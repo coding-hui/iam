@@ -65,4 +65,18 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>devops-wecoding-wecoding-wecoding-tool</id>
+            <name>wecoding-tool</name>
+            <url>https://devops-wecoding-maven.pkg.coding.net/repository/wecoding/wecoding-tool/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
 </project>
