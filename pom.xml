@@ -9,14 +9,13 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>top.wecoding</groupId>
     <artifactId>wecoding-iam</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>wecoding-iam</name>
     <description>wecoding-iam</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>8</java.version>
         <wecoding.version>0.0.1</wecoding.version>
     </properties>
 
@@ -67,7 +66,7 @@
 
     <repositories>
         <repository>
-            <id>devops-wecoding-wecoding-wecoding-tool</id>
+            <id>devops-wecoding</id>
             <name>wecoding-tool</name>
             <url>https://devops-wecoding-maven.pkg.coding.net/repository/wecoding/wecoding-tool/</url>
             <releases>
