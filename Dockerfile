@@ -1,4 +1,4 @@
-FROM java:8
+FROM openjdk:8-jre
 EXPOSE 80
 MAINTAINER wecoding@yeah.net
 WORKDIR /wecoding
