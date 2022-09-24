@@ -12,7 +12,7 @@ import top.wecoding.core.exception.user.UnauthorizedException;
 import top.wecoding.iam.granter.AbstractTokenGranterStrategy;
 import top.wecoding.iam.model.request.TokenRequest;
 import top.wecoding.iam.service.UserService;
-import top.wecoding.jwt.util.JwtUtils;
+import top.wecoding.jwt.helper.JWTHelper;
 
 /**
  * 刷新令牌换取访问令牌
@@ -39,13 +39,13 @@ public class RefreshTokenGranterStrategy extends AbstractTokenGranterStrategy {
       throw new UnauthorizedException();
     }
 
-    if (JwtUtils.isTokenExpired(refreshToken)) {
+    if (JWTHelper.isTokenExpired(refreshToken)) {
       throw new UnauthorizedException();
     }
 
-    Claims claims = JwtUtils.parseToken(refreshToken);
-    String tokenType = JwtUtils.getValue(claims, TokenConstant.TOKEN_TYPE);
-    String account = JwtUtils.getValue(claims, SecurityConstants.DETAILS_ACCOUNT);
+    Claims claims = JWTHelper.parseToken(refreshToken);
+    String tokenType = JWTHelper.getValue(claims, TokenConstant.TOKEN_TYPE);
+    String account = JWTHelper.getValue(claims, SecurityConstants.DETAILS_ACCOUNT);
     if (!TokenConstant.REFRESH_TOKEN.equals(tokenType)) {
       throw new UnauthorizedException();
     }
