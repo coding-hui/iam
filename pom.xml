@@ -2,6 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+
     <parent>
         <groupId>top.wecoding</groupId>
         <artifactId>wecoding-parent</artifactId>
@@ -17,10 +19,15 @@
     <properties>
         <java.version>8</java.version>
         <wecoding.version>0.0.1</wecoding.version>
+        <iam.version>0.0.1-SNAPSHOT</iam.version>
     </properties>
 
-    <dependencyManagement>
-    </dependencyManagement>
+    <modules>
+        <module>api</module>
+        <module>common</module>
+        <module>server</module>
+        <module>sdk</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -45,24 +52,28 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>top.wecoding</groupId>
+                <artifactId>iam-common</artifactId>
+                <version>${iam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wecoding</groupId>
+                <artifactId>iam-api</artifactId>
+                <version>${iam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wecoding</groupId>
+                <artifactId>iam-sdk</artifactId>
+                <version>${iam.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <repository>
