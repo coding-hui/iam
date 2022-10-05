@@ -21,11 +21,6 @@
     <dependencies>
         <dependency>
             <groupId>top.wecoding</groupId>
-            <artifactId>wecoding-jwt</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>top.wecoding</groupId>
             <artifactId>wecoding-redis</artifactId>
         </dependency>
 
