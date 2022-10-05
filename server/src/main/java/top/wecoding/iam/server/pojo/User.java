@@ -42,15 +42,17 @@ public class User extends LogicDeletedBaseEntity {
 
   private String phone;
 
-  private String lastLoginIp;
-
-  private Date lastLoginTime;
-
-  private String userType;
+  private Integer userType;
 
   private String userState;
 
   private Boolean defaultPwd;
+
+  private String country;
+
+  private String lastLoginIp;
+
+  private Date lastLoginTime;
 
   private String infos;
 }

@@ -28,6 +28,8 @@ public class UserInfo {
 
   private String nickName;
 
+  private String password;
+
   private String avatar;
 
   private Date birthday;
@@ -42,7 +44,7 @@ public class UserInfo {
 
   private Date lastLoginTime;
 
-  private String userType;
+  private Integer userType;
 
   private String userState;
 

@@ -17,17 +17,25 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  messages:
+    basename: messages,messages-common,messages-iam
+
+  liquibase:
+    change-log: classpath:db/db.changelog-master.xml
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://sh-cynosdbmysql-grp-hrw08c4a.sql.tencentcdb.com:25863/wecoding?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    url: jdbc:mysql://localhost:3306/wecoding_iam?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
     username: root
-    password: WeCoding319!@.
+    password: 123456
+  #    password: WeCoding319.
   redis:
     host: localhost
     port: 6379
     database: 0
     password:
     timeout: 10s
+
 
 # 日志配置
 logging:

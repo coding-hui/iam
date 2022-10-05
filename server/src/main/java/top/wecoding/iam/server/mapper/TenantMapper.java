@@ -8,4 +8,13 @@ import top.wecoding.iam.server.pojo.Tenant;
  * @date 2022/9/12
  * @qq 1515418211
  */
-public interface TenantMapper extends BaseMapper<Tenant> {}
+public interface TenantMapper extends BaseMapper<Tenant> {
+
+  Tenant getByTenantName(String tenantName);
+
+  Tenant getByUsername(String username);
+
+  Tenant getByTenantId(String tenantId);
+
+  int count();
+}

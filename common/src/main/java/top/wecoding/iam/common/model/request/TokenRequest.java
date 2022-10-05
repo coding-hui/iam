@@ -22,7 +22,9 @@ public class TokenRequest {
 
   private String grantType;
 
-  private String account;
+  private String tenantName;
+
+  private String username;
 
   private String password;
 
@@ -32,7 +34,8 @@ public class TokenRequest {
 
   public static TokenRequest of(LoginRequest loginRequest) {
     return TokenRequest.builder()
-        .account(loginRequest.getAccount())
+        .tenantName(loginRequest.getTenantName())
+        .username(loginRequest.getUsername())
         .password(loginRequest.getPassword())
         .grantType(loginRequest.getGrantType())
         .refreshToken(loginRequest.getRefreshToken())

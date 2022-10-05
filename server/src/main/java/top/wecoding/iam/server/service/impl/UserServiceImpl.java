@@ -1,11 +1,10 @@
 package top.wecoding.iam.server.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import top.wecoding.core.enums.rest.CommonErrorCodeEnum;
 import top.wecoding.core.result.PageInfo;
 import top.wecoding.core.util.AssertUtils;
+import top.wecoding.iam.common.enums.IamErrorCode;
 import top.wecoding.iam.common.model.UserInfo;
 import top.wecoding.iam.common.model.request.*;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
@@ -32,7 +31,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
   public UserInfoResponse getInfoById(String userId) {
     User user = this.getById(userId);
 
-    AssertUtils.isNotNull(user, CommonErrorCodeEnum.COMMON_ERROR, "user does not exist");
+    AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
     UserInfo userInfo =
         UserInfo.builder()
@@ -48,12 +47,30 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
   @Override
   public UserInfoResponse getInfoByUsername(String username) {
-    User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, username));
+    User user = userMapper.getByUsername(username);
 
-    AssertUtils.isNotNull(user, CommonErrorCodeEnum.COMMON_ERROR, "user does not exist");
+    AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
     UserInfo userInfo =
-        UserInfo.builder().userId(user.getUserId()).username(user.getUsername()).build();
+        UserInfo.builder()
+            .userId(user.getUserId())
+            .tenantId(user.getTenantId())
+            .tenantName("wecoding")
+            .username(user.getUsername())
+            .nickName(user.getNickName())
+            .password(user.getPassword())
+            .avatar(user.getAvatar())
+            .birthday(user.getBirthday())
+            .gender(user.getGender())
+            .email(user.getEmail())
+            .phone(user.getPhone())
+            .lastLoginIp(user.getLastLoginIp())
+            .lastLoginTime(user.getLastLoginTime())
+            .userType(user.getUserType())
+            .userState(user.getUserState())
+            .defaultPwd(user.getDefaultPwd())
+            .infos(user.getInfos())
+            .build();
 
     return UserInfoResponse.builder().userInfo(userInfo).build();
   }

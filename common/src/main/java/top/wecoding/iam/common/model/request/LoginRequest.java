@@ -15,8 +15,6 @@
  */
 package top.wecoding.iam.common.model.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -35,20 +33,17 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "LoginParamDTO", description = "登录参数")
 public class LoginRequest {
 
-  @ApiModelProperty(value = "账号")
-  private String account;
+  private String tenantName;
 
-  @ApiModelProperty(value = "密码")
+  private String username;
+
   private String password;
 
-  @ApiModelProperty(value = "刷新令牌")
   private String refreshToken;
 
   /** password: 账号密码 captcha: 验证码 */
-  @ApiModelProperty(value = "授权类型", example = "password", allowableValues = "captcha,password")
   @NotEmpty(message = "授权类型不能为空")
   private String grantType;
 }

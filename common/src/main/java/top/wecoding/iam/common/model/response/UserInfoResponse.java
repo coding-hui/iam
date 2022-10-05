@@ -9,6 +9,7 @@ import top.wecoding.iam.common.model.GroupInfo;
 import top.wecoding.iam.common.model.UserInfo;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author liuyuhui
@@ -24,4 +25,8 @@ public class UserInfoResponse {
   @JsonUnwrapped private UserInfo userInfo;
 
   @JsonUnwrapped private List<GroupInfo> groupInfoList;
+
+  private Set<String> permissions;
+
+  private Set<String> roles;
 }

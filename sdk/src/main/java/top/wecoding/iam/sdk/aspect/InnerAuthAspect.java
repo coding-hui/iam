@@ -6,10 +6,13 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.security.access.AccessDeniedException;
 import top.wecoding.core.constant.SecurityConstants;
-import top.wecoding.core.exception.user.InnerAuthException;
-import top.wecoding.core.util.WebUtil;
-import top.wecoding.iam.sdk.annotation.InnerAuth;
+import top.wecoding.core.util.WebUtils;
+import top.wecoding.iam.sdk.InnerAuth;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 内部服务调用验证处理切面
@@ -23,23 +26,22 @@ public class InnerAuthAspect implements Ordered {
 
   @Around("@within(innerAuth) || @annotation(innerAuth)")
   public Object innerAround(ProceedingJoinPoint point, InnerAuth innerAuth) throws Throwable {
-    String source = WebUtil.getRequest().getHeader(SecurityConstants.FROM_SOURCE);
-
-    // 是否是内部请求
-    if (!StrUtil.equals(SecurityConstants.INNER, source)) {
-      log.warn("访问接口 {} 没有权限", point.getSignature().getName());
-      throw new InnerAuthException();
+    if (innerAuth == null) {
+      Class<?> clazz = point.getTarget().getClass();
+      innerAuth = AnnotationUtils.findAnnotation(clazz, InnerAuth.class);
     }
 
-    // 用户验证
-    String userId = WebUtil.getRequest().getHeader(SecurityConstants.DETAILS_USER_ID);
-    String account = WebUtil.getRequest().getHeader(SecurityConstants.DETAILS_ACCOUNT);
-    if (innerAuth.value() && StrUtil.hasBlank(userId, account)) {
-      log.warn("访问接口 {} 没有权限", point.getSignature().getName());
-      throw new InnerAuthException();
+    HttpServletRequest request = WebUtils.getRequest();
+    String requestURI = request.getRequestURI();
+    String source = request.getHeader(SecurityConstants.FROM);
+    if (innerAuth != null
+        && innerAuth.value()
+        && !StrUtil.equals(SecurityConstants.INNER, source)) {
+      log.warn("Access api {} does not have permission", requestURI);
+      throw new AccessDeniedException("Access is denied");
     }
 
-    log.debug(" >>> 内部应用访问，不检验权限，访问接口: {}", point.getSignature().getName());
+    log.debug("Internal request, skip authentication: {}", requestURI);
     return point.proceed();
   }
 

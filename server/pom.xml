@@ -22,6 +22,16 @@
 
         <dependency>
             <groupId>top.wecoding</groupId>
+            <artifactId>wecoding-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>top.wecoding</groupId>
+            <artifactId>iam-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>top.wecoding</groupId>
             <artifactId>iam-common</artifactId>
         </dependency>
 
@@ -30,6 +40,20 @@
             <artifactId>iam-sdk</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

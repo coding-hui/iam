@@ -25,4 +25,6 @@ public class CommonLoginResponse {
   private String username;
 
   private Integer userType;
+
+  private String accessToken;
 }
