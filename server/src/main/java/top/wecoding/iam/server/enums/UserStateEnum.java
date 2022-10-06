@@ -31,21 +31,21 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 @Accessors(fluent = true)
-public enum UserState {
+public enum UserStateEnum {
   DEFAULT(0),
   INACTIVATED(1),
   DISABLE(2);
 
-  private static final Map<String, UserState> DICT =
-      EnumUtil.ofDict(UserState::values, UserState::code);
+  private static final Map<String, UserStateEnum> DICT =
+      EnumUtil.ofDict(UserStateEnum::values, UserStateEnum::code);
 
   private final int code;
 
-  public static UserState of(int code) {
+  public static UserStateEnum of(int code) {
     return of(String.valueOf(code));
   }
 
-  public static UserState of(String code) {
+  public static UserStateEnum of(String code) {
     return DICT.get(code);
   }
 

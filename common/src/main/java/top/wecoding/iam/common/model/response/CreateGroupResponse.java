@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateGroupResponse {
 
-  private String tenantId;
+  private String groupId;
 
-  private String tenantName;
+  private String groupName;
 }

@@ -20,6 +20,10 @@ public class AuthUtil {
     return currentLoginUser().getUserId();
   }
 
+  public String currentUsername() {
+    return currentLoginUser().getUsername();
+  }
+
   public String currentTenantId() {
     return currentLoginUser().getTenantId();
   }

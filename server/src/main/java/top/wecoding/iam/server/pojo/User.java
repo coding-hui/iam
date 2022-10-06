@@ -1,9 +1,10 @@
 package top.wecoding.iam.server.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import top.wecoding.mybatis.base.LogicDeletedBaseEntity;
+import top.wecoding.mybatis.base.BaseEntity;
 
 import java.util.Date;
 
@@ -18,7 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @TableName("iam_user")
 @EqualsAndHashCode(callSuper = true)
-public class User extends LogicDeletedBaseEntity {
+public class User extends BaseEntity {
 
   @TableId private Long id;
 
@@ -28,6 +29,7 @@ public class User extends LogicDeletedBaseEntity {
 
   private String username;
 
+  @TableField("pwd")
   private String password;
 
   private String nickName;
@@ -44,8 +46,9 @@ public class User extends LogicDeletedBaseEntity {
 
   private Integer userType;
 
-  private String userState;
+  private Integer userState;
 
+  @TableField("def_pwd")
   private Boolean defaultPwd;
 
   private String country;

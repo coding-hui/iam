@@ -46,7 +46,7 @@ public class UserInfo {
 
   private Integer userType;
 
-  private String userState;
+  private Integer userState;
 
   private Boolean defaultPwd;
 

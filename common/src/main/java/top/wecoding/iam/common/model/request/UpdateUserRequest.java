@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -18,15 +17,9 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserRequest {
+public class UpdateUserRequest {
 
-  @NotBlank private String tenantId;
-
-  @NotBlank private String tenantName;
-
-  @NotBlank private String username;
-
-  @NotBlank private String password;
+  @NotNull private String userId;
 
   private String nickName;
 
@@ -36,11 +29,9 @@ public class CreateUserRequest {
 
   private String gender;
 
-  @Email private String email;
+  private String email;
 
   private String phone;
-
-  private Integer userType;
 
   private String country;
 }

@@ -18,5 +18,5 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class DisableUserRequest {
 
-  @NotBlank private String userId;
+  @NotBlank private Boolean disable;
 }

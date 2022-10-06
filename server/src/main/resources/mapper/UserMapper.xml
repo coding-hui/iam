@@ -67,6 +67,12 @@
         FROM `iam_user` WHERE `tenant_id` = #{tenantId} AND `username` = #{username} AND `user_state` = ${state}
     </select>
 
+    <select id="list" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userColumns"/>
+        FROM `iam_user`
+    </select>
+
     <select id="listByTenantId" resultMap="BaseResultMap">
         SELECT
         <include refid="userColumns"/>
@@ -83,11 +89,26 @@
         </foreach>
     </select>
 
+    <select id="page" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userColumns"/>
+        FROM `iam_user`
+    </select>
+
     <update id="flushLastLoginInfo">
         UPDATE `iam_user`
         SET `last_login_time` = NOW(),
             `last_login_ip`   = #{lastLoginIp}
         WHERE `id` = #{id}
+    </update>
+
+    <update id="updateState">
+        UPDATE `iam_user`
+        SET `updated_by`  = #{updatedBy},
+            `create_time` = NOW(),
+            `user_state`  = #{newState}
+        WHERE `id` = #{id}
+          AND `user_state` = #{oldState}
     </update>
 
     <select id="count" resultMap="BaseResultMap">

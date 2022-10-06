@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wecoding.iam.server.mapper.GroupMapper">
+
+    <resultMap id="BaseResultMap" type="top.wecoding.iam.server.pojo.Group">
+        <id column="id" property="id"/>
+        <result column="group_id" property="groupId"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="group_name" property="groupName"/>
+        <result column="created_time" property="createTime"/>
+        <result column="create_by" property="createdBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="updated_by" property="updatedBy"/>
+    </resultMap>
+
+    <sql id="columns">`id`,`group_id`,`tenant_id`,`group_name`,`create_time`,`created_by`,`update_time`,`updated_by`</sql>
+
+    <select id="getByGroupId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group` WHERE `tenant_name` = #{tenantName}
+    </select>
+
+    <select id="getByTenantIdAndGroupName" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group` WHERE `tenant_id` = #{tenant_id} AND `group_name` = #{groupName}
+    </select>
+
+    <select id="getByTenantIdAndGroupId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group` WHERE `tenant_id` = #{tenant_id} AND `group_id` = #{groupId}
+    </select>
+
+    <select id="count" resultMap="BaseResultMap">
+        SELECT COUNT(1)
+        FROM `iam_group`
+    </select>
+
+</mapper>

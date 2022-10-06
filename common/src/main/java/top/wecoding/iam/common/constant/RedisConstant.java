@@ -7,6 +7,8 @@ package top.wecoding.iam.common.constant;
  */
 public interface RedisConstant {
 
+  String OAUTH_ACCESS_PREFIX = "access_token:*";
+
   String USER_FAIL_COUNT = "user:fail:count";
 
   String USER_AUTH_INFO = "auth_info";

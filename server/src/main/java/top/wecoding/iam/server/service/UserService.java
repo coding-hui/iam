@@ -23,7 +23,9 @@ public interface UserService extends BaseService<User> {
 
   void create(CreateUserRequest createUserRequest);
 
-  void delete(DeleteUserRequest deleteUserRequest);
+  void update(UpdateUserRequest updateUserRequest);
+
+  void delete(String userId);
 
   void disable(String userId, DisableUserRequest disableUserRequest);
 
@@ -31,5 +33,5 @@ public interface UserService extends BaseService<User> {
 
   PageInfo<UserInfoResponse> infoPage(UserInfoPageRequest userInfoPageRequest);
 
-  List<UserInfoResponse> infoList(UserInfoPageRequest userInfoPageRequest);
+  List<UserInfoResponse> infoList(UserInfoListRequest userInfoListRequest);
 }

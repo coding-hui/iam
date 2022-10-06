@@ -1,13 +1,14 @@
 package top.wecoding.iam.server.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import top.wecoding.core.result.PageInfo;
 import top.wecoding.core.result.R;
+import top.wecoding.iam.common.model.request.*;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.sdk.InnerAuth;
+import top.wecoding.iam.sdk.utili.AuthUtil;
 import top.wecoding.iam.server.service.UserService;
 
 /**
@@ -26,5 +27,50 @@ public class UserController {
   @GetMapping("/info/{username}")
   public R<UserInfoResponse> info(@PathVariable("username") String username) {
     return R.ok(userService.getInfoByUsername(username));
+  }
+
+  @GetMapping("")
+  public R<PageInfo<UserInfoResponse>> page(UserInfoPageRequest userInfoPageRequest) {
+    return R.ok(userService.infoPage(userInfoPageRequest));
+  }
+
+  @PostMapping("")
+  public R<?> create(@RequestBody @Validated CreateUserRequest createUserRequest) {
+    userService.create(createUserRequest);
+    return R.ok();
+  }
+
+  @PutMapping("")
+  public R<?> update(@RequestBody @Validated UpdateUserRequest updateUserRequest) {
+    userService.update(updateUserRequest);
+    return R.ok();
+  }
+
+  @DeleteMapping("/{userId}")
+  public R<?> delete(@PathVariable("userId") String userId) {
+    userService.delete(userId);
+    return R.ok();
+  }
+
+  @PutMapping("/{id}/disable")
+  public R<?> disable(
+      @PathVariable("id") String userId,
+      @RequestBody @Validated DisableUserRequest disableUserRequest) {
+    userService.disable(userId, disableUserRequest);
+    return R.ok();
+  }
+
+  @PutMapping("/{userId}/password")
+  public R<?> password(
+      @PathVariable("userId") String userId,
+      @RequestBody @Validated UpdatePasswordRequest updatePasswordRequest) {
+    userService.password(userId, updatePasswordRequest);
+    return R.ok();
+  }
+
+  @PutMapping("/password")
+  public R<?> password(@RequestBody @Validated UpdatePasswordRequest updatePasswordRequest) {
+    userService.password(AuthUtil.currentUserId(), updatePasswordRequest);
+    return R.ok();
   }
 }
