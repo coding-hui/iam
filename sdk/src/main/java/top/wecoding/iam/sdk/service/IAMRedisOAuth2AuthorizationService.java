@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationCode;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.OAuth2TokenType;
-import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.util.Assert;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.STATE;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.*;
 
 /**
  * @author liuyuhui
@@ -39,15 +38,11 @@ public class IAMRedisOAuth2AuthorizationService implements OAuth2AuthorizationSe
     Assert.notNull(authorization, "authorization cannot be null");
 
     if (isState(authorization)) {
-      String token = authorization.getAttribute("state");
+      String token = authorization.getAttribute(STATE);
       redisTemplate.setValueSerializer(RedisSerializer.java());
       redisTemplate
           .opsForValue()
-          .set(
-              buildKey(OAuth2ParameterNames.STATE, token),
-              authorization,
-              TIMEOUT,
-              TimeUnit.MINUTES);
+          .set(buildKey(STATE, token), authorization, TIMEOUT, TimeUnit.MINUTES);
     }
 
     if (isCode(authorization)) {
@@ -61,7 +56,7 @@ public class IAMRedisOAuth2AuthorizationService implements OAuth2AuthorizationSe
       redisTemplate
           .opsForValue()
           .set(
-              buildKey(OAuth2ParameterNames.CODE, authorizationCodeToken.getTokenValue()),
+              buildKey(CODE, authorizationCodeToken.getTokenValue()),
               authorization,
               between,
               TimeUnit.MINUTES);
@@ -75,7 +70,7 @@ public class IAMRedisOAuth2AuthorizationService implements OAuth2AuthorizationSe
       redisTemplate
           .opsForValue()
           .set(
-              buildKey(OAuth2ParameterNames.REFRESH_TOKEN, refreshToken.getTokenValue()),
+              buildKey(REFRESH_TOKEN, refreshToken.getTokenValue()),
               authorization,
               between,
               TimeUnit.SECONDS);
@@ -89,7 +84,7 @@ public class IAMRedisOAuth2AuthorizationService implements OAuth2AuthorizationSe
       redisTemplate
           .opsForValue()
           .set(
-              buildKey(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getTokenValue()),
+              buildKey(ACCESS_TOKEN, accessToken.getTokenValue()),
               authorization,
               between,
               TimeUnit.SECONDS);
@@ -102,25 +97,25 @@ public class IAMRedisOAuth2AuthorizationService implements OAuth2AuthorizationSe
 
     List<String> keys = new ArrayList<>();
     if (isState(authorization)) {
-      String token = authorization.getAttribute("state");
-      keys.add(buildKey(OAuth2ParameterNames.STATE, token));
+      String token = authorization.getAttribute(STATE);
+      keys.add(buildKey(STATE, token));
     }
 
     if (isCode(authorization)) {
       OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode =
           authorization.getToken(OAuth2AuthorizationCode.class);
       OAuth2AuthorizationCode authorizationCodeToken = authorizationCode.getToken();
-      keys.add(buildKey(OAuth2ParameterNames.CODE, authorizationCodeToken.getTokenValue()));
+      keys.add(buildKey(CODE, authorizationCodeToken.getTokenValue()));
     }
 
     if (isRefreshToken(authorization)) {
       OAuth2RefreshToken refreshToken = authorization.getRefreshToken().getToken();
-      keys.add(buildKey(OAuth2ParameterNames.REFRESH_TOKEN, refreshToken.getTokenValue()));
+      keys.add(buildKey(REFRESH_TOKEN, refreshToken.getTokenValue()));
     }
 
     if (isAccessToken(authorization)) {
       OAuth2AccessToken accessToken = authorization.getAccessToken().getToken();
-      keys.add(buildKey(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getTokenValue()));
+      keys.add(buildKey(ACCESS_TOKEN, accessToken.getTokenValue()));
     }
     redisTemplate.delete(keys);
   }

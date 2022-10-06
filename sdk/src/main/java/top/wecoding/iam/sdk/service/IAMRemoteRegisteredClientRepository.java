@@ -1,18 +1,20 @@
 package top.wecoding.iam.sdk.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.OAuth2TokenFormat;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
 import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.iam.api.feign.RemoteClientDetailsService;
+import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
 
-import java.time.Duration;
-import java.util.UUID;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author liuyuhui
@@ -21,12 +23,6 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor
 public class IAMRemoteRegisteredClientRepository implements RegisteredClientRepository {
-
-  /** 刷新令牌有效期默认 30 天 */
-  private static final int refreshTokenValiditySeconds = 60 * 60 * 24 * 30;
-
-  /** 请求令牌有效期默认 12 小时 */
-  private static final int accessTokenValiditySeconds = 60 * 60 * 12;
 
   private final RemoteClientDetailsService clientDetailsService;
 
@@ -41,30 +37,74 @@ public class IAMRemoteRegisteredClientRepository implements RegisteredClientRepo
   }
 
   @Override
+  @SneakyThrows(Exception.class)
   public RegisteredClient findByClientId(String clientId) {
-    // R<OauthClientResponse> result =
-    //     clientDetailsService.getClientDetailsById(clientId, SecurityConstants.INNER);
-    // if (result.getData() == null) {
-    //   return null;
-    // }
-    // OauthClientResponse clientResponse = result.getData();
-    return RegisteredClient.withId(UUID.randomUUID().toString())
-        .clientId(clientId)
-        .clientSecret(SecurityConstants.NOOP + "wecoding")
-        .redirectUri("http:localhost:80")
-        .authorizationGrantType(AuthorizationGrantType.PASSWORD)
-        .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-        .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-        .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-        .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-        .scope("server")
-        .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
-        .tokenSettings(
-            TokenSettings.builder()
-                .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
-                .accessTokenTimeToLive(Duration.ofSeconds(accessTokenValiditySeconds))
-                .refreshTokenTimeToLive(Duration.ofSeconds(refreshTokenValiditySeconds))
-                .build())
-        .build();
+    Oauth2ClientInfoResponse clientResponse =
+        Optional.ofNullable(clientDetailsService.info(clientId, SecurityConstants.INNER).getData())
+            .orElseThrow(
+                () ->
+                    new OAuth2AuthenticationException(
+                        "Get query client failed, check database chain"));
+
+    Set<String> clientAuthenticationMethods = clientResponse.getClientAuthenticationMethods();
+    Set<String> authorizationGrantTypes = clientResponse.getAuthorizationGrantTypes();
+    Set<String> redirectUris = clientResponse.getRedirectUris();
+    Set<String> clientScopes = clientResponse.getScopes();
+    ClientSettings clientSettings = clientResponse.getClientSettings().toClientSettings();
+    TokenSettings tokenSettings = clientResponse.getTokenSettings().toTokenSettings();
+
+    RegisteredClient.Builder builder =
+        RegisteredClient.withId(clientResponse.getId())
+            .clientId(clientResponse.getClientId())
+            .clientIdIssuedAt(clientResponse.getClientIdIssuedAt())
+            .clientSecret(SecurityConstants.NOOP + clientResponse.getClientSecret())
+            .clientSecretExpiresAt(clientResponse.getClientSecretExpiresAt())
+            .clientName(clientResponse.getClientName())
+            .clientAuthenticationMethods(
+                (authenticationMethods) ->
+                    clientAuthenticationMethods.forEach(
+                        authenticationMethod ->
+                            authenticationMethods.add(
+                                resolveClientAuthenticationMethod(authenticationMethod))))
+            .authorizationGrantTypes(
+                (grantTypes) ->
+                    authorizationGrantTypes.forEach(
+                        grantType -> grantTypes.add(resolveAuthorizationGrantType(grantType))))
+            .redirectUris((uris) -> uris.addAll(redirectUris))
+            .scopes((scopes) -> scopes.addAll(clientScopes))
+            .clientSettings(clientSettings)
+            .tokenSettings(tokenSettings);
+
+    return builder.build();
+  }
+
+  private AuthorizationGrantType resolveAuthorizationGrantType(String authorizationGrantType) {
+    if (AuthorizationGrantType.AUTHORIZATION_CODE.getValue().equals(authorizationGrantType)) {
+      return AuthorizationGrantType.AUTHORIZATION_CODE;
+    } else if (AuthorizationGrantType.CLIENT_CREDENTIALS
+        .getValue()
+        .equals(authorizationGrantType)) {
+      return AuthorizationGrantType.CLIENT_CREDENTIALS;
+    } else if (AuthorizationGrantType.REFRESH_TOKEN.getValue().equals(authorizationGrantType)) {
+      return AuthorizationGrantType.REFRESH_TOKEN;
+    }
+    return new AuthorizationGrantType(authorizationGrantType); // Custom authorization grant type
+  }
+
+  private ClientAuthenticationMethod resolveClientAuthenticationMethod(
+      String clientAuthenticationMethod) {
+    if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC
+        .getValue()
+        .equals(clientAuthenticationMethod)) {
+      return ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
+    } else if (ClientAuthenticationMethod.CLIENT_SECRET_POST
+        .getValue()
+        .equals(clientAuthenticationMethod)) {
+      return ClientAuthenticationMethod.CLIENT_SECRET_POST;
+    } else if (ClientAuthenticationMethod.NONE.getValue().equals(clientAuthenticationMethod)) {
+      return ClientAuthenticationMethod.NONE;
+    }
+    return new ClientAuthenticationMethod(
+        clientAuthenticationMethod); // Custom client authentication method
   }
 }

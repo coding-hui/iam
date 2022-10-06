@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
-import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
+import top.wecoding.iam.common.pojo.OAuth2ClientSettings;
+import top.wecoding.iam.common.pojo.OAuth2TokenSettings;
 
 import java.time.Instant;
 import java.util.Set;
@@ -21,7 +19,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OauthClientResponse {
+public class Oauth2ClientInfoResponse {
 
   private String id;
 
@@ -35,15 +33,15 @@ public class OauthClientResponse {
 
   private String clientName;
 
-  private Set<ClientAuthenticationMethod> clientAuthenticationMethods;
+  private Set<String> clientAuthenticationMethods;
 
-  private Set<AuthorizationGrantType> authorizationGrantTypes;
+  private Set<String> authorizationGrantTypes;
 
   private Set<String> redirectUris;
 
   private Set<String> scopes;
 
-  private ClientSettings clientSettings;
+  private OAuth2ClientSettings clientSettings;
 
-  private TokenSettings tokenSettings;
+  private OAuth2TokenSettings tokenSettings;
 }

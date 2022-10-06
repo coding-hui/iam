@@ -30,6 +30,9 @@ import top.wecoding.iam.server.config.configurers.FormIdentityLoginConfigurer;
 
 import java.util.Arrays;
 
+import static top.wecoding.core.constant.SecurityConstants.CUSTOM_TOKEN_ENDPOINT_URI;
+import static top.wecoding.core.constant.SecurityConstants.PROJECT_LICENSE;
+
 /**
  * @author liuyuhui
  * @date 2022/10/3
@@ -74,7 +77,8 @@ public class AuthorizationServerConfiguration {
                     .authorizationService(authorizationService)
                     .providerSettings(
                         ProviderSettings.builder()
-                            .issuer(SecurityConstants.PROJECT_LICENSE)
+                            .tokenEndpoint(CUSTOM_TOKEN_ENDPOINT_URI)
+                            .issuer(PROJECT_LICENSE)
                             .build()))
             .and()
             .apply(new FormIdentityLoginConfigurer())

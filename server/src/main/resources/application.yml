@@ -4,6 +4,9 @@ server:
     context-path: /
 
 spring:
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
   application:
     name: wecoding-iam
   servlet:

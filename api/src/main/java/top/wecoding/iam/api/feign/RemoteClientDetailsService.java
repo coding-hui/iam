@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.result.R;
-import top.wecoding.iam.common.model.response.OauthClientDetailsResponse;
-import top.wecoding.iam.common.model.response.OauthClientResponse;
+import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
 
 import java.util.List;
 
@@ -17,8 +16,8 @@ import java.util.List;
  * @qq 1515418211
  */
 @FeignClient(
+    value = "iam-client",
     contextId = "remoteClientDetailsService",
-    value = "client",
     url = "http://localhost:80")
 public interface RemoteClientDetailsService {
 
@@ -29,8 +28,8 @@ public interface RemoteClientDetailsService {
    * @param from 调用标志
    * @return R
    */
-  @GetMapping("/api/v1/client/{clientId}")
-  R<OauthClientResponse> getClientDetailsById(
+  @GetMapping("/api/v1/client/info/{clientId}")
+  R<Oauth2ClientInfoResponse> info(
       @PathVariable("clientId") String clientId,
       @RequestHeader(SecurityConstants.FROM) String from);
 
@@ -41,6 +40,6 @@ public interface RemoteClientDetailsService {
    * @return R
    */
   @GetMapping("/client")
-  R<List<OauthClientDetailsResponse>> listClientDetails(
+  R<List<Oauth2ClientInfoResponse>> listClientDetails(
       @RequestHeader(SecurityConstants.FROM) String from);
 }
