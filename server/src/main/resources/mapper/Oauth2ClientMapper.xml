@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wecoding.iam.server.mapper.Oauth2ClientMapper">
+
+    <resultMap id="BaseResultMap" type="top.wecoding.iam.server.pojo.Oauth2Client">
+        <id column="id" property="id"/>
+        <result column="client_id" property="clientId"/>
+        <result column="client_id_issued_at" property="clientIdIssuedAt"/>
+        <result column="client_secret" property="clientSecret"/>
+        <result column="client_secret_expires_at" property="clientSecretExpiresAt"/>
+        <result column="client_name" property="clientName"/>
+        <result column="client_authentication_methods" property="clientAuthenticationMethods"/>
+        <result column="authorization_grant_types" property="authorizationGrantTypes"/>
+        <result column="redirect_uris" property="redirectUris"/>
+        <result column="scopes" property="scopes"/>
+        <result column="client_settings" property="clientSettings"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="token_settings" property="tokenSettings"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="created_time" property="createdBy"/>
+    </resultMap>
+
+    <sql id="columns">
+        `id`,
+        `client_id`,
+        `client_id_issued_at`,
+        `client_secret`,
+        `client_secret_expires_at`,
+        `client_name`,
+        `client_authentication_methods`,
+        `authorization_grant_types`,
+        `redirect_uris`,
+        `scopes`,
+        `client_settings`,
+        `token_settings`,
+        `update_time`,
+        `updated_by`,
+        `create_time`,
+        `created_by`
+    </sql>
+
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_oauth2_registered_client` WHERE `id` = #{id}
+    </select>
+
+    <select id="getByClientId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_oauth2_registered_client` WHERE `client_id` = #{clientId}
+    </select>
+
+    <delete id="deleteById">
+        DELETE
+        FROM `iam_oauth2_registered_client`
+        WHERE `id` = #{id}
+    </delete>
+
+    <select id="page" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_oauth2_registered_client`
+        <where>
+            <if test="query.clientId != null and query.clientId != ''">
+                `client_id` = #{query.clientId}
+            </if>
+            <if test="query.clientFuzzyName != null and query.clientFuzzyName != ''">
+                `client_name` LIKE CONCAT('%', #{query.clientFuzzyName}, '%')
+            </if>
+        </where>
+        ORDER BY `create_time`, `update_time`
+    </select>
+
+</mapper>
