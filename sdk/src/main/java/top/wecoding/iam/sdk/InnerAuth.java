@@ -13,6 +13,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface InnerAuth {
 
-  /** 是否校验请求头来源 */
+  /** 是否校验请求头来源，只允许内部访问 */
   boolean value() default true;
 }
