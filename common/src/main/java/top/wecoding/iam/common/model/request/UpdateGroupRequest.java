@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,11 @@ import java.util.Set;
 @AllArgsConstructor
 public class UpdateGroupRequest {
 
-  @NotNull private Set<String> inputIdSet;
+  @NotNull
+  @JsonProperty("input_id_set")
+  private Set<String> inputIdSet;
 
-  @NotNull private Set<String> outputIdSet;
+  @NotNull
+  @JsonProperty("output_id_set")
+  private Set<String> outputIdSet;
 }

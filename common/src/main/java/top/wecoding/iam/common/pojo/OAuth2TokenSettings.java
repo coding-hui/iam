@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,14 +30,19 @@ public class OAuth2TokenSettings implements Serializable {
 
   private static final Duration DEFAULT_REFRESH_TOKEN_TIME = Duration.ofDays(30);
 
+  @JsonProperty("access_token_time_to_live")
   private Long accessTokenTimeToLive;
 
+  @JsonProperty("token_format")
   private String tokenFormat;
 
+  @JsonProperty("reuse_refresh_tokens")
   private Boolean reuseRefreshTokens = true;
 
+  @JsonProperty("refresh_token_time_to_live")
   private Long refreshTokenTimeToLive;
 
+  @JsonProperty("id_token_signature_algorithm")
   private String idTokenSignatureAlgorithm;
 
   public static OAuth2TokenSettings fromTokenSettings(TokenSettings tokenSettings) {

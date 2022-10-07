@@ -1,6 +1,11 @@
 package top.wecoding.iam.common.model.request;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import top.wecoding.core.model.request.PageRequest;
 
 import java.util.Set;
@@ -11,13 +16,15 @@ import java.util.Set;
  * @qq 1515418211
  */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class GroupInfoPageRequest extends PageRequest {
+public class GroupInfoPageRequest extends PageRequest implements CommonRequest {
 
+  @JsonProperty("group_ids")
   private Set<String> groupIds;
 
+  @JsonProperty("fuzzy_name")
   private String fuzzyName;
 }

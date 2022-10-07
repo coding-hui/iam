@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,9 +19,13 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class UpdatePasswordRequest implements PasswordRequest {
 
-  @NotBlank private String oldPwd;
+  @NotBlank
+  @JsonProperty("old_pwd")
+  private String oldPwd;
 
-  @NotBlank private String newPwd;
+  @NotBlank
+  @JsonProperty("new_pwd")
+  private String newPwd;
 
   @Override
   public boolean reset() {

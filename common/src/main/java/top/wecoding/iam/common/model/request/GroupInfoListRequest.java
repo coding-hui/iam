@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,8 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupInfoListRequest {
+public class GroupInfoListRequest implements CommonRequest {
 
+  @JsonProperty("group_ids")
   private Set<String> groupIds;
 }

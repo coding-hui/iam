@@ -8,7 +8,7 @@ import top.wecoding.core.result.R;
 import top.wecoding.iam.common.model.request.*;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.sdk.InnerAuth;
-import top.wecoding.iam.sdk.utili.AuthUtil;
+import top.wecoding.iam.common.util.AuthUtil;
 import top.wecoding.iam.server.service.UserService;
 
 /**
@@ -29,7 +29,7 @@ public class UserController {
     return R.ok(userService.getInfoByUsername(username));
   }
 
-  @GetMapping("")
+  @PostMapping("/page")
   public R<PageInfo<UserInfoResponse>> page(UserInfoPageRequest userInfoPageRequest) {
     return R.ok(userService.infoPage(userInfoPageRequest));
   }

@@ -27,6 +27,9 @@ public interface UserConvert {
   @Mappings(@Mapping(source = "user", target = "userInfo"))
   UserInfoResponse toUserInfoResponse(User user);
 
+  @Mappings({@Mapping(source = "user", target = "userInfo")})
+  UserInfoResponse toUserInfoResponse(User user, String tenantName);
+
   @Mappings({
     @Mapping(source = "user", target = "userInfo"),
     @Mapping(source = "groupInfoList", target = "groupInfoList"),
@@ -37,6 +40,8 @@ public interface UserConvert {
       User user, List<GroupInfo> groupInfoList, Set<String> permissions, Set<String> roles);
 
   UserInfo toUserInfo(User user);
+
+  UserInfo toUserInfo(User user, String tenantName);
 
   User toUser(CreateUserRequest createUserRequest);
 

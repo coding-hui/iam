@@ -1,4 +1,4 @@
-package top.wecoding.iam.sdk.utili;
+package top.wecoding.iam.common.util;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.context.SecurityContext;

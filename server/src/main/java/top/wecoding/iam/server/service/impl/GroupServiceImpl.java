@@ -1,11 +1,14 @@
 package top.wecoding.iam.server.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wecoding.core.result.PageInfo;
 import top.wecoding.core.util.AssertUtils;
+import top.wecoding.core.util.PageUtil;
 import top.wecoding.iam.common.enums.IamErrorCode;
 import top.wecoding.iam.common.model.GroupInfo;
 import top.wecoding.iam.common.model.request.CreateGroupRequest;
@@ -14,7 +17,7 @@ import top.wecoding.iam.common.model.request.GroupInfoPageRequest;
 import top.wecoding.iam.common.model.request.UpdateGroupRequest;
 import top.wecoding.iam.common.model.response.CreateGroupResponse;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
-import top.wecoding.iam.sdk.utili.AuthUtil;
+import top.wecoding.iam.common.util.AuthUtil;
 import top.wecoding.iam.server.convert.GroupConvert;
 import top.wecoding.iam.server.mapper.GroupMapper;
 import top.wecoding.iam.server.mapper.UserGroupMapper;
@@ -56,15 +59,14 @@ public class GroupServiceImpl extends BaseServiceImpl<GroupMapper, Group> implem
   public CreateGroupResponse create(CreateGroupRequest createGroupRequest) {
     String tenantId = AuthUtil.currentTenantId();
     String groupName = createGroupRequest.getGroupName();
-    String groupId = IdWorker.getIdStr();
-
     Set<String> userIds = createGroupRequest.getUserIds();
+    String groupId = IdWorker.getIdStr();
 
     AssertUtils.isNull(
         groupMapper.getByTenantIdAndGroupName(tenantId, groupName),
         IamErrorCode.GROUP_ALREADY_EXIST);
 
-    Group group = GroupConvert.INSTANCE.toGroup(createGroupRequest);
+    Group group = Group.builder().groupId(groupId).groupName(groupName).tenantId(tenantId).build();
 
     List<UserGroup> userGroupList =
         Optional.ofNullable(userIds).orElse(Collections.emptySet()).stream()
@@ -138,6 +140,7 @@ public class GroupServiceImpl extends BaseServiceImpl<GroupMapper, Group> implem
   }
 
   @Override
+  @Transactional(rollbackFor = Exception.class)
   public void delete(String groupId) {
     String tenantId = AuthUtil.currentTenantId();
 
@@ -153,16 +156,35 @@ public class GroupServiceImpl extends BaseServiceImpl<GroupMapper, Group> implem
 
     AssertUtils.isTrue(
         1 == groupMapper.deleteById(group.getId()), IamErrorCode.GROUP_DELETE_FAILED);
-    userGroupMapper.deleteBatchIds(userGroupIds);
+
+    if (CollUtil.isNotEmpty(userGroupIds)) {
+      AssertUtils.isFalse(
+          0 != userGroupMapper.deleteBatchIds(userGroupIds), IamErrorCode.GROUP_DELETE_FAILED);
+      ;
+    }
   }
 
   @Override
   public PageInfo<GroupInfoResponse> infoPage(GroupInfoPageRequest groupInfoPageRequest) {
-    return null;
+    Page<Group> pageResult =
+        groupMapper.page(PageUtil.getPageFromRequest(groupInfoPageRequest), groupInfoPageRequest);
+    return PageInfo.of(pageResult.getRecords(), groupInfoPageRequest, pageResult.getTotal())
+        .map(
+            (group -> {
+              GroupInfo groupInfo = GroupConvert.INSTANCE.toGroupInfo(group);
+              return GroupInfoResponse.builder().groupInfo(groupInfo).build();
+            }));
   }
 
   @Override
   public List<GroupInfoResponse> infoList(GroupInfoListRequest groupInfoListRequest) {
-    return null;
+    List<Group> list = groupMapper.list(groupInfoListRequest);
+    return list.stream()
+        .map(
+            (group -> {
+              GroupInfo groupInfo = GroupConvert.INSTANCE.toGroupInfo(group);
+              return GroupInfoResponse.builder().groupInfo(groupInfo).build();
+            }))
+        .collect(Collectors.toList());
   }
 }

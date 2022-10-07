@@ -3,7 +3,7 @@ package top.wecoding.iam.server.pojo;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import top.wecoding.mybatis.base.LogicDeletedBaseEntity;
+import top.wecoding.mybatis.base.BaseEntity;
 
 /**
  * @author liuyuhui
@@ -16,7 +16,7 @@ import top.wecoding.mybatis.base.LogicDeletedBaseEntity;
 @AllArgsConstructor
 @TableName("iam_tenant")
 @EqualsAndHashCode(callSuper = true)
-public class Tenant extends LogicDeletedBaseEntity {
+public class Tenant extends BaseEntity {
 
   @TableId private Long id;
 

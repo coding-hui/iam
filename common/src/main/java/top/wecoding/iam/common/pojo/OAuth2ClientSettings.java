@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,12 +26,16 @@ public class OAuth2ClientSettings implements Serializable {
 
   private static final long serialVersionUID = -2379117687423147472L;
 
+  @JsonProperty("require_proof_key")
   private Boolean requireProofKey;
 
+  @JsonProperty("require_authorization_consent")
   private Boolean requireAuthorizationConsent;
 
+  @JsonProperty("jwk_set_url")
   private String jwkSetUrl;
 
+  @JsonProperty("signing_algorithm")
   private String signingAlgorithm;
 
   public static OAuth2ClientSettings fromClientSettings(ClientSettings clientSettings) {

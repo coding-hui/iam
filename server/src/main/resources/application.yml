@@ -46,3 +46,7 @@ logging:
     top.wecoding: debug
     org.springframework: warn
     com.baomidou.dynamic: warn
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true

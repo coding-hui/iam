@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,27 +21,36 @@ import java.util.Date;
 @AllArgsConstructor
 public class CreateUserRequest {
 
-  @NotBlank private String tenantId;
+  @NotBlank
+  @JsonProperty("username")
+  private String username;
 
-  @NotBlank private String tenantName;
+  @NotBlank
+  @JsonProperty("password")
+  private String password;
 
-  @NotBlank private String username;
-
-  @NotBlank private String password;
-
+  @JsonProperty("nick_name")
   private String nickName;
 
+  @JsonProperty("avatar")
   private String avatar;
 
+  @JsonProperty("birthday")
   private Date birthday;
 
+  @JsonProperty("gender")
   private String gender;
 
-  @Email private String email;
+  @Email
+  @JsonProperty("email")
+  private String email;
 
+  @JsonProperty("phone")
   private String phone;
 
+  @JsonProperty("user_type")
   private Integer userType;
 
+  @JsonProperty("country")
   private String country;
 }

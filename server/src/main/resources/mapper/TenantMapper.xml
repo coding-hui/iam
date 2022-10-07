@@ -38,9 +38,41 @@
         FROM `iam_tenant` WHERE `tenant_id` = #{tenant_id}
     </select>
 
-    <select id="count" resultMap="BaseResultMap">
+    <select id="page" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_tenant`
+        <where>
+            <if test="query.tenantNameFuzzy != null and query.tenantNameFuzzy != ''">
+                AND `tenant_name` LIKE CONCAT('%', #{query.tenantNameFuzzy}, '%')
+            </if>
+            <if test="query.tenantIds != null and query.tenantIds.size > 0">
+                AND `tenant_id` IN
+                <foreach collection="tenantIds" item="item" open=" ( " separator="," close=" ) ">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="count" resultType="Integer">
         SELECT COUNT(1)
         FROM `iam_tenant`
     </select>
+
+    <update id="updateTenantName">
+        UPDATE `iam_tenant`
+        SET `updated_by`  = #{updatedBy},
+            `tenant_name` = #{newTenantName}
+        WHERE `id` = #{id}
+          AND `tenant_name` = #{oldTenantName}
+    </update>
+
+    <update id="updateTenantAnnotate">
+        UPDATE `iam_tenant`
+        SET `updated_by` = #{updatedBy},
+            `annotate`   = #{annotate}
+        WHERE `id` = #{id}
+    </update>
 
 </mapper>

@@ -32,7 +32,7 @@ public class Oauth2ClientController extends BaseController {
     return R.ok(info);
   }
 
-  @GetMapping("")
+  @PostMapping("/page")
   public R<PageInfo<Oauth2ClientInfoResponse>> page(
       CreateOauth2ClientPageRequest clientPageRequest) {
     return R.ok(clientService.infoPage(clientPageRequest));

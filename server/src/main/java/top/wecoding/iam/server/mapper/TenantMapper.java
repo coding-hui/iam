@@ -1,7 +1,12 @@
 package top.wecoding.iam.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
+import top.wecoding.iam.common.model.request.TenantInfoPageRequest;
 import top.wecoding.iam.server.pojo.Tenant;
+
+import java.io.Serializable;
 
 /**
  * @author liuyuhui
@@ -16,5 +21,11 @@ public interface TenantMapper extends BaseMapper<Tenant> {
 
   Tenant getByTenantId(String tenantId);
 
+  Page<Tenant> page(@Param("page") Page<Tenant> page, @Param("query") TenantInfoPageRequest query);
+
   int count();
+
+  int updateTenantName(Serializable id, String newTenantName, String oldTenantName);
+
+  int updateTenantAnnotate(Serializable id, String annotate, String updatedBy);
 }

@@ -18,19 +18,37 @@
     <select id="getByGroupId" resultMap="BaseResultMap">
         SELECT
         <include refid="columns"/>
-        FROM `iam_group` WHERE `tenant_name` = #{tenantName}
+        FROM `iam_group` WHERE `group_id` = #{groupId}
     </select>
 
     <select id="getByTenantIdAndGroupName" resultMap="BaseResultMap">
         SELECT
         <include refid="columns"/>
-        FROM `iam_group` WHERE `tenant_id` = #{tenant_id} AND `group_name` = #{groupName}
+        FROM `iam_group` WHERE `tenant_id` = #{tenantId} AND `group_name` = #{groupName}
     </select>
 
     <select id="getByTenantIdAndGroupId" resultMap="BaseResultMap">
         SELECT
         <include refid="columns"/>
-        FROM `iam_group` WHERE `tenant_id` = #{tenant_id} AND `group_id` = #{groupId}
+        FROM `iam_group` WHERE `tenant_id` = #{tenantId} AND `group_id` = #{groupId}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group`
+        <where>
+            `tenant_id` = #{tenantId}
+        </where>
+    </select>
+
+    <select id="page" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group`
+        <where>
+            `tenant_id` = #{query.currentTenantId}
+        </where>
     </select>
 
     <select id="count" resultMap="BaseResultMap">

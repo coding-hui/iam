@@ -93,6 +93,9 @@
         SELECT
         <include refid="userColumns"/>
         FROM `iam_user`
+        <where>
+            `tenant_id` = #{query.currentTenantId}
+        </where>
     </select>
 
     <update id="flushLastLoginInfo">

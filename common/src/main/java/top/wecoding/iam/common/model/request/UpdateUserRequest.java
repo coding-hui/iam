@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,19 +20,28 @@ import java.util.Date;
 @AllArgsConstructor
 public class UpdateUserRequest {
 
-  @NotNull private String userId;
+  @NotNull
+  @JsonProperty("user_id")
+  private String userId;
 
+  @JsonProperty("nick_name")
   private String nickName;
 
+  @JsonProperty("avatar")
   private String avatar;
 
+  @JsonProperty("birthday")
   private Date birthday;
 
+  @JsonProperty("gender")
   private String gender;
 
+  @JsonProperty("email")
   private String email;
 
+  @JsonProperty("phone")
   private String phone;
 
+  @JsonProperty("country")
   private String country;
 }

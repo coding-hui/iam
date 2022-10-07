@@ -1,4 +1,4 @@
-package top.wecoding.iam.server.util;
+package top.wecoding.iam.common.util;
 
 import lombok.experimental.UtilityClass;
 import top.wecoding.core.enums.SystemDictEnum;

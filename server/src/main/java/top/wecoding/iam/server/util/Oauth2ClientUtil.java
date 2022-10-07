@@ -1,6 +1,7 @@
 package top.wecoding.iam.server.util;
 
 import cn.hutool.core.lang.UUID;
+import lombok.experimental.UtilityClass;
 import org.springframework.util.StringUtils;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientRequest;
 import top.wecoding.iam.common.model.request.UpdateOauth2ClientRequest;
@@ -16,11 +17,10 @@ import java.util.Set;
  * @date 2022/10/5
  * @qq 1515418211
  */
+@UtilityClass
 public class Oauth2ClientUtil {
 
-  private Oauth2ClientUtil() {}
-
-  public static Oauth2ClientInfoResponse toOauth2ClientInfoResponse(Oauth2Client client) {
+  public Oauth2ClientInfoResponse toOauth2ClientInfoResponse(Oauth2Client client) {
     Set<String> clientAuthenticationMethods =
         StringUtils.commaDelimitedListToSet(client.getClientAuthenticationMethods());
     Set<String> authorizationGrantTypes =
@@ -44,7 +44,7 @@ public class Oauth2ClientUtil {
         .build();
   }
 
-  public static Oauth2Client ofOauth2Client(CreateOauth2ClientRequest createOauth2ClientRequest) {
+  public Oauth2Client ofOauth2Client(CreateOauth2ClientRequest createOauth2ClientRequest) {
     String clientId =
         StringUtils.hasText(createOauth2ClientRequest.getClientId())
             ? createOauth2ClientRequest.getClientId()
@@ -82,7 +82,7 @@ public class Oauth2ClientUtil {
         .build();
   }
 
-  public static Oauth2Client ofOauth2Client(UpdateOauth2ClientRequest updateOauth2ClientRequest) {
+  public Oauth2Client ofOauth2Client(UpdateOauth2ClientRequest updateOauth2ClientRequest) {
     String id = updateOauth2ClientRequest.getId();
 
     String clientId = updateOauth2ClientRequest.getClientId();

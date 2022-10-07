@@ -19,6 +19,8 @@ public interface GroupConvert {
 
   GroupInfoResponse toGroupInfoResponse(GroupInfo groupInfo);
 
+  GroupInfoResponse toGroupInfoResponse(Group group);
+
   GroupInfo toGroupInfo(Group group);
 
   Group toGroup(CreateGroupRequest createGroupRequest);

@@ -3,7 +3,7 @@ package top.wecoding.iam.server.pojo;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import top.wecoding.mybatis.base.LogicDeletedBaseEntity;
+import top.wecoding.mybatis.base.BaseEntity;
 
 /**
  * @author liuyuhui
@@ -16,7 +16,7 @@ import top.wecoding.mybatis.base.LogicDeletedBaseEntity;
 @AllArgsConstructor
 @TableName("iam_group")
 @EqualsAndHashCode(callSuper = true)
-public class Group extends LogicDeletedBaseEntity {
+public class Group extends BaseEntity {
 
   @TableId private Long id;
 

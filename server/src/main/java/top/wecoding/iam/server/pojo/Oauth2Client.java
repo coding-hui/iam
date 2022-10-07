@@ -44,9 +44,9 @@ public class Oauth2Client extends BaseEntity {
 
   private String scopes;
 
-  @TableField(typeHandler = JacksonTypeHandler.class)
+  @TableField(value = "client_settings", typeHandler = JacksonTypeHandler.class)
   private OAuth2ClientSettings clientSettings;
 
-  @TableField(typeHandler = JacksonTypeHandler.class)
+  @TableField(value = "token_settings", typeHandler = JacksonTypeHandler.class)
   private OAuth2TokenSettings tokenSettings;
 }

@@ -3,6 +3,7 @@ package top.wecoding.iam.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,17 +15,18 @@ import top.wecoding.iam.common.enums.IamErrorCode;
 import top.wecoding.iam.common.model.UserInfo;
 import top.wecoding.iam.common.model.request.*;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
-import top.wecoding.iam.sdk.utili.AuthUtil;
+import top.wecoding.iam.common.util.AuthUtil;
+import top.wecoding.iam.common.util.PasswordUtil;
 import top.wecoding.iam.server.convert.UserConvert;
 import top.wecoding.iam.server.enums.UserStateEnum;
+import top.wecoding.iam.server.mapper.TenantMapper;
 import top.wecoding.iam.server.mapper.UserMapper;
+import top.wecoding.iam.server.pojo.Tenant;
 import top.wecoding.iam.server.pojo.User;
 import top.wecoding.iam.server.service.UserService;
 import top.wecoding.iam.server.util.PasswordEncoderUtil;
-import top.wecoding.iam.server.util.PasswordUtil;
 import top.wecoding.mybatis.base.BaseServiceImpl;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -37,9 +39,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implements UserService {
 
-  @Resource private UserMapper userMapper;
+  private final UserMapper userMapper;
+
+  private final TenantMapper tenantMapper;
 
   @Override
   public UserInfoResponse getInfoById(String userId) {
@@ -47,14 +52,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
     AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
-    UserInfo userInfo =
-        UserInfo.builder()
-            .tenantId(user.getTenantId())
-            .userId(userId)
-            .username(user.getUsername())
-            .nickName(user.getNickName())
-            .avatar(user.getAvatar())
-            .build();
+    Tenant tenant = tenantMapper.getByTenantId(user.getTenantId());
+
+    AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
+
+    UserInfo userInfo = UserConvert.INSTANCE.toUserInfo(user, tenant.getTenantName());
 
     return UserInfoResponse.builder().userInfo(userInfo).build();
   }
@@ -65,18 +67,27 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
     AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
-    UserInfo userInfo = UserConvert.INSTANCE.toUserInfo(user);
+    Tenant tenant = tenantMapper.getByTenantId(user.getTenantId());
+
+    AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
+
+    UserInfo userInfo = UserConvert.INSTANCE.toUserInfo(user, tenant.getTenantName());
 
     return UserInfoResponse.builder().userInfo(userInfo).build();
   }
 
   @Override
   public UserInfoResponse getInfoByUsernameAndTenantId(String username, String tenantId) {
+
     User user = userMapper.getByTenantIdAndUsername(tenantId, username);
 
     AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
-    UserInfo userInfo = UserConvert.INSTANCE.toUserInfo(user);
+    Tenant tenant = tenantMapper.getByTenantId(user.getTenantId());
+
+    AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
+
+    UserInfo userInfo = UserConvert.INSTANCE.toUserInfo(user, tenant.getTenantName());
 
     return UserInfoResponse.builder().userInfo(userInfo).build();
   }
@@ -84,6 +95,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
   @Override
   @Transactional(rollbackFor = Exception.class)
   public void create(CreateUserRequest createUserRequest) {
+    String tenantId = AuthUtil.currentTenantId();
     String username = createUserRequest.getUsername();
     String password = createUserRequest.getPassword();
     String userId = IdWorker.getIdStr();
@@ -93,6 +105,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     PasswordUtil.checkPwd(password);
 
     User user = UserConvert.INSTANCE.toUser(createUserRequest);
+    user.setTenantId(tenantId);
     user.setUserId(userId);
     user.setUserState(UserStateEnum.DEFAULT.code());
     user.setUserType(UserTypeEnum.LOCAL.code());
@@ -202,7 +215,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
   public PageInfo<UserInfoResponse> infoPage(UserInfoPageRequest userInfoPageRequest) {
     Page<User> pageResult =
         userMapper.page(PageUtil.getPageFromRequest(userInfoPageRequest), userInfoPageRequest);
-    PageInfo.of(pageResult.getRecords(), userInfoPageRequest, pageResult.getTotal());
 
     return PageInfo.of(pageResult.getRecords(), userInfoPageRequest, pageResult.getTotal())
         .map((UserConvert.INSTANCE::toUserInfoResponse));

@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.model.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,9 @@ public class UserInfoResponse {
 
   @JsonUnwrapped private List<GroupInfo> groupInfoList;
 
+  @JsonProperty("permissions")
   private Set<String> permissions;
 
+  @JsonProperty("roles")
   private Set<String> roles;
 }

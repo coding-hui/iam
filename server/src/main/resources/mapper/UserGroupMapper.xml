@@ -27,7 +27,7 @@
         SELECT
         <include refid="columns"/>
         FROM `iam_user_group`
-        WHERE `tenant_id` = #{tenantId} AND `group_id` = #{group_id}
+        WHERE `tenant_id` = #{tenantId} AND `group_id` = #{groupId}
     </select>
 
     <select id="listByTenantIdAndGroupIdAndUserIdList" resultMap="BaseResultMap">

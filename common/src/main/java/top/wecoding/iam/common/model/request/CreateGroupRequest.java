@@ -1,9 +1,10 @@
 package top.wecoding.iam.common.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
@@ -14,12 +15,15 @@ import java.util.Set;
  * @qq 1515418211
  */
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateGroupRequest {
 
-  @NotBlank private String groupName;
+  @NotBlank
+  @JsonProperty("group_name")
+  private String groupName;
 
+  @JsonProperty("user_ids")
   private Set<String> userIds;
 }

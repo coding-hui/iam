@@ -11,5 +11,7 @@ import top.wecoding.iam.common.model.response.TokenInfoResponse;
  */
 public interface TokenService {
 
+  boolean delete(String tokenValue);
+
   PageInfo<TokenInfoResponse> infoPage(TokenInfoPageRequest tokenInfoPageRequest);
 }

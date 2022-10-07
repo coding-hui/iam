@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,8 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class UpdateTenantRequest {
 
-  @Size(max = 500)
   @NotBlank
+  @Size(max = 500)
+  @JsonProperty("description")
   private String description;
 }

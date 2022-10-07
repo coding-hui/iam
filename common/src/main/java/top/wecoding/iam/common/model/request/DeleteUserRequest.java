@@ -1,5 +1,6 @@
 package top.wecoding.iam.common.model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +19,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class DeleteUserRequest {
 
-  @NotBlank private String userId;
+  @NotBlank
+  @JsonProperty("user_id")
+  private String userId;
 }
