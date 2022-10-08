@@ -12,7 +12,6 @@ import top.wecoding.core.result.PageInfo;
 import top.wecoding.core.util.AssertUtils;
 import top.wecoding.core.util.PageUtil;
 import top.wecoding.iam.common.enums.IamErrorCode;
-import top.wecoding.iam.common.model.UserInfo;
 import top.wecoding.iam.common.model.request.CreateUserRequest;
 import top.wecoding.iam.common.model.request.DisableUserRequest;
 import top.wecoding.iam.common.model.request.PasswordRequest;
@@ -24,9 +23,7 @@ import top.wecoding.iam.common.util.AuthUtil;
 import top.wecoding.iam.common.util.PasswordUtil;
 import top.wecoding.iam.server.convert.UserConvert;
 import top.wecoding.iam.server.enums.UserStateEnum;
-import top.wecoding.iam.server.mapper.TenantMapper;
 import top.wecoding.iam.server.mapper.UserMapper;
-import top.wecoding.iam.server.pojo.Tenant;
 import top.wecoding.iam.server.pojo.User;
 import top.wecoding.iam.server.service.UserService;
 import top.wecoding.iam.server.util.PasswordEncoderUtil;
@@ -49,19 +46,13 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
   private final UserMapper userMapper;
 
-  private final TenantMapper tenantMapper;
-
   @Override
   public UserInfoResponse getInfoById(String userId) {
     User user = this.getById(userId);
 
     AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
-    Tenant tenant = tenantMapper.getByTenantId(user.getTenantId());
-
-    AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
-
-    return UserConvert.INSTANCE.toUserInfoResponse(user, tenant.getTenantName());
+    return UserConvert.INSTANCE.toUserInfoResponse(user);
   }
 
   @Override
@@ -70,25 +61,17 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
     AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
-    Tenant tenant = tenantMapper.getByTenantId(user.getTenantId());
-
-    AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
-
-    return UserConvert.INSTANCE.toUserInfoResponse(user, tenant.getTenantName());
+    return UserConvert.INSTANCE.toUserInfoResponse(user);
   }
 
   @Override
   public UserInfoResponse getInfoByUsernameAndTenantId(String username, String tenantId) {
 
     User user = userMapper.getByTenantIdAndUsername(tenantId, username);
-
+  
     AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
-    Tenant tenant = tenantMapper.getByTenantId(user.getTenantId());
-
-    AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
-  
-    return UserConvert.INSTANCE.toUserInfoResponse(user, tenant.getTenantName());
+    return UserConvert.INSTANCE.toUserInfoResponse(user);
   }
 
   @Override
