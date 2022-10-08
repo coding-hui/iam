@@ -25,7 +25,11 @@
                 `redirect_uris` varchar(1000) DEFAULT NULL,
                 `scopes` varchar(1000) NOT NULL,
                 `client_settings` varchar(2000) NOT NULL,
-                `token_settings` varchar(2000) NOT NULL
+                `token_settings` varchar(2000) NOT NULL,
+                `create_time`     datetime    DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建时间',
+                `created_by`      varchar(64)                           NULL COMMENT '创建者',
+                `update_time`     datetime    DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+                `updated_by`      varchar(64)                           NULL COMMENT '修改者'
                 ) ENGINE = InnoDB
                 DEFAULT CHARSET = utf8 COMMENT ='客户端表';
         </sql>
