@@ -1,5 +1,7 @@
 package top.wecoding.iam.server.service.impl;
 
+import java.util.List;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
@@ -9,9 +11,6 @@ import top.wecoding.iam.server.pojo.User;
 import top.wecoding.iam.server.pojo.UserGroup;
 import top.wecoding.iam.server.service.UserGroupService;
 import top.wecoding.mybatis.base.BaseServiceImpl;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @author liuyuhui

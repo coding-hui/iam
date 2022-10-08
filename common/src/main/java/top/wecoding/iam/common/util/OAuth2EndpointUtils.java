@@ -1,6 +1,9 @@
 package top.wecoding.iam.common.util;
 
 import cn.hutool.core.map.MapUtil;
+import java.time.temporal.ChronoUnit;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
@@ -9,10 +12,6 @@ import org.springframework.security.oauth2.core.endpoint.PkceParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import javax.servlet.http.HttpServletRequest;
-import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 /**
  * @author liuyuhui

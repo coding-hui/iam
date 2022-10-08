@@ -1,13 +1,12 @@
 package top.wecoding.iam.server.authentication.base;
 
+import java.util.*;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.util.Assert;
-
-import java.util.*;
 
 /**
  * 自定义授权模式抽象

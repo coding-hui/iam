@@ -1,5 +1,8 @@
 package top.wecoding.iam.common.userdetails;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.core.Ordered;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -9,10 +12,6 @@ import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.result.R;
 import top.wecoding.iam.common.model.UserInfo;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author liuyuhui

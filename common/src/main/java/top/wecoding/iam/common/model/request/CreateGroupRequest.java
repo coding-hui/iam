@@ -1,13 +1,12 @@
 package top.wecoding.iam.common.model.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Set;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import javax.validation.constraints.NotBlank;
-import java.util.Set;
 
 /**
  * @author liuyuhui

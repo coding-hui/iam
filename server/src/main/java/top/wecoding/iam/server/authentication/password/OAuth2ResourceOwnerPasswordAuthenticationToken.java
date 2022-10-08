@@ -1,11 +1,10 @@
 package top.wecoding.iam.server.authentication.password;
 
+import java.util.Map;
+import java.util.Set;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import top.wecoding.iam.server.authentication.base.OAuth2ResourceOwnerBaseAuthenticationToken;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 密码授权token信息

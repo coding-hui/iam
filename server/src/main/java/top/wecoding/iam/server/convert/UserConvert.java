@@ -1,5 +1,7 @@
 package top.wecoding.iam.server.convert;
 
+import java.util.List;
+import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -10,9 +12,6 @@ import top.wecoding.iam.common.model.request.CreateUserRequest;
 import top.wecoding.iam.common.model.request.UpdateUserRequest;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.server.pojo.User;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author liuyuhui

@@ -10,8 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
-import top.wecoding.iam.sdk.web.ResourceAuthExceptionEntryPoint;
 import top.wecoding.iam.sdk.web.IAMBearerTokenExtractor;
+import top.wecoding.iam.sdk.web.ResourceAuthExceptionEntryPoint;
 
 /**
  * @author liuyuhui

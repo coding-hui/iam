@@ -1,5 +1,12 @@
 package top.wecoding.iam.sdk.service;
 
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.*;
+
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -12,14 +19,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.util.Assert;
 import top.wecoding.iam.common.cache.UserTokenCacheKeyBuilder;
-
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.*;
 
 /**
  * @author liuyuhui

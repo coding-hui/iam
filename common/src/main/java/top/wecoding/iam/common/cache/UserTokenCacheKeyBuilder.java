@@ -1,10 +1,9 @@
 package top.wecoding.iam.common.cache;
 
+import java.time.Duration;
 import org.springframework.lang.NonNull;
 import top.wecoding.core.cache.CacheKeyBuilder;
 import top.wecoding.iam.common.constant.RedisConstant;
-
-import java.time.Duration;
 
 /**
  * @author liuyuhui

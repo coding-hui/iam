@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import java.time.Instant;
 import lombok.*;
 import top.wecoding.iam.common.pojo.OAuth2ClientSettings;
 import top.wecoding.iam.common.pojo.OAuth2TokenSettings;
 import top.wecoding.mybatis.base.BaseEntity;
-
-import java.time.Instant;
 
 /**
  * @author liuyuhui

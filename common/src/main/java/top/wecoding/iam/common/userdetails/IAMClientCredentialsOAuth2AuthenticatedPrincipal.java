@@ -1,11 +1,10 @@
 package top.wecoding.iam.common.userdetails;
 
+import java.util.Collection;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * 支持客户端模式的用户存储

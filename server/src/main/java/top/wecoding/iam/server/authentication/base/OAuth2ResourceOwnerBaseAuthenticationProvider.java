@@ -1,6 +1,10 @@
 package top.wecoding.iam.server.authentication.base;
 
 import cn.hutool.extra.spring.SpringUtil;
+import java.security.Principal;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -22,11 +26,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import top.wecoding.iam.common.constant.OAuth2ErrorCodesExpand;
 import top.wecoding.iam.server.exception.ScopeException;
-
-import java.security.Principal;
-import java.time.Instant;
-import java.util.*;
-import java.util.function.Supplier;
 
 /**
  * 处理自定义授权

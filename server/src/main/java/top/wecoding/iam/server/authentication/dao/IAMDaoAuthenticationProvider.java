@@ -3,6 +3,11 @@ package top.wecoding.iam.server.authentication.dao;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+import javax.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import org.springframework.core.Ordered;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,12 +28,6 @@ import org.springframework.util.Assert;
 import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.util.WebUtils;
 import top.wecoding.iam.common.userdetails.IAMUserDetailsService;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * @author liuyuhui

@@ -1,10 +1,9 @@
 package top.wecoding.iam.server.util;
 
+import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 import top.wecoding.core.enums.rest.SystemErrorCodeEnum;
 import top.wecoding.core.exception.IllegalParameterException;
-
-import java.util.regex.Pattern;
 
 /**
  * @author liuyuhui

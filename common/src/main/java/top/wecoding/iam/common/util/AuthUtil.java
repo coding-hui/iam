@@ -1,12 +1,11 @@
 package top.wecoding.iam.common.util;
 
+import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import top.wecoding.core.exception.user.UnauthorizedException;
 import top.wecoding.iam.common.userdetails.LoginUser;
-
-import java.util.Optional;
 
 /**
  * @author liuyuhui

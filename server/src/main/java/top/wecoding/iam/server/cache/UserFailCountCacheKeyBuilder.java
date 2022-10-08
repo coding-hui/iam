@@ -1,9 +1,8 @@
 package top.wecoding.iam.server.cache;
 
+import java.time.Duration;
 import top.wecoding.core.cache.CacheKeyBuilder;
 import top.wecoding.iam.common.constant.RedisConstant;
-
-import java.time.Duration;
 
 /**
  * @author liuyuhui

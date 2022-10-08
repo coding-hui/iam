@@ -1,5 +1,7 @@
 package top.wecoding.iam.sdk.service;
 
+import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -12,9 +14,6 @@ import org.springframework.security.oauth2.server.authorization.config.TokenSett
 import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.iam.api.feign.RemoteClientDetailsService;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
-
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * @author liuyuhui

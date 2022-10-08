@@ -10,6 +10,5 @@ import org.junit.jupiter.api.Test;
 public class UserConvertTest {
 
   @Test
-  void toUser() {
-  }
+  void toUser() {}
 }

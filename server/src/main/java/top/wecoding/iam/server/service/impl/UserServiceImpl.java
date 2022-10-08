@@ -3,6 +3,10 @@ package top.wecoding.iam.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,11 +32,6 @@ import top.wecoding.iam.server.pojo.User;
 import top.wecoding.iam.server.service.UserService;
 import top.wecoding.iam.server.util.PasswordEncoderUtil;
 import top.wecoding.mybatis.base.BaseServiceImpl;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author liuyuhui
@@ -68,7 +67,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
   public UserInfoResponse getInfoByUsernameAndTenantId(String username, String tenantId) {
 
     User user = userMapper.getByTenantIdAndUsername(tenantId, username);
-  
+
     AssertUtils.isNotNull(user, IamErrorCode.USER_DOES_NOT_EXIST);
 
     return UserConvert.INSTANCE.toUserInfoResponse(user);

@@ -1,13 +1,12 @@
 package top.wecoding.iam.sdk.service;
 
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.util.Assert;
 import top.wecoding.iam.common.cache.AuthorizationConsentCacheKeyBuilder;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author liuyuhui

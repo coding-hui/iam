@@ -2,11 +2,10 @@ package top.wecoding.iam.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import java.io.Serializable;
 import org.apache.ibatis.annotations.Param;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientPageRequest;
 import top.wecoding.iam.server.pojo.Oauth2Client;
-
-import java.io.Serializable;
 
 /**
  * @author liuyuhui

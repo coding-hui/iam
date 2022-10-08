@@ -1,6 +1,7 @@
 package top.wecoding.iam.sdk.aspect;
 
 import cn.hutool.core.util.StrUtil;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -11,8 +12,6 @@ import org.springframework.security.access.AccessDeniedException;
 import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.util.WebUtils;
 import top.wecoding.iam.sdk.InnerAuth;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 内部服务调用验证处理切面

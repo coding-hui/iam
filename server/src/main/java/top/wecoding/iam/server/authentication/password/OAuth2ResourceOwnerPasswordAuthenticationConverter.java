@@ -1,17 +1,16 @@
 package top.wecoding.iam.server.authentication.password;
 
+import java.util.Map;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import top.wecoding.iam.server.authentication.base.OAuth2ResourceOwnerBaseAuthenticationConverter;
 import top.wecoding.iam.common.util.OAuth2EndpointUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.Set;
+import top.wecoding.iam.server.authentication.base.OAuth2ResourceOwnerBaseAuthenticationConverter;
 
 /**
  * 密码认证转换器

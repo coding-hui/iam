@@ -1,10 +1,9 @@
 package top.wecoding.iam.sdk;
 
+import java.lang.annotation.*;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import top.wecoding.iam.sdk.feign.IAMFeignRequestInterceptor;
-
-import java.lang.annotation.*;
 
 /**
  * @author liuyuhui

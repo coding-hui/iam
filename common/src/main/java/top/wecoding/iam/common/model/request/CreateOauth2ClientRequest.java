@@ -1,15 +1,14 @@
 package top.wecoding.iam.common.model.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import top.wecoding.iam.common.pojo.OAuth2ClientSettings;
 import top.wecoding.iam.common.pojo.OAuth2TokenSettings;
-
-import java.time.Instant;
-import java.util.Set;
 
 /**
  * @author liuyuhui

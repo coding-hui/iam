@@ -1,6 +1,8 @@
 package top.wecoding.iam.server.config;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import java.time.Duration;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
@@ -21,9 +23,6 @@ import top.wecoding.iam.server.mapper.UserMapper;
 import top.wecoding.iam.server.pojo.Oauth2Client;
 import top.wecoding.iam.server.pojo.User;
 import top.wecoding.iam.server.util.PasswordEncoderUtil;
-
-import java.time.Duration;
-import java.util.Arrays;
 
 /**
  * @author Liuyuhui

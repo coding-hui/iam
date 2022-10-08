@@ -1,5 +1,6 @@
 package top.wecoding.iam.server.config;
 
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -7,8 +8,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import top.wecoding.iam.server.props.AppProperties;
 import top.wecoding.redis.util.RedisUtils;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author liuyuhui

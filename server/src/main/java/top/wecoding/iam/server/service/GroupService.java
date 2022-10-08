@@ -1,5 +1,6 @@
 package top.wecoding.iam.server.service;
 
+import java.util.List;
 import top.wecoding.core.result.PageInfo;
 import top.wecoding.iam.common.model.request.CreateGroupRequest;
 import top.wecoding.iam.common.model.request.GroupInfoListRequest;
@@ -9,8 +10,6 @@ import top.wecoding.iam.common.model.response.CreateGroupResponse;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
 import top.wecoding.iam.server.pojo.Group;
 import top.wecoding.mybatis.base.BaseService;
-
-import java.util.List;
 
 /**
  * @author liuyuhui

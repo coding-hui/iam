@@ -1,6 +1,7 @@
 package top.wecoding.iam.common.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +11,6 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.util.StringUtils;
-
-import java.io.Serializable;
 
 /**
  * @author liuyuhui

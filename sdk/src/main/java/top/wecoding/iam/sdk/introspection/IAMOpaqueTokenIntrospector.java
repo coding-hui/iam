@@ -1,6 +1,11 @@
 package top.wecoding.iam.sdk.introspection;
 
 import cn.hutool.extra.spring.SpringUtil;
+import java.security.Principal;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -15,15 +20,9 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import top.wecoding.iam.common.userdetails.IAMClientCredentialsOAuth2AuthenticatedPrincipal;
 import top.wecoding.iam.common.userdetails.IAMUserDetailsService;
 import top.wecoding.iam.common.userdetails.LoginUser;
-import top.wecoding.iam.common.userdetails.IAMClientCredentialsOAuth2AuthenticatedPrincipal;
-
-import java.security.Principal;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author liuyuhui

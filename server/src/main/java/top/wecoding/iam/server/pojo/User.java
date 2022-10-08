@@ -3,10 +3,9 @@ package top.wecoding.iam.server.pojo;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.util.Date;
 import lombok.*;
 import top.wecoding.mybatis.base.BaseEntity;
-
-import java.util.Date;
 
 /**
  * 系统用户表

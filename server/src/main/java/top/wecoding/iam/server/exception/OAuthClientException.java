@@ -3,9 +3,7 @@ package top.wecoding.iam.server.exception;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 
-/**
- * @author liuyuhui
- */
+/** @author liuyuhui */
 public class OAuthClientException extends OAuth2AuthenticationException {
 
   /**

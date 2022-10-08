@@ -1,5 +1,6 @@
 package top.wecoding.iam.server.authentication.password;
 
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +14,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import top.wecoding.iam.server.authentication.base.OAuth2ResourceOwnerBaseAuthenticationProvider;
-
-import java.util.Map;
 
 /**
  * 密码认证

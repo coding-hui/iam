@@ -1,13 +1,12 @@
 package top.wecoding.iam.common.util;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import top.wecoding.core.enums.SystemDictEnum;
 import top.wecoding.core.util.AssertUtils;
 import top.wecoding.core.util.RSAUtil;
 import top.wecoding.iam.common.enums.IamErrorCode;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author liuyuhui

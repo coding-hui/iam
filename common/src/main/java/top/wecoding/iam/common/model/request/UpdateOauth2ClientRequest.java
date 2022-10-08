@@ -1,16 +1,15 @@
 package top.wecoding.iam.common.model.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
+import java.util.Set;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import top.wecoding.iam.common.pojo.OAuth2ClientSettings;
 import top.wecoding.iam.common.pojo.OAuth2TokenSettings;
-
-import javax.validation.constraints.NotBlank;
-import java.time.Instant;
-import java.util.Set;
 
 /**
  * @author liuyuhui

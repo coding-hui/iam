@@ -1,5 +1,6 @@
 package top.wecoding.iam.server.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +14,6 @@ import top.wecoding.iam.common.model.response.CreateGroupResponse;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
 import top.wecoding.iam.server.service.GroupService;
 import top.wecoding.web.controller.BaseController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
