@@ -24,11 +24,20 @@ public interface UserConvert {
 
   UserConvert INSTANCE = Mappers.getMapper(UserConvert.class);
 
+  default UserInfoResponse toUserInfoResponse(User user, String tenantName) {
+    if (user == null && tenantName == null) {
+      return null;
+    }
+
+    UserInfoResponse.UserInfoResponseBuilder userInfoResponse = UserInfoResponse.builder();
+
+    userInfoResponse.userInfo(toUserInfo(user, tenantName));
+
+    return userInfoResponse.build();
+  }
+
   @Mappings(@Mapping(source = "user", target = "userInfo"))
   UserInfoResponse toUserInfoResponse(User user);
-
-  @Mappings({@Mapping(source = "user", target = "userInfo")})
-  UserInfoResponse toUserInfoResponse(User user, String tenantName);
 
   @Mappings({
     @Mapping(source = "user", target = "userInfo"),

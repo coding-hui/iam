@@ -13,7 +13,12 @@ import top.wecoding.core.util.AssertUtils;
 import top.wecoding.core.util.PageUtil;
 import top.wecoding.iam.common.enums.IamErrorCode;
 import top.wecoding.iam.common.model.UserInfo;
-import top.wecoding.iam.common.model.request.*;
+import top.wecoding.iam.common.model.request.CreateUserRequest;
+import top.wecoding.iam.common.model.request.DisableUserRequest;
+import top.wecoding.iam.common.model.request.PasswordRequest;
+import top.wecoding.iam.common.model.request.UpdateUserRequest;
+import top.wecoding.iam.common.model.request.UserInfoListRequest;
+import top.wecoding.iam.common.model.request.UserInfoPageRequest;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.common.util.AuthUtil;
 import top.wecoding.iam.common.util.PasswordUtil;
@@ -56,9 +61,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
     AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
 
-    UserInfo userInfo = UserConvert.INSTANCE.toUserInfo(user, tenant.getTenantName());
-
-    return UserInfoResponse.builder().userInfo(userInfo).build();
+    return UserConvert.INSTANCE.toUserInfoResponse(user, tenant.getTenantName());
   }
 
   @Override
@@ -71,9 +74,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
 
     AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
 
-    UserInfo userInfo = UserConvert.INSTANCE.toUserInfo(user, tenant.getTenantName());
-
-    return UserInfoResponse.builder().userInfo(userInfo).build();
+    return UserConvert.INSTANCE.toUserInfoResponse(user, tenant.getTenantName());
   }
 
   @Override
@@ -86,10 +87,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     Tenant tenant = tenantMapper.getByTenantId(user.getTenantId());
 
     AssertUtils.isNotNull(tenant, IamErrorCode.TENANT_DOES_NOT_EXIST);
-
-    UserInfo userInfo = UserConvert.INSTANCE.toUserInfo(user, tenant.getTenantName());
-
-    return UserInfoResponse.builder().userInfo(userInfo).build();
+  
+    return UserConvert.INSTANCE.toUserInfoResponse(user, tenant.getTenantName());
   }
 
   @Override
