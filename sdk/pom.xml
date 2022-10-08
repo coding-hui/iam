@@ -22,6 +22,11 @@
             <groupId>top.wecoding</groupId>
             <artifactId>iam-api</artifactId>
         </dependency>
+    
+        <dependency>
+            <groupId>top.wecoding</groupId>
+            <artifactId>wecoding-feign</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -33,10 +38,6 @@
             <artifactId>spring-security-oauth2-authorization-server</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
