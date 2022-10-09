@@ -7,9 +7,13 @@ metadata:
 data:
   config.yaml: |
     spring:
+      datasource:
+        driver-class-name: {{ .Values.config.mysql.driverClassName }}
+        url: jdbc:mysql://{{ .Values.config.mysql.host }}:{{ .Values.config.mysql.port }}/{{ .Values.config.mysql.db }}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: {{ .Values.config.mysql.auth.username }}
+        password: {{ .Values.config.mysql.auth.password }}
       redis:
-        host: localhost
+        host: {{ .Values.config.redis.host }}
         port: 6379
-        database: 0
-        password:
-        timeout: 10s
+        database: {{ .Values.config.redis.database }}
+        password: {{ .Values.config.redis.password }}

@@ -5,12 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: registry.wecoding.top/wecoding/wecoding-iam
+  repository: wecoding/iam-server
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "v0.4"
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: "wecodingimagesecret"
 nameOverride: ""
 fullnameOverride: ""
 
@@ -82,3 +83,18 @@ tolerations: []
 affinity: {}
 
 kubernetesClusterDomain: cluster.local
+
+config:
+  redis:
+    host: redis-svc.wecoding-depend
+    database: 0
+    password:
+  mysql:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    host: mysql.wecoding-depend
+    port: 3306
+    db: wecoding_iam
+    auth:
+      rootPassword: wecoding
+      username: root
+      password: wecoding
