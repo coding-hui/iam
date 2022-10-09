@@ -59,7 +59,7 @@ public class IAMDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
   private UserDetailsPasswordService userDetailsPasswordService;
 
   public IAMDaoAuthenticationProvider() {
-    setMessageSource(SpringUtil.getBean("securityMessageSource"));
+    setMessageSource(SpringUtil.getBean("iamMessageSource"));
     setPasswordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder());
   }
 

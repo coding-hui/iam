@@ -24,8 +24,8 @@ import top.wecoding.iam.common.enums.IamErrorCode;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class IAMExceptionAdvice extends AbstractGlobalExceptionHandler {
 
-  public IAMExceptionAdvice(MessageSource messageSource) {
-    super(messageSource);
+  public IAMExceptionAdvice(MessageSource iamMessageSource) {
+    super(iamMessageSource);
   }
 
   @ResponseStatus(HttpStatus.UNAUTHORIZED)

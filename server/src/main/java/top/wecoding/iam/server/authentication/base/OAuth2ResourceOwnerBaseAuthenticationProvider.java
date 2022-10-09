@@ -74,7 +74,7 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
 
     // 国际化配置
     this.messages =
-        new MessageSourceAccessor(SpringUtil.getBean("securityMessageSource"), Locale.CHINA);
+        new MessageSourceAccessor(SpringUtil.getBean("iamMessageSource"), Locale.CHINA);
   }
 
   @Deprecated

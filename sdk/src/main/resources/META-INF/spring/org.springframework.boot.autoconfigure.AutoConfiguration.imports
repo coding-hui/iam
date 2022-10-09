@@ -1,5 +1,5 @@
 top.wecoding.iam.sdk.aspect.InnerAuthAspect
-top.wecoding.iam.sdk.IAMSecurityMessageSourceConfiguration
+top.wecoding.iam.sdk.IAMErrorMessageSourceConfiguration
 top.wecoding.iam.sdk.userdetails.IAMUserDetailsServiceImpl
 top.wecoding.iam.sdk.userdetails.IAMAppUserDetailsServiceImpl
 top.wecoding.iam.sdk.service.IAMRedisOAuth2AuthorizationService
