@@ -52,3 +52,7 @@ mybatis-plus:
   type-aliases-package: top.wecoding.iam.server.pojo
   configuration:
     map-underscore-to-camel-case: true
+
+wecoding:
+  feign:
+    iam-server: http://127.0.0.1:${server.port}
