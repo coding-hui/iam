@@ -54,12 +54,6 @@
         FROM `iam_oauth2_registered_client` WHERE `client_id` = #{clientId}
     </select>
 
-    <delete id="deleteById">
-        DELETE
-        FROM `iam_oauth2_registered_client`
-        WHERE `id` = #{id}
-    </delete>
-
     <select id="page" resultMap="BaseResultMap">
         SELECT
         <include refid="columns"/>

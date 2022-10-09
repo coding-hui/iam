@@ -18,8 +18,6 @@ public interface Oauth2ClientMapper extends BaseMapper<Oauth2Client> {
 
   Oauth2Client getByClientId(String clientId);
 
-  int deleteById(Serializable id);
-
   Page<Oauth2Client> page(
       @Param("page") Page<Oauth2Client> page, @Param("query") CreateOauth2ClientPageRequest query);
 }
