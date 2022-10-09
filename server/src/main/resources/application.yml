@@ -5,9 +5,35 @@ server:
   undertow:
     accesslog:
       enabled: true
+      rotate: true
       dir: log
-      pattern: '%h %l %u %{User-Agent}i %t "%r" %s %b %D'
-
+      pattern: '{
+                        "transportProtocol":"%{TRANSPORT_PROTOCOL}",
+                        "scheme":"%{SCHEME}",
+                        "protocol":"%{PROTOCOL}",
+                        "method":"%{METHOD}",
+                        "reqHeaderUserAgent":"%{i,User-Agent}",
+                        "cookieUserId": "%{c,userId}",
+                        "queryTest": "%{q,test}",
+                        "queryString": "%q",
+                        "relativePath": "%R, %{REQUEST_PATH}, %{RESOLVED_PATH}",
+                        "requestLine": "%r",
+                        "uri": "%U",
+                        "thread": "%I",
+                        "hostPort": "%{HOST_AND_PORT}",
+                        "localIp": "%A",
+                        "localPort": "%p",
+                        "localServerName": "%v",
+                        "remoteIp": "%a",
+                        "remoteHost": "%h",
+                        "bytesSent": "%b",
+                        "time":"%{time,yyyy-MM-dd HH:mm:ss.S}",
+                        "status":"%s",
+                        "reason":"%{RESPONSE_REASON_PHRASE}",
+                        "respHeaderUserSession":"%{o,userSession}",
+                        "respCookieUserId":"%{resp-cookie,userId}",
+                        "timeUsed":"%Dms, %Ts, %{RESPONSE_TIME}ms, %{RESPONSE_TIME_MICROS} us, %{RESPONSE_TIME_NANOS} ns",
+                      }'
 spring:
   application:
     name: wecoding-iam
