@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wecoding-iam
+  namespace: wecoding-system
+data:
+  config.yaml: |
+    logging:
+      level:
+        top.wecoding: debug

@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: registry.wecoding.top/wecoding/wecoding-iam
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
@@ -37,7 +37,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 80
 
 ingress:
@@ -47,7 +47,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: iam.wecoding.top
+    - host: iam-back.wecoding.top
       paths:
         - path: /
           pathType: ImplementationSpecific
@@ -69,7 +69,7 @@ resources: {}
   #   memory: 128Mi
 
 autoscaling:
-  enabled: false
+  enabled: true
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
@@ -80,3 +80,5 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+kubernetesClusterDomain: cluster.local

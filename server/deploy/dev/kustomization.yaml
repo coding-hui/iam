@@ -1,0 +1,9 @@
+images:
+  - name: iam-server
+    newName: docker.io/wecoding/iam-server
+    newTag: replace_tag
+resources:
+  - wecoding-iam-service.yaml
+  - wecoding-iam-configmap.yaml
+  - wecoding-iam-deployment.yaml
+  - wecoding-iam-serviceaccount.yaml

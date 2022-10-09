@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "wecoding-iam.fullname" . }}
+  labels:
+  {{- include "wecoding-iam.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    spring:
+      redis:
+        host: localhost
+        port: 6379
+        database: 0
+        password:
+        timeout: 10s
