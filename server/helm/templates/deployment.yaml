@@ -27,14 +27,6 @@ spec:
       serviceAccountName: {{ include "wecoding-iam.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      volumes:
-        - configMap:
-            defaultMode: 511
-            items:
-              - key: config.yaml
-                path: config.yaml
-            name: {{ include "wecoding-iam.fullname" . }}
-          name: wecoding-iam
       containers:
         - env:
             - name: KUBERNETES_CLUSTER_DOMAIN
@@ -52,14 +44,6 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -74,3 +58,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - configMap:
+            defaultMode: 511
+            items:
+              - key: config.yaml
+                path: config.yaml
+            name: {{ include "wecoding-iam.fullname" . }}
+          name: wecoding-iam
