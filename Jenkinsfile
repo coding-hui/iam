@@ -22,8 +22,9 @@ pipeline {
       steps {
         dir('server') {
           sh "docker build -t ${CODING_DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION} -f ${DOCKERFILE_PATH} ${DOCKER_BUILD_CONTEXT}"
-          useCustomStepPlugin(key: 'SYSTEM:artifact_docker_push', version: 'latest', params: [image:"${CODING_DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}",repo:"${DOCKER_REPO_NAME}"])
         }
+
+        useCustomStepPlugin(key: 'SYSTEM:artifact_docker_push', version: 'latest', params: [properties:'[]',image:'${CODING_DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}',host:'docker.io',project:'wecoding',repo:'iam-server',username:'${PROJECT_TOKEN_GK}',password:'${PROJECT_TOKEN}'])
       }
     }
 
