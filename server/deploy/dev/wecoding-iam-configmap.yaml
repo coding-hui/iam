@@ -5,6 +5,15 @@ metadata:
   namespace: wecoding-system
 data:
   config.yaml: |
-    logging:
-      level:
-        top.wecoding: debug
+    spring:
+      datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/wecoding_iam?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+        username: root
+        password: root
+      redis:
+        host: redis-svc.wecoding-depend
+        port: 6379
+        database: 0
+        password:
+        timeout: 10s
