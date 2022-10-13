@@ -83,8 +83,8 @@
     <repositories>
         <repository>
             <id>devops-wecoding</id>
-            <name>wecoding-tool</name>
-            <url>https://devops-wecoding-maven.pkg.coding.net/repository/wecoding/wecoding-tool/</url>
+            <name>maven-repo</name>
+            <url>https://devops-wecoding-maven.pkg.coding.net/repository/wecoding/maven-repo/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
