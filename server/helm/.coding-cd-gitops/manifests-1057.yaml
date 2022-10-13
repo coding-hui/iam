@@ -1,0 +1,130 @@
+metadata:
+  name: wecoding-iam
+  namespace: coding-cd
+  labels: {
+    }
+apiVersion: cd.coding.net/v1alpha1
+kind: Application
+spec: {
+  }
+---
+metadata:
+  name: wecoding-iam-wecoding-vm1
+  namespace: coding-cd
+  labels: {
+    }
+apiVersion: cd.coding.net/v1alpha1
+kind: Deploy
+spec:
+  environment: wecoding-iam-wecoding-vm1
+  source: wecoding-iam-wecoding-vm1
+  resources: [
+    ]
+  triggeredByUser: false
+---
+metadata:
+  name: wecoding-iam-wecoding-vm1
+  namespace: coding-cd
+  labels: {
+    }
+apiVersion: cd.coding.net/v1alpha1
+kind: Diff
+spec:
+  gitSource: diff-wecoding-iam-wecoding-vm1
+  git:
+    url: https://e.coding.net/devops-wecoding/wecoding/wecoding-iam.git
+    cred: git-wecoding-iam-wecoding-vm1
+    ref:
+      branch: main
+  environment: wecoding-iam-wecoding-vm1
+---
+metadata:
+  name: wecoding-iam-wecoding-vm1
+  namespace: coding-cd
+  labels:
+    forceSync: 'true'
+apiVersion: cd.coding.net/v1alpha1
+kind: Environment
+spec:
+  application: wecoding-iam
+  namespaceOverride: wecoding-system
+  cluster:
+    cred: 8c265aee6b84a628ede150d6bc8e711e7ef38a77
+  autoSync: false
+  resources:
+  - apiVersion: v1
+    name: wecoding-iam
+    kind: ServiceAccount
+    namespace: wecoding-system
+    wave: 0
+    ignore: false
+  - apiVersion: v1
+    name: wecoding-iam
+    kind: ConfigMap
+    namespace: wecoding-system
+    wave: 0
+    ignore: false
+  - apiVersion: v1
+    name: wecoding-iam
+    kind: Service
+    namespace: wecoding-system
+    wave: 0
+    ignore: false
+  - apiVersion: apps/v1
+    name: wecoding-iam
+    kind: Deployment
+    namespace: wecoding-system
+    wave: 0
+    ignore: false
+  - apiVersion: v1
+    name: wecoding-iam-test-connection
+    kind: Pod
+    namespace: wecoding-system
+    wave: 0
+    ignore: false
+---
+metadata:
+  name: diff-wecoding-iam-wecoding-vm1
+  namespace: coding-cd
+  labels: {
+    }
+apiVersion: cd.coding.net/v1alpha1
+kind: GitSource
+spec:
+  environment: wecoding-iam-wecoding-vm1
+  git:
+    url: https://e.coding.net/devops-wecoding/wecoding/wecoding-iam.git
+    cred: git-wecoding-iam-wecoding-vm1
+    ref:
+      branch: main
+  templateRenderer:
+    engine: Helm
+    path: server/helm
+    files:
+    - values.yaml
+    releaseName: wecoding-iam
+    imageUpdateRef: wecoding-iam-wecoding-vm1
+  interval: 1h
+---
+metadata:
+  name: wecoding-iam-wecoding-vm1
+  namespace: coding-cd
+  labels: {
+    }
+apiVersion: cd.coding.net/v1alpha1
+kind: GitSource
+spec:
+  environment: wecoding-iam-wecoding-vm1
+  git:
+    url: https://e.coding.net/devops-wecoding/wecoding/wecoding-iam.git
+    cred: git-wecoding-iam-wecoding-vm1
+    ref:
+      branch: main
+  templateRenderer:
+    engine: Helm
+    path: server/helm
+    files:
+    - values.yaml
+    releaseName: wecoding-iam
+    imageUpdateRef: wecoding-iam-wecoding-vm1
+  interval: 1h
