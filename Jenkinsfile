@@ -18,12 +18,17 @@ pipeline {
       }
     }
 
-    stage('推送') {
+    stage('构建镜像') {
       steps {
         dir('server') {
-          sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION} -f ${DOCKERFILE_PATH} ${DOCKER_BUILD_CONTEXT}"
+          sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION} ."
         }
 
+      }
+    }
+
+    stage('推送镜像') {
+      steps {
         useCustomStepPlugin(key: 'SYSTEM:artifact_docker_push', version: 'latest', params: [properties:'[]',image:'${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}',host:'docker.io',project:'wecoding',repo:'iam-server',username:'${PROJECT_TOKEN_GK}',password:'${PROJECT_TOKEN}'])
       }
     }
