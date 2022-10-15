@@ -56,8 +56,7 @@ pipeline {
         manifestType: 'Deployment', 
         manifestName: 'wecoding-iam', 
         containerName: 'wecoding-iam', 
-        credentialId: '0d9cbd34fd9e4112b2712bb8a0ad84a7', 
-        personalAccessToken: '${CD_CREDENTIALS}')
+        credentialId: '${CD_CREDENTIALS}')
       }
     }
 
