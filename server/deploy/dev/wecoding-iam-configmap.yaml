@@ -17,3 +17,10 @@ data:
         database: 0
         password:
         timeout: 10s
+      cloud:
+        nacos:
+          discovery:
+            group: wecoding-system
+            server-addr: nacos-cs.global-service:8848
+          config:
+            server-addr: nacos-cs.global-service:8848

@@ -17,3 +17,10 @@ data:
         port: 6379
         database: {{ .Values.config.redis.database }}
         password: {{ .Values.config.redis.password }}
+      cloud:
+        nacos:
+          discovery:
+            group: {{ .Values.config.nacos.discovery.group }}
+            server-addr: {{ .Values.config.nacos.discovery.serverAddr }}
+        config:
+            server-addr: {{ .Values.config.nacos.config.serverAddr }}

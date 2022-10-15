@@ -5,15 +5,15 @@
 replicaCount: 1
 
 image:
-  repository: wecoding/iam-server
+  repository: devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo/iam
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.5"
+  tag: "v0.2"
 
 imagePullSecrets:
-  - name: "wecodingimagesecret"
+  - name: "devops-wecoding"
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "iam-server"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -91,10 +91,15 @@ config:
     password:
   mysql:
     driverClassName: com.mysql.cj.jdbc.Driver
-    host: mysql.wecoding-depend
+    host: 10.0.4.15
     port: 3306
     db: wecoding_iam
     auth:
-      rootPassword: wecoding
       username: root
-      password: wecoding
+      password: WeCoding319!@.
+    nacos:
+      discovery:
+        group: wecoding-system
+        serverAddr: http://nacos-cs:8848
+      config:
+        serverAddr: http://nacos-cs:8848
