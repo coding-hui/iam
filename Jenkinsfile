@@ -42,14 +42,14 @@ pipeline {
       }
     }
 
-    stage('部署') {
-      when {
-        environment name: 'DEPLOY', value: 'true'
-      }
-      steps {
-        cdDeploy(deployType: 'PATCH_IMAGE', application: '${CCI_CURRENT_TEAM}', pipelineName: '${PROJECT_NAME}-${CCI_JOB_NAME}-2959888', image: 'devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}', cloudAccountName: 'wecoding-k8s', namespace: 'wecoding-system', manifestType: 'Deployment', manifestName: 'wecoding-iam', containerName: 'wecoding-iam', credentialId: '16c6dc5732f84db1b8c6dfac219dae2b', personalAccessToken: '${CD_PERSONAL_ACCESS_TOKEN}')
-      }
-    }
+    // stage('部署') {
+    //   when {
+    //     environment name: 'DEPLOY', value: 'true'
+    //   }
+    //   steps {
+    //     cdDeploy(deployType: 'PATCH_IMAGE', application: '${CCI_CURRENT_TEAM}', pipelineName: '${PROJECT_NAME}-${CCI_JOB_NAME}-2959888', image: 'devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}', cloudAccountName: 'wecoding-k8s', namespace: 'wecoding-system', manifestType: 'Deployment', manifestName: 'wecoding-iam', containerName: 'wecoding-iam', credentialId: '16c6dc5732f84db1b8c6dfac219dae2b', personalAccessToken: '${CD_PERSONAL_ACCESS_TOKEN}')
+    //   }
+    // }
 
   }
 }
