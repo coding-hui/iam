@@ -8,9 +8,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.result.R;
 import top.wecoding.iam.api.feign.RemoteUserService;
-import top.wecoding.iam.common.cache.UserDetailsCacheKeyBuilder;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.common.userdetails.IAMUserDetailsService;
+import top.wecoding.iam.sdk.cache.UserDetailsCacheKeyBuilder;
 import top.wecoding.redis.util.RedisUtils;
 
 /**

@@ -7,19 +7,19 @@
     <parent>
         <groupId>top.wecoding</groupId>
         <artifactId>wecoding-parent</artifactId>
-        <version>0.0.1</version>
+        <version>0.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <artifactId>wecoding-iam</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.2</version>
     <name>wecoding-iam</name>
     <description>wecoding-iam</description>
 
     <properties>
         <java.version>8</java.version>
         <wecoding.version>0.0.1</wecoding.version>
-        <iam.version>0.0.1-SNAPSHOT</iam.version>
+        <iam.version>0.2</iam.version>
     </properties>
 
     <modules>
@@ -30,11 +30,6 @@
     </modules>
 
     <dependencies>
-        <dependency>
-            <groupId>top.wecoding</groupId>
-            <artifactId>wecoding-boot</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -48,16 +43,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <dependencyManagement>

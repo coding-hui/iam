@@ -1,4 +1,4 @@
-package top.wecoding.iam.common.cache;
+package top.wecoding.iam.sdk.cache;
 
 import org.springframework.lang.NonNull;
 import top.wecoding.core.cache.CacheKeyBuilder;

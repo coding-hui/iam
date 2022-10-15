@@ -57,7 +57,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/wecoding_iam?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
     username: root
-    password: root
+    password: 123456
   #    password: WeCoding319.
   redis:
     host: localhost
@@ -65,6 +65,14 @@ spring:
     database: 0
     password:
     timeout: 10s
+  cloud:
+    nacos:
+      discovery:
+        service: ${spring.application.name}
+        group: wecoding-system
+        server-addr: http://localhost:8848
+      config:
+        server-addr: http://localhost:8848
 
 logging:
   level:
@@ -81,4 +89,4 @@ mybatis-plus:
 
 wecoding:
   feign:
-    iam-server: http://127.0.0.1:${server.port}
+    iam-server:

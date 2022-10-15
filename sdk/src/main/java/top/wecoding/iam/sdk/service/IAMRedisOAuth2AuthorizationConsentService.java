@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.util.Assert;
-import top.wecoding.iam.common.cache.AuthorizationConsentCacheKeyBuilder;
+import top.wecoding.iam.sdk.cache.AuthorizationConsentCacheKeyBuilder;
 
 /**
  * @author liuyuhui

@@ -18,7 +18,7 @@ import org.springframework.security.oauth2.core.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.util.Assert;
-import top.wecoding.iam.common.cache.UserTokenCacheKeyBuilder;
+import top.wecoding.iam.sdk.cache.UserTokenCacheKeyBuilder;
 
 /**
  * @author liuyuhui

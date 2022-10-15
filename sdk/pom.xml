@@ -5,7 +5,7 @@
     <parent>
         <artifactId>wecoding-iam</artifactId>
         <groupId>top.wecoding</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,17 +15,17 @@
     <dependencies>
         <dependency>
             <groupId>top.wecoding</groupId>
-            <artifactId>iam-common</artifactId>
+            <artifactId>iam-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>top.wecoding</groupId>
-            <artifactId>iam-api</artifactId>
+            <artifactId>wecoding-feign</artifactId>
         </dependency>
-    
+
         <dependency>
             <groupId>top.wecoding</groupId>
-            <artifactId>wecoding-feign</artifactId>
+            <artifactId>wecoding-redis</artifactId>
         </dependency>
 
         <dependency>
