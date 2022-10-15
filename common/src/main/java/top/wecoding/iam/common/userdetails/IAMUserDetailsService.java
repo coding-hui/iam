@@ -8,8 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.result.R;
+import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.model.UserInfo;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 

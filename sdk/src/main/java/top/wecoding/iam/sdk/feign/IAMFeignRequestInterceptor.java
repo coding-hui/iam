@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
-import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.util.WebUtils;
+import top.wecoding.iam.common.constant.SecurityConstants;
 
 /**
  * Feign 请求拦截器

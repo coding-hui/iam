@@ -4,8 +4,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.result.R;
+import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
 
 import java.util.List;

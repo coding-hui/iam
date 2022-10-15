@@ -9,8 +9,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.access.AccessDeniedException;
-import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.util.WebUtils;
+import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.sdk.InnerAuth;
 
 /**

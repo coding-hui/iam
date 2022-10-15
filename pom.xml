@@ -18,7 +18,6 @@
 
     <properties>
         <java.version>8</java.version>
-        <wecoding.version>0.0.1</wecoding.version>
         <iam.version>0.2</iam.version>
     </properties>
 

@@ -3,7 +3,7 @@ package top.wecoding.iam.server.authentication.token;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenClaimsContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenClaimsSet;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-import top.wecoding.core.constant.SecurityConstants;
+import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.userdetails.LoginUser;
 
 /**

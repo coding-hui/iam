@@ -25,8 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.web.authentication.www.BasicAuthenticationConverter;
 import org.springframework.util.Assert;
-import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.core.util.WebUtils;
+import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.userdetails.IAMUserDetailsService;
 
 /**

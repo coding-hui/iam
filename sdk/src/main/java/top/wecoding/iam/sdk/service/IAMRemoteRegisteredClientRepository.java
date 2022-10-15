@@ -11,8 +11,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
-import top.wecoding.core.constant.SecurityConstants;
 import top.wecoding.iam.api.feign.RemoteClientDetailsService;
+import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
 
 /**

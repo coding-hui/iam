@@ -1,9 +1,5 @@
 package top.wecoding.iam.server.config;
 
-import static top.wecoding.core.constant.SecurityConstants.CUSTOM_TOKEN_ENDPOINT_URI;
-import static top.wecoding.core.constant.SecurityConstants.PROJECT_LICENSE;
-
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +17,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import top.wecoding.core.constant.SecurityConstants;
+import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.server.authentication.dao.IAMDaoAuthenticationProvider;
 import top.wecoding.iam.server.authentication.handler.IAMAuthenticationFailureEventHandler;
 import top.wecoding.iam.server.authentication.handler.IAMAuthenticationSuccessEventHandler;
@@ -31,6 +27,11 @@ import top.wecoding.iam.server.authentication.token.IAMOAuth2AccessTokenGenerato
 import top.wecoding.iam.server.authentication.token.IAMOAuth2RefreshTokenGenerator;
 import top.wecoding.iam.server.authentication.token.IAMOAuth2TokenCustomizer;
 import top.wecoding.iam.server.config.configurers.FormIdentityLoginConfigurer;
+
+import java.util.Arrays;
+
+import static top.wecoding.iam.common.constant.SecurityConstants.CUSTOM_TOKEN_ENDPOINT_URI;
+import static top.wecoding.iam.common.constant.SecurityConstants.PROJECT_LICENSE;
 
 /**
  * @author liuyuhui

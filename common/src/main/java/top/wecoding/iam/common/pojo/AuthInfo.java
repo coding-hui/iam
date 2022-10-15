@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import top.wecoding.core.constant.SecurityConstants;
+import top.wecoding.iam.common.constant.SecurityConstants;
 
 /**
  * 认证成功信息
