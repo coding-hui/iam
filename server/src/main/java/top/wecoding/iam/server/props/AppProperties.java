@@ -12,15 +12,15 @@ public class AppProperties {
 
   public static final String PREFIX = "wecoding.iam";
 
-  public static Long userFailCount = 3L;
+  public static Integer userFailCount = 3;
 
-  public static Long userFailLockTime = 60 * 60 * 1000L;
+  public static Long userFailLockTime = 60 * 10L;
 
-  public static Long getUserFailCount() {
+  public static Integer getUserFailCount() {
     return userFailCount;
   }
 
-  public static void setUserFailCount(Long userFailCount) {
+  public static void setUserFailCount(Integer userFailCount) {
     AppProperties.userFailCount = userFailCount;
   }
 

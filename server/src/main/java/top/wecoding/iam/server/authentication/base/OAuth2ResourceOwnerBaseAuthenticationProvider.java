@@ -2,6 +2,7 @@ package top.wecoding.iam.server.authentication.base;
 
 import cn.hutool.extra.spring.SpringUtil;
 import java.security.Principal;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Supplier;
@@ -25,7 +26,11 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import top.wecoding.iam.common.constant.OAuth2ErrorCodesExpand;
+import top.wecoding.iam.common.enums.IamErrorCode;
+import top.wecoding.iam.server.cache.UserFailCountCacheKeyBuilder;
 import top.wecoding.iam.server.exception.ScopeException;
+import top.wecoding.iam.server.props.AppProperties;
+import top.wecoding.redis.util.RedisUtils;
 
 /**
  * 处理自定义授权
@@ -114,10 +119,10 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
     }
 
     Map<String, Object> reqParameters = resourceOwnerBaseAuthentication.getAdditionalParameters();
-    try {
+    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+        buildToken(reqParameters);
 
-      UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-          buildToken(reqParameters);
+    try {
 
       LOGGER.debug(
           "got usernamePasswordAuthenticationToken=" + usernamePasswordAuthenticationToken);
@@ -215,6 +220,8 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
 
       LOGGER.debug("returning OAuth2AccessTokenAuthenticationToken");
 
+      refreshFailCount(authentication, usernamePasswordAuthenticationToken);
+
       return new OAuth2AccessTokenAuthenticationToken(
           registeredClient,
           clientPrincipal,
@@ -224,6 +231,9 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
 
     } catch (Exception ex) {
       LOGGER.error("problem in authenticate", ex);
+
+      incrFailCounter(authentication, usernamePasswordAuthenticationToken);
+
       throw oAuth2AuthenticationException(authentication, (AuthenticationException) ex);
     }
   }
@@ -291,7 +301,9 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
     }
     return new OAuth2AuthenticationException(
         new OAuth2Error(
-            OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ErrorCodesExpand.UN_KNOW_LOGIN_ERROR, ""));
+            OAuth2ErrorCodes.INVALID_REQUEST,
+            this.messages.getMessage(IamErrorCode.UNAUTHORIZED.getCode()),
+            ""));
   }
 
   private OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(
@@ -309,5 +321,37 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
     }
 
     throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
+  }
+
+  private void incrFailCounter(
+      Authentication clientAuthentication,
+      UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+    String clientId = clientAuthentication.getName();
+    String username = usernamePasswordAuthenticationToken.getName();
+    String key = new UserFailCountCacheKeyBuilder().key(clientId, username).getKey();
+
+    Long num = RedisUtils.incr(key);
+
+    if (num > AppProperties.getUserFailCount()) {
+      Long ttl = RedisUtils.ttl(key);
+      throw new OAuth2AuthenticationException(
+          new OAuth2Error(
+              IamErrorCode.TOO_MANY_FAILURES_PLEASE_TRY_AGAIN_LATER.getCode(),
+              this.messages.getMessage(
+                  IamErrorCode.TOO_MANY_FAILURES_PLEASE_TRY_AGAIN_LATER.getCode(),
+                  new Object[] {ttl / 60}),
+              ""));
+    }
+    RedisUtils.expire(key, Duration.ofSeconds(AppProperties.getUserFailLockTime()));
+  }
+
+  private void refreshFailCount(
+      Authentication clientAuthentication,
+      UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+    String clientId = clientAuthentication.getName();
+    String username = usernamePasswordAuthenticationToken.getName();
+    String key = new UserFailCountCacheKeyBuilder().key(clientId, username).getKey();
+
+    RedisUtils.del(key);
   }
 }
