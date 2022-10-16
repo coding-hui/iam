@@ -1,11 +1,12 @@
 package top.wecoding.iam.common.util;
 
-import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import top.wecoding.core.exception.user.UnauthorizedException;
 import top.wecoding.iam.common.userdetails.LoginUser;
+
+import java.util.Optional;
 
 /**
  * @author liuyuhui
@@ -16,7 +17,7 @@ import top.wecoding.iam.common.userdetails.LoginUser;
 public class AuthUtil {
 
   public String currentUserId() {
-    return currentLoginUser().getUserId();
+    return currentLoginUser().userInfo().getUserId();
   }
 
   public String currentUsername() {
@@ -24,7 +25,11 @@ public class AuthUtil {
   }
 
   public String currentTenantId() {
-    return currentLoginUser().getTenantId();
+    return currentLoginUser().userInfo().getTenantId();
+  }
+
+  public String currentTenantName() {
+    return currentLoginUser().userInfo().getTenantName();
   }
 
   public LoginUser currentLoginUser() {

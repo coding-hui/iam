@@ -1,11 +1,13 @@
 package top.wecoding.iam.server.service;
 
-import java.util.List;
 import top.wecoding.core.result.PageInfo;
 import top.wecoding.iam.common.model.request.*;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
+import top.wecoding.iam.common.userdetails.LoginUser;
 import top.wecoding.iam.server.pojo.User;
 import top.wecoding.mybatis.base.BaseService;
+
+import java.util.List;
 
 /**
  * @author liuyuhui
@@ -13,6 +15,8 @@ import top.wecoding.mybatis.base.BaseService;
  * @qq 1515418211
  */
 public interface UserService extends BaseService<User> {
+
+  UserInfoResponse getInfo(LoginUser loginUser);
 
   UserInfoResponse getInfoById(String userId);
 

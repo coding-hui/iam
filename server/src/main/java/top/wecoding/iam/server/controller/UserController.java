@@ -23,6 +23,11 @@ public class UserController {
 
   private final UserService userService;
 
+  @GetMapping("/info")
+  public R<UserInfoResponse> info() {
+    return R.ok(userService.getInfo(AuthUtil.currentLoginUser()));
+  }
+
   @InnerAuth
   @GetMapping("/info/{username}")
   public R<UserInfoResponse> info(@PathVariable("username") String username) {

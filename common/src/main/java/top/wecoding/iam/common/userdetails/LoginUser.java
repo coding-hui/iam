@@ -1,51 +1,55 @@
 package top.wecoding.iam.common.userdetails;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import top.wecoding.iam.common.constant.SecurityConstants;
+import top.wecoding.iam.common.model.GroupInfo;
+import top.wecoding.iam.common.pojo.UserInfo;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * @author liuyuhui
  * @date 2022/10/3
  * @qq 1515418211
  */
-public class LoginUser extends User implements OAuth2AuthenticatedPrincipal {
+@Getter
+@Accessors(fluent = true)
+public class LoginUser extends User implements OAuth2AuthenticatedPrincipal, Serializable {
 
   private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
-  @Getter private final String userId;
+  private final UserInfo userInfo;
 
-  @Getter private final String tenantId;
+  private final List<GroupInfo> groups;
 
-  @Getter private final String phone;
+  private final Set<String> permissions;
+
+  private final Set<String> roles;
 
   public LoginUser(
-      String username,
-      String password,
-      boolean enabled,
-      boolean accountNonExpired,
-      boolean credentialsNonExpired,
-      boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities,
-      String userId,
-      String tenantId,
-      String phone) {
+      UserInfo userInfo,
+      List<GroupInfo> groups,
+      Set<String> permissions,
+      Set<String> roles) {
     super(
-        username,
-        password,
-        enabled,
-        accountNonExpired,
-        credentialsNonExpired,
-        accountNonLocked,
+        userInfo.getUsername(),
+        SecurityConstants.BCRYPT + userInfo.getPassword(),
+        true,
+        true,
+        true,
+        true,
         authorities);
-    this.userId = userId;
-    this.tenantId = tenantId;
-    this.phone = phone;
+    this.userInfo = userInfo;
+    this.groups = groups;
+    this.permissions = permissions;
+    this.roles = roles;
   }
 
   @Override

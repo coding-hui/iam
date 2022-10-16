@@ -1,17 +1,22 @@
 package top.wecoding.iam.common.userdetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.core.Ordered;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.CollectionUtils;
 import top.wecoding.core.result.R;
 import top.wecoding.iam.common.constant.SecurityConstants;
-import top.wecoding.iam.common.model.UserInfo;
+import top.wecoding.iam.common.model.GroupInfo;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
+import top.wecoding.iam.common.pojo.UserInfo;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author liuyuhui
@@ -32,22 +37,24 @@ public interface IAMUserDetailsService extends UserDetailsService, Ordered {
   default UserDetails getUserDetails(R<UserInfoResponse> result) {
     UserInfoResponse userInfoResponse = result.getData();
     UserInfo info = userInfoResponse.getUserInfo();
+    List<GroupInfo> groups = userInfoResponse.getGroups();
+    Set<String> roles = userInfoResponse.getRoles();
+    Set<String> permissions = userInfoResponse.getPermissions();
 
-    Set<String> dbAuthsSet = new HashSet<>();
+    Set<String> authsSet = new HashSet<>();
+    if (!CollectionUtils.isEmpty(permissions)) {
+      authsSet.addAll(permissions);
+    }
+    if (!CollectionUtils.isEmpty(roles)) {
+      authsSet.addAll(
+          roles.stream()
+              .map(role -> SecurityConstants.ROLE_PREFIX + role)
+              .collect(Collectors.toList()));
+    }
     Collection<GrantedAuthority> authorities =
-        AuthorityUtils.createAuthorityList(dbAuthsSet.toArray(new String[0]));
+        AuthorityUtils.createAuthorityList(authsSet.toArray(new String[0]));
 
-    return new LoginUser(
-        info.getUsername(),
-        SecurityConstants.BCRYPT + info.getPassword(),
-        true,
-        true,
-        true,
-        true,
-        authorities,
-        info.getUserId(),
-        info.getTenantId(),
-        info.getPhone());
+    return new LoginUser(authorities, info, groups, permissions, roles);
   }
 
   default UserDetails loadUserByUser(LoginUser loginUser) {

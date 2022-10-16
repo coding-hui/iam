@@ -28,7 +28,7 @@ public interface SecurityConstants {
   String DETAILS_LICENSE = "license";
 
   /** 客户端ID */
-  String CLIENT_ID = "clientId";
+  String CLIENT_ID = "client_id";
 
   /** 客户端模式 */
   String CLIENT_CREDENTIALS = "client_credentials";
@@ -56,4 +56,7 @@ public interface SecurityConstants {
 
   /** The default endpoint {@code URI} for access token requests. */
   String CUSTOM_TOKEN_ENDPOINT_URI = "/api/v1/oauth2/token";
+
+  /** role prefix */
+  String ROLE_PREFIX = "ROLE_";
 }

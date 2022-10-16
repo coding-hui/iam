@@ -1,11 +1,13 @@
-package top.wecoding.iam.common.model;
+package top.wecoding.iam.common.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author liuyuhui
@@ -16,7 +18,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfo {
+public class UserInfo implements Serializable {
+
+  private static final long serialVersionUID = -5097425171646833754L;
 
   @JsonProperty("user_id")
   private String userId;
