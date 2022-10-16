@@ -2,15 +2,14 @@ package top.wecoding.iam.common.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import top.wecoding.iam.common.model.GroupInfo;
 import top.wecoding.iam.common.pojo.UserInfo;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author liuyuhui

@@ -50,9 +50,9 @@ public class Oauth2ClientController extends BaseController {
     return R.ok();
   }
 
-  @DeleteMapping("/{id}")
-  public R<?> delete(@PathVariable("id") String id) {
-    clientService.delete(id);
+  @DeleteMapping("/{clientId}")
+  public R<?> delete(@PathVariable("clientId") String clientId) {
+    clientService.delete(clientId);
     return R.ok();
   }
 }

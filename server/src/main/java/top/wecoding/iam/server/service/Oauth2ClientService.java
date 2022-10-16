@@ -19,7 +19,7 @@ public interface Oauth2ClientService {
 
   void update(UpdateOauth2ClientRequest updateOauth2ClientRequest);
 
-  void delete(String id);
+  void delete(String clientId);
 
   PageInfo<Oauth2ClientInfoResponse> infoPage(CreateOauth2ClientPageRequest clientPageRequest);
 }

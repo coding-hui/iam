@@ -1,5 +1,7 @@
 package top.wecoding.iam.common.userdetails;
 
+import java.io.Serializable;
+import java.util.*;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,9 +11,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.model.GroupInfo;
 import top.wecoding.iam.common.pojo.UserInfo;
-
-import java.io.Serializable;
-import java.util.*;
 
 /**
  * @author liuyuhui

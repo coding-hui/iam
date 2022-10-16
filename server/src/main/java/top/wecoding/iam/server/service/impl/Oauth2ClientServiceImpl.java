@@ -3,10 +3,12 @@ package top.wecoding.iam.server.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import top.wecoding.core.result.PageInfo;
 import top.wecoding.core.util.AssertUtils;
 import top.wecoding.core.util.PageUtil;
+import top.wecoding.iam.common.constant.RedisConstant;
 import top.wecoding.iam.common.enums.IamErrorCode;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientPageRequest;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientRequest;
@@ -50,6 +52,7 @@ public class Oauth2ClientServiceImpl extends ServiceImpl<Oauth2ClientMapper, Oau
   }
 
   @Override
+  @CacheEvict(value = RedisConstant.CLIENT_DETAILS_KEY, key = "#updateOauth2ClientRequest.clientId")
   public void update(UpdateOauth2ClientRequest updateOauth2ClientRequest) {
     String id = updateOauth2ClientRequest.getId();
 
@@ -61,8 +64,14 @@ public class Oauth2ClientServiceImpl extends ServiceImpl<Oauth2ClientMapper, Oau
   }
 
   @Override
-  public void delete(String id) {
-    AssertUtils.isTrue(clientMapper.deleteById(id) > 0, IamErrorCode.CLIENT_DELETE_FAILED);
+  @CacheEvict(value = RedisConstant.CLIENT_DETAILS_KEY, key = "#clientId")
+  public void delete(String clientId) {
+    Oauth2Client client = clientMapper.getByClientId(clientId);
+
+    AssertUtils.isNotNull(client, IamErrorCode.CLIENT_DOES_NOT_EXIST);
+
+    AssertUtils.isTrue(
+        clientMapper.deleteById(client.getId()) > 0, IamErrorCode.CLIENT_DELETE_FAILED);
   }
 
   @Override

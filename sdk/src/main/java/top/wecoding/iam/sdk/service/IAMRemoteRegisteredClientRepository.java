@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
+import top.wecoding.core.result.R;
 import top.wecoding.iam.api.feign.RemoteClientDetailsService;
 import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
@@ -39,11 +40,9 @@ public class IAMRemoteRegisteredClientRepository implements RegisteredClientRepo
   @SneakyThrows(Exception.class)
   public RegisteredClient findByClientId(String clientId) {
     Oauth2ClientInfoResponse clientResponse =
-        Optional.ofNullable(clientDetailsService.info(clientId, SecurityConstants.INNER).getData())
-            .orElseThrow(
-                () ->
-                    new OAuth2AuthenticationException(
-                        "Get query client failed, check database chain"));
+        Optional.ofNullable(clientDetailsService.info(clientId, SecurityConstants.INNER))
+            .map(R::getData)
+            .orElseThrow(() -> new OAuth2AuthenticationException("Get registered client failed."));
 
     Set<String> clientAuthenticationMethods = clientResponse.getClientAuthenticationMethods();
     Set<String> authorizationGrantTypes = clientResponse.getAuthorizationGrantTypes();
