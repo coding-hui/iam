@@ -130,6 +130,8 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
       Authentication usernamePasswordAuthentication =
           authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
+      incrFailCounter(authentication, usernamePasswordAuthenticationToken);
+
       // @formatter:off
       DefaultOAuth2TokenContext.Builder tokenContextBuilder =
           DefaultOAuth2TokenContext.builder()
