@@ -1,10 +1,6 @@
 package top.wecoding.iam.server.authentication.base;
 
 import cn.hutool.extra.spring.SpringUtil;
-import java.security.Principal;
-import java.time.Instant;
-import java.util.*;
-import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -26,6 +22,11 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import top.wecoding.iam.common.constant.OAuth2ErrorCodesExpand;
 import top.wecoding.iam.server.exception.ScopeException;
+
+import java.security.Principal;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * 处理自定义授权
@@ -289,7 +290,9 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
                   "AbstractAccessDecisionManager.accessDenied", "invalid_scope"),
               ""));
     }
-    return new OAuth2AuthenticationException(OAuth2ErrorCodesExpand.UN_KNOW_LOGIN_ERROR);
+    return new OAuth2AuthenticationException(
+        new OAuth2Error(
+            OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ErrorCodesExpand.UN_KNOW_LOGIN_ERROR, ""));
   }
 
   private OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(
