@@ -1,4 +1,4 @@
-package top.wecoding.iam.server.pojo;
+package top.wecoding.iam.server.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import java.time.Instant;
 import lombok.*;
-import top.wecoding.iam.common.pojo.OAuth2ClientSettings;
-import top.wecoding.iam.common.pojo.OAuth2TokenSettings;
+import top.wecoding.iam.common.entity.OAuth2ClientSettings;
+import top.wecoding.iam.common.entity.OAuth2TokenSettings;
 import top.wecoding.mybatis.base.BaseEntity;
 
 /**

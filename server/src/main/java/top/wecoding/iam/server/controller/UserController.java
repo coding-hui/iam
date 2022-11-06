@@ -10,6 +10,7 @@ import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.common.util.AuthUtil;
 import top.wecoding.iam.sdk.InnerAuth;
 import top.wecoding.iam.server.service.UserService;
+import top.wecoding.iam.server.web.annotation.ParameterConvert;
 
 /**
  * @author liuyuhui
@@ -18,7 +19,7 @@ import top.wecoding.iam.server.service.UserService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
   private final UserService userService;
@@ -34,8 +35,14 @@ public class UserController {
     return R.ok(userService.getInfoByUsername(username));
   }
 
-  @PostMapping("/page")
-  public R<PageInfo<UserInfoResponse>> page(UserInfoPageRequest userInfoPageRequest) {
+  @GetMapping("/{user_id}/details")
+  public R<UserInfoResponse> details(@PathVariable("user_id") String userId) {
+    return R.ok(userService.getInfoById(userId));
+  }
+
+  @GetMapping("")
+  public R<PageInfo<UserInfoResponse>> page(
+      @ParameterConvert UserInfoPageRequest userInfoPageRequest) {
     return R.ok(userService.infoPage(userInfoPageRequest));
   }
 
@@ -45,9 +52,11 @@ public class UserController {
     return R.ok();
   }
 
-  @PutMapping("")
-  public R<?> update(@RequestBody @Validated UpdateUserRequest updateUserRequest) {
-    userService.update(updateUserRequest);
+  @PutMapping("/{userId}")
+  public R<?> update(
+      @PathVariable("userId") String userId,
+      @RequestBody @Validated UpdateUserRequest updateUserRequest) {
+    userService.update(userId, updateUserRequest);
     return R.ok();
   }
 

@@ -13,9 +13,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.CollectionUtils;
 import top.wecoding.core.result.R;
 import top.wecoding.iam.common.constant.SecurityConstants;
+import top.wecoding.iam.common.entity.UserInfo;
 import top.wecoding.iam.common.model.GroupInfo;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
-import top.wecoding.iam.common.pojo.UserInfo;
 
 /**
  * @author liuyuhui

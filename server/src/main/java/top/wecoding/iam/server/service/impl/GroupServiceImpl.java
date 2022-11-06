@@ -3,9 +3,6 @@ package top.wecoding.iam.server.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +19,16 @@ import top.wecoding.iam.common.model.response.CreateGroupResponse;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
 import top.wecoding.iam.common.util.AuthUtil;
 import top.wecoding.iam.server.convert.GroupConvert;
+import top.wecoding.iam.server.entity.Group;
+import top.wecoding.iam.server.entity.UserGroup;
 import top.wecoding.iam.server.mapper.GroupMapper;
 import top.wecoding.iam.server.mapper.UserGroupMapper;
-import top.wecoding.iam.server.pojo.Group;
-import top.wecoding.iam.server.pojo.UserGroup;
 import top.wecoding.iam.server.service.GroupService;
 import top.wecoding.mybatis.base.BaseServiceImpl;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author liuyuhui
@@ -58,14 +59,22 @@ public class GroupServiceImpl extends BaseServiceImpl<GroupMapper, Group> implem
   public CreateGroupResponse create(CreateGroupRequest createGroupRequest) {
     String tenantId = AuthUtil.currentTenantId();
     String groupName = createGroupRequest.getGroupName();
-    Set<String> userIds = createGroupRequest.getUserIds();
+    String groupCode = createGroupRequest.getGroupCode();
+    Set<String> userIds = createGroupRequest.getMembers();
     String groupId = IdWorker.getIdStr();
 
     AssertUtils.isNull(
-        groupMapper.getByTenantIdAndGroupName(tenantId, groupName),
+        groupMapper.getByTenantIdAndGroupCode(tenantId, groupCode),
         IamErrorCode.GROUP_ALREADY_EXIST);
 
-    Group group = Group.builder().groupId(groupId).groupName(groupName).tenantId(tenantId).build();
+    Group group =
+        Group.builder()
+            .tenantId(tenantId)
+            .groupId(groupId)
+            .groupName(groupName)
+            .groupCode(groupCode)
+            .description(createGroupRequest.getDescription())
+            .build();
 
     List<UserGroup> userGroupList =
         Optional.ofNullable(userIds).orElse(Collections.emptySet()).stream()

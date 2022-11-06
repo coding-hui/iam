@@ -14,7 +14,10 @@ import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
  * @date 2022/10/3
  * @qq 1515418211
  */
-@FeignClient(value = "wecoding-iam", contextId = "remoteClientDetails")
+@FeignClient(
+    value = "wecoding-iam",
+    contextId = "remoteClientDetails",
+    url = "${wecoding.feign.iam-server:http://localhost:80}")
 public interface RemoteClientDetailsService {
 
   /**

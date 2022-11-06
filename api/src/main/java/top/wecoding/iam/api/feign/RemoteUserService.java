@@ -16,7 +16,10 @@ import top.wecoding.iam.common.model.response.UserInfoResponse;
  * @date 2022/9/29
  * @qq 1515418211
  */
-@FeignClient(name = "wecoding-iam", contextId = "remoteUser")
+@FeignClient(
+    name = "wecoding-iam",
+    contextId = "remoteUser",
+    url = "${wecoding.feign.iam-server:http://localhost:80}")
 public interface RemoteUserService {
 
   /**
@@ -26,7 +29,7 @@ public interface RemoteUserService {
    * @param from 调用标志
    * @return R
    */
-  @GetMapping("/api/v1/user/info/{username}")
+  @GetMapping("/api/v1/users/info/{username}")
   R<UserInfoResponse> info(
       @PathVariable("username") String username,
       @RequestHeader(SecurityConstants.FROM) String from);

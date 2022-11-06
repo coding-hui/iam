@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.wecoding.iam.server.mapper.UserGroupMapper">
 
-    <resultMap id="BaseResultMap" type="top.wecoding.iam.server.pojo.UserGroup">
+    <resultMap id="BaseResultMap" type="top.wecoding.iam.server.entity.UserGroup">
         <id column="id" property="id"/>
         <result column="tenant_id" property="tenantId"/>
         <result column="user_id" property="userId"/>

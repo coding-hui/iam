@@ -1,11 +1,12 @@
-package top.wecoding.iam.server.pojo;
+package top.wecoding.iam.server.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
 import lombok.*;
 import top.wecoding.mybatis.base.BaseEntity;
+
+import java.util.Date;
 
 /**
  * 系统用户表
@@ -26,6 +27,10 @@ public class User extends BaseEntity {
 
   private String tenantId;
 
+  /** 姓名 */
+  private String name;
+
+  /** 用户名（登录名） */
   private String username;
 
   @TableField("pwd")
@@ -52,9 +57,23 @@ public class User extends BaseEntity {
 
   private String country;
 
+  private String company;
+
+  private String address;
+
+  private String province;
+
+  private String city;
+
+  private String streetAddress;
+
+  private String postalCode;
+
+  private String externalId;
+
   private String lastLoginIp;
 
   private Date lastLoginTime;
 
-  private String infos;
+  private Integer loginCount;
 }

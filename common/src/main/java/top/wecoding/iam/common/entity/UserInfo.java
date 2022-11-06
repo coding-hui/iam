@@ -1,4 +1,4 @@
-package top.wecoding.iam.common.model.request;
+package top.wecoding.iam.common.entity;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -19,15 +20,25 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UpdateUserRequest {
+public class UserInfo implements Serializable {
+
+  private static final long serialVersionUID = -5097425171646833754L;
 
   private String userId;
 
+  private String tenantId;
+
   private String name;
+
+  private String tenantName;
 
   private String username;
 
   private String nickName;
+
+  private String password;
+
+  private String avatar;
 
   private Date birthday;
 
@@ -36,6 +47,10 @@ public class UpdateUserRequest {
   private String email;
 
   private String phone;
+
+  private Integer userType;
+
+  private Integer userState;
 
   private String country;
 
@@ -52,4 +67,12 @@ public class UpdateUserRequest {
   private String postalCode;
 
   private String externalId;
+
+  private String createTime;
+
+  private String lastLoginIp;
+
+  private Date lastLoginTime;
+
+  private Integer loginCount;
 }

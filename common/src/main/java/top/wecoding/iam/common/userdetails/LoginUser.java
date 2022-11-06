@@ -9,8 +9,8 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import top.wecoding.iam.common.constant.SecurityConstants;
+import top.wecoding.iam.common.entity.UserInfo;
 import top.wecoding.iam.common.model.GroupInfo;
-import top.wecoding.iam.common.pojo.UserInfo;
 
 /**
  * @author liuyuhui

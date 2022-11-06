@@ -1,4 +1,4 @@
-package top.wecoding.iam.server.pojo;
+package top.wecoding.iam.server.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -14,15 +14,15 @@ import top.wecoding.mybatis.base.BaseEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("iam_group")
+@TableName("iam_user_group")
 @EqualsAndHashCode(callSuper = true)
-public class Group extends BaseEntity {
+public class UserGroup extends BaseEntity {
 
   @TableId private Long id;
 
-  private String groupId;
-
   private String tenantId;
 
-  private String groupName;
+  private String userId;
+
+  private String groupId;
 }

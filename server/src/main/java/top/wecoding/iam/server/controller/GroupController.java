@@ -1,23 +1,22 @@
 package top.wecoding.iam.server.controller;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.wecoding.core.result.PageInfo;
 import top.wecoding.core.result.R;
 import top.wecoding.iam.common.model.request.CreateGroupRequest;
-import top.wecoding.iam.common.model.request.GroupInfoListRequest;
 import top.wecoding.iam.common.model.request.GroupInfoPageRequest;
 import top.wecoding.iam.common.model.request.UpdateGroupRequest;
 import top.wecoding.iam.common.model.response.CreateGroupResponse;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
 import top.wecoding.iam.server.service.GroupService;
+import top.wecoding.iam.server.web.annotation.ParameterConvert;
 import top.wecoding.web.controller.BaseController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/group")
+@RequestMapping("/api/v1/groups")
 public class GroupController extends BaseController {
 
   private final GroupService groupService;
@@ -27,15 +26,9 @@ public class GroupController extends BaseController {
     return R.ok(groupService.getInfo(groupId));
   }
 
-  @PostMapping("/list")
-  public R<List<GroupInfoResponse>> infoList(
-      @RequestBody @Validated GroupInfoListRequest groupInfoListRequest) {
-    return R.ok(groupService.infoList(groupInfoListRequest));
-  }
-
-  @PostMapping("/page")
+  @GetMapping("")
   public R<PageInfo<GroupInfoResponse>> infoPage(
-      @RequestBody @Validated GroupInfoPageRequest groupInfoPageRequest) {
+      @ParameterConvert GroupInfoPageRequest groupInfoPageRequest) {
     return R.ok(groupService.infoPage(groupInfoPageRequest));
   }
 
@@ -45,9 +38,9 @@ public class GroupController extends BaseController {
     return R.ok(groupService.create(createGroupRequest));
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/{groupId}")
   public R<?> update(
-      @PathVariable("id") String groupId,
+      @PathVariable("groupId") String groupId,
       @RequestBody @Validated UpdateGroupRequest updateGroupRequest) {
     groupService.update(groupId, updateGroupRequest);
     return R.ok();

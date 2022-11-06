@@ -5,7 +5,7 @@ import org.mapstruct.factory.Mappers;
 import top.wecoding.iam.common.model.GroupInfo;
 import top.wecoding.iam.common.model.request.CreateGroupRequest;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
-import top.wecoding.iam.server.pojo.Group;
+import top.wecoding.iam.server.entity.Group;
 
 /**
  * @author liuyuhui

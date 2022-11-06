@@ -8,8 +8,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import top.wecoding.iam.common.model.request.UserInfoListRequest;
 import top.wecoding.iam.common.model.request.UserInfoPageRequest;
-import top.wecoding.iam.server.pojo.Oauth2Client;
-import top.wecoding.iam.server.pojo.User;
+import top.wecoding.iam.server.entity.Oauth2Client;
+import top.wecoding.iam.server.entity.User;
 
 /**
  * @author liuyuhui

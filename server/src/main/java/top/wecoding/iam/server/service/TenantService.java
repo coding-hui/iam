@@ -6,7 +6,7 @@ import top.wecoding.iam.common.model.request.TenantInfoPageRequest;
 import top.wecoding.iam.common.model.request.UpdateTenantRequest;
 import top.wecoding.iam.common.model.response.CreateTenantResponse;
 import top.wecoding.iam.common.model.response.TenantInfoResponse;
-import top.wecoding.iam.server.pojo.Tenant;
+import top.wecoding.iam.server.entity.Tenant;
 import top.wecoding.mybatis.base.BaseService;
 
 /**

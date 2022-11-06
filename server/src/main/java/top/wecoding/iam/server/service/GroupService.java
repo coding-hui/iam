@@ -8,7 +8,7 @@ import top.wecoding.iam.common.model.request.GroupInfoPageRequest;
 import top.wecoding.iam.common.model.request.UpdateGroupRequest;
 import top.wecoding.iam.common.model.response.CreateGroupResponse;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
-import top.wecoding.iam.server.pojo.Group;
+import top.wecoding.iam.server.entity.Group;
 import top.wecoding.mybatis.base.BaseService;
 
 /**

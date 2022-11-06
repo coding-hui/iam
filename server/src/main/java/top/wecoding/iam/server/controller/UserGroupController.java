@@ -14,23 +14,23 @@ import top.wecoding.web.controller.BaseController;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/group/{group_id}")
+@RequestMapping("/api/v1/groups/{groupId}")
 public class UserGroupController extends BaseController {
 
   private final UserGroupService userGroupService;
 
-  @GetMapping("/member/list")
-  public R<PageInfo<Object>> memberList(@PathVariable("group_id") String groupId) {
+  @GetMapping("/users")
+  public R<PageInfo<Object>> memberList(@PathVariable("groupId") String groupId) {
     return R.ok();
   }
 
-  @PostMapping("/member/add")
-  public R<Object> addMember(@PathVariable("group_id") String groupId) {
+  @PostMapping("/users/add")
+  public R<Object> addMember(@PathVariable("groupId") String groupId) {
     return R.ok();
   }
 
-  @PostMapping("/member/remove")
-  public R<Object> removeMember(@PathVariable("group_id") String groupId) {
+  @PostMapping("/users/remove")
+  public R<Object> removeMember(@PathVariable("groupId") String groupId) {
     return R.ok();
   }
 }

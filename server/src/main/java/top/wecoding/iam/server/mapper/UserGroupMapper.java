@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import java.util.Set;
 import org.apache.ibatis.annotations.Param;
-import top.wecoding.iam.server.pojo.UserGroup;
+import top.wecoding.iam.server.entity.UserGroup;
 
 /**
  * @author liuyuhui

@@ -1,12 +1,14 @@
 package top.wecoding.iam.common.model.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Set;
-import javax.validation.constraints.NotBlank;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 /**
  * @author liuyuhui
@@ -17,12 +19,14 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CreateGroupRequest {
 
-  @NotBlank
-  @JsonProperty("group_name")
-  private String groupName;
+  @NotBlank private String groupCode;
 
-  @JsonProperty("user_ids")
-  private Set<String> userIds;
+  @NotBlank private String groupName;
+
+  private String description;
+
+  private Set<String> members;
 }

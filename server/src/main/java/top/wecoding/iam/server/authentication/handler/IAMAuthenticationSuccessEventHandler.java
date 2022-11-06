@@ -1,8 +1,10 @@
 package top.wecoding.iam.server.authentication.handler;
 
+import cn.hutool.core.map.MapUtil;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +20,10 @@ import org.springframework.security.oauth2.core.http.converter.OAuth2AccessToken
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.CollectionUtils;
+import top.wecoding.iam.common.constant.SecurityConstants;
+import top.wecoding.iam.common.userdetails.LoginUser;
+import top.wecoding.iam.server.authentication.token.AccessTokenResponseParametersConverter;
+import top.wecoding.iam.server.util.LogUtil;
 
 /**
  * @author liuyuhui
@@ -27,8 +33,24 @@ import org.springframework.util.CollectionUtils;
 @Slf4j
 public class IAMAuthenticationSuccessEventHandler implements AuthenticationSuccessHandler {
 
-  private final HttpMessageConverter<OAuth2AccessTokenResponse> accessTokenHttpResponseConverter =
-      new OAuth2AccessTokenResponseHttpMessageConverter();
+  private HttpMessageConverter<OAuth2AccessTokenResponse> accessTokenHttpResponseConverter;
+
+  public IAMAuthenticationSuccessEventHandler() {
+    OAuth2AccessTokenResponseHttpMessageConverter tokenResponseHttpMessageConverter =
+        new OAuth2AccessTokenResponseHttpMessageConverter();
+    tokenResponseHttpMessageConverter.setAccessTokenResponseParametersConverter(
+        new AccessTokenResponseParametersConverter());
+    this.accessTokenHttpResponseConverter = tokenResponseHttpMessageConverter;
+  }
+
+  @PostConstruct
+  public void init() {
+    OAuth2AccessTokenResponseHttpMessageConverter oAuth2AccessTokenResponseHttpMessageConverter =
+        new OAuth2AccessTokenResponseHttpMessageConverter();
+    oAuth2AccessTokenResponseHttpMessageConverter.setAccessTokenResponseParametersConverter(
+        new AccessTokenResponseParametersConverter());
+    this.accessTokenHttpResponseConverter = oAuth2AccessTokenResponseHttpMessageConverter;
+  }
 
   @Override
   public void onAuthenticationSuccess(
@@ -36,6 +58,16 @@ public class IAMAuthenticationSuccessEventHandler implements AuthenticationSucce
       throws IOException, ServletException {
 
     // TODO 发送成功日志
+    OAuth2AccessTokenAuthenticationToken accessTokenAuthentication =
+        (OAuth2AccessTokenAuthenticationToken) authentication;
+    Map<String, Object> map = accessTokenAuthentication.getAdditionalParameters();
+    if (MapUtil.isNotEmpty(map)) {
+      // 发送异步日志事件
+      LoginUser userInfo = (LoginUser) map.get(SecurityConstants.DETAILS_USER);
+      log.info("用户：{} 登录成功", userInfo.getName());
+      SecurityContextHolder.getContext().setAuthentication(accessTokenAuthentication);
+      LogUtil.successLogin(userInfo.userInfo().getUserId());
+    }
 
     sendAccessTokenResponse(request, response, authentication);
   }

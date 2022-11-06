@@ -14,8 +14,8 @@ import top.wecoding.iam.common.model.request.CreateOauth2ClientPageRequest;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientRequest;
 import top.wecoding.iam.common.model.request.UpdateOauth2ClientRequest;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
+import top.wecoding.iam.server.entity.Oauth2Client;
 import top.wecoding.iam.server.mapper.Oauth2ClientMapper;
-import top.wecoding.iam.server.pojo.Oauth2Client;
 import top.wecoding.iam.server.service.Oauth2ClientService;
 import top.wecoding.iam.server.util.Oauth2ClientUtil;
 

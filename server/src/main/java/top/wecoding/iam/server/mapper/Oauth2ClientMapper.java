@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import java.io.Serializable;
 import org.apache.ibatis.annotations.Param;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientPageRequest;
-import top.wecoding.iam.server.pojo.Oauth2Client;
+import top.wecoding.iam.server.entity.Oauth2Client;
 
 /**
  * @author liuyuhui

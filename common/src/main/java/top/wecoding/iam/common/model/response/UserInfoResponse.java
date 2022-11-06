@@ -8,8 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import top.wecoding.iam.common.entity.UserInfo;
 import top.wecoding.iam.common.model.GroupInfo;
-import top.wecoding.iam.common.pojo.UserInfo;
 
 /**
  * @author liuyuhui

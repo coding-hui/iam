@@ -2,6 +2,7 @@ package top.wecoding.iam.common.model.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Set;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateGroupRequest {
+
+  @NotBlank
+  @JsonProperty("group_name")
+  private String groupName;
+
+  @JsonProperty("description")
+  private String description;
 
   @NotNull
   @JsonProperty("input_id_set")

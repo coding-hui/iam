@@ -1,4 +1,4 @@
-package top.wecoding.iam.common.pojo;
+package top.wecoding.iam.common.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;

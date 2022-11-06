@@ -1,6 +1,7 @@
 package top.wecoding.iam.common.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,14 +16,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GroupInfo {
 
-  @JsonProperty("group_id")
   private String groupId;
 
-  @JsonProperty("tenant_id")
   private String tenantId;
 
-  @JsonProperty("group_name")
   private String groupName;
+
+  private String groupCode;
+
+  private String description;
 }

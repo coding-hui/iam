@@ -8,8 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import top.wecoding.iam.common.pojo.OAuth2ClientSettings;
-import top.wecoding.iam.common.pojo.OAuth2TokenSettings;
+import top.wecoding.iam.common.entity.OAuth2ClientSettings;
+import top.wecoding.iam.common.entity.OAuth2TokenSettings;
 
 /**
  * @author liuyuhui

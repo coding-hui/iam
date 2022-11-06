@@ -5,7 +5,7 @@ import top.wecoding.core.result.PageInfo;
 import top.wecoding.iam.common.model.request.*;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.common.userdetails.LoginUser;
-import top.wecoding.iam.server.pojo.User;
+import top.wecoding.iam.server.entity.User;
 import top.wecoding.mybatis.base.BaseService;
 
 /**
@@ -25,7 +25,7 @@ public interface UserService extends BaseService<User> {
 
   void create(CreateUserRequest createUserRequest);
 
-  void update(UpdateUserRequest updateUserRequest);
+  void update(String userId, UpdateUserRequest updateUserRequest);
 
   void delete(String userId);
 

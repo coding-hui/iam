@@ -7,7 +7,7 @@ import top.wecoding.iam.common.model.TenantInfo;
 import top.wecoding.iam.common.model.request.CreateTenantRequest;
 import top.wecoding.iam.common.model.request.UpdateTenantRequest;
 import top.wecoding.iam.common.model.response.TenantInfoResponse;
-import top.wecoding.iam.server.pojo.Tenant;
+import top.wecoding.iam.server.entity.Tenant;
 
 /**
  * @author liuyuhui

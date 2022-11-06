@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientRequest;
 import top.wecoding.iam.common.model.request.UpdateOauth2ClientRequest;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
-import top.wecoding.iam.server.pojo.Oauth2Client;
+import top.wecoding.iam.server.entity.Oauth2Client;
 
 /**
  * @author liuyuhui

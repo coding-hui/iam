@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import top.wecoding.iam.common.model.request.GroupInfoListRequest;
 import top.wecoding.iam.common.model.request.GroupInfoPageRequest;
-import top.wecoding.iam.server.pojo.Group;
+import top.wecoding.iam.server.entity.Group;
 
 /**
  * @author liuyuhui
@@ -17,7 +17,7 @@ public interface GroupMapper extends BaseMapper<Group> {
 
   Group getByGroupId(String groupId);
 
-  Group getByTenantIdAndGroupName(String tenantId, String groupName);
+  Group getByTenantIdAndGroupCode(String tenantId, String groupCode);
 
   Group getByTenantIdAndGroupId(String tenantId, String groupId);
 

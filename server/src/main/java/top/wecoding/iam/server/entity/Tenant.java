@@ -1,4 +1,4 @@
-package top.wecoding.iam.server.pojo;
+package top.wecoding.iam.server.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;

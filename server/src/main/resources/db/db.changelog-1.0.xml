@@ -7,7 +7,7 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <changeSet id="2" author="yuhui.liu">
         <sql>
-            ALTER TABLE `iam_tenant` ADD `login_type` tinyint NULL COMMENT '登陆类型';
+            ALTER TABLE `iam_tenant` ADD `login_type` tinyint NULL COMMENT '登录类型';
         </sql>
     </changeSet>
 
@@ -32,6 +32,42 @@
                 `updated_by`      varchar(64)                           NULL COMMENT '修改者'
                 ) ENGINE = InnoDB
                 DEFAULT CHARSET = utf8 COMMENT ='客户端表';
+        </sql>
+    </changeSet>
+
+    <changeSet id="4" author="yuhui.liu">
+        <sql>
+            ALTER TABLE `iam_user` ADD `login_count` int NOT NULL DEFAULT 0 COMMENT '登录次数' AFTER `last_login_time`;
+        </sql>
+    </changeSet>
+
+    <changeSet id="5" author="yuhui.liu">
+        <sql>
+            ALTER TABLE `iam_user` ADD `name` varchar(360) NOT NULL DEFAULT '' COMMENT '姓名' AFTER `tenant_id`;
+            ALTER TABLE `iam_user` ADD `company` varchar(20) NOT NULL DEFAULT '' COMMENT '公司' AFTER `country`;
+            ALTER TABLE `iam_user` ADD `address` varchar(64) NOT NULL DEFAULT '' COMMENT '住址' AFTER `company`;
+            ALTER TABLE `iam_user` ADD `province` varchar(20) NOT NULL DEFAULT '' COMMENT '省份' AFTER `address`;
+            ALTER TABLE `iam_user` ADD `city` varchar(20) NOT NULL DEFAULT '' COMMENT '城市' AFTER `province`;
+            ALTER TABLE `iam_user` ADD `street_address` varchar(64) NOT NULL DEFAULT '' COMMENT '街道地址' AFTER `city`;
+            ALTER TABLE `iam_user` ADD `postal_code` char(6) NOT NULL DEFAULT '' COMMENT '邮政编码' AFTER `street_address`;
+            ALTER TABLE `iam_user` ADD `external_id` varchar(64) NOT NULL DEFAULT '' COMMENT '原系统ID' AFTER `postal_code`;
+            ALTER TABLE `iam_user` DROP COLUMN `infos`;
+        </sql>
+    </changeSet>
+
+    <changeSet id="6" author="yuhui.liu">
+        <sql>
+            ALTER TABLE `iam_group` ADD `group_code` varchar(64) NOT NULL DEFAULT '' COMMENT '唯一标识' AFTER `tenant_id`;
+            ALTER TABLE `iam_group` ADD `description` varchar(255) NOT NULL DEFAULT '' COMMENT '描述备注' AFTER `group_name`;
+        </sql>
+    </changeSet>
+
+    <changeSet id="7" author="yuhui.liu">
+        <sql>
+            ALTER TABLE `iam_group` DROP INDEX `iam_group_tenant_id_group_name_uindex`;
+            ALTER TABLE `iam_group` DROP INDEX `iam_group_group_name_index`;
+            ALTER TABLE `iam_group` ADD UNIQUE `iam_group_tenant_id_group_code_uindex`(`tenant_id`, `group_code`);
+            ALTER TABLE `iam_group` ADD INDEX `iam_group_group_code_index`(`group_code`);
         </sql>
     </changeSet>
 </databaseChangeLog>

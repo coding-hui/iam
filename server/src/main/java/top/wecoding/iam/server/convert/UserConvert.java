@@ -4,11 +4,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
+import top.wecoding.iam.common.entity.UserInfo;
 import top.wecoding.iam.common.model.request.CreateUserRequest;
 import top.wecoding.iam.common.model.request.UpdateUserRequest;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
-import top.wecoding.iam.common.pojo.UserInfo;
-import top.wecoding.iam.server.pojo.User;
+import top.wecoding.iam.server.entity.User;
 
 /**
  * @author liuyuhui

@@ -2,10 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.wecoding.iam.server.mapper.UserMapper">
 
-    <resultMap id="BaseResultMap" type="top.wecoding.iam.server.pojo.User">
+    <resultMap id="BaseResultMap" type="top.wecoding.iam.server.entity.User">
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
         <result column="tenant_id" property="tenantId"/>
+        <result column="name" property="name"/>
         <result column="username" property="username"/>
         <result column="pwd" property="password"/>
         <result column="nick_name" property="nickName"/>
@@ -20,7 +21,14 @@
         <result column="country" property="country"/>
         <result column="last_login_ip" property="lastLoginIp"/>
         <result column="last_login_time" property="lastLoginTime"/>
-        <result column="infos" property="infos"/>
+        <result column="login_count" property="loginCount"/>
+        <result column="company" property="company"/>
+        <result column="address" property="address"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="street_address" property="streetAddress"/>
+        <result column="postal_code" property="postalCode"/>
+        <result column="external_id" property="externalId"/>
         <result column="update_time" property="updateTime"/>
         <result column="updated_by" property="updatedBy"/>
         <result column="create_time" property="createTime"/>
@@ -28,7 +36,8 @@
     </resultMap>
 
     <sql id="userColumns">
-        `id`, `user_id`, `tenant_id`, `username`, `pwd`, `nick_name`, `avatar`, `birthday`, `gender`, `email`, `phone`, `user_type`, `user_state`, `def_pwd`, `country`, `last_login_ip`, `last_login_time`, `infos`, `update_time`, `updated_by`, `create_time`, `created_by`
+        `update_time`, `updated_by`, `create_time`, `created_by`,
+        `id`, `user_id`, `tenant_id`, `name`, `username`, `pwd`, `nick_name`, `avatar`, `birthday`, `gender`, `email`, `phone`, `user_type`, `user_state`, `def_pwd`, `country`, `last_login_ip`, `last_login_time`, `login_count`, `company`, `address`, `province`, `city`, `street_address`, `postal_code`, `external_id`
     </sql>
 
     <select id="getById" resultMap="BaseResultMap">
@@ -95,14 +104,18 @@
         FROM `iam_user`
         <where>
             `tenant_id` = #{query.currentTenantId}
+            <if test="query.fuzzyName != null and query.fuzzyName != ''">
+                AND username like CONCAT('%', #{query.fuzzyName}, '%')
+            </if>
         </where>
     </select>
 
     <update id="flushLastLoginInfo">
         UPDATE `iam_user`
         SET `last_login_time` = NOW(),
-            `last_login_ip`   = #{lastLoginIp}
-        WHERE `id` = #{id}
+            `last_login_ip`   = #{lastLoginIp},
+            `login_count` = `login_count` + 1
+        WHERE `user_id` = #{id}
     </update>
 
     <update id="updateState">

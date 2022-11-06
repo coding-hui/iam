@@ -15,13 +15,13 @@ import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.util.StringUtils;
 import top.wecoding.core.enums.iam.UserTypeEnum;
 import top.wecoding.iam.common.constant.SecurityConstants;
-import top.wecoding.iam.common.pojo.OAuth2ClientSettings;
-import top.wecoding.iam.common.pojo.OAuth2TokenSettings;
+import top.wecoding.iam.common.entity.OAuth2ClientSettings;
+import top.wecoding.iam.common.entity.OAuth2TokenSettings;
+import top.wecoding.iam.server.entity.Oauth2Client;
+import top.wecoding.iam.server.entity.User;
 import top.wecoding.iam.server.enums.UserStateEnum;
 import top.wecoding.iam.server.mapper.Oauth2ClientMapper;
 import top.wecoding.iam.server.mapper.UserMapper;
-import top.wecoding.iam.server.pojo.Oauth2Client;
-import top.wecoding.iam.server.pojo.User;
 import top.wecoding.iam.server.util.PasswordEncoderUtil;
 
 /**
