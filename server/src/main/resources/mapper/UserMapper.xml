@@ -4,24 +4,31 @@
 
     <resultMap id="BaseResultMap" type="top.wecoding.iam.server.entity.User">
         <id column="id" property="id"/>
-        <result column="user_id" property="userId"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="pwd" property="password"/>
+        <result column="user_state" property="userState"/>
+        <result column="def_pwd" property="defaultPwd"/>
+        <result column="last_login_ip" property="lastLoginIp"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="login_count" property="loginCount"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="created_time" property="createdBy"/>
+    </resultMap>
+
+    <resultMap id="UserInfoResultMap" type="top.wecoding.iam.common.entity.UserInfo">
+        <id column="user_id" property="userId"/>
         <result column="tenant_id" property="tenantId"/>
         <result column="name" property="name"/>
         <result column="username" property="username"/>
-        <result column="pwd" property="password"/>
         <result column="nick_name" property="nickName"/>
         <result column="avatar" property="avatar"/>
         <result column="birthday" property="birthday"/>
         <result column="gender" property="gender"/>
         <result column="email" property="email"/>
         <result column="phone" property="phone"/>
-        <result column="user_type" property="userType"/>
-        <result column="user_state" property="userState"/>
-        <result column="def_pwd" property="defaultPwd"/>
         <result column="country" property="country"/>
-        <result column="last_login_ip" property="lastLoginIp"/>
-        <result column="last_login_time" property="lastLoginTime"/>
-        <result column="login_count" property="loginCount"/>
         <result column="company" property="company"/>
         <result column="address" property="address"/>
         <result column="province" property="province"/>
@@ -29,83 +36,57 @@
         <result column="street_address" property="streetAddress"/>
         <result column="postal_code" property="postalCode"/>
         <result column="external_id" property="externalId"/>
-        <result column="update_time" property="updateTime"/>
-        <result column="updated_by" property="updatedBy"/>
+
+        <result column="pwd" property="password"/>
+        <result column="user_state" property="userState"/>
+        <result column="last_login_ip" property="lastLoginIp"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="login_count" property="loginCount"/>
+        <result column="external_id" property="externalId"/>
         <result column="create_time" property="createTime"/>
-        <result column="created_time" property="createdBy"/>
+        <result column="tenant_id" property="tenantId"/>
     </resultMap>
 
     <sql id="userColumns">
-        `update_time`, `updated_by`, `create_time`, `created_by`,
-        `id`, `user_id`, `tenant_id`, `name`, `username`, `pwd`, `nick_name`, `avatar`, `birthday`, `gender`, `email`, `phone`, `user_type`, `user_state`, `def_pwd`, `country`, `last_login_ip`, `last_login_time`, `login_count`, `company`, `address`, `province`, `city`, `street_address`, `postal_code`, `external_id`
+        u.`update_time`, u.`updated_by`, u.`create_time`, u.`created_by`,
+        u.`id`, u.`tenant_id`, u.`pwd`, u.`user_state`, u.`def_pwd`, u.`last_login_ip`, u.`last_login_time`, u.`login_count`
+    </sql>
+
+    <sql id="userProfileColumns">
+        <include refid="top.wecoding.iam.server.mapper.UserProfileMapper.userProfileColumns"/>
     </sql>
 
     <select id="getById" resultMap="BaseResultMap">
         SELECT
         <include refid="userColumns"/>
-        FROM `iam_user` WHERE `id` = #{id}
+        FROM `iam_user` u WHERE u.`id` = #{id}
     </select>
 
-    <select id="getByUserId" resultMap="BaseResultMap">
+    <select id="getInfoById" resultMap="UserInfoResultMap">
         SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user` WHERE `user_id` = #{userId}
+        <include refid="userColumns"/>,
+        <include refid="userProfileColumns"/>
+        FROM `iam_user` u LEFT JOIN `iam_user_profile` up ON up.user_id = u.id
+        WHERE u.`id` = #{id}
     </select>
 
-    <select id="getByUsername" resultMap="BaseResultMap">
+    <select id="getInfoByUsername" resultMap="UserInfoResultMap">
         SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user` WHERE `username` = #{username}
+        <include refid="userColumns"/>,
+        <include refid="userProfileColumns"/>
+        FROM `iam_user` u LEFT JOIN `iam_user_profile` up ON up.user_id = u.id
+        WHERE up.`username` = #{username}
     </select>
 
-    <select id="getByTenantIdAndUserId" resultMap="BaseResultMap">
+    <select id="page" resultMap="UserInfoResultMap">
         SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user` WHERE `tenant_id` = #{tenantId} AND `user_id` = #{userId}
-    </select>
-
-    <select id="getByTenantIdAndUsername" resultMap="BaseResultMap">
-        SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user` WHERE `tenant_id` = #{tenantId} AND `username` = #{username}
-    </select>
-
-    <select id="getByTenantIdAndUsernameAndState" resultMap="BaseResultMap">
-        SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user` WHERE `tenant_id` = #{tenantId} AND `username` = #{username} AND `user_state` = ${state}
-    </select>
-
-    <select id="list" resultMap="BaseResultMap">
-        SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user`
-    </select>
-
-    <select id="listByTenantId" resultMap="BaseResultMap">
-        SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user` WHERE `tenant_id` = #{tenantId}
-    </select>
-
-    <select id="listByTenantIdAndUserIds" resultMap="BaseResultMap">
-        SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user` WHERE `tenant_id` = #{tenantId}
-        AND `user_id` IN
-        <foreach collection="userIds" item="item" open=" ( " separator="," close=" ) ">
-            #{item}
-        </foreach>
-    </select>
-
-    <select id="page" resultMap="BaseResultMap">
-        SELECT
-        <include refid="userColumns"/>
-        FROM `iam_user`
+        <include refid="userColumns"/>,
+        <include refid="userProfileColumns"/>
+        FROM `iam_user` u LEFT JOIN `iam_user_profile` up ON up.user_id = u.id
         <where>
-            `tenant_id` = #{query.currentTenantId}
+            u.`tenant_id` = #{query.currentTenantId}
             <if test="query.fuzzyName != null and query.fuzzyName != ''">
-                AND username like CONCAT('%', #{query.fuzzyName}, '%')
+                AND up.`username` like CONCAT('%', #{query.fuzzyName}, '%')
             </if>
         </where>
     </select>
@@ -114,8 +95,8 @@
         UPDATE `iam_user`
         SET `last_login_time` = NOW(),
             `last_login_ip`   = #{lastLoginIp},
-            `login_count` = `login_count` + 1
-        WHERE `user_id` = #{id}
+            `login_count`     = `login_count` + 1
+        WHERE `id` = #{id}
     </update>
 
     <update id="updateState">
@@ -129,7 +110,7 @@
 
     <select id="count" resultMap="BaseResultMap">
         SELECT COUNT(1)
-        FROM `iam_user`
+        FROM `iam_user` u
     </select>
 
 </mapper>

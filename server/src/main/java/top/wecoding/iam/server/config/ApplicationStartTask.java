@@ -13,15 +13,16 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2TokenFormat;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.util.StringUtils;
-import top.wecoding.core.enums.iam.UserTypeEnum;
 import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.entity.OAuth2ClientSettings;
 import top.wecoding.iam.common.entity.OAuth2TokenSettings;
 import top.wecoding.iam.server.entity.Oauth2Client;
 import top.wecoding.iam.server.entity.User;
+import top.wecoding.iam.server.entity.UserProfile;
 import top.wecoding.iam.server.enums.UserStateEnum;
 import top.wecoding.iam.server.mapper.Oauth2ClientMapper;
 import top.wecoding.iam.server.mapper.UserMapper;
+import top.wecoding.iam.server.mapper.UserProfileMapper;
 import top.wecoding.iam.server.util.PasswordEncoderUtil;
 
 /**
@@ -34,6 +35,8 @@ import top.wecoding.iam.server.util.PasswordEncoderUtil;
 public class ApplicationStartTask {
 
   private final UserMapper userMapper;
+
+  private final UserProfileMapper userProfileMapper;
 
   private final Oauth2ClientMapper oauth2ClientMapper;
 
@@ -93,24 +96,30 @@ public class ApplicationStartTask {
   private void initializeDefaultSuperAdministrator() {
     String tenantId = String.valueOf(Long.MAX_VALUE);
     String username = "ADMIN";
-    User user = userMapper.getByTenantIdAndUsername(tenantId, username);
-    if (null != user) {
+    UserProfile userProfile = userProfileMapper.getByTenantIdAndUsername(tenantId, username);
+    if (null != userProfile) {
       return;
     }
-    user =
+    String userId = IdWorker.getIdStr();
+    User user =
         User.builder()
-            .userId(IdWorker.getIdStr())
+            .id(userId)
+            .tenantId(tenantId)
+            .userState(UserStateEnum.DEFAULT.code())
+            .password(PasswordEncoderUtil.encode("WECODING"))
+            .defaultPwd(true)
+            .build();
+    userProfile =
+        UserProfile.builder()
+            .userId(userId)
             .tenantId(tenantId)
             .username(username)
             .nickName(username)
             .country("")
             .email("wecoding@yeah.net")
-            .password(PasswordEncoderUtil.encode("WECODING"))
-            .userType(UserTypeEnum.LOCAL.code())
-            .userState(UserStateEnum.DEFAULT.code())
-            .defaultPwd(true)
             .build();
     userMapper.insert(user);
+    userProfileMapper.insert(userProfile);
     log.info("initialize default super administrator done");
   }
 }

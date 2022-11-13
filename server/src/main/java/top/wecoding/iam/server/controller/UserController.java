@@ -30,14 +30,9 @@ public class UserController {
   }
 
   @InnerAuth
-  @GetMapping("/info/{username}")
+  @GetMapping("/{username}/info")
   public R<UserInfoResponse> info(@PathVariable("username") String username) {
     return R.ok(userService.getInfoByUsername(username));
-  }
-
-  @GetMapping("/{user_id}/details")
-  public R<UserInfoResponse> details(@PathVariable("user_id") String userId) {
-    return R.ok(userService.getInfoById(userId));
   }
 
   @GetMapping("")

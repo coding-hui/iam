@@ -3,12 +3,14 @@ package top.wecoding.iam.server.convert;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import top.wecoding.iam.common.entity.UserInfo;
 import top.wecoding.iam.common.model.request.CreateUserRequest;
 import top.wecoding.iam.common.model.request.UpdateUserRequest;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.server.entity.User;
+import top.wecoding.iam.server.entity.UserProfile;
 
 /**
  * @author liuyuhui
@@ -32,10 +34,19 @@ public interface UserConvert {
     return userInfoResponse.build();
   }
 
+  @Named("userToUserInfo")
   @Mappings(@Mapping(source = "user", target = "userInfo"))
   UserInfoResponse toUserInfoResponse(User user);
 
+  UserInfoResponse toUserInfoResponse(User user, UserProfile userProfile);
+
   UserInfo toUserInfo(User user);
+
+  @Mappings({
+    @Mapping(target = "tenantId", source = "user.tenantId"),
+    @Mapping(target = "createTime", source = "user.createTime"),
+  })
+  UserInfo toUserInfo(User user, UserProfile userProfile);
 
   UserInfo toUserInfo(User user, String tenantName);
 

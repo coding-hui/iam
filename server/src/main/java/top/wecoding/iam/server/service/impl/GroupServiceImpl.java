@@ -3,6 +3,9 @@ package top.wecoding.iam.server.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +28,6 @@ import top.wecoding.iam.server.mapper.GroupMapper;
 import top.wecoding.iam.server.mapper.UserGroupMapper;
 import top.wecoding.iam.server.service.GroupService;
 import top.wecoding.mybatis.base.BaseServiceImpl;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author liuyuhui

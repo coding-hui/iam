@@ -1,6 +1,5 @@
 package top.wecoding.iam.server.service;
 
-import java.util.List;
 import top.wecoding.core.result.PageInfo;
 import top.wecoding.iam.common.model.request.*;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
@@ -21,8 +20,6 @@ public interface UserService extends BaseService<User> {
 
   UserInfoResponse getInfoByUsername(String username);
 
-  UserInfoResponse getInfoByUsernameAndTenantId(String username, String tenantId);
-
   void create(CreateUserRequest createUserRequest);
 
   void update(String userId, UpdateUserRequest updateUserRequest);
@@ -34,6 +31,4 @@ public interface UserService extends BaseService<User> {
   void password(String userId, PasswordRequest passwordRequest);
 
   PageInfo<UserInfoResponse> infoPage(UserInfoPageRequest userInfoPageRequest);
-
-  List<UserInfoResponse> infoList(UserInfoListRequest userInfoListRequest);
 }

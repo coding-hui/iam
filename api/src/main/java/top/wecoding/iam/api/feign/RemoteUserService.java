@@ -29,7 +29,7 @@ public interface RemoteUserService {
    * @param from 调用标志
    * @return R
    */
-  @GetMapping("/api/v1/users/info/{username}")
+  @GetMapping("/api/v1/users/{username}/info")
   R<UserInfoResponse> info(
       @PathVariable("username") String username,
       @RequestHeader(SecurityConstants.FROM) String from);
@@ -41,7 +41,7 @@ public interface RemoteUserService {
    * @param from 调用标志
    * @return R
    */
-  @GetMapping("/app/info/{phone}")
+  @GetMapping("/app/{phone}/info")
   R<UserInfoResponse> infoByMobile(
       @PathVariable("phone") String phone, @RequestHeader(SecurityConstants.FROM) String from);
 
