@@ -16,10 +16,7 @@ import top.wecoding.iam.common.model.response.UserInfoResponse;
  * @date 2022/9/29
  * @qq 1515418211
  */
-@FeignClient(
-    name = "wecoding-iam",
-    contextId = "remoteUser",
-    url = "${wecoding.feign.iam-server:http://localhost:80}")
+@FeignClient(name = "wecoding-iam", contextId = "remoteUser")
 public interface RemoteUserService {
 
   /**
