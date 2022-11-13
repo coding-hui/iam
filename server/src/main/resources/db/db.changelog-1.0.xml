@@ -16,9 +16,9 @@
             CREATE TABLE IF NOT EXISTS `iam_oauth2_registered_client` (
                 `id`      bigint AUTO_INCREMENT COMMENT '自增主键' PRIMARY KEY,
                 `client_id` varchar(100) NOT NULL,
-                `client_id_issued_at` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                `client_id_issued_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `client_secret` varchar(200) DEFAULT NULL,
-                `client_secret_expires_at` timestamp DEFAULT NULL,
+                `client_secret_expires_at` timestamp NULL DEFAULT NULL,
                 `client_name` varchar(200) NOT NULL,
                 `client_authentication_methods` varchar(1000) NOT NULL,
                 `authorization_grant_types` varchar(1000) NOT NULL,
