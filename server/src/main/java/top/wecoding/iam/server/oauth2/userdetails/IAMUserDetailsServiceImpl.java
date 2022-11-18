@@ -1,4 +1,4 @@
-package top.wecoding.iam.server.service.userdetails;
+package top.wecoding.iam.server.oauth2.userdetails;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

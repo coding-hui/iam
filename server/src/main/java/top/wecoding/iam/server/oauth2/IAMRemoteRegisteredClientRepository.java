@@ -1,4 +1,4 @@
-package top.wecoding.iam.server.service;
+package top.wecoding.iam.server.oauth2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.server.authorization.config.TokenSett
 import org.springframework.stereotype.Service;
 import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
+import top.wecoding.iam.server.service.Oauth2ClientService;
 
 import java.util.Optional;
 import java.util.Set;

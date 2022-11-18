@@ -1,4 +1,4 @@
-package top.wecoding.iam.server.config.configurers;
+package top.wecoding.iam.server.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;

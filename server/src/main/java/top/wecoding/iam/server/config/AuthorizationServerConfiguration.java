@@ -1,9 +1,5 @@
 package top.wecoding.iam.server.config;
 
-import static top.wecoding.iam.common.constant.SecurityConstants.CUSTOM_TOKEN_ENDPOINT_URI;
-import static top.wecoding.iam.common.constant.SecurityConstants.PROJECT_LICENSE;
-
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +26,11 @@ import top.wecoding.iam.server.authentication.password.OAuth2ResourceOwnerPasswo
 import top.wecoding.iam.server.authentication.token.IAMOAuth2AccessTokenGenerator;
 import top.wecoding.iam.server.authentication.token.IAMOAuth2RefreshTokenGenerator;
 import top.wecoding.iam.server.authentication.token.IAMOAuth2TokenCustomizer;
-import top.wecoding.iam.server.config.configurers.FormIdentityLoginConfigurer;
+
+import java.util.Arrays;
+
+import static top.wecoding.iam.common.constant.SecurityConstants.CUSTOM_TOKEN_ENDPOINT_URI;
+import static top.wecoding.iam.common.constant.SecurityConstants.PROJECT_LICENSE;
 
 /**
  * @author liuyuhui

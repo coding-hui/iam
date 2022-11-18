@@ -1,4 +1,4 @@
-package top.wecoding.iam.server.service;
+package top.wecoding.iam.server.oauth2;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
