@@ -10,7 +10,7 @@ import top.wecoding.core.result.PageInfo;
 import top.wecoding.core.result.R;
 import top.wecoding.iam.common.model.request.TokenInfoPageRequest;
 import top.wecoding.iam.common.model.response.TokenInfoResponse;
-import top.wecoding.iam.sdk.InnerAuth;
+import top.wecoding.iam.framework.InnerAuth;
 import top.wecoding.iam.server.service.TokenService;
 
 /**

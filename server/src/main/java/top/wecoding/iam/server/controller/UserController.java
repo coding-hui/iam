@@ -8,7 +8,7 @@ import top.wecoding.core.result.R;
 import top.wecoding.iam.common.model.request.*;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
 import top.wecoding.iam.common.util.AuthUtil;
-import top.wecoding.iam.sdk.InnerAuth;
+import top.wecoding.iam.framework.InnerAuth;
 import top.wecoding.iam.server.service.UserService;
 import top.wecoding.iam.server.web.annotation.ParameterConvert;
 

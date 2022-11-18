@@ -9,7 +9,7 @@ import top.wecoding.iam.common.model.request.CreateOauth2ClientPageRequest;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientRequest;
 import top.wecoding.iam.common.model.request.UpdateOauth2ClientRequest;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
-import top.wecoding.iam.sdk.InnerAuth;
+import top.wecoding.iam.framework.InnerAuth;
 import top.wecoding.iam.server.service.Oauth2ClientService;
 import top.wecoding.web.controller.BaseController;
 

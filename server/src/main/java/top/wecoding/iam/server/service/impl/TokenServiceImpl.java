@@ -18,8 +18,8 @@ import top.wecoding.core.result.PageInfo;
 import top.wecoding.iam.common.constant.RedisConstant;
 import top.wecoding.iam.common.model.request.TokenInfoPageRequest;
 import top.wecoding.iam.common.model.response.TokenInfoResponse;
-import top.wecoding.iam.sdk.cache.UserDetailsCacheKeyBuilder;
-import top.wecoding.iam.sdk.cache.UserTokenCacheKeyBuilder;
+import top.wecoding.iam.framework.cache.UserDetailsCacheKeyBuilder;
+import top.wecoding.iam.framework.cache.UserTokenCacheKeyBuilder;
 import top.wecoding.iam.server.service.TokenService;
 import top.wecoding.redis.util.RedisUtils;
 

@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>iam-server</artifactId>
-    <name>IAM Server</name>
+    <name>WeCoding IAM :: Server</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -47,7 +47,7 @@
 
         <dependency>
             <groupId>top.wecoding</groupId>
-            <artifactId>iam-sdk</artifactId>
+            <artifactId>iam-framework</artifactId>
         </dependency>
 
         <dependency>
