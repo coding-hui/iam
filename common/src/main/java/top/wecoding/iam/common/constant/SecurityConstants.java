@@ -22,7 +22,7 @@ package top.wecoding.iam.common.constant;
 public interface SecurityConstants {
 
   /** 项目的license */
-  String PROJECT_LICENSE = "http://iam.wecoding.top";
+  String PROJECT_LICENSE = "http://localhost";
 
   /** 协议字段 */
   String DETAILS_LICENSE = "license";
@@ -55,7 +55,7 @@ public interface SecurityConstants {
   String CUSTOM_CONSENT_PAGE_URI = "/token/confirm_access";
 
   /** The default endpoint {@code URI} for access token requests. */
-  String CUSTOM_TOKEN_ENDPOINT_URI = "/api/v1/oauth2/token";
+  String CUSTOM_TOKEN_ENDPOINT_URI = "/oauth2/token";
 
   /** role prefix */
   String ROLE_PREFIX = "ROLE_";

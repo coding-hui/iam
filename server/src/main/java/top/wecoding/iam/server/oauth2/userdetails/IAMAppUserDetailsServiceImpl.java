@@ -6,7 +6,6 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 import top.wecoding.iam.common.constant.RedisConstant;
 import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
@@ -20,7 +19,6 @@ import top.wecoding.iam.server.service.UserService;
  * @qq 1515418211
  */
 @Slf4j
-@Service
 @RequiredArgsConstructor
 public class IAMAppUserDetailsServiceImpl implements IAMUserDetailsService {
 

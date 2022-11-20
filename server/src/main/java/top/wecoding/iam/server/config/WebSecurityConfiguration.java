@@ -1,9 +1,11 @@
 package top.wecoding.iam.server.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -11,20 +13,24 @@ import org.springframework.security.web.SecurityFilterChain;
  * @date 2022/10/3
  * @qq 1515418211
  */
+@RequiredArgsConstructor
 @EnableWebSecurity(debug = true)
 public class WebSecurityConfiguration {
+
+  private final UserDetailsService userDetailsService;
 
   @Bean
   public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeRequests(
             authorizeRequests ->
-                authorizeRequests.antMatchers("/token/*").permitAll().anyRequest().authenticated())
+                authorizeRequests.antMatchers("/login").permitAll().anyRequest().authenticated())
         .headers()
         .frameOptions()
         // 避免iframe同源无法登录
         .sameOrigin()
         .and()
         .apply(new FormIdentityLoginConfigurer());
+    http.userDetailsService(userDetailsService);
     return http.build();
   }
 

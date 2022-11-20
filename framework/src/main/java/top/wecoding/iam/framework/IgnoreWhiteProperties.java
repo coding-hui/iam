@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -23,7 +22,6 @@ import java.util.regex.Pattern;
  * @qq 1515418211
  */
 @Slf4j
-@ConfigurationProperties(prefix = "security.oauth2.ignore")
 public class IgnoreWhiteProperties implements InitializingBean {
 
   private static final Pattern PATTERN = Pattern.compile("\\{(.*?)}");

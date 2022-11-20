@@ -2,7 +2,6 @@ package top.wecoding.iam.server.oauth2.userdetails;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import top.wecoding.redis.util.RedisUtils;
  */
 @Slf4j
 @Service
-@Primary
 @RequiredArgsConstructor
 public class IAMUserDetailsServiceImpl implements IAMUserDetailsService {
 

@@ -4,7 +4,7 @@ server:
     context-path: /
   undertow:
     accesslog:
-      enabled: true
+      enabled: false
       rotate: true
       dir: log
       pattern: '{
@@ -34,6 +34,7 @@ server:
                         "respCookieUserId":"%{resp-cookie,userId}",
                         "timeUsed":"%Dms, %Ts, %{RESPONSE_TIME}ms, %{RESPONSE_TIME_MICROS} us, %{RESPONSE_TIME_NANOS} ns",
                       }'
+
 spring:
   application:
     name: wecoding-iam
@@ -70,15 +71,28 @@ spring:
       discovery:
         service: ${spring.application.name}
         group: wecoding-system
-        server-addr: http://wecoding.top:8848
+        server-addr: http://localhost:8848
       config:
-        server-addr: http://wecoding.top:8848
+        server-addr: http://localhost:8848
 
+  freemarker:
+    allow-request-override: false
+    allow-session-override: false
+    cache: true
+    charset: UTF-8
+    check-template-location: true
+    content-type: text/html
+    enabled: true
+    expose-session-attributes: false
+    expose-spring-macro-helpers: true
+    prefer-file-system-access: true
+    suffix: .ftl
+    template-loader-path: classpath:/templates/
 
 logging:
   level:
     top.wecoding: debug
-    org.springframework: warn
+    org.springframework: trace
 
 mybatis-plus:
   global-config:
@@ -88,7 +102,3 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
-wecoding:
-  feign:
-    iam-server:
