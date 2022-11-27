@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wecoding.iam.server.mapper.UserProfileMapper">
+
+    <resultMap id="BaseResultMap" type="top.wecoding.iam.server.entity.UserProfile">
+        <id column="user_id" property="userId"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="name" property="name"/>
+        <result column="username" property="username"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="avatar" property="avatar"/>
+        <result column="birthday" property="birthday"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="country" property="country"/>
+        <result column="company" property="company"/>
+        <result column="address" property="address"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="street_address" property="streetAddress"/>
+        <result column="postal_code" property="postalCode"/>
+        <result column="external_id" property="externalId"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="created_time" property="createdBy"/>
+    </resultMap>
+
+    <sql id="userProfileColumns">
+        up.`update_time`, up.`updated_by`, up.`create_time`, up.`created_by`,
+        up.`user_id`, up.`tenant_id`, up.`name`, up.`username`, up.`nick_name`, up.`avatar`, up.`birthday`,
+        up.`gender`, up.`email`, up.`phone`, up.`country`, up.`company`, up.`address`, up.`province`,
+        up.`city`, up.`street_address`, up.`postal_code`, up.`external_id`
+    </sql>
+
+    <select id="getByUserId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userProfileColumns"/>
+        FROM `iam_user_profile` up WHERE up.`user_id` = #{userId}
+    </select>
+
+    <select id="getByUsername" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userProfileColumns"/>
+        FROM `iam_user_profile` up WHERE up.`username` = #{username}
+    </select>
+
+    <select id="getByTenantIdAndUserId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userProfileColumns"/>
+        FROM `iam_user_profile` up WHERE up.`tenant_id` = #{tenantId} AND up.`user_id` = #{userId}
+    </select>
+
+    <select id="getByTenantIdAndUsername" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userProfileColumns"/>
+        FROM `iam_user_profile` up WHERE up.`tenant_id` = #{tenantId} AND up.`username` = #{username}
+    </select>
+
+    <select id="getByTenantIdAndUsernameAndState" resultMap="BaseResultMap">
+        SELECT
+        <include refid="userProfileColumns"/>
+        FROM `iam_user_profile` up WHERE up.`tenant_id` = #{tenantId} AND up.`username` = #{username} AND `user_state` =
+        ${state}
+    </select>
+
+    <select id="count" resultMap="BaseResultMap">
+        SELECT COUNT(1)
+        FROM `iam_user_profile`
+    </select>
+
+</mapper>

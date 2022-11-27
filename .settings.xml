@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <profiles>
+        <profile>
+            <!--
+                N.B. this profile is only here to support users and IDEs that do not use Maven 3.3.
+                It isn't needed on the command line if you use the wrapper script (mvnw) or if you use
+                a native Maven with the right version. Eclipse users should points their Maven tooling to
+                this settings file, or copy the profile into their ~/.m2/settings.xml.
+            -->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <id>wecoding</id>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>aliyun-plugin</id>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+                </pluginRepository>
+            </pluginRepositories>
+            <repositories>
+                <repository>
+                    <id>repo.wecoding.top</id>
+                    <name>maven-repo</name>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <url>https://devops-wecoding-maven.pkg.coding.net/repository/wecoding/maven-repo/</url>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <!--
+                Turns on jdk8 for tests
+            -->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <id>ide</id>
+        </profile>
+    </profiles>
+    <servers>
+        <server>
+            <id>repo.wecoding.top</id>
+            <password>${env.CI_DEPLOY_PASSWORD}</password>
+            <username>${env.CI_DEPLOY_USERNAME}</username>
+        </server>
+    </servers>
+</settings>

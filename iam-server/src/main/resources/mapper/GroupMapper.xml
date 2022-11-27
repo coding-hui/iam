@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wecoding.iam.server.mapper.GroupMapper">
+
+    <resultMap id="BaseResultMap" type="top.wecoding.iam.server.entity.Group">
+        <id column="id" property="id"/>
+        <result column="group_id" property="groupId"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="group_name" property="groupName"/>
+        <result column="group_code" property="groupCode"/>
+        <result column="description" property="description"/>
+        <result column="created_time" property="createTime"/>
+        <result column="create_by" property="createdBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="updated_by" property="updatedBy"/>
+    </resultMap>
+
+    <sql id="columns">`id`,`group_id`,`tenant_id`,`group_name`, `group_code`, `description`, `create_time`,`created_by`,`update_time`,`updated_by`</sql>
+
+    <select id="getByGroupId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group` WHERE `group_id` = #{groupId}
+    </select>
+
+    <select id="getByTenantIdAndGroupCode" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group` WHERE `tenant_id` = #{tenantId} AND `group_code` = #{groupCode}
+    </select>
+
+    <select id="getByTenantIdAndGroupId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group` WHERE `tenant_id` = #{tenantId} AND `group_id` = #{groupId}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group`
+        <where>
+            `tenant_id` = #{tenantId}
+        </where>
+    </select>
+
+    <select id="page" resultMap="BaseResultMap">
+        SELECT
+        <include refid="columns"/>
+        FROM `iam_group`
+        <where>
+            `tenant_id` = #{query.currentTenantId}
+            <if test="query.fuzzyName != null and query.fuzzyName != ''">
+                AND `group_name` LIKE CONCAT('%', #{query.fuzzyName}, '%');
+            </if>
+        </where>
+    </select>
+
+    <select id="count" resultType="Integer">
+        SELECT COUNT(*)
+        FROM `iam_group`
+    </select>
+
+</mapper>

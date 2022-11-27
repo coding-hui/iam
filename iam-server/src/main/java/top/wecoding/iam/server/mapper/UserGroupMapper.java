@@ -1,0 +1,29 @@
+package top.wecoding.iam.server.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import top.wecoding.iam.server.entity.UserGroup;
+
+import java.util.List;
+import java.util.Set;
+
+/**
+ * @author liuyuhui
+ * @date 2022/9/12
+ */
+public interface UserGroupMapper extends BaseMapper<UserGroup> {
+  default int insertBatch0(List<UserGroup> userGroupList, String updatedBy) {
+    userGroupList.forEach(userGroup -> userGroup.setCreatedBy(updatedBy));
+    return insertBatch(userGroupList);
+  }
+
+  int insertBatch(List<UserGroup> userGroupList);
+
+  List<UserGroup> listByTenantIdAndGroupId(
+      @Param("tenantId") String tenantId, @Param("groupId") String groupId);
+
+  List<UserGroup> listByTenantIdAndGroupIdAndUserIdList(
+      @Param("tenantId") String tenantId,
+      @Param("groupId") String groupId,
+      @Param("userIds") Set<String> userIds);
+}

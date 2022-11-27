@@ -1,0 +1,109 @@
+server:
+  port: 80
+  servlet:
+    context-path: /
+  undertow:
+    accesslog:
+      enabled: false
+      rotate: true
+      dir: log
+      pattern: '{
+                        "transportProtocol":"%{TRANSPORT_PROTOCOL}",
+                        "scheme":"%{SCHEME}",
+                        "protocol":"%{PROTOCOL}",
+                        "method":"%{METHOD}",
+                        "reqHeaderUserAgent":"%{i,User-Agent}",
+                        "cookieUserId": "%{c,userId}",
+                        "queryTest": "%{q,test}",
+                        "queryString": "%q",
+                        "relativePath": "%R, %{REQUEST_PATH}, %{RESOLVED_PATH}",
+                        "requestLine": "%r",
+                        "uri": "%U",
+                        "thread": "%I",
+                        "hostPort": "%{HOST_AND_PORT}",
+                        "localIp": "%A",
+                        "localPort": "%p",
+                        "localServerName": "%v",
+                        "remoteIp": "%a",
+                        "remoteHost": "%h",
+                        "bytesSent": "%b",
+                        "time":"%{time,yyyy-MM-dd HH:mm:ss.S}",
+                        "status":"%s",
+                        "reason":"%{RESPONSE_REASON_PHRASE}",
+                        "respHeaderUserSession":"%{o,userSession}",
+                        "respCookieUserId":"%{resp-cookie,userId}",
+                        "timeUsed":"%Dms, %Ts, %{RESPONSE_TIME}ms, %{RESPONSE_TIME_MICROS} us, %{RESPONSE_TIME_NANOS} ns",
+                      }'
+
+spring:
+  application:
+    name: wecoding-iam
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
+  cache:
+    type: redis
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  liquibase:
+    change-log: classpath:db/db.changelog-master.xml
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/wecoding_iam?createDatabaseIfNotExist=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: root
+    password: 123456
+  #    password: WeCoding319.
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      password:
+      timeout: 10s
+  cloud:
+    nacos:
+      discovery:
+        service: ${spring.application.name}
+        group: wecoding-system
+        server-addr: http://localhost:8848
+      config:
+        server-addr: http://localhost:8848
+
+  freemarker:
+    allow-request-override: false
+    allow-session-override: false
+    cache: true
+    charset: UTF-8
+    check-template-location: true
+    content-type: text/html
+    enabled: true
+    expose-session-attributes: false
+    expose-spring-macro-helpers: true
+    prefer-file-system-access: true
+    suffix: .ftl
+    template-loader-path: classpath:/templates/
+
+logging:
+  level:
+    top.wecoding: debug
+    org.springframework.security: trace
+
+mybatis:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: top.wecoding.iam,com.baomidou.mybatisplus.extension.plugins.pagination
+
+mybatis-plus:
+  global-config:
+    banner: false
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: top.wecoding.iam.server.pojo
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
