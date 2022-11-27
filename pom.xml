@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.wecoding</groupId>
         <artifactId>wecoding-build</artifactId>
-        <version>0.5</version>
+        <version>0.5.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>wecoding-iam</artifactId>
@@ -17,8 +17,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <wecoding-commons.version>0.5</wecoding-commons.version>
-        <wecoding-build.version>0.5</wecoding-build.version>
-        <wecoding-tool.version>0.5</wecoding-tool.version>
+        <wecoding-build.version>0.5.1</wecoding-build.version>
+        <wecoding-tool.version>0.5.1</wecoding-tool.version>
     </properties>
 
     <modules>
