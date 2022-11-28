@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
 import top.wecoding.iam.server.service.Oauth2ClientService;
 
@@ -30,13 +31,19 @@ public class InDbRegisteredClientRepository implements RegisteredClientRepositor
 
   @Override
   public RegisteredClient findById(String id) {
-    throw new UnsupportedOperationException();
+    Assert.hasText(id, "client id cannot be empty");
+    Oauth2ClientInfoResponse clientResponse = clientDetailsService.getInfoById(id);
+    return buildRegisteredClient(clientResponse);
   }
 
   @Override
   public RegisteredClient findByClientId(String clientId) {
-    Oauth2ClientInfoResponse clientResponse = clientDetailsService.getInfo(clientId);
+    Assert.hasText(clientId, "clientId cannot be empty");
+    Oauth2ClientInfoResponse clientResponse = clientDetailsService.getInfoByClientId(clientId);
+    return buildRegisteredClient(clientResponse);
+  }
 
+  private RegisteredClient buildRegisteredClient(Oauth2ClientInfoResponse clientResponse) {
     Set<String> clientAuthenticationMethods = clientResponse.getClientAuthenticationMethods();
     Set<String> authorizationGrantTypes = clientResponse.getAuthorizationGrantTypes();
     Set<String> redirectUris = clientResponse.getRedirectUris();

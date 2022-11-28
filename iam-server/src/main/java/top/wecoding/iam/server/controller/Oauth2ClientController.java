@@ -28,7 +28,7 @@ public class Oauth2ClientController extends BaseController {
   @InnerAuth
   @GetMapping("/info/{clientId}")
   public R<Oauth2ClientInfoResponse> info(@PathVariable("clientId") String clientId) {
-    Oauth2ClientInfoResponse info = clientService.getInfo(clientId);
+    Oauth2ClientInfoResponse info = clientService.getInfoByClientId(clientId);
     return R.ok(info);
   }
 

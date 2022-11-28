@@ -30,7 +30,16 @@ public class Oauth2ClientServiceImpl extends ServiceImpl<Oauth2ClientMapper, Oau
   private final Oauth2ClientMapper clientMapper;
 
   @Override
-  public Oauth2ClientInfoResponse getInfo(String clientId) {
+  public Oauth2ClientInfoResponse getInfoById(String id) {
+    Oauth2Client client = clientMapper.getById(id);
+
+    ArgumentAssert.notNull(client, IamErrorCode.CLIENT_DOES_NOT_EXIST);
+
+    return Oauth2ClientUtil.toOauth2ClientInfoResponse(client);
+  }
+
+  @Override
+  public Oauth2ClientInfoResponse getInfoByClientId(String clientId) {
     Oauth2Client client = clientMapper.getByClientId(clientId);
 
     ArgumentAssert.notNull(client, IamErrorCode.CLIENT_DOES_NOT_EXIST);

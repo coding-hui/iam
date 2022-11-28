@@ -12,7 +12,9 @@ import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
  */
 public interface Oauth2ClientService {
 
-  Oauth2ClientInfoResponse getInfo(String clientId);
+  Oauth2ClientInfoResponse getInfoById(String id);
+
+  Oauth2ClientInfoResponse getInfoByClientId(String clientId);
 
   void create(CreateOauth2ClientRequest createOauth2ClientRequest);
 

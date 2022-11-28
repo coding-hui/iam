@@ -34,6 +34,8 @@ public class InRedisOAuth2AuthorizationService implements OAuth2AuthorizationSer
 
   private final RedisTemplate<String, Object> redisTemplate;
 
+  private final String[] supportedTokenTypes = {CODE, STATE, ACCESS_TOKEN, REFRESH_TOKEN};
+
   @Override
   public void save(OAuth2Authorization authorization) {
     Assert.notNull(authorization, "authorization cannot be null");
@@ -131,10 +133,20 @@ public class InRedisOAuth2AuthorizationService implements OAuth2AuthorizationSer
   @Nullable
   public OAuth2Authorization findByToken(String token, @Nullable OAuth2TokenType tokenType) {
     Assert.hasText(token, "token cannot be empty");
-    Assert.notNull(tokenType, "tokenType cannot be empty");
     redisTemplate.setValueSerializer(RedisSerializer.java());
-    return (OAuth2Authorization)
-        redisTemplate.opsForValue().get(buildKey(tokenType.getValue(), token));
+    if (tokenType != null) {
+      return (OAuth2Authorization)
+          redisTemplate.opsForValue().get(buildKey(tokenType.getValue(), token));
+    }
+    for (String supportedTokenType : supportedTokenTypes) {
+      OAuth2Authorization authorization =
+          (OAuth2Authorization)
+              redisTemplate.opsForValue().get(buildKey(supportedTokenType, token));
+      if (Objects.nonNull(authorization)) {
+        return authorization;
+      }
+    }
+    return null;
   }
 
   private String buildKey(String type, String id) {
