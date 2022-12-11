@@ -19,12 +19,16 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.oauth2.server.authorization.web.authentication.*;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import top.wecoding.iam.framework.props.IgnoreWhiteProperties;
 import top.wecoding.iam.framework.security.handler.WeCodingAuthenticationFailureEventHandler;
 import top.wecoding.iam.framework.security.jose.Jwks;
+import top.wecoding.iam.framework.security.web.ResourceAuthExceptionEntryPoint;
 import top.wecoding.iam.server.security.authorization.authentication.password.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import top.wecoding.iam.server.security.authorization.token.IAMOAuth2TokenCustomizer;
 import top.wecoding.iam.server.security.configurers.FormIdentityLoginConfigurer;
@@ -43,7 +47,15 @@ import static top.wecoding.iam.common.constant.WeCodingSettingNames.Authorizatio
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
 
+  protected final ResourceAuthExceptionEntryPoint resourceAuthExceptionEntryPoint;
+
   private final OAuth2AuthorizationService authorizationService;
+
+  private final IgnoreWhiteProperties permitAllUrl;
+
+  private final BearerTokenResolver weCodingBearerTokenExtractor;
+
+  private final OpaqueTokenIntrospector opaqueTokenIntrospector;
 
   @Bean
   @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -79,6 +91,13 @@ public class AuthorizationServerConfig {
         .authorizationService(authorizationService)
         .oidc(Customizer.withDefaults());
 
+    http.oauth2ResourceServer(
+        oauth2 ->
+            oauth2
+                .opaqueToken(token -> token.introspector(opaqueTokenIntrospector))
+                .authenticationEntryPoint(resourceAuthExceptionEntryPoint)
+                .bearerTokenResolver(weCodingBearerTokenExtractor));
+
     http.apply(weCodingAuthorizationServerConfigurer)
         .passwordLoginEndpoint(
             passwordLoginEndpoint -> {
@@ -87,7 +106,9 @@ public class AuthorizationServerConfig {
                   .errorResponseHandler(new WeCodingAuthenticationFailureEventHandler());
             });
 
-    return http.apply(new FormIdentityLoginConfigurer()).and().build();
+    http.apply(new FormIdentityLoginConfigurer());
+
+    return http.build();
   }
 
   @Bean
