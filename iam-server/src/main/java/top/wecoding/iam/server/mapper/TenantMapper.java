@@ -1,6 +1,7 @@
 package top.wecoding.iam.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import top.wecoding.iam.common.model.request.TenantInfoPageRequest;
@@ -20,7 +21,7 @@ public interface TenantMapper extends BaseMapper<Tenant> {
 
   Tenant getByTenantId(String tenantId);
 
-  Page<Tenant> page(@Param("page") Page<Tenant> page, @Param("query") TenantInfoPageRequest query);
+  Page<Tenant> page(@Param("page") IPage<Tenant> page, @Param("query") TenantInfoPageRequest query);
 
   int count();
 

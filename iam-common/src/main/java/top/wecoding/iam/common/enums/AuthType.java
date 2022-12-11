@@ -3,9 +3,8 @@ package top.wecoding.iam.common.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import top.wecoding.iam.common.util.EnumUtil;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,15 +15,13 @@ import java.util.Map;
 @AllArgsConstructor
 @Accessors(fluent = true)
 public enum AuthType {
-  WEB("WEB"),
-  API_TOKEN("API_TOKEN");
+  PASSWORD("PASSWORD"),
+  API_TOKEN("API_TOKEN"),
+  LDAP("LDAP"),
+  AD("AD");
 
   private static final Map<String, AuthType> DICT =
-      new HashMap<String, AuthType>() {
-        {
-          Arrays.asList(AuthType.values()).forEach(item -> put(item.code, item));
-        }
-      };
+      EnumUtil.ofDict(AuthType::values, AuthType::code);
 
   private final String code;
 

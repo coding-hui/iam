@@ -21,6 +21,7 @@ import top.wecoding.iam.server.mapper.TenantMapper;
 import top.wecoding.iam.server.service.TenantService;
 import top.wecoding.iam.server.util.TenantUtil;
 import top.wecoding.mybatis.base.BaseServiceImpl;
+import top.wecoding.mybatis.helper.PageHelper;
 
 import java.util.Locale;
 
@@ -103,9 +104,7 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, Tenant>
   @Override
   public PageInfo<TenantInfoResponse> infoPage(TenantInfoPageRequest tenantInfoPageRequest) {
     Page<Tenant> pageResult =
-        tenantMapper.page(
-            Page.of(tenantInfoPageRequest.getPageNum(), tenantInfoPageRequest.getPageSize()),
-            tenantInfoPageRequest);
+        tenantMapper.page(PageHelper.startPage(tenantInfoPageRequest), tenantInfoPageRequest);
 
     return PageInfo.of(pageResult.getRecords(), tenantInfoPageRequest, pageResult.getTotal())
         .map(

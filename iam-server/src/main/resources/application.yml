@@ -95,9 +95,9 @@ logging:
     top.wecoding: debug
     org.springframework.security: trace
 
-mybatis:
-  mapper-locations: classpath*:/mapper/**/*.xml
-  type-aliases-package: top.wecoding.iam,com.baomidou.mybatisplus.extension.plugins.pagination
+#mybatis:
+#  mapper-locations: classpath*:/mapper/**/*.xml
+#  type-aliases-package: top.wecoding.iam,com.baomidou.mybatisplus.extension.plugins.pagination
 
 mybatis-plus:
   global-config:

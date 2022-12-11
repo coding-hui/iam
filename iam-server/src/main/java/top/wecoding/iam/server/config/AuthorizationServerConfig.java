@@ -4,35 +4,36 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
+import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.oauth2.server.authorization.web.authentication.*;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import top.wecoding.iam.framework.authentication.WeCodingDaoAuthenticationProvider;
-import top.wecoding.iam.framework.authentication.password.OAuth2ResourceOwnerPasswordAuthenticationConverter;
-import top.wecoding.iam.framework.authentication.password.OAuth2ResourceOwnerPasswordAuthenticationProvider;
-import top.wecoding.iam.framework.configurer.FormIdentityLoginConfigurer;
-import top.wecoding.iam.framework.handler.WeCodingAuthenticationFailureEventHandler;
-import top.wecoding.iam.framework.jose.Jwks;
+import top.wecoding.iam.framework.security.handler.WeCodingAuthenticationFailureEventHandler;
+import top.wecoding.iam.framework.security.jose.Jwks;
+import top.wecoding.iam.server.security.authorization.authentication.password.OAuth2ResourceOwnerPasswordAuthenticationConverter;
+import top.wecoding.iam.server.security.authorization.token.IAMOAuth2TokenCustomizer;
+import top.wecoding.iam.server.security.configurers.FormIdentityLoginConfigurer;
+import top.wecoding.iam.server.security.configurers.WeCodingAuthorizationServerConfigurer;
+import top.wecoding.iam.server.security.handler.SsoAuthenticationSuccessHandler;
 
 import java.util.Arrays;
+
+import static top.wecoding.iam.common.constant.WeCodingSettingNames.AuthorizationServer.RESOURCE_OWNER_TOKEN_ENDPOINT;
 
 /**
  * @author liuyuhui
@@ -44,45 +45,49 @@ public class AuthorizationServerConfig {
 
   private final OAuth2AuthorizationService authorizationService;
 
-  @Resource private final WeCodingDaoAuthenticationProvider weCodingDaoAuthenticationProvider;
-
-  public static void applyDefaultSecurity(HttpSecurity http) throws Exception {
-    OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-        new OAuth2AuthorizationServerConfigurer();
-    RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
-
-    http.securityMatcher(endpointsMatcher)
-        .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-        .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-        .apply(authorizationServerConfigurer);
-  }
-
   @Bean
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
       throws Exception {
-    applyDefaultSecurity(http);
+    OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+        new OAuth2AuthorizationServerConfigurer();
+    WeCodingAuthorizationServerConfigurer weCodingAuthorizationServerConfigurer =
+        new WeCodingAuthorizationServerConfigurer();
 
-    http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+    RequestMatcher requestMatcher =
+        new OrRequestMatcher(
+            weCodingAuthorizationServerConfigurer.getEndpointsMatcher(),
+            authorizationServerConfigurer.getEndpointsMatcher());
+
+    http.securityMatchers(matchers -> matchers.requestMatchers(requestMatcher))
+        .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+        .csrf(csrf -> csrf.ignoringRequestMatchers(requestMatcher));
+
+    http.apply(authorizationServerConfigurer)
         .tokenEndpoint(
             tokenEndpoint -> {
               tokenEndpoint
                   .accessTokenRequestConverter(accessTokenRequestConverter())
+                  .accessTokenResponseHandler(new SsoAuthenticationSuccessHandler())
                   .errorResponseHandler(new WeCodingAuthenticationFailureEventHandler());
             })
         .clientAuthentication(
             clientAuthentication -> {
-              clientAuthentication.errorResponseHandler(new WeCodingAuthenticationFailureEventHandler());
+              clientAuthentication.errorResponseHandler(
+                  new WeCodingAuthenticationFailureEventHandler());
             })
         .authorizationService(authorizationService)
         .oidc(Customizer.withDefaults());
 
-    DefaultSecurityFilterChain securityFilterChain =
-        http.apply(new FormIdentityLoginConfigurer()).and().build();
+    http.apply(weCodingAuthorizationServerConfigurer)
+        .passwordLoginEndpoint(
+            passwordLoginEndpoint -> {
+              passwordLoginEndpoint
+                  .accessTokenRequestConverter(accessTokenRequestConverter())
+                  .errorResponseHandler(new WeCodingAuthenticationFailureEventHandler());
+            });
 
-    applyCustomOAuth2GrantAuthenticationProvider(http);
-
-    return securityFilterChain;
+    return http.apply(new FormIdentityLoginConfigurer()).and().build();
   }
 
   @Bean
@@ -97,12 +102,29 @@ public class AuthorizationServerConfig {
     return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
   }
 
-  // public OAuth2TokenGenerator oAuth2TokenGenerator() {
-  //   IAMOAuth2AccessTokenGenerator accessTokenGenerator = new IAMOAuth2AccessTokenGenerator();
-  //   accessTokenGenerator.setAccessTokenCustomizer(new IAMOAuth2TokenCustomizer());
-  //   return new DelegatingOAuth2TokenGenerator(
-  //       accessTokenGenerator, new IAMOAuth2RefreshTokenGenerator());
-  // }
+  @Bean
+  @SuppressWarnings("rawtypes")
+  public OAuth2TokenGenerator oAuth2TokenGenerator(JWKSource<SecurityContext> jwkSource) {
+    OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();
+    accessTokenGenerator.setAccessTokenCustomizer(new IAMOAuth2TokenCustomizer());
+    JwtGenerator jwtGenerator = new JwtGenerator(new NimbusJwtEncoder(jwkSource));
+    return new DelegatingOAuth2TokenGenerator(
+        accessTokenGenerator, new OAuth2RefreshTokenGenerator(), jwtGenerator);
+  }
+
+  @Bean
+  public AuthorizationServerSettings authorizationServerSettings() {
+    return AuthorizationServerSettings.builder()
+        .authorizationEndpoint("/oauth2/authorize")
+        .tokenEndpoint("/oauth2/token")
+        .jwkSetEndpoint("/oauth2/jwks")
+        .tokenRevocationEndpoint("/oauth2/revoke")
+        .tokenIntrospectionEndpoint("/oauth2/introspect")
+        .oidcClientRegistrationEndpoint("/connect/register")
+        .oidcUserInfoEndpoint("/userinfo")
+        .setting(RESOURCE_OWNER_TOKEN_ENDPOINT, "/api/v1/signin")
+        .build();
+  }
 
   private AuthenticationConverter accessTokenRequestConverter() {
     return new DelegatingAuthenticationConverter(
@@ -113,29 +135,5 @@ public class AuthorizationServerConfig {
             new OAuth2AuthorizationCodeAuthenticationConverter(),
             new OAuth2AuthorizationCodeRequestAuthenticationConverter(),
             new JwtClientAssertionAuthenticationConverter()));
-  }
-
-  @SuppressWarnings("unchecked")
-  private void applyCustomOAuth2GrantAuthenticationProvider(HttpSecurity http) {
-    AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-    OAuth2AuthorizationService authorizationService =
-        http.getSharedObject(OAuth2AuthorizationService.class);
-
-    OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator =
-        http.getSharedObject(OAuth2TokenGenerator.class);
-
-    OAuth2ResourceOwnerPasswordAuthenticationProvider resourceOwnerPasswordAuthenticationProvider =
-        new OAuth2ResourceOwnerPasswordAuthenticationProvider(
-            authenticationManager, authorizationService, tokenGenerator);
-
-    // 处理 UsernamePasswordAuthenticationToken
-    http.authenticationProvider(weCodingDaoAuthenticationProvider);
-    // 处理 OAuth2ResourceOwnerPasswordAuthenticationToken
-    http.authenticationProvider(resourceOwnerPasswordAuthenticationProvider);
-  }
-
-  @Bean
-  public AuthorizationServerSettings authorizationServerSettings() {
-    return AuthorizationServerSettings.builder().build();
   }
 }

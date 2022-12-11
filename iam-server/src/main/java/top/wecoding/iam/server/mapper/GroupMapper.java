@@ -1,7 +1,7 @@
 package top.wecoding.iam.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
 import top.wecoding.iam.common.model.request.GroupInfoListRequest;
 import top.wecoding.iam.common.model.request.GroupInfoPageRequest;
@@ -23,7 +23,7 @@ public interface GroupMapper extends BaseMapper<Group> {
 
   List<Group> list(GroupInfoListRequest groupInfoListRequest);
 
-  List<Group> page(@Param("page") Page<Group> page, @Param("query") GroupInfoPageRequest query);
+  List<Group> page(@Param("page") IPage<Group> page, @Param("query") GroupInfoPageRequest query);
 
   int count();
 }

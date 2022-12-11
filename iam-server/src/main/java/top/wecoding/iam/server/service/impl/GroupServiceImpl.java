@@ -1,7 +1,6 @@
 package top.wecoding.iam.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +23,7 @@ import top.wecoding.iam.server.mapper.GroupMapper;
 import top.wecoding.iam.server.mapper.UserGroupMapper;
 import top.wecoding.iam.server.service.GroupService;
 import top.wecoding.mybatis.base.BaseServiceImpl;
+import top.wecoding.mybatis.helper.PageHelper;
 
 import java.io.Serializable;
 import java.util.*;
@@ -178,9 +178,7 @@ public class GroupServiceImpl extends BaseServiceImpl<GroupMapper, Group> implem
     }
 
     List<Group> pageResult =
-        groupMapper.page(
-            Page.of(groupInfoPageRequest.getPageNum(), groupInfoPageRequest.getPageSize()),
-            groupInfoPageRequest);
+        groupMapper.page(PageHelper.startPage(groupInfoPageRequest), groupInfoPageRequest);
 
     return PageInfo.of(pageResult, groupInfoPageRequest, total)
         .map(

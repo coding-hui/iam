@@ -1,6 +1,7 @@
 package top.wecoding.iam.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientPageRequest;
@@ -19,5 +20,5 @@ public interface Oauth2ClientMapper extends BaseMapper<Oauth2Client> {
   Oauth2Client getByClientId(String clientId);
 
   Page<Oauth2Client> page(
-      @Param("page") Page<Oauth2Client> page, @Param("query") CreateOauth2ClientPageRequest query);
+      @Param("page") IPage<Oauth2Client> page, @Param("query") CreateOauth2ClientPageRequest query);
 }

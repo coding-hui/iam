@@ -17,6 +17,7 @@ import top.wecoding.iam.server.entity.Oauth2Client;
 import top.wecoding.iam.server.mapper.Oauth2ClientMapper;
 import top.wecoding.iam.server.service.Oauth2ClientService;
 import top.wecoding.iam.server.util.Oauth2ClientUtil;
+import top.wecoding.mybatis.helper.PageHelper;
 
 /**
  * @author liuyuhui
@@ -85,9 +86,7 @@ public class Oauth2ClientServiceImpl extends ServiceImpl<Oauth2ClientMapper, Oau
   public PageInfo<Oauth2ClientInfoResponse> infoPage(
       CreateOauth2ClientPageRequest clientPageRequest) {
     Page<Oauth2Client> pageResult =
-        clientMapper.page(
-            Page.of(clientPageRequest.getPageNum(), clientPageRequest.getPageSize()),
-            clientPageRequest);
+        clientMapper.page(PageHelper.startPage(clientPageRequest), clientPageRequest);
     return PageInfo.of(pageResult.getRecords(), clientPageRequest, pageResult.getTotal())
         .map(Oauth2ClientUtil::toOauth2ClientInfoResponse);
   }

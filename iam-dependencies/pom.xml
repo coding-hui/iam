@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>wecoding-dependencies-parent</artifactId>
+        <groupId>top.wecoding</groupId>
+        <version>0.5.1</version>
+        <relativePath/>
+    </parent>
+    <artifactId>iam-dependencies</artifactId>
+    <packaging>pom</packaging>
+    <version>0.5.2</version>
+    <name>WeCoding IAM :: Dependencies</name>
+    <description>WeCoding IAM Dependencies</description>
+
+    <properties>
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- this's projects -->
+            <dependency>
+                <groupId>top.wecoding</groupId>
+                <artifactId>iam-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wecoding</groupId>
+                <artifactId>iam-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>top.wecoding</groupId>
+                <artifactId>iam-framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- other dependencies -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>wecoding</id>
+            <repositories>
+                <repository>
+                    <id>repo.wecoding.top</id>
+                    <name>maven-repo</name>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <url>https://devops-wecoding-maven.pkg.coding.net/repository/wecoding/maven-repo/</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+</project>

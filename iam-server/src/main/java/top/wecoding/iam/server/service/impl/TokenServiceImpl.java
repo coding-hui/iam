@@ -65,7 +65,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     int total = keys.size();
-    int pageSize = tokenInfoPageRequest.getPageSize();
+    int pageSize = tokenInfoPageRequest.getSize();
     long offset = tokenInfoPageRequest.getOffset();
 
     List<String> selectKeys =

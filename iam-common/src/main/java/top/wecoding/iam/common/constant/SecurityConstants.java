@@ -15,7 +15,9 @@
  */
 package top.wecoding.iam.common.constant;
 
-/** @author liuyuhui */
+/**
+ * @author liuyuhui
+ */
 public interface SecurityConstants {
 
   /** 项目的license */
