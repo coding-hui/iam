@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenRespon
 import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
 import org.springframework.security.oauth2.core.http.converter.OAuth2ErrorHttpMessageConverter;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenClaimNames;
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
@@ -39,10 +41,12 @@ import top.wecoding.iam.common.convert.RestAccessTokenResponseHttpMessageConvert
 import top.wecoding.iam.common.convert.RestOAuth2ErrorParametersConverter;
 import top.wecoding.iam.server.security.authorization.authentication.OAuth2ResourceOwnerBaseAuthenticationToken;
 import top.wecoding.iam.server.security.configurers.Oauth2ResourceOwnerTokenEndpointFilterConfigurer;
+import top.wecoding.iam.server.util.LogUtil;
 
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,6 +54,7 @@ import java.util.Map;
  * @since 0.5
  * @see Oauth2ResourceOwnerTokenEndpointFilterConfigurer
  */
+@Slf4j
 public class Oauth2ResourceOwnerTokenEndpointFilter extends OncePerRequestFilter {
 
   private static final String DEFAULT_TOKEN_ENDPOINT_URI = "/oauth2/token";
@@ -222,7 +227,12 @@ public class Oauth2ResourceOwnerTokenEndpointFilter extends OncePerRequestFilter
     }
     if (!CollectionUtils.isEmpty(additionalParameters)) {
       builder.additionalParameters(additionalParameters);
+      List<String> audience = (List<String>) additionalParameters.get(OAuth2TokenClaimNames.AUD);
+      String userId = (String) additionalParameters.get(OAuth2TokenClaimNames.SUB);
+      log.info("user {} login successful.", audience);
+      LogUtil.successLogin(userId);
     }
+
     OAuth2AccessTokenResponse accessTokenResponse = builder.build();
     ServletServerHttpResponse httpResponse = new ServletServerHttpResponse(response);
     this.accessTokenHttpResponseConverter.write(

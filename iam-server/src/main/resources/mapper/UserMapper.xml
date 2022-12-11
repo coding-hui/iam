@@ -89,9 +89,6 @@
                 AND up.`username` like CONCAT('%', #{query.fuzzyName}, '%')
             </if>
         </where>
-        <if test="page != null">
-            LIMIT ${(page.current - 1)*page.size}, #{page.size}
-        </if>
     </select>
 
     <update id="flushLastLoginInfo">
