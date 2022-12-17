@@ -21,6 +21,7 @@ public class LoginResponse {
   private String accessToken;
 
   @JsonProperty("id_token")
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String idToken;
 
   @JsonProperty("refresh_token")
