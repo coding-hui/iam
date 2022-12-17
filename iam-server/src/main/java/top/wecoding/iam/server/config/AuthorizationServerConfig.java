@@ -11,11 +11,14 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2ClientAuthenticationConfigurer;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2TokenEndpointConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.oauth2.server.authorization.web.authentication.*;
@@ -59,7 +62,11 @@ public class AuthorizationServerConfig {
 
   @Bean
   @Order(Ordered.HIGHEST_PRECEDENCE)
-  public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
+  public SecurityFilterChain authorizationServerSecurityFilterChain(
+      HttpSecurity http,
+      Customizer<OAuth2TokenEndpointConfigurer> tokenEndpointCustomizer,
+      Customizer<OAuth2ClientAuthenticationConfigurer> clientAuthenticationCustomizer,
+      Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>> oauth2ResourceServerCustomizer)
       throws Exception {
     OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
         new OAuth2AuthorizationServerConfigurer();
@@ -76,27 +83,12 @@ public class AuthorizationServerConfig {
         .csrf(csrf -> csrf.ignoringRequestMatchers(requestMatcher));
 
     http.apply(authorizationServerConfigurer)
-        .tokenEndpoint(
-            tokenEndpoint -> {
-              tokenEndpoint
-                  .accessTokenRequestConverter(accessTokenRequestConverter())
-                  .accessTokenResponseHandler(new SsoAuthenticationSuccessHandler())
-                  .errorResponseHandler(new WeCodingAuthenticationFailureEventHandler());
-            })
-        .clientAuthentication(
-            clientAuthentication -> {
-              clientAuthentication.errorResponseHandler(
-                  new WeCodingAuthenticationFailureEventHandler());
-            })
+        .tokenEndpoint(tokenEndpointCustomizer)
+        .clientAuthentication(clientAuthenticationCustomizer)
         .authorizationService(authorizationService)
         .oidc(Customizer.withDefaults());
 
-    http.oauth2ResourceServer(
-        oauth2 ->
-            oauth2
-                .opaqueToken(token -> token.introspector(opaqueTokenIntrospector))
-                .authenticationEntryPoint(resourceAuthExceptionEntryPoint)
-                .bearerTokenResolver(weCodingBearerTokenExtractor));
+    http.oauth2ResourceServer(oauth2ResourceServerCustomizer);
 
     http.apply(weCodingAuthorizationServerConfigurer)
         .passwordLoginEndpoint(
@@ -109,6 +101,30 @@ public class AuthorizationServerConfig {
     http.apply(new FormIdentityLoginConfigurer());
 
     return http.build();
+  }
+
+  @Bean
+  public Customizer<OAuth2TokenEndpointConfigurer> tokenEndpointCustomizer() {
+    return customizer ->
+        customizer
+            .accessTokenRequestConverter(accessTokenRequestConverter())
+            .accessTokenResponseHandler(new SsoAuthenticationSuccessHandler())
+            .errorResponseHandler(new WeCodingAuthenticationFailureEventHandler());
+  }
+
+  @Bean
+  public Customizer<OAuth2ClientAuthenticationConfigurer> clientAuthenticationCustomizer() {
+    return customizer ->
+        customizer.errorResponseHandler(new WeCodingAuthenticationFailureEventHandler());
+  }
+
+  @Bean
+  public Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>> oauth2ResourceServerCustomizer() {
+    return customizer ->
+        customizer
+            .opaqueToken(token -> token.introspector(opaqueTokenIntrospector))
+            .authenticationEntryPoint(resourceAuthExceptionEntryPoint)
+            .bearerTokenResolver(weCodingBearerTokenExtractor);
   }
 
   @Bean
