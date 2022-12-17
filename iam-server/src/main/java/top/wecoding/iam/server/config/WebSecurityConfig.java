@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import top.wecoding.iam.server.security.authorization.authentication.WeCodingDaoAuthenticationProvider;
 import top.wecoding.iam.server.security.configurers.FormIdentityLoginConfigurer;
@@ -19,8 +18,6 @@ import top.wecoding.iam.server.security.configurers.FormIdentityLoginConfigurer;
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 public class WebSecurityConfig {
-
-  @Resource private final UserDetailsService userDetailsService;
 
   @Resource private final WeCodingDaoAuthenticationProvider weCodingDaoAuthenticationProvider;
 
