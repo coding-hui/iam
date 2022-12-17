@@ -5,9 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
-import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.web.authentication.AuthenticationConverter;
-import org.springframework.util.MultiValueMap;
+import top.wecoding.commons.core.constant.StrPool;
 import top.wecoding.commons.core.util.JsonUtil;
 import top.wecoding.commons.lang.Objects;
 import top.wecoding.commons.lang.Strings;
@@ -18,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -47,20 +47,16 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationConverter<
       return null;
     }
 
-    MultiValueMap<String, String> parameters = OAuth2EndpointUtils.getParameters(request);
     // scope (OPTIONAL)
-    String scope = parameters.getFirst(OAuth2ParameterNames.SCOPE);
-    if (Strings.hasText(scope) && parameters.get(OAuth2ParameterNames.SCOPE).size() != 1) {
-      OAuth2EndpointUtils.throwError(
-          OAuth2ErrorCodes.INVALID_REQUEST,
-          OAuth2ParameterNames.SCOPE,
-          OAuth2EndpointUtils.ACCESS_TOKEN_REQUEST_ERROR_URI);
-    }
+    String scope =
+        Optional.ofNullable(loginRequest.getOptions())
+            .map(LoginRequest.Options::getScope)
+            .orElse(StrPool.EMPTY);
 
     Set<String> requestedScopes = null;
     if (Strings.hasText(scope)) {
       requestedScopes =
-          new HashSet<>(Arrays.asList(Strings.delimitedListToStringArray(scope, " ")));
+          new HashSet<>(Arrays.asList(Strings.delimitedListToStringArray(scope, StrPool.BLANK)));
     }
 
     // verify personalization parameters

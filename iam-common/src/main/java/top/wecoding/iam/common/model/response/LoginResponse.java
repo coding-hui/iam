@@ -20,6 +20,9 @@ public class LoginResponse {
   @JsonProperty("access_token")
   private String accessToken;
 
+  @JsonProperty("id_token")
+  private String idToken;
+
   @JsonProperty("refresh_token")
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String refreshToken;

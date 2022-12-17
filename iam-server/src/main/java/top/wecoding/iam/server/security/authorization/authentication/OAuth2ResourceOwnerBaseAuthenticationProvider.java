@@ -10,6 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.*;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -31,11 +35,7 @@ import top.wecoding.redis.util.RedisUtils;
 
 import java.security.Principal;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Supplier;
+import java.util.*;
 
 /**
  * 处理自定义授权
@@ -52,16 +52,12 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
 
   private static final String ERROR_URI =
       "https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1";
-
+  private static final OAuth2TokenType ID_TOKEN_TOKEN_TYPE =
+      new OAuth2TokenType(OidcParameterNames.ID_TOKEN);
   private final OAuth2AuthorizationService authorizationService;
-
   private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
-
   private final AuthenticationManager authenticationManager;
-
   private final MessageSourceAccessor messages;
-
-  @Deprecated private Supplier<String> refreshTokenGenerator;
 
   /**
    * Constructs an {@code OAuth2AuthorizationCodeAuthenticationProvider} using the provided
@@ -83,12 +79,6 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
     this.messages = new MessageSourceAccessor(iamMessageSource(), Locale.CHINA);
   }
 
-  @Deprecated
-  public void setRefreshTokenGenerator(Supplier<String> refreshTokenGenerator) {
-    Assert.notNull(refreshTokenGenerator, "refreshTokenGenerator cannot be null");
-    this.refreshTokenGenerator = refreshTokenGenerator;
-  }
-
   public abstract UsernamePasswordAuthenticationToken buildToken(LoginRequest loginRequest);
 
   @Override
@@ -105,6 +95,7 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
         getAuthenticatedClientElseThrowInvalidClient(resourceOwnerBaseAuthentication);
 
     RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
+
     checkClient(registeredClient);
 
     Set<String> authorizedScopes = resourceOwnerBaseAuthentication.getScopes();
@@ -182,26 +173,58 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
               .getClientAuthenticationMethod()
               .equals(ClientAuthenticationMethod.NONE)) {
 
-        if (this.refreshTokenGenerator != null) {
-          Instant issuedAt = Instant.now();
-          Instant expiresAt =
-              issuedAt.plus(registeredClient.getTokenSettings().getRefreshTokenTimeToLive());
-          refreshToken =
-              new OAuth2RefreshToken(this.refreshTokenGenerator.get(), issuedAt, expiresAt);
-        } else {
-          tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.REFRESH_TOKEN).build();
-          OAuth2Token generatedRefreshToken = this.tokenGenerator.generate(tokenContext);
-          if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
-            OAuth2Error error =
-                new OAuth2Error(
-                    OAuth2ErrorCodes.SERVER_ERROR,
-                    "The token generator failed to generate the refresh token.",
-                    ERROR_URI);
-            throw new OAuth2AuthenticationException(error);
-          }
-          refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
+        tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.REFRESH_TOKEN).build();
+        OAuth2Token generatedRefreshToken = this.tokenGenerator.generate(tokenContext);
+        if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
+          OAuth2Error error =
+              new OAuth2Error(
+                  OAuth2ErrorCodes.SERVER_ERROR,
+                  "The token generator failed to generate the refresh token.",
+                  ERROR_URI);
+          throw new OAuth2AuthenticationException(error);
         }
+
+        refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
         authorizationBuilder.refreshToken(refreshToken);
+      }
+
+      // ----- ID token -----
+      OidcIdToken idToken;
+      if (authorizedScopes.contains(OidcScopes.OPENID)) {
+        tokenContext =
+            tokenContextBuilder
+                .tokenType(ID_TOKEN_TOKEN_TYPE)
+                .authorization(
+                    authorizationBuilder
+                        .build()) // ID token customizer may need access to the access token and/or
+                // refresh token
+                .build();
+        OAuth2Token generatedIdToken = this.tokenGenerator.generate(tokenContext);
+        if (!(generatedIdToken instanceof Jwt)) {
+          OAuth2Error error =
+              new OAuth2Error(
+                  OAuth2ErrorCodes.SERVER_ERROR,
+                  "The token generator failed to generate the ID token.",
+                  ERROR_URI);
+          throw new OAuth2AuthenticationException(error);
+        }
+
+        if (LOGGER.isTraceEnabled()) {
+          LOGGER.trace("Generated id token");
+        }
+
+        idToken =
+            new OidcIdToken(
+                generatedIdToken.getTokenValue(),
+                generatedIdToken.getIssuedAt(),
+                generatedIdToken.getExpiresAt(),
+                ((Jwt) generatedIdToken).getClaims());
+        authorizationBuilder.token(
+            idToken,
+            (metadata) ->
+                metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, idToken.getClaims()));
+      } else {
+        idToken = null;
       }
 
       OAuth2Authorization authorization = authorizationBuilder.build();
@@ -212,12 +235,19 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<
 
       refreshFailCount(authentication, usernamePasswordAuthenticationToken);
 
+      Map<String, Object> additionalParameters = Collections.emptyMap();
+      if (idToken != null) {
+        additionalParameters =
+            new HashMap<>(Objects.requireNonNull(authorization.getAccessToken().getClaims()));
+        additionalParameters.put(OidcParameterNames.ID_TOKEN, idToken.getTokenValue());
+      }
+
       return new OAuth2AccessTokenAuthenticationToken(
           registeredClient,
           clientPrincipal,
           accessToken,
           refreshToken,
-          Objects.requireNonNull(authorization.getAccessToken().getClaims()));
+          Objects.requireNonNull(additionalParameters));
 
     } catch (Exception ex) {
       LOGGER.error("problem in authenticate", ex);

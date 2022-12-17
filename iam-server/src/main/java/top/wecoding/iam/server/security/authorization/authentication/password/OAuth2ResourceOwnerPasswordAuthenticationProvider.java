@@ -73,8 +73,10 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider
 
   @Override
   public void checkClient(RegisteredClient registeredClient) {
-    assert registeredClient != null;
-    if (!registeredClient.getAuthorizationGrantTypes().contains(AuthorizationGrantType.PASSWORD)) {
+    if (registeredClient != null
+        && !registeredClient
+            .getAuthorizationGrantTypes()
+            .contains(AuthorizationGrantType.PASSWORD)) {
       throw new OAuth2AuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
     }
   }

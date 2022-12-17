@@ -48,5 +48,8 @@ public class LoginRequest implements CommonRequest {
 
     @JsonProperty("captcha_code")
     private String captchaCode;
+
+    @JsonProperty("scope")
+    private String scope;
   }
 }
