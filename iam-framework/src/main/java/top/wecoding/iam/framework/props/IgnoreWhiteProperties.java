@@ -29,7 +29,7 @@ public class IgnoreWhiteProperties implements InitializingBean, ApplicationConte
 
   private static final Pattern PATTERN = Pattern.compile("\\{(.*?)}");
 
-  private static final String[] DEFAULT_IGNORE_URLS = {"/actuator/**", "/error", "/v3/api-docs", "/login"};
+  private static final String[] DEFAULT_IGNORE_URLS = {"/actuator/**", "/error", "/auth/*", "/v3/api-docs", "/login"};
 
   private static ApplicationContext context;
 

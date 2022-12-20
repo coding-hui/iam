@@ -3,6 +3,7 @@ package top.wecoding.iam.server.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -50,6 +51,21 @@ public class WebSecurityConfig {
 
     http.oauth2ResourceServer(oauth2ResourceServerCustomizer);
 
+    return http.build();
+  }
+
+  @Bean
+  @Order(0)
+  SecurityFilterChain resources(HttpSecurity http) throws Exception {
+    http.securityMatchers(
+            (matchers) -> matchers.requestMatchers("/actuator/**", "/css/**", "/error"))
+        .authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll())
+        .requestCache()
+        .disable()
+        .securityContext()
+        .disable()
+        .sessionManagement()
+        .disable();
     return http.build();
   }
 }

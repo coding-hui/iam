@@ -2,9 +2,8 @@ package top.wecoding.iam.server.security.configurers;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import top.wecoding.iam.framework.security.handler.WeCodingAuthenticationFailureEventHandler;
 import top.wecoding.iam.server.security.handler.SsoLogoutSuccessHandler;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * @author liuyuhui
@@ -15,7 +14,12 @@ public class FormIdentityLoginConfigurer
 
   @Override
   public void init(HttpSecurity http) throws Exception {
-    http.formLogin(withDefaults());
+    http.formLogin(
+        formLogin -> {
+          formLogin.loginPage("/auth/login");
+          formLogin.loginProcessingUrl("/auth/form");
+          formLogin.failureHandler(new WeCodingAuthenticationFailureEventHandler());
+        });
     http.logout()
         .logoutSuccessHandler(new SsoLogoutSuccessHandler())
         .deleteCookies("JSESSIONID")
