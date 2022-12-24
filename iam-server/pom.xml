@@ -20,7 +20,7 @@
         </dependency>
 
         <dependency>
-            <groupId>top.wecoding</groupId>
+            <groupId>top.wecoding.tools</groupId>
             <artifactId>wecoding-boot</artifactId>
         </dependency>
 

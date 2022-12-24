@@ -19,12 +19,12 @@
         </dependency>
 
         <dependency>
-            <groupId>top.wecoding</groupId>
+            <groupId>top.wecoding.tools</groupId>
             <artifactId>wecoding-feign</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>top.wecoding</groupId>
+            <groupId>top.wecoding.tools</groupId>
             <artifactId>wecoding-redis</artifactId>
         </dependency>
 
