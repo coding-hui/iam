@@ -3,7 +3,9 @@ package top.wecoding.iam.framework.exception;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 
-/** @author liuyuhui */
+/**
+ * @author liuyuhui
+ */
 public class ScopeException extends OAuth2AuthenticationException {
 
   /**

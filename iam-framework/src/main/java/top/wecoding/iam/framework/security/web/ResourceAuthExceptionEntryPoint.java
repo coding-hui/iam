@@ -3,6 +3,7 @@ package top.wecoding.iam.framework.security.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,6 @@ import org.springframework.stereotype.Component;
 import top.wecoding.commons.core.constant.StrPool;
 import top.wecoding.commons.core.enums.SystemErrorCodeEnum;
 import top.wecoding.commons.core.model.R;
-
-import java.io.PrintWriter;
 
 /**
  * @author liuyuhui

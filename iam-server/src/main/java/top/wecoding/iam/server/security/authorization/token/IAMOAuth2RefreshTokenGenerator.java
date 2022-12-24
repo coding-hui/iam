@@ -1,5 +1,8 @@
 package top.wecoding.iam.server.security.authorization.token;
 
+import java.time.Instant;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
@@ -7,10 +10,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import top.wecoding.iam.common.constant.UserConstant;
-
-import java.time.Instant;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author liuyuhui

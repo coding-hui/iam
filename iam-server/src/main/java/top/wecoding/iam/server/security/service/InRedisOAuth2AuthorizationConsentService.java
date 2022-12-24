@@ -1,5 +1,6 @@
 package top.wecoding.iam.server.security.service;
 
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
@@ -7,8 +8,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import top.wecoding.iam.framework.cache.AuthorizationConsentCacheKeyBuilder;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author liuyuhui

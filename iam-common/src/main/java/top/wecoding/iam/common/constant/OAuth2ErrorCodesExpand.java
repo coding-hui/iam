@@ -1,6 +1,8 @@
 package top.wecoding.iam.common.constant;
 
-/** @author liuyuhui */
+/**
+ * @author liuyuhui
+ */
 public interface OAuth2ErrorCodesExpand {
 
   /** 用户名未找到 */

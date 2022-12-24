@@ -2,6 +2,10 @@ package top.wecoding.iam.server.security.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -18,11 +22,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.util.CollectionUtils;
 import top.wecoding.commons.lang.Objects;
 import top.wecoding.iam.server.util.LogUtil;
-
-import java.io.IOException;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author liuyuhui

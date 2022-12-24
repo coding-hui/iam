@@ -1,5 +1,7 @@
 package top.wecoding.iam.api.feign;
 
+import java.util.List;
+import java.util.Set;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,9 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import top.wecoding.commons.core.model.R;
 import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author liuyuhui

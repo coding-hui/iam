@@ -4,6 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -28,9 +30,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * @author liuyuhui
@@ -72,7 +71,7 @@ public class WeCodingClientAuthenticationFilter extends OncePerRequestFilter {
   }
 
   private static void validateClientIdentifier(Authentication authentication) {
-    if (!(authentication instanceof OAuth2ClientAuthenticationToken)) {
+    if (!(authentication instanceof OAuth2ClientAuthenticationToken clientAuthentication)) {
       return;
     }
 
@@ -82,8 +81,6 @@ public class WeCodingClientAuthenticationFilter extends OncePerRequestFilter {
     // -> Hex 20 -> ASCII 32 -> space
     // -> Hex 7E -> ASCII 126 -> tilde
 
-    OAuth2ClientAuthenticationToken clientAuthentication =
-        (OAuth2ClientAuthenticationToken) authentication;
     String clientId = (String) clientAuthentication.getPrincipal();
     for (int i = 0; i < clientId.length(); i++) {
       char charAt = clientId.charAt(i);

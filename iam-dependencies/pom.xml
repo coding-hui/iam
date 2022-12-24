@@ -6,7 +6,7 @@
     <parent>
         <artifactId>wecoding-dependencies-parent</artifactId>
         <groupId>top.wecoding</groupId>
-        <version>0.5.1</version>
+        <version>0.5.3</version>
         <relativePath/>
     </parent>
     <artifactId>iam-dependencies</artifactId>

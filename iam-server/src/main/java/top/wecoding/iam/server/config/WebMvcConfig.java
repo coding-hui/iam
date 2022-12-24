@@ -1,6 +1,8 @@
 package top.wecoding.iam.server.config;
 
 import jakarta.annotation.PostConstruct;
+import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
@@ -15,9 +17,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import top.wecoding.iam.framework.props.AppProperties;
 import top.wecoding.iam.server.web.UnderlineToCamelArgumentResolver;
 import top.wecoding.redis.util.RedisUtils;
-
-import java.util.List;
-import java.util.Locale;
 
 /**
  * @author liuyuhui

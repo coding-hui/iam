@@ -1,5 +1,10 @@
 package top.wecoding.iam.server.security.configurers;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,12 +15,6 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author liuyuhui
@@ -36,7 +35,8 @@ public class WeCodingAuthorizationServerConfigurer
    * @return the {@link WeCodingAuthorizationServerConfigurer} for further configuration
    */
   public WeCodingAuthorizationServerConfigurer passwordLoginEndpoint(
-      Customizer<Oauth2ResourceOwnerTokenEndpointFilterConfigurer> passwordLoginEndpointConfigurerCustomizer) {
+      Customizer<Oauth2ResourceOwnerTokenEndpointFilterConfigurer>
+          passwordLoginEndpointConfigurerCustomizer) {
     passwordLoginEndpointConfigurerCustomizer.customize(
         getConfigurer(Oauth2ResourceOwnerTokenEndpointFilterConfigurer.class));
     return this;
@@ -77,7 +77,8 @@ public class WeCodingAuthorizationServerConfigurer
     if (exceptionHandling != null) {
       exceptionHandling.defaultAuthenticationEntryPointFor(
           new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-          new OrRequestMatcher(getRequestMatcher(Oauth2ResourceOwnerTokenEndpointFilterConfigurer.class)));
+          new OrRequestMatcher(
+              getRequestMatcher(Oauth2ResourceOwnerTokenEndpointFilterConfigurer.class)));
     }
   }
 

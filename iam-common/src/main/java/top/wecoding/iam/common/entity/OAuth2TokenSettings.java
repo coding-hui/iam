@@ -1,6 +1,10 @@
 package top.wecoding.iam.common.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.Duration;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,11 +12,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.Duration;
-import java.util.Optional;
 
 /**
  * @author liuyuhui

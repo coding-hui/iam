@@ -1,15 +1,14 @@
 package top.wecoding.iam.common.convert;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import top.wecoding.commons.core.model.R;
 import top.wecoding.commons.core.util.JsonUtil;
 import top.wecoding.iam.common.model.response.LoginResponse;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 /**
  * @author liuyuhui

@@ -1,5 +1,10 @@
 package top.wecoding.iam.server.service.impl;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -17,12 +22,6 @@ import top.wecoding.iam.framework.cache.UserDetailsCacheKeyBuilder;
 import top.wecoding.iam.framework.cache.UserTokenCacheKeyBuilder;
 import top.wecoding.iam.server.service.TokenService;
 import top.wecoding.redis.util.RedisUtils;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author liuyuhui

@@ -1,6 +1,8 @@
 package top.wecoding.iam.common.util;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
@@ -10,9 +12,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import top.wecoding.commons.lang.Objects;
-
-import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 /**
  * @author liuyuhui
@@ -29,10 +28,8 @@ public class OAuth2EndpointUtils {
     MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>(parameterMap.size());
     parameterMap.forEach(
         (key, values) -> {
-          if (values.length > 0) {
-            for (String value : values) {
-              parameters.add(key, value);
-            }
+          for (String value : values) {
+            parameters.add(key, value);
           }
         });
     return parameters;

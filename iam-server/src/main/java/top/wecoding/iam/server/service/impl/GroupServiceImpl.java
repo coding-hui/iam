@@ -1,6 +1,9 @@
 package top.wecoding.iam.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +27,6 @@ import top.wecoding.iam.server.mapper.UserGroupMapper;
 import top.wecoding.iam.server.service.GroupService;
 import top.wecoding.mybatis.base.BaseServiceImpl;
 import top.wecoding.mybatis.helper.PageHelper;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author liuyuhui

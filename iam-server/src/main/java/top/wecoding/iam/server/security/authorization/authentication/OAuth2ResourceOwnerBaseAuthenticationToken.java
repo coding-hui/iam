@@ -1,5 +1,8 @@
 package top.wecoding.iam.server.security.authorization.authentication;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -8,10 +11,6 @@ import org.springframework.util.Assert;
 import top.wecoding.commons.core.constant.StrPool;
 import top.wecoding.iam.common.enums.AuthType;
 import top.wecoding.iam.common.model.request.LoginRequest;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * 自定义授权模式抽象

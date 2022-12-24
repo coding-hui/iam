@@ -1,9 +1,12 @@
 package top.wecoding.iam.server.config;
 
+import static top.wecoding.iam.common.constant.WeCodingSettingNames.AuthorizationServer.RESOURCE_OWNER_TOKEN_ENDPOINT;
+
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,10 +38,6 @@ import top.wecoding.iam.server.security.authorization.token.WecodingOAuth2TokenC
 import top.wecoding.iam.server.security.configurers.FormIdentityLoginConfigurer;
 import top.wecoding.iam.server.security.configurers.WeCodingAuthorizationServerConfigurer;
 import top.wecoding.iam.server.security.handler.SsoAuthenticationSuccessHandler;
-
-import java.util.Arrays;
-
-import static top.wecoding.iam.common.constant.WeCodingSettingNames.AuthorizationServer.RESOURCE_OWNER_TOKEN_ENDPOINT;
 
 /**
  * @author liuyuhui

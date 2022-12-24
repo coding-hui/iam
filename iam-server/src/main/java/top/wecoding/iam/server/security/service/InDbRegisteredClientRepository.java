@@ -1,5 +1,6 @@
 package top.wecoding.iam.server.security.service;
 
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -11,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
 import top.wecoding.iam.server.service.Oauth2ClientService;
-
-import java.util.Set;
 
 /**
  * @author liuyuhui

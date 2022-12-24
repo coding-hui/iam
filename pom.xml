@@ -6,7 +6,7 @@
     <parent>
         <groupId>top.wecoding</groupId>
         <artifactId>wecoding-build</artifactId>
-        <version>0.5.1</version>
+        <version>0.5.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>wecoding-iam</artifactId>
@@ -17,7 +17,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <wecoding-commons.version>0.5.2</wecoding-commons.version>
-        <wecoding-build.version>0.5.1</wecoding-build.version>
+        <wecoding-build.version>0.5.3</wecoding-build.version>
         <wecoding-tool.version>0.5.2</wecoding-tool.version>
     </properties>
 
@@ -87,6 +87,10 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify.fmt</groupId>
+                <artifactId>fmt-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

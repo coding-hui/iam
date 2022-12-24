@@ -1,6 +1,9 @@
 package top.wecoding.iam.server.security.configurers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -27,10 +30,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import top.wecoding.iam.common.constant.WeCodingSettingNames;
 import top.wecoding.iam.server.security.web.WeCodingClientAuthenticationFilter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author liuyuhui

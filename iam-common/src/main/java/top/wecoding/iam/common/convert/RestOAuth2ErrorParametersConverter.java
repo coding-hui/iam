@@ -1,14 +1,13 @@
 package top.wecoding.iam.common.convert;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.util.StringUtils;
 import top.wecoding.commons.core.model.R;
 import top.wecoding.commons.core.util.JsonUtil;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author liuyuhui

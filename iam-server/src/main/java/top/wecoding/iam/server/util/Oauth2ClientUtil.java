@@ -1,16 +1,15 @@
 package top.wecoding.iam.server.util;
 
+import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.StringUtils;
 import top.wecoding.iam.common.model.request.CreateOauth2ClientRequest;
 import top.wecoding.iam.common.model.request.UpdateOauth2ClientRequest;
 import top.wecoding.iam.common.model.response.Oauth2ClientInfoResponse;
 import top.wecoding.iam.server.entity.Oauth2Client;
-
-import java.time.Instant;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * @author liuyuhui

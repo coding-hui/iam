@@ -1,5 +1,8 @@
 package top.wecoding.iam.server.security.authorization.authentication;
 
+import java.security.Principal;
+import java.time.Duration;
+import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.MessageSource;
@@ -32,10 +35,6 @@ import top.wecoding.iam.framework.cache.UserFailCountCacheKeyBuilder;
 import top.wecoding.iam.framework.exception.ScopeException;
 import top.wecoding.iam.framework.props.AppProperties;
 import top.wecoding.redis.util.RedisUtils;
-
-import java.security.Principal;
-import java.time.Duration;
-import java.util.*;
 
 /**
  * 处理自定义授权

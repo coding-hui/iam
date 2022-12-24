@@ -1,6 +1,7 @@
 package top.wecoding.iam.server.service.impl;
 
 import jakarta.annotation.Resource;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import top.wecoding.iam.common.model.response.GroupInfoResponse;
 import top.wecoding.iam.common.model.response.UserInfoResponse;
@@ -10,8 +11,6 @@ import top.wecoding.iam.server.entity.UserGroup;
 import top.wecoding.iam.server.mapper.UserGroupMapper;
 import top.wecoding.iam.server.service.UserGroupService;
 import top.wecoding.mybatis.base.BaseServiceImpl;
-
-import java.util.List;
 
 /**
  * @author liuyuhui

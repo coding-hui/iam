@@ -1,5 +1,8 @@
 package top.wecoding.iam.server.security.authorization.token;
 
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
@@ -15,10 +18,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.wecoding.iam.common.constant.UserConstant;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author liuyuhui

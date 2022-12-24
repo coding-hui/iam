@@ -1,13 +1,12 @@
 package top.wecoding.iam.framework.security.web;
 
+import java.util.Collection;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
 import top.wecoding.commons.lang.Objects;
-
-import java.util.Collection;
 
 /**
  * @author liuyuhui

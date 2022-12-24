@@ -4,6 +4,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpMethod;
@@ -42,11 +46,6 @@ import top.wecoding.iam.common.convert.RestOAuth2ErrorParametersConverter;
 import top.wecoding.iam.server.security.authorization.authentication.OAuth2ResourceOwnerBaseAuthenticationToken;
 import top.wecoding.iam.server.security.configurers.Oauth2ResourceOwnerTokenEndpointFilterConfigurer;
 import top.wecoding.iam.server.util.LogUtil;
-
-import java.io.IOException;
-import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Map;
 
 /**
  * @author liuyuhui

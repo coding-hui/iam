@@ -1,12 +1,11 @@
 package top.wecoding.iam.common.util;
 
-import lombok.experimental.UtilityClass;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import lombok.experimental.UtilityClass;
 
 /**
  * @author liuyuhui

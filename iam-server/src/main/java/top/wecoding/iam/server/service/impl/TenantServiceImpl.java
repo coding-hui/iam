@@ -2,6 +2,7 @@ package top.wecoding.iam.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wecoding.commons.core.enums.UserTypeEnum;
@@ -22,8 +23,6 @@ import top.wecoding.iam.server.service.TenantService;
 import top.wecoding.iam.server.util.TenantUtil;
 import top.wecoding.mybatis.base.BaseServiceImpl;
 import top.wecoding.mybatis.helper.PageHelper;
-
-import java.util.Locale;
 
 /**
  * @author liuyuhui

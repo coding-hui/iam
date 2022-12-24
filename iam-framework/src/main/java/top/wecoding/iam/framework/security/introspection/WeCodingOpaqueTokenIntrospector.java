@@ -1,5 +1,7 @@
 package top.wecoding.iam.framework.security.introspection;
 
+import java.security.Principal;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,9 +19,6 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 import org.springframework.stereotype.Component;
 import top.wecoding.iam.common.userdetails.ClientCredentialsOAuth2AuthenticatedPrincipal;
 import top.wecoding.iam.common.userdetails.LoginUser;
-
-import java.security.Principal;
-import java.util.Objects;
 
 /**
  * @author liuyuhui

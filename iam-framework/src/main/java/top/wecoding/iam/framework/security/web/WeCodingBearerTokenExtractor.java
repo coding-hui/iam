@@ -1,6 +1,8 @@
 package top.wecoding.iam.framework.security.web;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -12,9 +14,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import top.wecoding.iam.framework.props.IgnoreWhiteProperties;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author liuyuhui
@@ -30,11 +29,11 @@ public class WeCodingBearerTokenExtractor implements BearerTokenResolver {
 
   private final IgnoreWhiteProperties urlProperties;
 
-  private boolean allowFormEncodedBodyParameter = false;
+  private final boolean allowFormEncodedBodyParameter = false;
 
-  private boolean allowUriQueryParameter = false;
+  private final boolean allowUriQueryParameter = false;
 
-  private String bearerTokenHeaderName = HttpHeaders.AUTHORIZATION;
+  private final String bearerTokenHeaderName = HttpHeaders.AUTHORIZATION;
 
   public WeCodingBearerTokenExtractor(IgnoreWhiteProperties urlProperties) {
     this.urlProperties = urlProperties;

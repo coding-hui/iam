@@ -1,12 +1,11 @@
 package top.wecoding.iam.common.util;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import top.wecoding.commons.core.exception.IllegalParameterException;
 import top.wecoding.commons.core.util.ArgumentAssert;
 import top.wecoding.iam.common.enums.IamErrorCode;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author liuyuhui

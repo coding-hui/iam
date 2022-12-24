@@ -1,5 +1,7 @@
 package top.wecoding.iam.server.security.authorization.authentication.password;
 
+import java.util.Objects;
+import java.util.Set;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
@@ -10,9 +12,6 @@ import top.wecoding.iam.common.model.request.LoginRequest;
 import top.wecoding.iam.common.util.OAuth2EndpointUtils;
 import top.wecoding.iam.server.security.authorization.authentication.OAuth2ResourceOwnerBaseAuthenticationConverter;
 
-import java.util.Objects;
-import java.util.Set;
-
 /**
  * 密码认证转换器
  *
@@ -21,7 +20,7 @@ import java.util.Set;
  */
 public class OAuth2ResourceOwnerPasswordAuthenticationConverter
     extends OAuth2ResourceOwnerBaseAuthenticationConverter<
-            OAuth2ResourceOwnerPasswordAuthenticationToken> {
+        OAuth2ResourceOwnerPasswordAuthenticationToken> {
 
   @Override
   public boolean support(String authType) {

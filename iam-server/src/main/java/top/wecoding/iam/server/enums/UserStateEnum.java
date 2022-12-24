@@ -15,12 +15,11 @@
  */
 package top.wecoding.iam.server.enums;
 
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import top.wecoding.iam.common.util.EnumUtil;
-
-import java.util.Map;
 
 /**
  * 用户类型枚举

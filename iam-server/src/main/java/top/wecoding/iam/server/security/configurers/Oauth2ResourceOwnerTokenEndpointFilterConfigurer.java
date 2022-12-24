@@ -1,6 +1,9 @@
 package top.wecoding.iam.server.security.configurers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -31,10 +34,6 @@ import top.wecoding.iam.server.security.authorization.authentication.OAuth2Resou
 import top.wecoding.iam.server.security.authorization.authentication.WeCodingDaoAuthenticationProvider;
 import top.wecoding.iam.server.security.authorization.authentication.password.OAuth2ResourceOwnerPasswordAuthenticationProvider;
 import top.wecoding.iam.server.security.web.Oauth2ResourceOwnerTokenEndpointFilter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Configurer for the WeCoding Password Login Endpoint.

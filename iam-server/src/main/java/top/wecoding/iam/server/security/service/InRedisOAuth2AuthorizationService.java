@@ -1,5 +1,12 @@
 package top.wecoding.iam.server.security.service;
 
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.*;
+
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -13,14 +20,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import top.wecoding.iam.framework.cache.UserTokenCacheKeyBuilder;
-
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.*;
 
 /**
  * @author liuyuhui

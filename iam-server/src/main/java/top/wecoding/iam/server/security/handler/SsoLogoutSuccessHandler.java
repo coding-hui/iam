@@ -2,12 +2,11 @@ package top.wecoding.iam.server.security.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import top.wecoding.commons.lang.Strings;
-
-import java.io.IOException;
 
 /**
  * @author liuyuhui

@@ -1,5 +1,7 @@
 package top.wecoding.iam.server.web;
 
+import java.lang.annotation.Annotation;
+import java.util.Objects;
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -12,9 +14,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-
-import java.lang.annotation.Annotation;
-import java.util.Objects;
 
 /**
  * @author liuyuhui

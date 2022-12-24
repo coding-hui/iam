@@ -1,6 +1,12 @@
 package top.wecoding.iam.server.security.authorization.authentication;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,13 +18,6 @@ import top.wecoding.commons.lang.Objects;
 import top.wecoding.commons.lang.Strings;
 import top.wecoding.iam.common.model.request.LoginRequest;
 import top.wecoding.iam.common.util.OAuth2EndpointUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * 自定义模式认证转换器
