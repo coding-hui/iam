@@ -18,6 +18,8 @@ public interface Oauth2ClientService {
 
   void create(CreateOauth2ClientRequest createOauth2ClientRequest);
 
+  void update(String id, UpdateOauth2ClientRequest updateOauth2ClientRequest);
+
   void update(UpdateOauth2ClientRequest updateOauth2ClientRequest);
 
   void delete(String clientId);

@@ -22,7 +22,6 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenRespon
 import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
 import org.springframework.security.oauth2.core.http.converter.OAuth2ErrorHttpMessageConverter;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenClaimNames;
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
@@ -37,6 +36,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import top.wecoding.iam.common.constant.AuthParameterNames;
+import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.convert.RestAccessTokenResponseHttpMessageConverter;
 import top.wecoding.iam.common.convert.RestOAuth2ErrorParametersConverter;
 import top.wecoding.iam.server.security.authorization.authentication.OAuth2ResourceOwnerBaseAuthenticationToken;
@@ -46,7 +46,6 @@ import top.wecoding.iam.server.util.LogUtil;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -227,9 +226,8 @@ public class Oauth2ResourceOwnerTokenEndpointFilter extends OncePerRequestFilter
     }
     if (!CollectionUtils.isEmpty(additionalParameters)) {
       builder.additionalParameters(additionalParameters);
-      List<String> audience = (List<String>) additionalParameters.get(OAuth2TokenClaimNames.AUD);
-      String userId = (String) additionalParameters.get(OAuth2TokenClaimNames.SUB);
-      log.info("user {} login successful.", audience);
+      String userId = (String) additionalParameters.get(SecurityConstants.USER_ID);
+      log.info("user {} login successful.", userId);
       LogUtil.successLogin(userId);
     }
 

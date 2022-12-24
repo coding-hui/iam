@@ -44,9 +44,11 @@ public class Oauth2ClientController extends BaseController {
     return R.ok();
   }
 
-  @PutMapping("")
-  public R<?> update(@RequestBody @Validated UpdateOauth2ClientRequest updateOauth2ClientRequest) {
-    clientService.update(updateOauth2ClientRequest);
+  @PutMapping("/id/{id}")
+  public R<?> update(
+      @PathVariable("id") String id,
+      @RequestBody @Validated UpdateOauth2ClientRequest updateOauth2ClientRequest) {
+    clientService.update(id, updateOauth2ClientRequest);
     return R.ok();
   }
 

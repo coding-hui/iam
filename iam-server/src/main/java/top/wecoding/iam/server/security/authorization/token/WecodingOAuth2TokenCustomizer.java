@@ -10,7 +10,8 @@ import top.wecoding.iam.common.userdetails.LoginUser;
  * @author liuyuhui
  * @date 2022/10/3
  */
-public class IAMOAuth2TokenCustomizer implements OAuth2TokenCustomizer<OAuth2TokenClaimsContext> {
+public class WecodingOAuth2TokenCustomizer
+    implements OAuth2TokenCustomizer<OAuth2TokenClaimsContext> {
 
   /**
    * Customize the OAuth 2.0 Token attributes.
@@ -27,9 +28,7 @@ public class IAMOAuth2TokenCustomizer implements OAuth2TokenCustomizer<OAuth2Tok
         context.getAuthorizationGrantType().getValue())) {
       return;
     }
-
     LoginUser loginUser = (LoginUser) context.getPrincipal().getPrincipal();
-    claims.claim(SecurityConstants.DETAILS_USER, loginUser);
-    claims.subject(loginUser.userInfo().getUserId());
+    claims.claim(SecurityConstants.USER_ID, loginUser.userInfo().getUserId());
   }
 }

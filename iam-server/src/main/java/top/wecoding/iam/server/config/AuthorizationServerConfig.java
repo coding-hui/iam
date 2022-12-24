@@ -30,7 +30,8 @@ import top.wecoding.iam.framework.security.handler.WeCodingAuthenticationFailure
 import top.wecoding.iam.framework.security.jose.Jwks;
 import top.wecoding.iam.framework.security.web.ResourceAuthExceptionEntryPoint;
 import top.wecoding.iam.server.security.authorization.authentication.password.OAuth2ResourceOwnerPasswordAuthenticationConverter;
-import top.wecoding.iam.server.security.authorization.token.IAMOAuth2TokenCustomizer;
+import top.wecoding.iam.server.security.authorization.token.WecodingOAuth2JwtTokenCustomizer;
+import top.wecoding.iam.server.security.authorization.token.WecodingOAuth2TokenCustomizer;
 import top.wecoding.iam.server.security.configurers.FormIdentityLoginConfigurer;
 import top.wecoding.iam.server.security.configurers.WeCodingAuthorizationServerConfigurer;
 import top.wecoding.iam.server.security.handler.SsoAuthenticationSuccessHandler;
@@ -121,11 +122,25 @@ public class AuthorizationServerConfig {
   }
 
   @Bean
+  public OAuth2TokenCustomizer<OAuth2TokenClaimsContext> auth2TokenCustomizer() {
+    return new WecodingOAuth2TokenCustomizer();
+  }
+
+  @Bean
+  public OAuth2TokenCustomizer<JwtEncodingContext> oAuth2TokenCustomizer() {
+    return new WecodingOAuth2JwtTokenCustomizer();
+  }
+
+  @Bean
   @SuppressWarnings("rawtypes")
-  public OAuth2TokenGenerator oAuth2TokenGenerator(JWKSource<SecurityContext> jwkSource) {
+  public OAuth2TokenGenerator oAuth2TokenGenerator(
+      JWKSource<SecurityContext> jwkSource,
+      OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer,
+      OAuth2TokenCustomizer<OAuth2TokenClaimsContext> oauth2TokenCustomizer) {
     OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();
-    accessTokenGenerator.setAccessTokenCustomizer(new IAMOAuth2TokenCustomizer());
+    accessTokenGenerator.setAccessTokenCustomizer(oauth2TokenCustomizer);
     JwtGenerator jwtGenerator = new JwtGenerator(new NimbusJwtEncoder(jwkSource));
+    jwtGenerator.setJwtCustomizer(jwtTokenCustomizer);
     return new DelegatingOAuth2TokenGenerator(
         accessTokenGenerator, new OAuth2RefreshTokenGenerator(), jwtGenerator);
   }
@@ -133,13 +148,13 @@ public class AuthorizationServerConfig {
   @Bean
   public AuthorizationServerSettings authorizationServerSettings() {
     return AuthorizationServerSettings.builder()
-        .authorizationEndpoint("/oauth2/authorize")
-        .tokenEndpoint("/oauth2/token")
-        .jwkSetEndpoint("/oauth2/jwks")
-        .tokenRevocationEndpoint("/oauth2/revoke")
-        .tokenIntrospectionEndpoint("/oauth2/introspect")
-        .oidcClientRegistrationEndpoint("/connect/register")
-        .oidcUserInfoEndpoint("/userinfo")
+        .authorizationEndpoint("/v1/authorize")
+        .tokenEndpoint("/v1/token")
+        .jwkSetEndpoint("/v1/jwks")
+        .tokenRevocationEndpoint("/v1/revoke")
+        .tokenIntrospectionEndpoint("/v1/introspect")
+        .oidcClientRegistrationEndpoint("/v1/connect/register")
+        .oidcUserInfoEndpoint("/v1/userinfo")
         .setting(RESOURCE_OWNER_TOKEN_ENDPOINT, "/api/v1/signin")
         .build();
   }

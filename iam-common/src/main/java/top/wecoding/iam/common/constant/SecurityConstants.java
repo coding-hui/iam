@@ -35,6 +35,8 @@ public interface SecurityConstants {
   /** 用户信息 */
   String DETAILS_USER = "user_info";
 
+  String USER_ID = "user_id";
+
   /** 请求来源 */
   String FROM = "from-source";
 

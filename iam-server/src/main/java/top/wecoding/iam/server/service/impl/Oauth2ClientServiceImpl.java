@@ -60,6 +60,12 @@ public class Oauth2ClientServiceImpl extends ServiceImpl<Oauth2ClientMapper, Oau
   }
 
   @Override
+  public void update(String id, UpdateOauth2ClientRequest updateOauth2ClientRequest) {
+    updateOauth2ClientRequest.setId(id);
+    update(updateOauth2ClientRequest);
+  }
+
+  @Override
   @CacheEvict(value = RedisConstant.CLIENT_DETAILS_KEY, key = "#updateOauth2ClientRequest.clientId")
   public void update(UpdateOauth2ClientRequest updateOauth2ClientRequest) {
     String id = updateOauth2ClientRequest.getId();
