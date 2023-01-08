@@ -5,13 +5,13 @@ import java.time.Duration;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.wecoding.iam.common.constant.SecurityConstants;
 import top.wecoding.iam.common.entity.OAuth2ClientSettings;
@@ -30,9 +30,17 @@ import top.wecoding.iam.server.util.PasswordEncoderUtil;
  * @date 2022/10/8
  */
 @Slf4j
-@Configuration
+@Component
 @RequiredArgsConstructor
-public class ApplicationStartTask {
+public class ApplicationStartTask implements ApplicationRunner {
+
+  private static final String DEFAULT_CLIENT_ID = "wecoding";
+
+  private static final String DEFAULT_CLIENT_SCOPES = "server";
+
+  private static final String DEFAULT_USERNAME = "ADMIN";
+
+  private static final String DEFAULT_PASSWORD = "WECODING";
 
   private final UserMapper userMapper;
 
@@ -40,16 +48,14 @@ public class ApplicationStartTask {
 
   private final Oauth2ClientMapper oauth2ClientMapper;
 
-  @Bean
-  public ApplicationRunner initialize() {
-    return args -> {
-      initializeDefaultClient();
-      initializeDefaultSuperAdministrator();
-    };
+  @Override
+  public void run(ApplicationArguments args) {
+    initializeDefaultClient();
+    initializeDefaultSuperAdministrator();
   }
 
   private void initializeDefaultClient() {
-    String clientId = "wecoding";
+    String clientId = DEFAULT_CLIENT_ID;
     Oauth2Client client = oauth2ClientMapper.getByClientId(clientId);
     if (null != client) {
       return;
@@ -74,7 +80,7 @@ public class ApplicationStartTask {
                         AuthorizationGrantType.JWT_BEARER.getValue(),
                         AuthorizationGrantType.PASSWORD.getValue())))
             .redirectUris(SecurityConstants.PROJECT_LICENSE)
-            .scopes("server")
+            .scopes(DEFAULT_CLIENT_SCOPES)
             .clientSettings(
                 OAuth2ClientSettings.builder()
                     .requireProofKey(true)
@@ -95,7 +101,7 @@ public class ApplicationStartTask {
 
   private void initializeDefaultSuperAdministrator() {
     String tenantId = String.valueOf(Long.MAX_VALUE);
-    String username = "ADMIN";
+    String username = DEFAULT_USERNAME;
     UserProfile userProfile = userProfileMapper.getByTenantIdAndUsername(tenantId, username);
     if (null != userProfile) {
       return;
@@ -106,7 +112,7 @@ public class ApplicationStartTask {
             .id(userId)
             .tenantId(tenantId)
             .userState(UserStateEnum.DEFAULT.code())
-            .password(PasswordEncoderUtil.encode("WECODING"))
+            .password(PasswordEncoderUtil.encode(DEFAULT_PASSWORD))
             .defaultPwd(true)
             .build();
     userProfile =

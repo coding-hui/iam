@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <wecoding-commons.version>0.5.2</wecoding-commons.version>
         <wecoding-build.version>0.5.3</wecoding-build.version>
-        <wecoding-tool.version>0.6</wecoding-tool.version>
+        <wecoding-tool.version>0.7</wecoding-tool.version>
     </properties>
 
     <modules>

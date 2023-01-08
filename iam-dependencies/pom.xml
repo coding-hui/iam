@@ -21,7 +21,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- this's projects -->
+            <!-- this projects -->
             <dependency>
                 <groupId>top.wecoding</groupId>
                 <artifactId>iam-common</artifactId>
