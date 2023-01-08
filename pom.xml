@@ -6,18 +6,18 @@
     <parent>
         <groupId>top.wecoding</groupId>
         <artifactId>wecoding-build</artifactId>
-        <version>0.5.3</version>
+        <version>0.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>wecoding-iam</artifactId>
-    <version>0.5.2</version>
+    <version>0.7</version>
     <name>WeCoding IAM</name>
     <description>wecoding-iam</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <wecoding-commons.version>0.5.2</wecoding-commons.version>
-        <wecoding-build.version>0.5.3</wecoding-build.version>
+        <wecoding-commons.version>0.7</wecoding-commons.version>
+        <wecoding-build.version>0.7</wecoding-build.version>
         <wecoding-tool.version>0.7</wecoding-tool.version>
     </properties>
 

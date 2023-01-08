@@ -6,12 +6,12 @@
     <parent>
         <artifactId>wecoding-dependencies-parent</artifactId>
         <groupId>top.wecoding</groupId>
-        <version>0.5.3</version>
+        <version>0.7</version>
         <relativePath/>
     </parent>
     <artifactId>iam-dependencies</artifactId>
     <packaging>pom</packaging>
-    <version>0.5.2</version>
+    <version>0.7</version>
     <name>WeCoding IAM :: Dependencies</name>
     <description>WeCoding IAM Dependencies</description>
 
