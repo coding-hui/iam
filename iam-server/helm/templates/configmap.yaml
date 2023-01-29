@@ -1,26 +1,26 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "wecoding-iam.fullname" . }}
-  labels:
+    name: {{ include "wecoding-iam.fullname" . }}
+    labels:
   {{- include "wecoding-iam.labels" . | nindent 4 }}
 data:
-  config.yaml: |
-    spring:
-      datasource:
-        driver-class-name: {{ .Values.config.mysql.driverClassName }}
-        url: jdbc:mysql://{{ .Values.config.mysql.host }}:{{ .Values.config.mysql.port }}/{{ .Values.config.mysql.db }}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
-        username: {{ .Values.config.mysql.auth.username }}
-        password: {{ .Values.config.mysql.auth.password }}
-      redis:
-        host: {{ .Values.config.redis.host }}
-        port: 6379
-        database: {{ .Values.config.redis.database }}
-        password: {{ .Values.config.redis.password }}
-      cloud:
-        nacos:
-          discovery:
-            group: {{ .Values.config.nacos.discovery.group }}
-            server-addr: {{ .Values.config.nacos.discovery.serverAddr }}
-        config:
-            server-addr: {{ .Values.config.nacos.config.serverAddr }}
+    config.yaml: |
+        spring:
+          datasource:
+            driver-class-name: {{ .Values.config.mysql.driverClassName }}
+            url: jdbc:mysql://{{ .Values.config.mysql.host }}:{{ .Values.config.mysql.port }}/{{ .Values.config.mysql.db }}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&useSSL=false
+            username: {{ .Values.config.mysql.auth.username }}
+            password: {{ .Values.config.mysql.auth.password }}
+          redis:
+            host: {{ .Values.config.redis.host }}
+            port: 6379
+            database: {{ .Values.config.redis.database }}
+            password: {{ .Values.config.redis.password }}
+          cloud:
+            nacos:
+              discovery:
+                group: {{ .Values.config.nacos.discovery.group }}
+                server-addr: {{ .Values.config.nacos.discovery.serverAddr }}
+            config:
+                server-addr: {{ .Values.config.nacos.config.serverAddr }}

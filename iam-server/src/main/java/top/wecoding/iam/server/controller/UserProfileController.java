@@ -2,7 +2,12 @@ package top.wecoding.iam.server.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import top.wecoding.commons.core.model.R;
 import top.wecoding.iam.common.model.request.UpdateUserRequest;
 import top.wecoding.iam.common.model.response.UserInfoResponse;

@@ -1,6 +1,9 @@
 package top.wecoding.iam.server.security.service;
 
-import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.*;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.CODE;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.STATE;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;

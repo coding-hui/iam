@@ -1,7 +1,11 @@
 package top.wecoding.iam.common.userdetails;
 
 import java.io.Serial;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
