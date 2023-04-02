@@ -130,8 +130,8 @@ type DataStore interface {
 	// BatchAdd will adds batched entities to database, Name() and TableName() can't return zero value.
 	BatchAdd(ctx context.Context, entities []Entity) error
 
-	// Put will update entity to database, Name() and TableName() can't return zero value.
-	Put(ctx context.Context, entity Entity) error
+	// Update will update entity to database, Name() and TableName() can't return zero value.
+	Update(ctx context.Context, entity Entity) error
 
 	// Delete entity from database, Name() and TableName() can't return zero value.
 	Delete(ctx context.Context, entity Entity) error

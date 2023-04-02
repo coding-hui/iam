@@ -3,7 +3,6 @@ package apiserver
 import (
 	"context"
 	"fmt"
-	"github.com/wecoding/iam/pkg/env"
 	"net/http"
 	"net/http/httputil"
 	"time"
@@ -19,8 +18,11 @@ import (
 	"github.com/wecoding/iam/pkg/apiserver/domain/service"
 	"github.com/wecoding/iam/pkg/apiserver/event"
 	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore"
+	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore/mongodb"
+	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/wecoding/iam/pkg/apiserver/interfaces/api"
 	"github.com/wecoding/iam/pkg/apiserver/utils/container"
+	"github.com/wecoding/iam/pkg/env"
 	"github.com/wecoding/iam/pkg/middleware"
 )
 
@@ -51,10 +53,31 @@ func New(cfg config.Config) (a APIServer) {
 	return s
 }
 
-func (s *restServer) buildIoCContainer() error {
+func (s *restServer) buildIoCContainer() (err error) {
 	// infrastructure
 	if err := s.beanContainer.ProvideWithName("RestServer", s); err != nil {
 		return fmt.Errorf("fail to provides the RestServer bean to the container: %w", err)
+	}
+
+	// datastore
+	var ds datastore.DataStore
+	switch s.cfg.Datastore.Type {
+	case "mongodb":
+		ds, err = mongodb.New(context.Background(), s.cfg.Datastore)
+		if err != nil {
+			return fmt.Errorf("create mongodb datastore instance failure %w", err)
+		}
+	case "mysqldb":
+		ds, err = mysqldb.New(context.Background(), s.cfg.Datastore)
+		if err != nil {
+			return fmt.Errorf("create mysqldb datastore instance failure %w", err)
+		}
+	default:
+		return fmt.Errorf("not support datastore type %s", s.cfg.Datastore.Type)
+	}
+	s.dataStore = ds
+	if err := s.beanContainer.ProvideWithName("datastore", s.dataStore); err != nil {
+		return fmt.Errorf("fail to provides the datastore bean to the container: %w", err)
 	}
 
 	// domain
