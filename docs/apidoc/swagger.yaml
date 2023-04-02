@@ -1,0 +1,88 @@
+definitions:
+  api.PageResponse:
+    properties:
+      list: {}
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  api.Response:
+    properties:
+      code:
+        type: string
+      data: {}
+      msg:
+        type: string
+    type: object
+  v1.DetailUserResponse:
+    properties:
+      alias:
+        type: string
+      create_time:
+        type: string
+      disabled:
+        type: boolean
+      email:
+        type: string
+      last_login_time:
+        type: string
+      name:
+        type: string
+      state:
+        type: string
+      type:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/users:
+    get:
+      description: 分页获取用户列表
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 别名
+        in: query
+        name: alias
+        type: string
+      - description: 邮箱
+        in: query
+        name: email
+        type: string
+      - description: 页条数
+        in: query
+        name: page_size
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      responses:
+        "200":
+          description: '{"code": "000", "data": [...]} "分页获取用户列表,返回包括列表,总数,页码,每页数量'
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/api.PageResponse'
+                  - properties:
+                      list:
+                        items:
+                          $ref: '#/definitions/v1.DetailUserResponse'
+                        type: array
+                    type: object
+              type: object
+      security:
+      - Bearer: []
+      summary: 分页获取用户列表
+      tags:
+      - 用户管理
+swagger: "2.0"
