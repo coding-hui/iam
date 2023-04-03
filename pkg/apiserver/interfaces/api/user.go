@@ -6,6 +6,7 @@ import (
 	"github.com/wecoding/iam/pkg/api"
 	"github.com/wecoding/iam/pkg/apiserver/domain/service"
 	apisv1 "github.com/wecoding/iam/pkg/apiserver/interfaces/api/dto/v1"
+	"github.com/wecoding/iam/pkg/apiserver/utils"
 )
 
 type user struct {
@@ -44,5 +45,19 @@ func (u *user) GetApiGroup() InitApiGroup {
 // @Router /api/v1/users [get]
 // @Security Bearer
 func (u *user) listUser(c *gin.Context) {
-	api.OkWithPage(apisv1.ListUserResponse{}, 0, 10, 1, c)
+	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
+	if err != nil {
+		api.Fail(c)
+		return
+	}
+	resp, err := u.UserService.ListUsers(c.Request.Context(), page, pageSize, apisv1.ListUserOptions{
+		Name:  c.Query("name"),
+		Alias: c.Query("alias"),
+		Email: c.Query("email"),
+	})
+	if err != nil {
+		api.Fail(c)
+		return
+	}
+	api.OkWithPage(resp.Users, resp.Total, page, pageSize, c)
 }

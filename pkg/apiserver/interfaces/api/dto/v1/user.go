@@ -27,6 +27,23 @@ type ListUserResponse struct {
 	Total int64                 `json:"total"`
 }
 
+// CreateUserRequest create user request
+type CreateUserRequest struct {
+	Name     string   `json:"name" validate:"checkname"`
+	Alias    string   `json:"alias,omitempty" validate:"checkalias" optional:"true"`
+	Email    string   `json:"email" validate:"checkemail"`
+	Password string   `json:"password" validate:"checkpassword"`
+	Roles    []string `json:"roles"`
+}
+
+// UpdateUserRequest update user request
+type UpdateUserRequest struct {
+	Alias    string    `json:"alias,omitempty" optional:"true"`
+	Password string    `json:"password,omitempty" validate:"checkpassword" optional:"true"`
+	Email    string    `json:"email,omitempty" validate:"checkemail" optional:"true"`
+	Roles    *[]string `json:"roles"`
+}
+
 // DetailUserResponse is the response of user detail
 type DetailUserResponse struct {
 	UserBase
