@@ -30,11 +30,6 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 
 func (u *userServiceImpl) ListUsers(ctx context.Context, page, pageSize int, listOptions apisv1.ListUserOptions) (*apisv1.ListUserResponse, error) {
 	user := &model.User{}
-	user.Name = "wecoding"
-	err := u.Store.Get(ctx, user)
-	if err != nil {
-		return nil, err
-	}
 	var queries []datastore.FuzzyQueryOption
 	if listOptions.Name != "" {
 		queries = append(queries, datastore.FuzzyQueryOption{Key: "name", Query: listOptions.Name})
