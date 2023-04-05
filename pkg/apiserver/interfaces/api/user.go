@@ -87,7 +87,7 @@ func (u *user) createUser(c *gin.Context) {
 // @Description update user info
 // @Accept  application/json
 // @Product application/json
-// @Param name path string false "identifier of a user"
+// @Param name path string true "identifier of a user"
 // @Param data body iamv1alpha1.User true "user info"
 // @Success   200   {object}  api.Response "{"code": "000", "data": [...]}
 // @Router /api/v1/users/{name} [put]
@@ -112,7 +112,7 @@ func (u *user) updateUser(c *gin.Context) {
 // @Tags Users
 // @Summary delete user
 // @Description delete user
-// @Param name path string false "identifier of a user"
+// @Param name path string true "identifier of a user"
 // @Success   200   {object}  api.Response "{"code": "000", "data": [...]}
 // @Router /api/v1/users/{name} [delete]
 // @Security Bearer
@@ -130,7 +130,7 @@ func (u *user) deleteUser(c *gin.Context) {
 // @Tags Users
 // @Summary get user detail
 // @Description get user detail
-// @Param name path string false "identifier of a user"
+// @Param name path string true "identifier of a user"
 // @Success   200   {object}  api.Response{data=iamv1alpha1.User} "{"code": "000", "data": [...]} "user detail"
 // @Router /api/v1/users/{name} [get]
 // @Security Bearer

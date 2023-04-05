@@ -133,7 +133,7 @@ func (s *restServer) RegisterAPIRoute() {
 
 func (s *restServer) configSwagger() {
 	apidoc.SwaggerInfo.Title = "IAM API Doc"
-	apidoc.SwaggerInfo.Description = "This is a sample server Petstore server."
+	apidoc.SwaggerInfo.Description = "IAM ApiService API Doc."
 	apidoc.SwaggerInfo.Version = "v1alpha"
 	s.webEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
 }
