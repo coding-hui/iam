@@ -11,8 +11,6 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-var tableNamePrefix = "w_"
-
 var registeredModels = map[string]Interface{}
 
 // Interface model interface
@@ -115,18 +113,24 @@ func (j *JSONStruct) RawExtension() *runtime.RawExtension {
 
 // BaseModel common model
 type BaseModel struct {
-	CreateTime time.Time `json:"create_time"`
-	UpdateTime time.Time `json:"update_time"`
+	// CreatedAt is a timestamp representing the server time when this object was
+	// created. It is not guaranteed to be set in happens-before order across separate operations.
+	// Clients may not set this value. It is represented in RFC3339 form and is in UTC.
+	CreatedAt time.Time `json:"created_at,omitempty" gorm:"column:created_at"`
+
+	// UpdatedAt is a timestamp representing the server time when this object was updated.
+	// Clients may not set this value. It is represented in RFC3339 form and is in UTC.
+	UpdatedAt time.Time `json:"updated_at,omitempty" gorm:"column:updated_at"`
 }
 
 // SetCreateTime set create time
 func (m *BaseModel) SetCreateTime(time time.Time) {
-	m.CreateTime = time
+	m.CreatedAt = time
 }
 
 // SetUpdateTime set update time
 func (m *BaseModel) SetUpdateTime(time time.Time) {
-	m.UpdateTime = time
+	m.UpdatedAt = time
 }
 
 func deepCopy(src interface{}) interface{} {

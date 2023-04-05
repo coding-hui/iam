@@ -23,46 +23,46 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "分页获取用户列表",
+                "description": "list users",
                 "tags": [
-                    "用户管理"
+                    "Users"
                 ],
-                "summary": "分页获取用户列表",
+                "summary": "list users",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "名称",
+                        "description": "fuzzy search based on name",
                         "name": "name",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "别名",
+                        "description": "fuzzy search based on alias",
                         "name": "alias",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "邮箱",
+                        "description": "fuzzy search based on email",
                         "name": "email",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "页条数",
-                        "name": "page_size",
+                        "description": "query the page number",
+                        "name": "offset",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "页码",
-                        "name": "page",
+                        "description": "query the page size number",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"code\": \"000\", \"data\": [...]} \"分页获取用户列表,返回包括列表,总数,页码,每页数量",
+                        "description": "{\"code\": \"000\", \"data\": [...]} \"users",
                         "schema": {
                             "allOf": [
                                 {
@@ -82,7 +82,7 @@ const docTemplate = `{
                                                         "list": {
                                                             "type": "array",
                                                             "items": {
-                                                                "$ref": "#/definitions/v1.DetailUserResponse"
+                                                                "$ref": "#/definitions/v1alpha1.User"
                                                             }
                                                         }
                                                     }
@@ -95,6 +95,150 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "create user",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "create user",
+                "parameters": [
+                    {
+                        "description": "user info",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1alpha1.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": \"000\", \"data\": [...]}",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{name}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "get user detail",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "get user detail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a user",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": \"000\", \"data\": [...]} \"user detail",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1alpha1.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "update user info",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "update user info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a user",
+                        "name": "id",
+                        "in": "path"
+                    },
+                    {
+                        "description": "user info",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1alpha1.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": \"000\", \"data\": [...]}",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "delete user",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "delete user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a user",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": \"000\", \"data\": [...]}",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
             }
         }
     },
@@ -103,12 +247,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "list": {},
-                "page": {
-                    "type": "integer"
-                },
-                "page_size": {
-                    "type": "integer"
-                },
                 "total": {
                     "type": "integer"
                 }
@@ -126,32 +264,87 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.DetailUserResponse": {
+        "v1.Extend": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "v1.ObjectMeta": {
             "type": "object",
             "properties": {
-                "alias": {
+                "createdAt": {
+                    "description": "CreatedAt is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
                     "type": "string"
                 },
-                "create_time": {
+                "extend": {
+                    "description": "Extend store the fields that need to be added, but do not want to add a new table column, will not be stored in db.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.Extend"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID is the unique in time and space value for this object. It is typically generated by\nthe storage on successful creation of a resource and is not allowed to change on PUT\noperations.\n\nPopulated by the system.\nRead-only.",
+                    "type": "integer"
+                },
+                "instanceID": {
+                    "description": "InstanceID defines a string type resource identifier,\nuse prefixed to distinguish resource types, easy to remember, Url-friendly.",
                     "type": "string"
+                },
+                "name": {
+                    "description": "Required: true\nName must be unique. Is required when creating resources.\nName is primarily intended for creation idempotence and configuration\ndefinition.\nIt will be generated automated only if Name is not specified.\nCannot be updated.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt is a timestamp representing the server time when this object was updated.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1alpha1.User": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "alias": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
                 },
                 "disabled": {
                     "type": "boolean"
                 },
                 "email": {
-                    "type": "string"
+                    "description": "Required: true",
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
                 },
                 "last_login_time": {
                     "type": "string"
                 },
-                "name": {
+                "metadata": {
+                    "description": "Standard object's metadata.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.ObjectMeta"
+                        }
+                    ]
+                },
+                "password": {
+                    "description": "Required: true",
                     "type": "string"
                 },
-                "state": {
+                "phone": {
                     "type": "string"
                 },
-                "type": {
-                    "type": "string"
+                "status": {
+                    "type": "integer"
+                },
+                "tenantId": {
+                    "type": "integer"
                 }
             }
         }

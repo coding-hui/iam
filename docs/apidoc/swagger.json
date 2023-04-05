@@ -1,147 +1,189 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "contact": {}
-    },
-    "paths": {
-        "/api/v1/users": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "分页获取用户列表",
-                "tags": [
-                    "用户管理"
-                ],
-                "summary": "分页获取用户列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "名称",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "别名",
-                        "name": "alias",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "邮箱",
-                        "name": "email",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "页条数",
-                        "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "{\"code\": \"000\", \"data\": [...]} \"分页获取用户列表,返回包括列表,总数,页码,每页数量",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/api.PageResponse"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "list": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/v1.DetailUserResponse"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]
+  "swagger": "2.0",
+  "info": {
+    "contact": {}
+  },
+  "paths": {
+    "/api/v1/users": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "list users",
+        "tags": [
+          "Users"
+        ],
+        "summary": "list users",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "fuzzy search based on name",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "fuzzy search based on alias",
+            "name": "alias",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "fuzzy search based on email",
+            "name": "email",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page size number",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{\"code\": \"000\", \"data\": [...]} \"users",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/api.PageResponse"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "list": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/definitions/v1.DetailUserResponse"
+                              }
+                            }
+                          }
                         }
+                      ]
                     }
+                  }
                 }
+              ]
             }
+          }
         }
+      }
     },
-    "definitions": {
-        "api.PageResponse": {
-            "type": "object",
-            "properties": {
-                "list": {},
-                "page": {
-                    "type": "integer"
+    "/api/v1/users/{id}": {
+      "get": {
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "description": "get user detail",
+        "tags": [
+          "Users"
+        ],
+        "summary": "get user detail",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a user",
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{\"code\": \"000\", \"data\": [...]} \"user detail",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "page_size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.DetailUserResponse"
+                    }
+                  }
                 }
+              ]
             }
-        },
-        "api.Response": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {},
-                "msg": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.DetailUserResponse": {
-            "type": "object",
-            "properties": {
-                "alias": {
-                    "type": "string"
-                },
-                "create_time": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "last_login_time": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
+          }
         }
+      }
     }
+  },
+  "definitions": {
+    "api.PageResponse": {
+      "type": "object",
+      "properties": {
+        "list": {},
+        "page": {
+          "type": "integer"
+        },
+        "page_size": {
+          "type": "integer"
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "api.Response": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "data": {},
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.DetailUserResponse": {
+      "type": "object",
+      "properties": {
+        "alias": {
+          "type": "string"
+        },
+        "create_time": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "last_login_time": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    }
+  }
 }

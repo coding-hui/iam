@@ -14,10 +14,8 @@ type Response struct {
 
 // PageResponse page response
 type PageResponse struct {
-	List     interface{} `json:"list"`
-	Total    int64       `json:"total"`
-	Page     int         `json:"page"`
-	PageSize int         `json:"page_size"`
+	List  interface{} `json:"list"`
+	Total int64       `json:"total"`
 }
 
 const (
@@ -26,7 +24,6 @@ const (
 )
 
 func Result(code string, data interface{}, msg string, c *gin.Context) {
-	// 开始时间
 	c.JSON(http.StatusOK, Response{
 		code,
 		data,
@@ -50,21 +47,17 @@ func OkWithDetailed(data interface{}, message string, c *gin.Context) {
 	Result(SUCCESS, data, message, c)
 }
 
-func OkWithPage(result interface{}, count int64, pageIndex, pageSize int, c *gin.Context) {
+func OkWithPage(result interface{}, count int64, c *gin.Context) {
 	Result(SUCCESS, &PageResponse{
-		List:     result,
-		Total:    count,
-		PageSize: pageSize,
-		Page:     pageIndex,
+		List:  result,
+		Total: count,
 	}, "success", c)
 }
 
-func OkWithPageDetailed(result interface{}, count int64, pageIndex, pageSize int, message string, c *gin.Context) {
+func OkWithPageDetailed(result interface{}, count int64, message string, c *gin.Context) {
 	Result(SUCCESS, &PageResponse{
-		List:     result,
-		Total:    count,
-		PageSize: pageSize,
-		Page:     pageIndex,
+		List:  result,
+		Total: count,
 	}, message, c)
 }
 
@@ -74,8 +67,4 @@ func Fail(c *gin.Context) {
 
 func FailWithMessage(message string, c *gin.Context) {
 	Result(ERROR, map[string]interface{}{}, message, c)
-}
-
-func FailWithDetailed(data interface{}, message string, c *gin.Context) {
-	Result(ERROR, data, message, c)
 }

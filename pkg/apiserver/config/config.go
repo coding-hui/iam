@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore"
-	"github.com/wecoding/iam/pkg/env"
+	"github.com/wecoding/iam/pkg/utils/env"
 )
 
 // Config config for apiserver
@@ -29,9 +29,9 @@ func NewConfig() *Config {
 		MetricPath: "/metrics",
 		Datastore: datastore.Config{
 			Type:     "mysqldb",
-			Database: "iam",
+			Database: "iam_1",
 			//URL:      "mongodb://root:root@localhost:27017/",
-			URL: "root:123456@tcp(127.0.0.1:3306)/iam_1?charset=utf8&parseTime=True&loc=Local&timeout=1000ms",
+			URL: "root:123456@tcp(127.0.0.1:3306)/iam_1?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms",
 		},
 		Mode:         env.ModeDev.String(),
 		PrintVersion: false,

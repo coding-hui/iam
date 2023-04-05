@@ -15,15 +15,14 @@ import (
 
 	"github.com/wecoding/iam/docs/apidoc"
 	"github.com/wecoding/iam/pkg/apiserver/config"
+	"github.com/wecoding/iam/pkg/apiserver/domain/repository"
 	"github.com/wecoding/iam/pkg/apiserver/domain/service"
 	"github.com/wecoding/iam/pkg/apiserver/event"
-	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore"
-	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore/mongodb"
 	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/wecoding/iam/pkg/apiserver/interfaces/api"
-	"github.com/wecoding/iam/pkg/apiserver/utils/container"
-	"github.com/wecoding/iam/pkg/env"
 	"github.com/wecoding/iam/pkg/middleware"
+	"github.com/wecoding/iam/pkg/utils/container"
+	"github.com/wecoding/iam/pkg/utils/env"
 )
 
 // APIServer interface for call api apiserver
@@ -33,11 +32,11 @@ type APIServer interface {
 
 // restServer rest apiserver
 type restServer struct {
-	webEngine     *gin.Engine
-	beanContainer *container.Container
-	cfg           config.Config
-	dataStore     datastore.DataStore
-	dexProxy      *httputil.ReverseProxy
+	webEngine        *gin.Engine
+	beanContainer    *container.Container
+	cfg              config.Config
+	repositoryFactor repository.Factory
+	dexProxy         *httputil.ReverseProxy
 }
 
 // New create api apiserver with config data
@@ -59,26 +58,22 @@ func (s *restServer) buildIoCContainer() (err error) {
 		return fmt.Errorf("fail to provides the RestServer bean to the container: %w", err)
 	}
 
-	// datastore
-	var ds datastore.DataStore
+	// datastore repository
+	var factory repository.Factory
 	switch s.cfg.Datastore.Type {
-	case "mongodb":
-		ds, err = mongodb.New(context.Background(), s.cfg.Datastore)
-		if err != nil {
-			return fmt.Errorf("create mongodb datastore instance failure %w", err)
-		}
 	case "mysqldb":
-		ds, err = mysqldb.New(context.Background(), s.cfg.Datastore)
+		factory, err = mysqldb.GetMySQLFactory(context.Background(), s.cfg.Datastore)
 		if err != nil {
 			return fmt.Errorf("create mysqldb datastore instance failure %w", err)
 		}
 	default:
 		return fmt.Errorf("not support datastore type %s", s.cfg.Datastore.Type)
 	}
-	s.dataStore = ds
-	if err := s.beanContainer.ProvideWithName("datastore", s.dataStore); err != nil {
+	s.repositoryFactor = factory
+	if err := s.beanContainer.ProvideWithName("repository", s.repositoryFactor); err != nil {
 		return fmt.Errorf("fail to provides the datastore bean to the container: %w", err)
 	}
+	repository.SetClient(factory)
 
 	// domain
 	if err := s.beanContainer.Provides(service.InitServiceBean(s.cfg)...); err != nil {

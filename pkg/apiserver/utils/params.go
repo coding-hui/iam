@@ -7,12 +7,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-const defaultPageSize = "10"
+const (
+	defaultPageSize = "10"
+	pageParam       = "offset"
+	pageSizeParam   = "limit"
+)
 
 // ExtractPagingParams extract `page` and `pageSize` params from request
-func ExtractPagingParams(c *gin.Context, minPageSize, maxPageSize int) (int, int, error) {
-	pageStr := c.Query("page")
-	pageSizeStr := c.Query("pageSize")
+func ExtractPagingParams(c *gin.Context, minPageSize, maxPageSize int64) (int64, int64, error) {
+	pageStr := c.Query(pageParam)
+	pageSizeStr := c.Query(pageSizeParam)
 	if pageStr == "" {
 		pageStr = "0"
 	}
@@ -27,8 +31,8 @@ func ExtractPagingParams(c *gin.Context, minPageSize, maxPageSize int) (int, int
 	if err != nil {
 		return 0, 0, errors.Errorf("invalid pageSize %s: %v", pageSizeStr, err)
 	}
-	page := int(page64)
-	pageSize := int(pageSize64)
+	page := page64
+	pageSize := pageSize64
 	if page < 0 {
 		page = 0
 	}

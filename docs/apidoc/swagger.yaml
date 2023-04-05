@@ -1,7 +1,7 @@
 definitions:
   api.PageResponse:
     properties:
-      list: {}
+      list: { }
       page:
         type: integer
       page_size:
@@ -13,7 +13,7 @@ definitions:
     properties:
       code:
         type: string
-      data: {}
+      data: { }
       msg:
         type: string
     type: object
@@ -37,52 +37,75 @@ definitions:
         type: string
     type: object
 info:
-  contact: {}
+  contact: { }
 paths:
   /api/v1/users:
     get:
-      description: 分页获取用户列表
+      description: list users
       parameters:
-      - description: 名称
-        in: query
-        name: name
-        type: string
-      - description: 别名
-        in: query
-        name: alias
-        type: string
-      - description: 邮箱
-        in: query
-        name: email
-        type: string
-      - description: 页条数
-        in: query
-        name: page_size
-        type: integer
-      - description: 页码
-        in: query
-        name: page
-        type: integer
+        - description: fuzzy search based on name
+          in: query
+          name: name
+          type: string
+        - description: fuzzy search based on alias
+          in: query
+          name: alias
+          type: string
+        - description: fuzzy search based on email
+          in: query
+          name: email
+          type: string
+        - description: query the page number
+          in: query
+          name: offset
+          type: integer
+        - description: query the page size number
+          in: query
+          name: limit
+          type: integer
       responses:
         "200":
-          description: '{"code": "000", "data": [...]} "分页获取用户列表,返回包括列表,总数,页码,每页数量'
+          description: '{"code": "000", "data": [...]} "users'
           schema:
             allOf:
-            - $ref: '#/definitions/api.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/api.PageResponse'
-                  - properties:
-                      list:
-                        items:
-                          $ref: '#/definitions/v1.DetailUserResponse'
-                        type: array
-                    type: object
-              type: object
+              - $ref: '#/definitions/api.Response'
+              - properties:
+                  data:
+                    allOf:
+                      - $ref: '#/definitions/api.PageResponse'
+                      - properties:
+                          list:
+                            items:
+                              $ref: '#/definitions/v1.DetailUserResponse'
+                            type: array
+                        type: object
+                type: object
       security:
-      - Bearer: []
-      summary: 分页获取用户列表
+        - Bearer: [ ]
+      summary: list users
       tags:
-      - 用户管理
+        - Users
+  /api/v1/users/{id}:
+    get:
+      description: get user detail
+      parameters:
+        - description: identifier of a user
+          in: path
+          name: id
+          type: string
+      responses:
+        "200":
+          description: '{"code": "000", "data": [...]} "user detail'
+          schema:
+            allOf:
+              - $ref: '#/definitions/api.Response'
+              - properties:
+                  data:
+                    $ref: '#/definitions/v1.DetailUserResponse'
+                type: object
+      security:
+        - Bearer: [ ]
+      summary: get user detail
+      tags:
+        - Users
 swagger: "2.0"
