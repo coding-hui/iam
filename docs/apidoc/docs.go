@@ -147,8 +147,9 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a user",
-                        "name": "id",
-                        "in": "path"
+                        "name": "name",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -190,8 +191,9 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a user",
-                        "name": "id",
-                        "in": "path"
+                        "name": "name",
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "description": "user info",
@@ -227,8 +229,9 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a user",
-                        "name": "id",
-                        "in": "path"
+                        "name": "name",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
