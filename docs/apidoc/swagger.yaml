@@ -236,4 +236,15 @@ paths:
       summary: update user info
       tags:
       - Users
+  /ping:
+    get:
+      description: check service is running
+      responses:
+        "200":
+          description: '{"code": "000", "data": [...]}'
+          schema:
+            $ref: '#/definitions/api.Response'
+      summary: check service is running
+      tags:
+      - System
 swagger: "2.0"

@@ -243,6 +243,23 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/ping": {
+            "get": {
+                "description": "check service is running",
+                "tags": [
+                    "System"
+                ],
+                "summary": "check service is running",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": \"000\", \"data\": [...]}",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

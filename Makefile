@@ -83,7 +83,7 @@ clean:
 
 build-swagger:
 	go get -u github.com/swaggo/swag/cmd/swag
-	swag i -g server.go -dir ./pkg/apiserver --parseDependency --parseInternal -o ./docs/apidoc
+	swag i -g apiserver.go -dir ./pkg/apiserver --parseDependency --parseInternal -o ./docs/apidoc
 
 run-apiserver:
 	go run ./cmd/apiserver/main.go

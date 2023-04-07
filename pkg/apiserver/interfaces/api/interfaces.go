@@ -46,6 +46,9 @@ func GetRegisteredAPI() []Interface {
 // InitAPIBean inits all API handlers, pass in the required parameter object.
 // It can be implemented using the idea of dependency injection.
 func InitAPIBean() []interface{} {
+	// Ping
+	RegisterAPI(NewPing())
+
 	// Authentication
 	RegisterAPI(NewUser())
 
