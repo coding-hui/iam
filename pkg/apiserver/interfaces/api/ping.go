@@ -2,11 +2,11 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/wecoding/iam/pkg/api"
 )
 
-type ping struct {
-}
+type ping struct{}
 
 // NewPing ping
 func NewPing() Interface {
