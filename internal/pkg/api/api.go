@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/coding-hui/common/errors"
-	"github.com/wecoding/iam/pkg/code"
+	"github.com/wecoding/iam/internal/pkg/code"
 )
 
 type Response struct {

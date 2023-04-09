@@ -5,10 +5,9 @@ import (
 
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
-
 	"github.com/wecoding/iam/internal/apiserver/domain/service"
 	"github.com/wecoding/iam/internal/apiserver/utils"
-	"github.com/wecoding/iam/pkg/api"
+	"github.com/wecoding/iam/internal/pkg/api"
 )
 
 type user struct {

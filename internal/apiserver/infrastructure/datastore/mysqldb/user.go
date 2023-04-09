@@ -11,8 +11,8 @@ import (
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/wecoding/iam/internal/apiserver/domain/repository"
 	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
-	"github.com/wecoding/iam/pkg/code"
-	"github.com/wecoding/iam/pkg/utils/gormutil"
+	"github.com/wecoding/iam/internal/pkg/code"
+	"github.com/wecoding/iam/internal/pkg/utils/gormutil"
 )
 
 type userRepositoryImpl struct {

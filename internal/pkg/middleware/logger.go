@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wecoding/iam/pkg/utils"
 	"k8s.io/klog/v2"
+
+	"github.com/wecoding/iam/internal/pkg/utils"
 )
 
 // requestLog write to console

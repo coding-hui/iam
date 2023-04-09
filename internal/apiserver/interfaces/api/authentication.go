@@ -8,14 +8,14 @@ import (
 	"k8s.io/klog/v2"
 
 	"github.com/wecoding/iam/internal/apiserver/config"
-	service2 "github.com/wecoding/iam/internal/apiserver/domain/service"
-	"github.com/wecoding/iam/pkg/api"
+	"github.com/wecoding/iam/internal/apiserver/domain/service"
+	"github.com/wecoding/iam/internal/pkg/api"
 	"github.com/wecoding/iam/pkg/api/apiserver/v1alpha1"
 )
 
 type authentication struct {
-	UserService           service2.UserService           `inject:""`
-	AuthenticationService service2.AuthenticationService `inject:""`
+	UserService           service.UserService           `inject:""`
+	AuthenticationService service.AuthenticationService `inject:""`
 
 	cfg config.Config
 }

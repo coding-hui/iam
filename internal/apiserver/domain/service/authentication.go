@@ -4,21 +4,22 @@ import (
 	"context"
 	"time"
 
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/coding-hui/common/errors"
+	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/wecoding/iam/internal/apiserver/config"
 	"github.com/wecoding/iam/internal/apiserver/domain/model"
 	"github.com/wecoding/iam/internal/apiserver/domain/repository"
 	convert "github.com/wecoding/iam/internal/apiserver/interfaces/api/convert/v1alpha1"
+	"github.com/wecoding/iam/internal/pkg/code"
 	"github.com/wecoding/iam/pkg/api/apiserver/v1alpha1"
-	"github.com/wecoding/iam/pkg/code"
 )
 
 const (
 	jwtIssuer = "iam-issuer"
+	audience  = "iam.api.wecoding.top"
 
 	// GrantTypeAccess is the grant type for access token
 	GrantTypeAccess = "access"
@@ -57,6 +58,7 @@ func (a *authenticationServiceImpl) newLocalHandler(loginReq v1alpha1.Authentica
 	if loginReq.Username == "" || loginReq.Password == "" {
 		return nil, errors.WithCode(code.ErrMissingLoginValues, "Missing Username or Password")
 	}
+
 	return &localHandlerImpl{
 		store:       a.Store,
 		userService: a.UserService,
@@ -68,25 +70,23 @@ func (a *authenticationServiceImpl) newLocalHandler(loginReq v1alpha1.Authentica
 func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v1alpha1.AuthenticateRequest) (*v1alpha1.AuthenticateResponse, error) {
 	var handler authHandler
 	var err error
-
 	handler, err = a.newLocalHandler(loginReq)
 	if err != nil {
 		return nil, err
 	}
-
 	userBase, err := handler.authenticate(ctx)
 	if err != nil {
 		return nil, err
 	}
+	accessToken, err := a.generateJWTToken(userBase.Name, GrantTypeAccess, a.cfg.JwtOptions.Timeout)
+	if err != nil {
+		return nil, err
+	}
+	refreshToken, err := a.generateJWTToken(userBase.Name, GrantTypeRefresh, a.cfg.JwtOptions.MaxRefresh)
+	if err != nil {
+		return nil, err
+	}
 
-	accessToken, err := a.generateJWTToken(userBase.Name, GrantTypeAccess, time.Hour)
-	if err != nil {
-		return nil, err
-	}
-	refreshToken, err := a.generateJWTToken(userBase.Name, GrantTypeRefresh, time.Hour*24)
-	if err != nil {
-		return nil, err
-	}
 	return &v1alpha1.AuthenticateResponse{
 		User:         userBase,
 		AccessToken:  accessToken,
@@ -99,7 +99,7 @@ func (a *authenticationServiceImpl) generateJWTToken(username, grantType string,
 	claims := model.CustomClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    jwtIssuer,
-			Audience:  jwt.ClaimStrings{v1alpha1.APIServerAudience},
+			Audience:  jwt.ClaimStrings{audience},
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(expire),
 		},
@@ -107,7 +107,8 @@ func (a *authenticationServiceImpl) generateJWTToken(username, grantType string,
 		GrantType: grantType,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte("iam-key"))
+
+	return token.SignedString([]byte(a.cfg.JwtOptions.Key))
 }
 
 func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1alpha1.UserBase, error) {
@@ -130,5 +131,6 @@ func passwordVerify(hash, password string) error {
 	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 		return errors.WithCode(code.ErrPasswordIncorrect, "Password was incorrect")
 	}
+
 	return err
 }

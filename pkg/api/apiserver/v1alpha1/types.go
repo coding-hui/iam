@@ -6,14 +6,6 @@ import (
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
-const (
-	// APIServerAudience defines the value of jwt audience field.
-	APIServerAudience = "iam.api.wecoding.top"
-
-	// APIServerIssuer defines the value of jwt issuer field.
-	APIServerIssuer = "iam-apiserver"
-)
-
 type UserState string
 
 // These are the valid phases of a user.

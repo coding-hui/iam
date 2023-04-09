@@ -2,11 +2,13 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/pflag"
 
 	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
-	"github.com/wecoding/iam/pkg/utils/env"
+	"github.com/wecoding/iam/internal/pkg/options"
+	"github.com/wecoding/iam/internal/pkg/utils/env"
 )
 
 // Config config for apiserver
@@ -17,6 +19,8 @@ type Config struct {
 	MetricPath string
 	// Datastore config
 	Datastore datastore.Config
+	// Jwt config
+	JwtOptions options.JwtOptions
 	// RunMode
 	Mode         string
 	PrintVersion bool
@@ -32,6 +36,12 @@ func NewConfig() *Config {
 			Database: "iam_1",
 			//URL:      "mongodb://root:root@localhost:27017/",
 			URL: "root:123456@tcp(127.0.0.1:3306)/iam_1?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms",
+		},
+		JwtOptions: options.JwtOptions{
+			Realm:      "iam jwt",
+			Key:        "iam-key",
+			Timeout:    1 * time.Hour,
+			MaxRefresh: 1 * time.Hour,
 		},
 		Mode:         env.ModeDev.String(),
 		PrintVersion: false,

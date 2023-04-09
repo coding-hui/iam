@@ -20,9 +20,9 @@ import (
 	"github.com/wecoding/iam/internal/apiserver/event"
 	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/wecoding/iam/internal/apiserver/interfaces/api"
-	"github.com/wecoding/iam/pkg/middleware"
-	"github.com/wecoding/iam/pkg/utils/container"
-	"github.com/wecoding/iam/pkg/utils/env"
+	"github.com/wecoding/iam/internal/pkg/middleware"
+	"github.com/wecoding/iam/internal/pkg/utils/container"
+	"github.com/wecoding/iam/internal/pkg/utils/env"
 )
 
 // APIServer interface for call api apiserver
