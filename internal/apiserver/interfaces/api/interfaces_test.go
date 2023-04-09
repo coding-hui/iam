@@ -4,7 +4,7 @@ import (
 	"gotest.tools/assert"
 	"testing"
 
-	"github.com/wecoding/iam/pkg/apiserver/config"
+	"github.com/wecoding/iam/internal/apiserver/config"
 )
 
 func TestInitAPIBean(t *testing.T) {

@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/wecoding/iam/internal/apiserver"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,7 +13,6 @@ import (
 	"k8s.io/klog/v2"
 
 	"github.com/wecoding/iam/cmd/apiserver/app/options"
-	"github.com/wecoding/iam/pkg/apiserver"
 	"github.com/wecoding/iam/version"
 )
 

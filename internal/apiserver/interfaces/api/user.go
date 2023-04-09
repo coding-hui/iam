@@ -6,9 +6,9 @@ import (
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 
+	"github.com/wecoding/iam/internal/apiserver/domain/service"
+	"github.com/wecoding/iam/internal/apiserver/utils"
 	"github.com/wecoding/iam/pkg/api"
-	"github.com/wecoding/iam/pkg/apiserver/domain/service"
-	"github.com/wecoding/iam/pkg/apiserver/utils"
 )
 
 type user struct {
@@ -23,7 +23,7 @@ func NewUser() Interface {
 func (u *user) GetApiGroup() InitApiGroup {
 	v1 := InitApiGroup{
 		BaseUrl: versionPrefix + "/users",
-		Filters: gin.HandlersChain{},
+		Filters: gin.HandlersChain{authCheckFilter},
 		Apis: []InitApi{
 			{
 				Method:  POST,

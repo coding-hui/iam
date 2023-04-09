@@ -5,15 +5,14 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/coding-hui/common/errors"
-	"github.com/wecoding/iam/pkg/apiserver/domain/repository"
-	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore"
-	"github.com/wecoding/iam/pkg/code"
-	"github.com/wecoding/iam/pkg/utils/gormutil"
-
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
+	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/common/fields"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	"github.com/wecoding/iam/internal/apiserver/domain/repository"
+	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
+	"github.com/wecoding/iam/pkg/code"
+	"github.com/wecoding/iam/pkg/utils/gormutil"
 )
 
 type userRepositoryImpl struct {

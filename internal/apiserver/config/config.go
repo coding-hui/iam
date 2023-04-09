@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore"
+	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
 	"github.com/wecoding/iam/pkg/utils/env"
 )
 

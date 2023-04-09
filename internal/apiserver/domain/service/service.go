@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/wecoding/iam/pkg/apiserver/config"
+	"github.com/wecoding/iam/internal/apiserver/config"
 )
 
 // needInitData register the service that need to init data

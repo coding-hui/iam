@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	"github.com/wecoding/iam/pkg/apiserver/domain/repository"
-	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore"
+	repository2 "github.com/wecoding/iam/internal/apiserver/domain/repository"
+	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
 )
 
 type mysqldb struct {
@@ -17,7 +17,7 @@ type mysqldb struct {
 }
 
 // GetMySQLFactory create mysql factory with the given config.
-func GetMySQLFactory(ctx context.Context, cfg datastore.Config) (repository.Factory, error) {
+func GetMySQLFactory(ctx context.Context, cfg datastore.Config) (repository2.Factory, error) {
 	err := createDatabase(cfg)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func GetMySQLFactory(ctx context.Context, cfg datastore.Config) (repository.Fact
 	return m, nil
 }
 
-func (m *mysqldb) UserRepository() repository.UserRepository {
+func (m *mysqldb) UserRepository() repository2.UserRepository {
 	return newUserRepository(m.client)
 }
 

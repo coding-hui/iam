@@ -1,18 +1,21 @@
 package api
 
 import (
+	"strings"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"k8s.io/klog/v2"
 
+	"github.com/wecoding/iam/internal/apiserver/config"
+	service2 "github.com/wecoding/iam/internal/apiserver/domain/service"
 	"github.com/wecoding/iam/pkg/api"
 	"github.com/wecoding/iam/pkg/api/apiserver/v1alpha1"
-	"github.com/wecoding/iam/pkg/apiserver/config"
-	"github.com/wecoding/iam/pkg/apiserver/domain/service"
 )
 
 type authentication struct {
-	UserService           service.UserService           `inject:""`
-	AuthenticationService service.AuthenticationService `inject:""`
+	UserService           service2.UserService           `inject:""`
+	AuthenticationService service2.AuthenticationService `inject:""`
 
 	cfg config.Config
 }
@@ -25,6 +28,7 @@ func NewAuthentication(c config.Config) Interface {
 func (a *authentication) GetApiGroup() InitApiGroup {
 	return InitApiGroup{
 		BaseUrl: "",
+		Filters: gin.HandlersChain{authCheckFilter},
 		Apis: []InitApi{
 			{
 				Method:  POST,
@@ -33,6 +37,23 @@ func (a *authentication) GetApiGroup() InitApiGroup {
 			},
 		},
 	}
+}
+
+func authCheckFilter(c *gin.Context) {
+	var tokenValue string
+	tokenHeader := c.Request.Header.Get("Authorization")
+	if tokenHeader != "" {
+		splitted := strings.Split(tokenHeader, " ")
+		if len(splitted) != 2 {
+			api.Fail(c)
+			return
+		}
+		tokenValue = splitted[1]
+	}
+
+	klog.Info("determine token: %s", tokenValue)
+
+	c.Next()
 }
 
 func (a *authentication) authenticate(c *gin.Context) {

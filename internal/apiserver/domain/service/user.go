@@ -3,11 +3,10 @@ package service
 import (
 	"context"
 
-	"github.com/coding-hui/common/util/auth"
-	"github.com/wecoding/iam/pkg/apiserver/domain/repository"
-
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	"github.com/coding-hui/common/util/auth"
+	"github.com/wecoding/iam/internal/apiserver/domain/repository"
 )
 
 // UserService User manage api

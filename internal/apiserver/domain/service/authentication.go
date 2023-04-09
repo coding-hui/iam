@@ -6,14 +6,14 @@ import (
 
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/golang-jwt/jwt/v4"
-	convert "github.com/wecoding/iam/pkg/apiserver/interfaces/api/convert/v1alpha1"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/coding-hui/common/errors"
+	"github.com/wecoding/iam/internal/apiserver/config"
+	"github.com/wecoding/iam/internal/apiserver/domain/model"
+	"github.com/wecoding/iam/internal/apiserver/domain/repository"
+	convert "github.com/wecoding/iam/internal/apiserver/interfaces/api/convert/v1alpha1"
 	"github.com/wecoding/iam/pkg/api/apiserver/v1alpha1"
-	"github.com/wecoding/iam/pkg/apiserver/config"
-	"github.com/wecoding/iam/pkg/apiserver/domain/model"
-	"github.com/wecoding/iam/pkg/apiserver/domain/repository"
 	"github.com/wecoding/iam/pkg/code"
 )
 
