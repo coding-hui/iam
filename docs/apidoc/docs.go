@@ -244,6 +244,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/login/{identityprovider}": {
+            "post": {
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ],
+                "description": "Login by identity provider user",
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login by identity provider user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "password of a user",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": \"000\", \"data\": [...]}",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/ping": {
             "get": {
                 "description": "check service is running",
@@ -276,10 +307,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
-                    "type": "string"
+                    "description": "Code defines the business error code.",
+                    "type": "integer"
                 },
                 "data": {},
                 "msg": {
+                    "description": "Msg contains the detail of this message.\nThis message is suitable to be exposed to external",
+                    "type": "string"
+                },
+                "reference": {
+                    "description": "Reference returns the reference document which maybe useful to solve this error.",
                     "type": "string"
                 }
             }

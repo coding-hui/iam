@@ -81,7 +81,7 @@ func (s *restServer) buildIoCContainer() (err error) {
 	}
 
 	// interfaces
-	if err := s.beanContainer.Provides(apisv1.InitAPIBean()...); err != nil {
+	if err := s.beanContainer.Provides(apisv1.InitAPIBean(s.cfg)...); err != nil {
 		return fmt.Errorf("fail to provides the api bean to the container: %w", err)
 	}
 
@@ -123,6 +123,11 @@ func (s *restServer) RegisterAPIRoute() {
 	// Register all custom api
 	for _, api := range apisv1.GetRegisteredAPI() {
 		r := s.webEngine.Group(api.GetApiGroup().BaseUrl)
+		if len(api.GetApiGroup().Filters) > 0 {
+			for _, filter := range api.GetApiGroup().Filters {
+				r.Use(filter)
+			}
+		}
 		for _, v := range api.GetApiGroup().Apis {
 			r.Handle(v.Method, v.Path, v.Handler)
 		}

@@ -1,22 +1,31 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+
+	"github.com/wecoding/iam/pkg/apiserver/config"
+)
+
+const (
+	GET    string = "GET"
+	POST   string = "POST"
+	PUT    string = "PUT"
+	DELETE string = "DELETE"
+)
 
 // versionPrefix API version prefix.
 var versionPrefix = "/api/v1"
 
-// viewPrefix the path prefix for view page
-var viewPrefix = "/view"
-
 // GetAPIPrefix return the prefix of the api route path
 func GetAPIPrefix() []string {
-	return []string{versionPrefix, viewPrefix, "/v1"}
+	return []string{versionPrefix, "/v1"}
 }
 
 // InitApiGroup the API should define the http route
 type InitApiGroup struct {
 	BaseUrl string
 	Apis    []InitApi
+	Filters gin.HandlersChain
 }
 
 // InitApi the API should define the http route
@@ -45,16 +54,18 @@ func GetRegisteredAPI() []Interface {
 
 // InitAPIBean inits all API handlers, pass in the required parameter object.
 // It can be implemented using the idea of dependency injection.
-func InitAPIBean() []interface{} {
+func InitAPIBean(c config.Config) []interface{} {
 	// Ping
 	RegisterAPI(NewPing())
 
 	// Authentication
+	RegisterAPI(NewAuthentication(c))
 	RegisterAPI(NewUser())
 
 	var beans []interface{}
 	for i := range registeredAPI {
 		beans = append(beans, registeredAPI[i])
 	}
+
 	return beans
 }

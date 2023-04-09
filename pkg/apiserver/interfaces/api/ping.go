@@ -18,7 +18,7 @@ func (p *ping) GetApiGroup() InitApiGroup {
 		BaseUrl: "/ping",
 		Apis: []InitApi{
 			{
-				Method:  "GET",
+				Method:  GET,
 				Path:    "",
 				Handler: p.ping,
 			},

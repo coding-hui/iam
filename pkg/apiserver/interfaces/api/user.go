@@ -3,12 +3,12 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 
+	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
+	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+
 	"github.com/wecoding/iam/pkg/api"
 	"github.com/wecoding/iam/pkg/apiserver/domain/service"
 	"github.com/wecoding/iam/pkg/apiserver/utils"
-
-	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
 type user struct {
@@ -23,29 +23,30 @@ func NewUser() Interface {
 func (u *user) GetApiGroup() InitApiGroup {
 	v1 := InitApiGroup{
 		BaseUrl: versionPrefix + "/users",
+		Filters: gin.HandlersChain{},
 		Apis: []InitApi{
 			{
-				Method:  "POST",
+				Method:  POST,
 				Path:    "",
 				Handler: u.createUser,
 			},
 			{
-				Method:  "PUT",
+				Method:  PUT,
 				Path:    "/:name",
 				Handler: u.updateUser,
 			},
 			{
-				Method:  "DELETE",
+				Method:  DELETE,
 				Path:    "/:name",
 				Handler: u.deleteUser,
 			},
 			{
-				Method:  "GET",
+				Method:  GET,
 				Path:    "/:name",
 				Handler: u.getUser,
 			},
 			{
-				Method:  "GET",
+				Method:  GET,
 				Path:    "",
 				Handler: u.listUser,
 			},

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/coding-hui/common/util/auth"
 	"github.com/wecoding/iam/pkg/apiserver/domain/repository"
 
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
@@ -36,6 +37,7 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 
 // Create create user
 func (u *userServiceImpl) Create(ctx context.Context, user *iamv1alpha1.User, opts metav1alpha1.CreateOptions) error {
+	user.Password, _ = auth.Encrypt(user.Password)
 	if err := u.Store.UserRepository().Create(ctx, user, opts); err != nil {
 		return err
 	}

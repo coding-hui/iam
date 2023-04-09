@@ -8,9 +8,17 @@ definitions:
   api.Response:
     properties:
       code:
-        type: string
+        description: Code defines the business error code.
+        type: integer
       data: {}
       msg:
+        description: |-
+          Msg contains the detail of this message.
+          This message is suitable to be exposed to external
+        type: string
+      reference:
+        description: Reference returns the reference document which maybe useful to
+          solve this error.
         type: string
     type: object
   v1.Extend:
@@ -236,6 +244,25 @@ paths:
       summary: update user info
       tags:
       - Users
+  /login/{identityprovider}:
+    post:
+      description: Login by identity provider user
+      parameters:
+      - description: password of a user
+        in: query
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{"code": "000", "data": [...]}'
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - Basic: []
+      summary: Login by identity provider user
+      tags:
+      - Authentication
   /ping:
     get:
       description: check service is running

@@ -2,12 +2,13 @@ package mysqldb
 
 import (
 	"context"
-	"errors"
 
 	"gorm.io/gorm"
 
+	"github.com/coding-hui/common/errors"
 	"github.com/wecoding/iam/pkg/apiserver/domain/repository"
 	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore"
+	"github.com/wecoding/iam/pkg/code"
 	"github.com/wecoding/iam/pkg/utils/gormutil"
 
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
@@ -82,7 +83,7 @@ func (u *userRepositoryImpl) Get(ctx context.Context, username string, opts meta
 	err := u.db.WithContext(ctx).Where("name = ?", username).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, datastore.NewDBError(err)
+			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
 		}
 
 		return nil, err

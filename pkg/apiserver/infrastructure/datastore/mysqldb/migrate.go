@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
 	"github.com/wecoding/iam/pkg/apiserver/domain/model"
 	"github.com/wecoding/iam/pkg/apiserver/infrastructure/datastore"
 )
@@ -18,6 +17,7 @@ func mysqlEmptyDsn(cfg datastore.Config) string {
 	return cfg.URL[:strings.Index(cfg.URL, "/")+1]
 }
 
+// createDatabase create database if not exists
 func createDatabase(cfg datastore.Config) error {
 	createSql := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;", cfg.Database)
 	db, err := sql.Open("mysql", mysqlEmptyDsn(cfg))
@@ -48,5 +48,4 @@ func migrate(client *gorm.DB) {
 		}
 		klog.Infof("migrating data for table %v", k.TableName())
 	}
-	client.AutoMigrate(iamv1alpha1.User{})
 }

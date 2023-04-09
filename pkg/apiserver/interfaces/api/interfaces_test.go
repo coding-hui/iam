@@ -1,11 +1,12 @@
 package api
 
 import (
+	"gotest.tools/assert"
 	"testing"
 
-	"gotest.tools/assert"
+	"github.com/wecoding/iam/pkg/apiserver/config"
 )
 
 func TestInitAPIBean(t *testing.T) {
-	assert.Equal(t, len(InitAPIBean()), 1)
+	assert.Equal(t, len(InitAPIBean(config.Config{})), 3)
 }
