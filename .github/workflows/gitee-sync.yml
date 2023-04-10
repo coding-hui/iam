@@ -42,3 +42,4 @@ jobs:
           debug: true
           force_update: true
           static_list: "iam"
+          clone_style: "ssh"
