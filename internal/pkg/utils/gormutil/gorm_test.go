@@ -1,3 +1,7 @@
+// Copyright (c) 2023 coding-hui. All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file.
+
 // Package gormutil is a util to convert offset and limit to default values.
 package gormutil
 
