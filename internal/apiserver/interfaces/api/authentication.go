@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"k8s.io/klog/v2"
 
-	"github.com/wecoding/iam/internal/apiserver/config"
-	"github.com/wecoding/iam/internal/apiserver/domain/service"
-	"github.com/wecoding/iam/internal/pkg/api"
-	"github.com/wecoding/iam/pkg/api/apiserver/v1alpha1"
+	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/domain/service"
+	"github.com/coding-hui/iam/internal/pkg/api"
+	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
 
 type authentication struct {

@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/wecoding/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/config"
 )
 
 const (

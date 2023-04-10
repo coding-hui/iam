@@ -1,6 +1,6 @@
 BIN_DIR=_output/bin
 RELEASE_DIR=_output/release
-REPO_PATH=github.com/wecoding/iam
+REPO_PATH=github.com/coding-hui/iam
 IMAGE_PREFIX=wecoding
 CC ?= "gcc"
 GOOS ?= linux

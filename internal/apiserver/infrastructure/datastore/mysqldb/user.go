@@ -9,10 +9,10 @@ import (
 	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/common/fields"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
-	"github.com/wecoding/iam/internal/apiserver/domain/repository"
-	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
-	"github.com/wecoding/iam/internal/pkg/code"
-	"github.com/wecoding/iam/internal/pkg/utils/gormutil"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
+	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
 )
 
 type userRepositoryImpl struct {

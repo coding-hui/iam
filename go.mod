@@ -1,4 +1,4 @@
-module github.com/wecoding/iam
+module github.com/coding-hui/iam
 
 go 1.19
 

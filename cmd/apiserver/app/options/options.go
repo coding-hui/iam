@@ -6,7 +6,7 @@ import (
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/klog/v2"
 
-	"github.com/wecoding/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/config"
 )
 
 // ServerRunOptions contains everything necessary to create and run api apiserver

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/wecoding/iam/cmd/apiserver/app"
+	"github.com/coding-hui/iam/cmd/apiserver/app"
 )
 
 func main() {

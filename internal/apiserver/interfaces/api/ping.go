@@ -1,8 +1,8 @@
 package api
 
 import (
+	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/gin-gonic/gin"
-	"github.com/wecoding/iam/internal/pkg/api"
 )
 
 type ping struct{}

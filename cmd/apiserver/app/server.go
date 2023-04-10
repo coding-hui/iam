@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/cobra"
 	"k8s.io/klog/v2"
 
-	"github.com/wecoding/iam/cmd/apiserver/app/options"
-	"github.com/wecoding/iam/internal/apiserver"
-	"github.com/wecoding/iam/version"
+	"github.com/coding-hui/iam/cmd/apiserver/app/options"
+	"github.com/coding-hui/iam/internal/apiserver"
+	"github.com/coding-hui/iam/version"
 )
 
 // NewAPIServerCommand creates a *cobra.Command object with default parameters

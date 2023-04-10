@@ -3,7 +3,7 @@ package event
 import (
 	"context"
 
-	"github.com/wecoding/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/config"
 )
 
 var workers []Worker

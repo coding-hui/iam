@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
-	"github.com/wecoding/iam/pkg/api/apiserver/v1alpha1"
+	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
 
 // ConvertUserModelToBase assemble the User model to DTO

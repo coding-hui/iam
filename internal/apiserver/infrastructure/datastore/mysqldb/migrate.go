@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	"github.com/wecoding/iam/internal/apiserver/domain/model"
-	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
+	"github.com/coding-hui/iam/internal/apiserver/domain/model"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 )
 
 // mysqlEmptyDsn msyql empty dsn for create databases

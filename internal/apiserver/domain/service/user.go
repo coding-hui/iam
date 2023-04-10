@@ -6,7 +6,7 @@ import (
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/coding-hui/common/util/auth"
-	"github.com/wecoding/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 )
 
 // UserService User manage api

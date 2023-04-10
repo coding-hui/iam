@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	repository2 "github.com/wecoding/iam/internal/apiserver/domain/repository"
-	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
+	repository2 "github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 )
 
 type mysqldb struct {

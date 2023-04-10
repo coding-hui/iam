@@ -6,9 +6,9 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore"
-	"github.com/wecoding/iam/internal/pkg/options"
-	"github.com/wecoding/iam/internal/pkg/utils/env"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
+	"github.com/coding-hui/iam/internal/pkg/options"
+	"github.com/coding-hui/iam/internal/pkg/utils/env"
 )
 
 // Config config for apiserver

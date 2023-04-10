@@ -1,7 +1,7 @@
 definitions:
   api.PageResponse:
     properties:
-      list: {}
+      list: { }
       total:
         type: integer
     type: object
@@ -10,7 +10,7 @@ definitions:
       code:
         description: Code defines the business error code.
         type: integer
-      data: {}
+      data: { }
       msg:
         description: |-
           Msg contains the detail of this message.
@@ -38,7 +38,7 @@ definitions:
         type: string
       extend:
         allOf:
-        - $ref: '#/definitions/v1.Extend'
+          - $ref: '#/definitions/v1.Extend'
         description: Extend store the fields that need to be added, but do not want
           to add a new table column, will not be stored in db.
       id:
@@ -91,7 +91,7 @@ definitions:
         type: string
       metadata:
         allOf:
-        - $ref: '#/definitions/v1.ObjectMeta'
+          - $ref: '#/definitions/v1.ObjectMeta'
         description: Standard object's metadata.
       password:
         description: 'Required: true'
@@ -103,166 +103,166 @@ definitions:
       tenantId:
         type: integer
     required:
-    - email
-    - password
+      - email
+      - password
     type: object
 info:
-  contact: {}
+  contact: { }
 paths:
   /api/v1/users:
     get:
       description: list users
       parameters:
-      - description: fuzzy search based on name
-        in: query
-        name: name
-        type: string
-      - description: fuzzy search based on alias
-        in: query
-        name: alias
-        type: string
-      - description: fuzzy search based on email
-        in: query
-        name: email
-        type: string
-      - description: query the page number
-        in: query
-        name: offset
-        type: integer
-      - description: query the page size number
-        in: query
-        name: limit
-        type: integer
+        - description: fuzzy search based on name
+          in: query
+          name: name
+          type: string
+        - description: fuzzy search based on alias
+          in: query
+          name: alias
+          type: string
+        - description: fuzzy search based on email
+          in: query
+          name: email
+          type: string
+        - description: query the page number
+          in: query
+          name: offset
+          type: integer
+        - description: query the page size number
+          in: query
+          name: limit
+          type: integer
       responses:
         "200":
           description: '{"code": "000", "data": [...]} "users'
           schema:
             allOf:
-            - $ref: '#/definitions/api.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/api.PageResponse'
-                  - properties:
-                      list:
-                        items:
-                          $ref: '#/definitions/v1alpha1.User'
-                        type: array
-                    type: object
-              type: object
+              - $ref: '#/definitions/api.Response'
+              - properties:
+                  data:
+                    allOf:
+                      - $ref: '#/definitions/api.PageResponse'
+                      - properties:
+                          list:
+                            items:
+                              $ref: '#/definitions/v1alpha1.User'
+                            type: array
+                        type: object
+                type: object
       security:
-      - Bearer: []
+        - Bearer: [ ]
       summary: list users
       tags:
-      - Users
+        - Users
     post:
       consumes:
-      - application/json
+        - application/json
       description: create user
       parameters:
-      - description: user info
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/v1alpha1.User'
+        - description: user info
+          in: body
+          name: data
+          required: true
+          schema:
+            $ref: '#/definitions/v1alpha1.User'
       responses:
         "200":
           description: '{"code": "000", "data": [...]}'
           schema:
             $ref: '#/definitions/api.Response'
       security:
-      - Bearer: []
+        - Bearer: [ ]
       summary: create user
       tags:
-      - Users
+        - Users
   /api/v1/users/{name}:
     delete:
       description: delete user
       parameters:
-      - description: identifier of a user
-        in: path
-        name: name
-        required: true
-        type: string
+        - description: identifier of a user
+          in: path
+          name: name
+          required: true
+          type: string
       responses:
         "200":
           description: '{"code": "000", "data": [...]}'
           schema:
             $ref: '#/definitions/api.Response'
       security:
-      - Bearer: []
+        - Bearer: [ ]
       summary: delete user
       tags:
-      - Users
+        - Users
     get:
       description: get user detail
       parameters:
-      - description: identifier of a user
-        in: path
-        name: name
-        required: true
-        type: string
+        - description: identifier of a user
+          in: path
+          name: name
+          required: true
+          type: string
       responses:
         "200":
           description: '{"code": "000", "data": [...]} "user detail'
           schema:
             allOf:
-            - $ref: '#/definitions/api.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/v1alpha1.User'
-              type: object
+              - $ref: '#/definitions/api.Response'
+              - properties:
+                  data:
+                    $ref: '#/definitions/v1alpha1.User'
+                type: object
       security:
-      - Bearer: []
+        - Bearer: [ ]
       summary: get user detail
       tags:
-      - Users
+        - Users
     put:
       consumes:
-      - application/json
+        - application/json
       description: update user info
       parameters:
-      - description: identifier of a user
-        in: path
-        name: name
-        required: true
-        type: string
-      - description: user info
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/v1alpha1.User'
+        - description: identifier of a user
+          in: path
+          name: name
+          required: true
+          type: string
+        - description: user info
+          in: body
+          name: data
+          required: true
+          schema:
+            $ref: '#/definitions/v1alpha1.User'
       responses:
         "200":
           description: '{"code": "000", "data": [...]}'
           schema:
             $ref: '#/definitions/api.Response'
       security:
-      - Bearer: []
+        - Bearer: [ ]
       summary: update user info
       tags:
-      - Users
+        - Users
   /login/{identityprovider}:
     post:
       description: Login by identity provider user
       parameters:
-      - description: password of a user
-        in: query
-        name: password
-        required: true
-        type: string
+        - description: password of a user
+          in: query
+          name: password
+          required: true
+          type: string
       responses:
         "200":
           description: '{"code": "000", "data": [...]}'
           schema:
             $ref: '#/definitions/api.Response'
       security:
-      - Basic: []
+        - Basic: [ ]
       summary: Login by identity provider user
       tags:
-      - Authentication
+        - Authentication
   /ping:
     get:
       description: check service is running
@@ -273,5 +273,5 @@ paths:
             $ref: '#/definitions/api.Response'
       summary: check service is running
       tags:
-      - System
+        - System
 swagger: "2.0"

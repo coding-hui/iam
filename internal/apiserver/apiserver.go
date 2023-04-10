@@ -13,16 +13,16 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"github.com/wecoding/iam/docs/apidoc"
-	"github.com/wecoding/iam/internal/apiserver/config"
-	"github.com/wecoding/iam/internal/apiserver/domain/repository"
-	"github.com/wecoding/iam/internal/apiserver/domain/service"
-	"github.com/wecoding/iam/internal/apiserver/event"
-	"github.com/wecoding/iam/internal/apiserver/infrastructure/datastore/mysqldb"
-	apisv1 "github.com/wecoding/iam/internal/apiserver/interfaces/api"
-	"github.com/wecoding/iam/internal/pkg/middleware"
-	"github.com/wecoding/iam/internal/pkg/utils/container"
-	"github.com/wecoding/iam/internal/pkg/utils/env"
+	"github.com/coding-hui/iam/docs/apidoc"
+	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/domain/service"
+	"github.com/coding-hui/iam/internal/apiserver/event"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
+	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
+	"github.com/coding-hui/iam/internal/pkg/middleware"
+	"github.com/coding-hui/iam/internal/pkg/utils/container"
+	"github.com/coding-hui/iam/internal/pkg/utils/env"
 )
 
 // APIServer interface for call api apiserver

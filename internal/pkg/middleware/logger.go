@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"k8s.io/klog/v2"
 
-	"github.com/wecoding/iam/internal/pkg/utils"
+	"github.com/coding-hui/iam/internal/pkg/utils"
 )
 
 // requestLog write to console
