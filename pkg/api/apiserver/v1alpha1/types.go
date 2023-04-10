@@ -97,14 +97,28 @@ type AuthenticateRequest struct {
 
 // AuthenticateResponse is the response of login request
 type AuthenticateResponse struct {
-	User         *UserBase `json:"user"`
-	AccessToken  string    `json:"accessToken"`
-	RefreshToken string    `json:"refreshToken,omitempty"`
-	Expire       string    `json:"expire"`
+	// User user info
+	User *UserBase `json:"user"`
+
+	// AccessToken is the token that authorizes and authenticates
+	// the requests.
+	AccessToken string `json:"access_token"`
+
+	// TokenType is the type of token.
+	// The Type method returns either this or "Bearer", the default.
+	TokenType string `json:"token_type,omitempty"`
+
+	// RefreshToken is a token that's used by the application
+	// (as opposed to the user) to refresh the access token
+	// if it expires.
+	RefreshToken string `json:"refresh_token,omitempty"`
+
+	// ExpiresIn is the optional expiration second of the access token.
+	ExpiresIn int `json:"expires_in,omitempty"`
 }
 
 // RefreshTokenResponse is the response of refresh token request
 type RefreshTokenResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }

@@ -63,7 +63,10 @@ func (u *User) AfterCreate(tx *gorm.DB) error {
 
 // CustomClaims is the custom claims
 type CustomClaims struct {
+	jwt.RegisteredClaims
+	// Private Claim Names
+	// TokenType defined the type of the token
+	TokenType string `json:"token_type,omitempty"`
 	Username  string `json:"username"`
 	GrantType string `json:"grant_type"`
-	jwt.RegisteredClaims
 }

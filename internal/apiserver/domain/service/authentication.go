@@ -92,20 +92,26 @@ func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v
 	}
 
 	return &v1alpha1.AuthenticateResponse{
-		User:         userBase,
-		AccessToken:  accessToken,
+		User:        userBase,
+		AccessToken: accessToken,
+		// The OAuth 2.0 token_type response parameter value MUST be Bearer,
+		// as specified in OAuth 2.0 Bearer Token Usage [RFC6750]
+		TokenType:    "Bearer",
 		RefreshToken: refreshToken,
+		ExpiresIn:    int(a.cfg.JwtOptions.Timeout.Seconds()),
 	}, nil
 }
 
-func (a *authenticationServiceImpl) generateJWTToken(username, grantType string, expireDuration time.Duration) (string, error) {
-	expire := time.Now().Add(expireDuration)
+func (a *authenticationServiceImpl) generateJWTToken(username, grantType string, expiresIn time.Duration) (string, error) {
+	issueAt := time.Now()
 	claims := model.CustomClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    jwtIssuer,
+			IssuedAt:  jwt.NewNumericDate(issueAt),
 			Audience:  jwt.ClaimStrings{audience},
+			Subject:   username,
 			NotBefore: jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(expire),
+			ExpiresAt: jwt.NewNumericDate(issueAt.Add(expiresIn)),
 		},
 		Username:  username,
 		GrantType: grantType,
