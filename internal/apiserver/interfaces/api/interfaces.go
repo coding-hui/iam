@@ -36,6 +36,7 @@ type InitApiGroup struct {
 type InitApi struct {
 	Method  string
 	Path    string
+	Filters gin.HandlersChain
 	Handler gin.HandlerFunc
 }
 

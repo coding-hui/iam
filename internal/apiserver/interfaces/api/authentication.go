@@ -5,16 +5,18 @@
 package api
 
 import (
+	"context"
 	"strings"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
-	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
-
+	"github.com/coding-hui/common/errors"
+	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/pkg/api"
+	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	"github.com/gin-gonic/gin"
 )
 
 type authentication struct {
@@ -43,6 +45,12 @@ func (a *authentication) GetApiGroup() InitApiGroup {
 				Path:    "/auth/refresh-token",
 				Handler: a.refreshToken,
 			},
+			{
+				Method:  GET,
+				Path:    "/auth/user-info",
+				Filters: gin.HandlersChain{authCheckFilter},
+				Handler: a.userInfo,
+			},
 		},
 	}
 }
@@ -53,13 +61,29 @@ func authCheckFilter(c *gin.Context) {
 	if tokenHeader != "" {
 		splitted := strings.Split(tokenHeader, " ")
 		if len(splitted) != 2 {
-			api.Fail(c)
+			api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The `Authorization` header was empty"), c)
+			c.Abort()
 			return
 		}
 		tokenValue = splitted[1]
 	}
+	if tokenValue == "" {
+		api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The `Authorization` header was empty"), c)
+		c.Abort()
+		return
+	}
+	token, err := service.ParseToken(tokenValue)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		c.Abort()
+		return
+	}
+	if token.GrantType != service.GrantTypeAccess {
+		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Invalid authorization header"), c)
+		return
+	}
 
-	klog.Info("determine token: %s", tokenValue)
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserName, token.Username))
 
 	c.Next()
 }
@@ -115,4 +139,19 @@ func (a *authentication) refreshToken(c *gin.Context) {
 	}
 
 	api.OkWithData(base, c)
+}
+
+func (a *authentication) userInfo(c *gin.Context) {
+	userName, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserName).(string)
+	if !ok {
+		api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The `Authorization` header was empty"), c)
+		return
+	}
+	user, err := a.UserService.Get(c.Request.Context(), userName, metav1alpha1.GetOptions{})
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.OkWithData(user, c)
 }

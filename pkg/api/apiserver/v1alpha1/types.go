@@ -10,6 +10,11 @@ import (
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
+var (
+	// CtxKeyUserName request context key of username
+	CtxKeyUserName = "username"
+)
+
 type UserState string
 
 // These are the valid phases of a user.

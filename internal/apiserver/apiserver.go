@@ -133,6 +133,11 @@ func (s *restServer) RegisterAPIRoute() {
 			}
 		}
 		for _, v := range api.GetApiGroup().Apis {
+			if len(v.Filters) > 0 {
+				for _, filter := range v.Filters {
+					r.Use(filter)
+				}
+			}
 			r.Handle(v.Method, v.Path, v.Handler)
 		}
 	}
