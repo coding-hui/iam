@@ -31,9 +31,12 @@ const (
 	GrantTypeRefresh = "refresh"
 )
 
+var signedKey string
+
 // AuthenticationService authentication service
 type AuthenticationService interface {
 	Authenticate(ctx context.Context, loginReq v1alpha1.AuthenticateRequest) (*v1alpha1.AuthenticateResponse, error)
+	RefreshToken(ctx context.Context, refreshToken string) (*v1alpha1.RefreshTokenResponse, error)
 }
 
 type authenticationServiceImpl struct {
@@ -44,6 +47,7 @@ type authenticationServiceImpl struct {
 
 // NewAuthenticationService new authentication service
 func NewAuthenticationService(c config.Config) AuthenticationService {
+	signedKey = c.JwtOptions.Key
 	return &authenticationServiceImpl{cfg: c}
 }
 
@@ -102,6 +106,55 @@ func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v
 	}, nil
 }
 
+func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken string) (*v1alpha1.RefreshTokenResponse, error) {
+	claim, err := ParseToken(refreshToken)
+	if err != nil {
+		if errors.IsCode(err, code.ErrExpired) {
+			return nil, errors.WithCode(code.ErrExpired, jwt.ErrTokenExpired.Error())
+		}
+		return nil, err
+	}
+	if claim.GrantType == GrantTypeRefresh {
+		accessToken, err := a.generateJWTToken(claim.Username, GrantTypeAccess, time.Hour)
+		if err != nil {
+			return nil, err
+		}
+		return &v1alpha1.RefreshTokenResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		}, nil
+	}
+	return nil, err
+}
+
+// ParseToken parses and verifies a token
+func ParseToken(tokenString string) (*model.CustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &model.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(signedKey), nil
+	})
+	if err != nil {
+		var ve *jwt.ValidationError
+		if jwtErr := errors.As(err, &ve); jwtErr {
+			switch ve.Errors {
+			case jwt.ValidationErrorExpired:
+				return nil, errors.WithCode(code.ErrExpired, jwt.ErrTokenExpired.Error())
+			case jwt.ValidationErrorNotValidYet:
+				return nil, errors.WithCode(code.ErrSignatureInvalid, jwt.ErrTokenNotValidYet.Error())
+			case jwt.ValidationErrorMalformed:
+				return nil, errors.WithCode(code.ErrEncrypt, jwt.ErrTokenMalformed.Error())
+			default:
+				return nil, errors.WithCode(code.ErrSignatureInvalid, err.Error())
+			}
+		}
+		return nil, err
+	}
+	if claims, ok := token.Claims.(*model.CustomClaims); ok && token.Valid {
+		return claims, nil
+	}
+
+	return nil, errors.WithCode(code.ErrSignatureInvalid, err.Error())
+}
+
 func (a *authenticationServiceImpl) generateJWTToken(username, grantType string, expiresIn time.Duration) (string, error) {
 	issueAt := time.Now()
 	claims := model.CustomClaims{
@@ -118,7 +171,7 @@ func (a *authenticationServiceImpl) generateJWTToken(username, grantType string,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(a.cfg.JwtOptions.Key))
+	return token.SignedString([]byte(signedKey))
 }
 
 func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1alpha1.UserBase, error) {

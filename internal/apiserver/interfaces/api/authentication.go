@@ -32,12 +32,16 @@ func NewAuthentication(c config.Config) Interface {
 func (a *authentication) GetApiGroup() InitApiGroup {
 	return InitApiGroup{
 		BaseUrl: "",
-		Filters: gin.HandlersChain{authCheckFilter},
 		Apis: []InitApi{
 			{
 				Method:  POST,
 				Path:    "/login",
 				Handler: a.authenticate,
+			},
+			{
+				Method:  GET,
+				Path:    "/auth/refresh-token",
+				Handler: a.refreshToken,
 			},
 		},
 	}
@@ -101,4 +105,14 @@ func parseWithBody(c *gin.Context) (v1alpha1.AuthenticateRequest, error) {
 	}
 
 	return login, nil
+}
+
+func (a *authentication) refreshToken(c *gin.Context) {
+	base, err := a.AuthenticationService.RefreshToken(c.Request.Context(), c.GetHeader("RefreshToken"))
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.OkWithData(base, c)
 }
