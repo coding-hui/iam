@@ -25,7 +25,7 @@ readonly RELEASE_TARS="${LOCAL_OUTPUT_ROOT}/release-tars"
 readonly RELEASE_IMAGES="${LOCAL_OUTPUT_ROOT}/release-images"
 
 # IAM github account info
-readonly IAM_GITHUB_ORG=marmotedu
+readonly IAM_GITHUB_ORG=coding-hui
 readonly IAM_GITHUB_REPO=iam
 
 readonly ARTIFACT=iam.tar.gz
