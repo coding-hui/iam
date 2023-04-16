@@ -8,11 +8,13 @@ on:
   push:
     branches:
       - "go-0.x"
+      - "develop"
     tags:
       - "*"
   pull_request:
     branches:
       - "go-0.x"
+      - "develop"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
