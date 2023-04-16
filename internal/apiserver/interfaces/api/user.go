@@ -7,11 +7,13 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 
-	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
+	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
+	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
 
 type user struct {
@@ -61,15 +63,19 @@ func (u *user) GetApiGroup() InitApiGroup {
 
 // createUser create new user
 func (u *user) createUser(c *gin.Context) {
-	user := &iamv1alpha1.User{}
-	err := c.ShouldBindJSON(user)
+	createReq := v1alpha1.CreateUserRequest{}
+	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
-		api.Fail(c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	err = u.UserService.Create(c.Request.Context(), user, metav1alpha1.CreateOptions{})
+	if err := createReq.Validate(); err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, err.ToAggregate().Error()), c)
+		return
+	}
+	err = u.UserService.Create(c.Request.Context(), createReq)
 	if err != nil {
-		api.FailWithMessage(err.Error(), c)
+		api.FailWithErrCode(err, c)
 		return
 	}
 
@@ -78,15 +84,19 @@ func (u *user) createUser(c *gin.Context) {
 
 // updateUser update user info
 func (u *user) updateUser(c *gin.Context) {
-	user := &iamv1alpha1.User{}
-	err := c.ShouldBindJSON(user)
+	updateReq := v1alpha1.UpdateUserRequest{}
+	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
-		api.Fail(c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	err = u.UserService.Update(c.Request.Context(), user, metav1alpha1.UpdateOptions{})
+	if errs := updateReq.ValidateUpdate(); errs != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		return
+	}
+	err = u.UserService.Update(c.Request.Context(), c.Param("name"), updateReq)
 	if err != nil {
-		api.FailWithMessage(err.Error(), c)
+		api.FailWithErrCode(err, c)
 		return
 	}
 
@@ -97,7 +107,7 @@ func (u *user) updateUser(c *gin.Context) {
 func (u *user) deleteUser(c *gin.Context) {
 	err := u.UserService.Delete(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
 	if err != nil {
-		api.FailWithMessage(err.Error(), c)
+		api.FailWithErrCode(err, c)
 		return
 	}
 
@@ -108,7 +118,7 @@ func (u *user) deleteUser(c *gin.Context) {
 func (u *user) getUser(c *gin.Context) {
 	user, err := u.UserService.Get(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
 	if err != nil {
-		api.FailWithMessage(err.Error(), c)
+		api.FailWithErrCode(err, c)
 		return
 	}
 
@@ -127,8 +137,9 @@ func (u *user) listUser(c *gin.Context) {
 		Offset: &page,
 	})
 	if err != nil {
-		api.FailWithMessage(err.Error(), c)
+		api.FailWithErrCode(err, c)
 		return
 	}
+
 	api.OkWithPage(resp.Items, resp.GetTotalCount(), c)
 }

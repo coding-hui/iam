@@ -11,6 +11,7 @@ func init() {
 	register(ErrUserNotFound, 404, "User not found")
 	register(ErrUserAlreadyExist, 400, "User already exist")
 	register(ErrUserNameIsEmpty, 400, "Username is empty")
+	register(ErrDeleteOneself, 400, "Unable to delete yourself")
 	register(ErrReachMaxCount, 400, "Secret reach the max count")
 	register(ErrSecretNotFound, 404, "Secret not found")
 	register(ErrPolicyNotFound, 404, "Policy not found")

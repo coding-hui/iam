@@ -16,6 +16,9 @@ const (
 
 	// ErrUserNameIsEmpty - 400: Username is empty.
 	ErrUserNameIsEmpty
+
+	// ErrDeleteOneself - 400: Unable to delete yourself.
+	ErrDeleteOneself
 )
 
 // iam-apiserver: secret errors.

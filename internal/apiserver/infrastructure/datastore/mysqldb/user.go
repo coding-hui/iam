@@ -9,10 +9,11 @@ import (
 
 	"gorm.io/gorm"
 
-	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
+	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
+	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 
 	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/common/fields"
@@ -29,16 +30,22 @@ func newUserRepository(db *gorm.DB) repository.UserRepository {
 }
 
 // Create creates a new user account.
-func (u *userRepositoryImpl) Create(ctx context.Context, user *iamv1alpha1.User, opts metav1alpha1.CreateOptions) error {
-	if _, err := u.Get(ctx, user.Name, metav1alpha1.GetOptions{}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return errors.WithCode(code.ErrUserAlreadyExist, err.Error())
+func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts metav1alpha1.CreateOptions) error {
+	if oldUser, _ := u.Get(ctx, user.Name, metav1alpha1.GetOptions{}); oldUser != nil {
+		return errors.WithCode(code.ErrUserAlreadyExist, "User %s already exist", user.Name)
+	}
+	if err := u.db.WithContext(ctx).Create(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return errors.WithCode(code.ErrUserAlreadyExist, err.Error())
+		}
+		return err
 	}
 
-	return u.db.WithContext(ctx).Create(&user).Error
+	return nil
 }
 
 // Update updates an user account information.
-func (u *userRepositoryImpl) Update(ctx context.Context, user *iamv1alpha1.User, opts metav1alpha1.UpdateOptions) error {
+func (u *userRepositoryImpl) Update(ctx context.Context, user *model.User, opts metav1alpha1.UpdateOptions) error {
 	if err := u.db.WithContext(ctx).Save(user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrUserNotFound, err.Error())
@@ -55,8 +62,10 @@ func (u *userRepositoryImpl) Delete(ctx context.Context, username string, opts m
 	if opts.Unscoped {
 		u.db = u.db.Unscoped()
 	}
-
-	err := u.db.WithContext(ctx).Where("name = ?", username).Delete(&iamv1alpha1.User{}).Error
+	if currentUser := ctx.Value(&v1alpha1.CtxKeyUserName); currentUser != "" && currentUser == username {
+		return errors.WithCode(code.ErrDeleteOneself, "User %s failed to be deleted and cannot delete itself", currentUser)
+	}
+	err := u.db.WithContext(ctx).Where("name = ?", username).Delete(&model.User{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrUserNotFound, err.Error())
@@ -74,12 +83,12 @@ func (u *userRepositoryImpl) DeleteCollection(ctx context.Context, usernames []s
 		u.db = u.db.Unscoped()
 	}
 
-	return u.db.WithContext(ctx).Where("name in (?)", usernames).Delete(&iamv1alpha1.User{}).Error
+	return u.db.WithContext(ctx).Where("name in (?)", usernames).Delete(&model.User{}).Error
 }
 
 // Get get user
-func (u *userRepositoryImpl) Get(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*iamv1alpha1.User, error) {
-	user := &iamv1alpha1.User{}
+func (u *userRepositoryImpl) Get(ctx context.Context, username string, _ metav1alpha1.GetOptions) (*model.User, error) {
+	user := &model.User{}
 	if username == "" {
 		return nil, errors.WithCode(code.ErrUserNameIsEmpty, "Username is empty")
 	}
@@ -96,8 +105,8 @@ func (u *userRepositoryImpl) Get(ctx context.Context, username string, opts meta
 }
 
 // List list users
-func (u *userRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*iamv1alpha1.UserList, error) {
-	list := &iamv1alpha1.UserList{}
+func (u *userRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
+	list := &v1alpha1.UserList{}
 
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
 
@@ -107,7 +116,8 @@ func (u *userRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOpt
 	if username != "" {
 		db.Where("name like ?", "%"+username+"%")
 	}
-	db.Offset(ol.Offset).
+	db.Model(model.User{}).
+		Offset(ol.Offset).
 		Limit(ol.Limit).
 		Order("id desc").
 		Find(&list.Items).

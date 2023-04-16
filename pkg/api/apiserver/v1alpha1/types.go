@@ -27,28 +27,32 @@ const (
 	UserAuthLimitExceeded UserState = "AuthLimitExceeded"
 )
 
+// CreateUserRequest create user request
+type CreateUserRequest struct {
+	Name     string `json:"name" validate:"required,name"`
+	Alias    string `json:"alias,omitempty" validate:"min=1,max=30" optional:"true"`
+	Email    string `json:"email" validate:"required,email,min=1,max=100"`
+	Password string `json:"password" validate:"required,password"`
+}
+
+// UpdateUserRequest update user request
+type UpdateUserRequest struct {
+	Alias string `json:"alias,omitempty" validate:"min=1,max=30" optional:"true"`
+	Email string `json:"email" validate:"required,email,min=1,max=100"`
+}
+
 // UserBase represents a user restful resource.
 type UserBase struct {
 	// Standard object's metadata.
 	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
-
-	TenantId uint64 `json:"tenantId,omitempty"`
-
-	Status int `json:"status" validate:"omitempty"`
-
-	Alias string `json:"alias" validate:"min=1,max=30"`
-
-	// Required: true
-	Password string `json:"password,omitempty" validate:"required"`
-
-	// Required: true
-	Email string `json:"email" validate:"required,email,min=1,max=100"`
-
-	Phone string `json:"phone" validate:"omitempty"`
-
-	Disabled bool `json:"disabled"`
-
-	LastLoginTime *time.Time `json:"last_login_time,omitempty"`
+	TenantId                uint64     `json:"tenantId,omitempty"`
+	Status                  int        `json:"status"`
+	Alias                   string     `json:"alias"`
+	Password                string     `json:"password,omitempty"`
+	Email                   string     `json:"email"`
+	Phone                   string     `json:"phone"`
+	Disabled                bool       `json:"disabled"`
+	LastLoginTime           *time.Time `json:"last_login_time,omitempty"`
 }
 
 // UserList is the whole list of all users which have been stored in stroage.

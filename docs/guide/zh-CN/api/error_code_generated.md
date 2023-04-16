@@ -24,6 +24,7 @@ IAM 系统支持的错误码列表如下：
 | ErrUserNotFound | 110001 | 404 | User not found |
 | ErrUserAlreadyExist | 110002 | 400 | User already exist |
 | ErrUserNameIsEmpty | 110003 | 400 | Username is empty |
+| ErrDeleteOneself | 110004 | 400 | Unable to delete yourself |
 | ErrReachMaxCount | 110101 | 400 | Secret reach the max count |
 | ErrSecretNotFound | 110102 | 404 | Secret not found |
 | ErrPolicyNotFound | 110201 | 404 | Policy not found |

@@ -21,7 +21,7 @@ type Response struct {
 	// This message is suitable to be exposed to external
 	Msg string `json:"msg"`
 
-	Data interface{} `json:"data"`
+	Data interface{} `json:"data,omitempty"`
 
 	// Reference returns the reference document which maybe useful to solve this error.
 	Reference string `json:"reference,omitempty"`
@@ -42,11 +42,11 @@ func Result(code int, data interface{}, msg string, c *gin.Context) {
 }
 
 func Ok(c *gin.Context) {
-	Result(code.ErrSuccess, map[string]interface{}{}, "success", c)
+	Result(code.ErrSuccess, nil, "success", c)
 }
 
 func OkWithMessage(message string, c *gin.Context) {
-	Result(code.ErrSuccess, map[string]interface{}{}, message, c)
+	Result(code.ErrSuccess, nil, message, c)
 }
 
 func OkWithData(data interface{}, c *gin.Context) {

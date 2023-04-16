@@ -10,7 +10,7 @@ import (
 )
 
 // Validate validates that a user object is valid.
-func (u *UserBase) Validate() field.ErrorList {
+func (u *CreateUserRequest) Validate() field.ErrorList {
 	val := validation.NewValidator(u)
 	allErrs := val.Validate()
 
@@ -23,7 +23,7 @@ func (u *UserBase) Validate() field.ErrorList {
 
 // ValidateUpdate validates that a user object is valid when update.
 // Like User.Validate but not validate password.
-func (u *UserBase) ValidateUpdate() field.ErrorList {
+func (u *UpdateUserRequest) ValidateUpdate() field.ErrorList {
 	val := validation.NewValidator(u)
 	allErrs := val.Validate()
 

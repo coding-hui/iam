@@ -24,16 +24,16 @@ const (
 )
 
 func init() {
-	if err := validate.RegisterValidation("checkname", ValidateName); err != nil {
+	if err := validate.RegisterValidation("name", ValidateName); err != nil {
 		panic(err)
 	}
-	if err := validate.RegisterValidation("checkalias", ValidateAlias); err != nil {
+	if err := validate.RegisterValidation("alias", ValidateAlias); err != nil {
 		panic(err)
 	}
-	if err := validate.RegisterValidation("checkemail", ValidateEmail); err != nil {
+	if err := validate.RegisterValidation("email", ValidateEmail); err != nil {
 		panic(err)
 	}
-	if err := validate.RegisterValidation("checkpassword", ValidatePassword); err != nil {
+	if err := validate.RegisterValidation("password", ValidatePassword); err != nil {
 		panic(err)
 	}
 }
