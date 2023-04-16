@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/iam/internal/pkg/code"
@@ -84,6 +85,7 @@ func FailWithMessage(message string, c *gin.Context) {
 // errors.Coder contains error code, user-safe error message and http status code.
 func FailWithErrCode(err error, c *gin.Context) {
 	if err != nil {
+		klog.Errorf("%#+v", err)
 		coder := errors.ParseCoder(err)
 		c.JSON(coder.HTTPStatus(), Response{
 			Code:      coder.Code(),
