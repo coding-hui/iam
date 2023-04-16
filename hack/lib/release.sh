@@ -435,13 +435,13 @@ Client binaries are no longer included in the IAM final tarball.
 Run release/get-iam-binaries.sh to download client and server binaries.
 EOF
 
-  # We want everything in /scripts.
+  # We want everything in /hack.
   mkdir -p "${release_stage}/release"
-  cp -R "${IAM_ROOT}/scripts/release" "${release_stage}/"
+  cp -R "${IAM_ROOT}/hack/release" "${release_stage}/"
   cat <<EOF >"${release_stage}/release/get-iam-binaries.sh"
 #!/usr/bin/env bash
 
-# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Copyright (c) 2023 coding-hui. All rights reserved.
 # Use of this source code is governed by a MIT style
 # license that can be found in the LICENSE file.
 

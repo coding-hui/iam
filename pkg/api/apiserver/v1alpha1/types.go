@@ -25,8 +25,6 @@ const (
 	UserDisabled UserState = "Disabled"
 	// UserAuthLimitExceeded means restrict user login.
 	UserAuthLimitExceeded UserState = "AuthLimitExceeded"
-
-	AuthenticatedSuccessfully = "authenticated successfully"
 )
 
 // UserBase represents a user restful resource.

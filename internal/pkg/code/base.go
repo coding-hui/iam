@@ -33,6 +33,24 @@ const (
 const (
 	// ErrDatabase - 500: Database error.
 	ErrDatabase int = iota + 100101
+
+	// ErrPrimaryEmpty - 500: Primary key is empty.
+	ErrPrimaryEmpty
+
+	// ErrNilEntity - 500: Entity is nil.
+	ErrNilEntity
+
+	// ErrRecordExist - 500: Entity primary key is exist.
+	ErrRecordExist
+
+	// ErrRecordNotExist - 500: Entity primary key is not exist.
+	ErrRecordNotExist
+
+	// ErrIndexInvalid - 500: Entity index is invalid.
+	ErrIndexInvalid
+
+	// ErrEntityInvalid - 500: Entity is invalid.
+	ErrEntityInvalid
 )
 
 // common: authorization and authentication errors.
@@ -43,10 +61,16 @@ const (
 	// ErrSignatureInvalid - 401: Signature is invalid.
 	ErrSignatureInvalid
 
+	// ErrTokenMalformed - 401: Token is malformed.
+	ErrTokenMalformed
+
+	// ErrTokenNotValidYet - 401: Token is not valid yet.
+	ErrTokenNotValidYet
+
 	// ErrExpired - 401: Token expired.
 	ErrExpired
 
-	// ErrMissingLoginValues - 401: Missing Username or Password
+	// ErrMissingLoginValues - 401: Missing Username or Password.
 	ErrMissingLoginValues
 
 	// ErrInvalidAuthHeader - 401: Invalid authorization header.
@@ -55,7 +79,7 @@ const (
 	// ErrMissingHeader - 401: The `Authorization` header was empty.
 	ErrMissingHeader
 
-	// ErrPasswordIncorrect - 401: Password was incorrect.
+	// ErrPasswordIncorrect - 401: Invalid Username or Password.
 	ErrPasswordIncorrect
 
 	// ErrPermissionDenied - 403: Permission denied.

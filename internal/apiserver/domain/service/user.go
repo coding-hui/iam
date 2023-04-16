@@ -6,11 +6,26 @@ package service
 
 import (
 	"context"
+	"time"
+
+	"k8s.io/klog/v2"
 
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/pkg/code"
+
+	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/coding-hui/common/util/auth"
-	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+)
+
+const (
+	// DefaultAdmin default admin username
+	DefaultAdmin string = "ADMIN"
+	// DefaultAdminPwd default admin password
+	DefaultAdminPwd string = "WECODING"
+	// DefaultAdminUserAlias default admin user alias
+	DefaultAdminUserAlias string = "Administrator"
 )
 
 // UserService User manage api
@@ -21,6 +36,7 @@ type UserService interface {
 	DeleteCollection(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
 	Get(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*iamv1alpha1.User, error)
 	List(ctx context.Context, opts metav1alpha1.ListOptions) (*iamv1alpha1.UserList, error)
+	FlushLastLoginTime(ctx context.Context, user *iamv1alpha1.User) error
 	Init(ctx context.Context) error
 }
 
@@ -35,6 +51,23 @@ func NewUserService() UserService {
 
 // Init initialize user data
 func (u *userServiceImpl) Init(ctx context.Context) error {
+	_, err := u.Get(ctx, DefaultAdmin, metav1alpha1.GetOptions{})
+	if err != nil && errors.IsCode(err, code.ErrUserNotFound) {
+		user := &iamv1alpha1.User{
+			ObjectMeta: metav1alpha1.ObjectMeta{
+				Name: DefaultAdmin,
+			},
+			Password: DefaultAdminPwd,
+			Alias:    DefaultAdminUserAlias,
+			Disabled: false,
+		}
+		err = u.Create(ctx, user, metav1alpha1.CreateOptions{})
+		if err != nil {
+			return errors.WithMessagef(err, "Failed to initialize default admin")
+		}
+		klog.Info("initialize default admin done")
+	}
+
 	return nil
 }
 
@@ -96,4 +129,12 @@ func (u *userServiceImpl) List(ctx context.Context, listOptions metav1alpha1.Lis
 	}
 
 	return users, nil
+}
+
+// FlushLastLoginTime update user login time
+func (u *userServiceImpl) FlushLastLoginTime(ctx context.Context, user *iamv1alpha1.User) error {
+	now := time.Now()
+	user.LastLoginTime = &now
+
+	return u.Update(ctx, user, metav1alpha1.UpdateOptions{})
 }

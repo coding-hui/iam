@@ -13,6 +13,9 @@ const (
 
 	// ErrUserAlreadyExist - 400: User already exist.
 	ErrUserAlreadyExist
+
+	// ErrUserNameIsEmpty - 400: Username is empty.
+	ErrUserNameIsEmpty
 )
 
 // iam-apiserver: secret errors.

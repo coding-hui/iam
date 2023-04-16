@@ -13,6 +13,9 @@ import (
 
 	repository2 "github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
+	"github.com/coding-hui/iam/internal/pkg/code"
+
+	"github.com/coding-hui/common/errors"
 )
 
 type mysqldb struct {
@@ -53,7 +56,7 @@ func (m *mysqldb) UserRepository() repository2.UserRepository {
 func (m *mysqldb) Close() error {
 	db, err := m.client.DB()
 	if err != nil {
-		return datastore.ErrGetClient
+		return errors.WithCode(code.ErrDatabase, err.Error())
 	}
 
 	return db.Close()

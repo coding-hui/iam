@@ -30,11 +30,6 @@ func (p *ping) GetApiGroup() InitApiGroup {
 }
 
 // ping
-// @Tags System
-// @Summary check service is running
-// @Description check service is running
-// @Success   200   {object}  api.Response "{"code": "000", "data": [...]}
-// @Router /ping [get]
 func (p *ping) ping(c *gin.Context) {
 	api.OkWithData("pong", c)
 }

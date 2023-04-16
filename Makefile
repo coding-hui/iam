@@ -1,89 +1,74 @@
-BIN_DIR=_output/bin
-RELEASE_DIR=_output/release
-REPO_PATH=github.com/coding-hui/iam
-IMAGE_PREFIX=wecoding
-CC ?= "gcc"
-GOOS ?= linux
-SUPPORT_PLUGINS ?= "no"
-BUILDX_OUTPUT_TYPE ?= "docker"
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
 
-# Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
-ifeq (,$(shell go env GOBIN))
-GOBIN=$(shell go env GOPATH)/bin
-else
-GOBIN=$(shell go env GOBIN)
-endif
+# Build all by default, even if it's not first
+.DEFAULT_GOAL := all
 
-# Get OS architecture
-OSARCH=$(shell uname -m)
-ifeq ($(OSARCH),x86_64)
-GOARCH?=amd64
-else ifeq ($(OSARCH),x64)
-GOARCH?=amd64
-else ifeq ($(OSARCH),aarch64)
-GOARCH?=arm64
-else ifeq ($(OSARCH),aarch64_be)
-GOARCH?=arm64
-else ifeq ($(OSARCH),armv8b)
-GOARCH?=arm64
-else ifeq ($(OSARCH),armv8l)
-GOARCH?=arm64
-else ifeq ($(OSARCH),i386)
-GOARCH?=x86
-else ifeq ($(OSARCH),i686)
-GOARCH?=x86
-else ifeq ($(OSARCH),arm)
-GOARCH?=arm
-else
-GOARCH?=$(OSARCH)
-endif
+.PHONY: all
+all: clean
 
-# Run `make images DOCKER_PLATFORMS="linux/amd64,linux/arm64" BUILDX_OUTPUT_TYPE=registry IMAGE_PREFIX=[yourregistry]` to push multi-platform
-DOCKER_PLATFORMS ?= "linux/${GOARCH}"
+# ==============================================================================
+# Build options
 
-include Makefile.def
+ROOT_PACKAGE=github.com/coding-hui/iam
+VERSION_PACKAGE=github.com/coding-hui/iam/version
 
-.EXPORT_ALL_VARIABLES:
+# ==============================================================================
+# Includes
 
-all: apiserver
+include hack/makelib/common.mk # make sure include common.mk at the first include line
+include hack/makelib/golang.mk
+include hack/makelib/image.mk
+include hack/makelib/deploy.mk
+include hack/makelib/copyright.mk
+include hack/makelib/gen.mk
+include hack/makelib/ca.mk
+include hack/makelib/release.mk
+include hack/makelib/swagger.mk
+include hack/makelib/dependencies.mk
+include hack/makelib/tools.mk
 
-init:
-	mkdir -p ${BIN_DIR}
-	mkdir -p ${RELEASE_DIR}
+## gen: Generate all necessary files, such as error code files.
+.PHONY: gen
+gen:
+	@$(MAKE) gen.run
 
-apiserver: init
-	if [ ${SUPPORT_PLUGINS} = "yes" ];then\
-		CC=${CC} CGO_ENABLED=1 go build -ldflags ${LD_FLAGS} -o ${BIN_DIR}/apiserver ./cmd/apiserver;\
-	else\
-		CC=${CC} CGO_ENABLED=0 go build -ldflags ${LD_FLAGS} -o ${BIN_DIR}/apiserver ./cmd/apiserver;\
-	fi;
+## ca: Generate CA files for all iam components.
+.PHONY: ca
+ca:
+	@$(MAKE) gen.ca
 
-apiserver-win: init
-	if [ ${SUPPORT_PLUGINS} = "yes" ];then\
-		env GOOS=windows CC=${CC} CGO_ENABLED=1 go build -ldflags ${LD_FLAGS} -o ${BIN_DIR}/apiserver.exe ./cmd/apiserver/main.go;\
-	else\
-		env GOOS=windows CC=${CC} CGO_ENABLED=0 go build -ldflags ${LD_FLAGS} -o ${BIN_DIR}/apiserver.exe ./cmd/apiserver/main.go;\
-	fi;
+## swagger: Generate swagger document.
+.PHONY: swagger
+swagger:
+	@$(MAKE) swagger.run
 
-image_bins: apiserver
+## serve-swagger: Serve swagger spec and docs.
+.PHONY: swagger.serve
+serve-swagger:
+	@$(MAKE) swagger.serve
 
-apiserver-image:
-	docker build -t "${IMAGE_PREFIX}/apiserver:$(RELEASE_VER)" . -f ./installer/dockerfile/apiserver/Dockerfile\
-		--build-arg=VERSION=$(RELEASE_VER)\
-		--build-arg=GITVERSION=$(GITVERSION)\
-		--build-arg=BUILDPLATFORM=$(DOCKER_PLATFORMS)
+## dependencies: Install necessary dependencies.
+.PHONY: dependencies
+dependencies:
+	@$(MAKE) dependencies.run
 
-unit-test:
-	go clean -testcache
-	go test -gcflags=all=-l -coverprofile=coverage.txt $(shell go list ./pkg/... ./cmd/...)
+## tools: install dependent tools.
+.PHONY: tools
+tools:
+	@$(MAKE) tools.install
 
+## check-updates: Check outdated dependencies of the go projects.
+.PHONY: check-updates
+check-updates:
+	@$(MAKE) go.updates
+
+.PHONY: tidy
+tidy:
+	@$(GO) mod tidy
+
+.PHONY: clean
 clean:
 	rm -rf _output/
 	rm -f *.log
-
-build-swagger:
-	go get -u github.com/swaggo/swag/cmd/swag
-	swag i -g apiserver.go -dir ./pkg/apiserver --parseDependency --parseInternal -o ./docs/apidoc
-
-run-apiserver:
-	go run ./cmd/apiserver/main.go

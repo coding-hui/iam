@@ -11,14 +11,15 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	convert "github.com/coding-hui/iam/internal/apiserver/interfaces/api/convert/v1alpha1"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+
+	"github.com/coding-hui/common/errors"
+	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
 const (
@@ -137,13 +138,13 @@ func ParseToken(tokenString string) (*model.CustomClaims, error) {
 		if jwtErr := errors.As(err, &ve); jwtErr {
 			switch ve.Errors {
 			case jwt.ValidationErrorExpired:
-				return nil, errors.WithCode(code.ErrExpired, jwt.ErrTokenExpired.Error())
+				return nil, errors.WithCode(code.ErrExpired, err.Error())
 			case jwt.ValidationErrorNotValidYet:
-				return nil, errors.WithCode(code.ErrSignatureInvalid, jwt.ErrTokenNotValidYet.Error())
+				return nil, errors.WithCode(code.ErrTokenNotValidYet, err.Error())
 			case jwt.ValidationErrorMalformed:
-				return nil, errors.WithCode(code.ErrEncrypt, jwt.ErrTokenMalformed.Error())
+				return nil, errors.WithCode(code.ErrTokenMalformed, err.Error())
 			default:
-				return nil, errors.WithCode(code.ErrSignatureInvalid, err.Error())
+				return nil, errors.WithCode(code.ErrTokenInvalid, err.Error())
 			}
 		}
 		return nil, err
@@ -152,7 +153,7 @@ func ParseToken(tokenString string) (*model.CustomClaims, error) {
 		return claims, nil
 	}
 
-	return nil, errors.WithCode(code.ErrSignatureInvalid, err.Error())
+	return nil, errors.WithCode(code.ErrTokenInvalid, err.Error())
 }
 
 func (a *authenticationServiceImpl) generateJWTToken(username, grantType string, expiresIn time.Duration) (string, error) {
@@ -178,11 +179,14 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1alpha1.UserBase
 	user, err := l.userService.Get(ctx, l.username, metav1alpha1.GetOptions{})
 	if err != nil {
 		if errors.IsCode(err, code.ErrUserNotFound) {
-			return nil, errors.WithCode(code.ErrPasswordIncorrect, "Password was incorrect")
+			return nil, errors.WithCode(code.ErrPasswordIncorrect, err.Error())
 		}
 		return nil, err
 	}
 	if err := passwordVerify(user.Password, l.password); err != nil {
+		return nil, err
+	}
+	if err := l.userService.FlushLastLoginTime(ctx, user); err != nil {
 		return nil, err
 	}
 
@@ -192,7 +196,7 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1alpha1.UserBase
 func passwordVerify(hash, password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-		return errors.WithCode(code.ErrPasswordIncorrect, "Password was incorrect")
+		return errors.WithCode(code.ErrPasswordIncorrect, err.Error())
 	}
 
 	return err

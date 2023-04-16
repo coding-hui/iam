@@ -59,16 +59,7 @@ func (u *user) GetApiGroup() InitApiGroup {
 	return v1
 }
 
-// createUser
-// @Tags Users
-// @Summary create user
-// @Description create user
-// @Accept  application/json
-// @Product application/json
-// @Param data body iamv1alpha1.User true "user info"
-// @Success   200   {object}  api.Response "{"code": "000", "data": [...]}
-// @Router /api/v1/users [post]
-// @Security Bearer
+// createUser create new user
 func (u *user) createUser(c *gin.Context) {
 	user := &iamv1alpha1.User{}
 	err := c.ShouldBindJSON(user)
@@ -85,17 +76,7 @@ func (u *user) createUser(c *gin.Context) {
 	api.Ok(c)
 }
 
-// updateUser
-// @Tags Users
-// @Summary update user info
-// @Description update user info
-// @Accept  application/json
-// @Product application/json
-// @Param name path string true "identifier of a user"
-// @Param data body iamv1alpha1.User true "user info"
-// @Success   200   {object}  api.Response "{"code": "000", "data": [...]}
-// @Router /api/v1/users/{name} [put]
-// @Security Bearer
+// updateUser update user info
 func (u *user) updateUser(c *gin.Context) {
 	user := &iamv1alpha1.User{}
 	err := c.ShouldBindJSON(user)
@@ -112,14 +93,7 @@ func (u *user) updateUser(c *gin.Context) {
 	api.Ok(c)
 }
 
-// deleteUser
-// @Tags Users
-// @Summary delete user
-// @Description delete user
-// @Param name path string true "identifier of a user"
-// @Success   200   {object}  api.Response "{"code": "000", "data": [...]}
-// @Router /api/v1/users/{name} [delete]
-// @Security Bearer
+// deleteUser delete user by username
 func (u *user) deleteUser(c *gin.Context) {
 	err := u.UserService.Delete(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
 	if err != nil {
@@ -130,14 +104,7 @@ func (u *user) deleteUser(c *gin.Context) {
 	api.Ok(c)
 }
 
-// getUser
-// @Tags Users
-// @Summary get user detail
-// @Description get user detail
-// @Param name path string true "identifier of a user"
-// @Success   200   {object}  api.Response{data=iamv1alpha1.User} "{"code": "000", "data": [...]} "user detail"
-// @Router /api/v1/users/{name} [get]
-// @Security Bearer
+// getUser get user info
 func (u *user) getUser(c *gin.Context) {
 	user, err := u.UserService.Get(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
 	if err != nil {
@@ -148,18 +115,7 @@ func (u *user) getUser(c *gin.Context) {
 	api.OkWithData(user, c)
 }
 
-// listUser
-// @Tags Users
-// @Summary list users
-// @Description list users
-// @Param name query string false "fuzzy search based on name"
-// @Param alias query string false "fuzzy search based on alias"
-// @Param email query string false "fuzzy search based on email"
-// @Param offset query int false "query the page number"
-// @Param limit query int false "query the page size number"
-// @Success   200   {object}  api.Response{data=api.PageResponse{list=[]iamv1alpha1.User}} "{"code": "000", "data": [...]} "users"
-// @Router /api/v1/users [get]
-// @Security Bearer
+// listUser list user page
 func (u *user) listUser(c *gin.Context) {
 	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
 	if err != nil {

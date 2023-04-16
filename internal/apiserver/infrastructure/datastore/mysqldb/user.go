@@ -10,13 +10,13 @@ import (
 	"gorm.io/gorm"
 
 	iamv1alpha1 "github.com/coding-hui/api/iam/v1alpha1"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
+
 	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/common/fields"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
-	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
-	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
 )
 
 type userRepositoryImpl struct {
@@ -31,7 +31,7 @@ func newUserRepository(db *gorm.DB) repository.UserRepository {
 // Create creates a new user account.
 func (u *userRepositoryImpl) Create(ctx context.Context, user *iamv1alpha1.User, opts metav1alpha1.CreateOptions) error {
 	if _, err := u.Get(ctx, user.Name, metav1alpha1.GetOptions{}); err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return datastore.ErrRecordExist
+		return errors.WithCode(code.ErrUserAlreadyExist, err.Error())
 	}
 
 	return u.db.WithContext(ctx).Create(&user).Error
@@ -41,7 +41,7 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *iamv1alpha1.User,
 func (u *userRepositoryImpl) Update(ctx context.Context, user *iamv1alpha1.User, opts metav1alpha1.UpdateOptions) error {
 	if err := u.db.WithContext(ctx).Save(user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return datastore.ErrRecordNotExist
+			return errors.WithCode(code.ErrUserNotFound, err.Error())
 		}
 
 		return err
@@ -59,7 +59,7 @@ func (u *userRepositoryImpl) Delete(ctx context.Context, username string, opts m
 	err := u.db.WithContext(ctx).Where("name = ?", username).Delete(&iamv1alpha1.User{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return datastore.ErrRecordNotExist
+			return errors.WithCode(code.ErrUserNotFound, err.Error())
 		}
 
 		return err
@@ -81,7 +81,7 @@ func (u *userRepositoryImpl) DeleteCollection(ctx context.Context, usernames []s
 func (u *userRepositoryImpl) Get(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*iamv1alpha1.User, error) {
 	user := &iamv1alpha1.User{}
 	if username == "" {
-		return nil, datastore.ErrPrimaryEmpty
+		return nil, errors.WithCode(code.ErrUserNameIsEmpty, "Username is empty")
 	}
 	err := u.db.WithContext(ctx).Where("name = ?", username).First(&user).Error
 	if err != nil {
