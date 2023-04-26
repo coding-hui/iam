@@ -69,8 +69,8 @@ func (u *user) createUser(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	if err := createReq.Validate(); err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, err.ToAggregate().Error()), c)
+	if errs := createReq.Validate(); errs != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
 	err = u.UserService.Create(c.Request.Context(), createReq)
@@ -141,5 +141,5 @@ func (u *user) listUser(c *gin.Context) {
 		return
 	}
 
-	api.OkWithPage(resp.Items, resp.GetTotalCount(), c)
+	api.OkWithPage(resp.Items, resp.TotalCount, c)
 }

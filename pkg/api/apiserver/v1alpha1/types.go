@@ -32,7 +32,7 @@ type CreateUserRequest struct {
 	Name     string `json:"name" validate:"required,name"`
 	Alias    string `json:"alias,omitempty" validate:"min=1,max=30" optional:"true"`
 	Email    string `json:"email" validate:"required,email,min=1,max=100"`
-	Password string `json:"password" validate:"required,password"`
+	Password string `json:"password" validate:"required"`
 }
 
 // UpdateUserRequest update user request

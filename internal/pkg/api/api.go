@@ -15,6 +15,9 @@ import (
 )
 
 type Response struct {
+	// Success request is successful
+	Success bool `json:"success"`
+
 	// Code defines the business error code.
 	Code int `json:"code"`
 
@@ -22,23 +25,22 @@ type Response struct {
 	// This message is suitable to be exposed to external
 	Msg string `json:"msg"`
 
+	// Data return data object
 	Data interface{} `json:"data,omitempty"`
+
+	// Total total of page
+	Total int64 `json:"total,omitempty"`
 
 	// Reference returns the reference document which maybe useful to solve this error.
 	Reference string `json:"reference,omitempty"`
 }
 
-// PageResponse page response
-type PageResponse struct {
-	List  interface{} `json:"list"`
-	Total int64       `json:"total"`
-}
-
 func Result(code int, data interface{}, msg string, c *gin.Context) {
 	c.JSON(http.StatusOK, Response{
-		Code: code,
-		Msg:  msg,
-		Data: data,
+		Success: true,
+		Code:    code,
+		Msg:     msg,
+		Data:    data,
 	})
 }
 
@@ -58,18 +60,24 @@ func OkWithDetailed(data interface{}, message string, c *gin.Context) {
 	Result(code.ErrSuccess, data, message, c)
 }
 
-func OkWithPage(result interface{}, count int64, c *gin.Context) {
-	Result(code.ErrSuccess, &PageResponse{
-		List:  result,
-		Total: count,
-	}, "success", c)
+func OkWithPage(result interface{}, total int64, c *gin.Context) {
+	c.JSON(http.StatusOK, Response{
+		Success: true,
+		Code:    code.ErrSuccess,
+		Msg:     "success",
+		Data:    result,
+		Total:   total,
+	})
 }
 
-func OkWithPageDetailed(result interface{}, count int64, message string, c *gin.Context) {
-	Result(code.ErrSuccess, &PageResponse{
-		List:  result,
-		Total: count,
-	}, message, c)
+func OkWithPageDetailed(result interface{}, total int64, message string, c *gin.Context) {
+	c.JSON(http.StatusOK, Response{
+		Success: true,
+		Code:    code.ErrSuccess,
+		Msg:     message,
+		Data:    result,
+		Total:   total,
+	})
 }
 
 func Fail(c *gin.Context) {
@@ -88,6 +96,7 @@ func FailWithErrCode(err error, c *gin.Context) {
 		klog.Errorf("%#+v", err)
 		coder := errors.ParseCoder(err)
 		c.JSON(coder.HTTPStatus(), Response{
+			Success:   false,
 			Code:      coder.Code(),
 			Msg:       coder.String(),
 			Reference: coder.Reference(),

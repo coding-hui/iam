@@ -35,7 +35,7 @@ func NewAuthentication(c config.Config) Interface {
 
 func (a *authentication) GetApiGroup() InitApiGroup {
 	return InitApiGroup{
-		BaseUrl: "",
+		BaseUrl: versionPrefix,
 		Apis: []InitApi{
 			{
 				Method:  POST,
@@ -98,9 +98,11 @@ func (a *authentication) authenticate(c *gin.Context) {
 	// support header and body both
 	if c.Request.Header.Get("Authorization") != "" {
 		login, err = parseWithHeader(c)
-	} else {
+	}
+	if c.Request.Header.Get("Authorization") == "" || err != nil {
 		login, err = parseWithBody(c)
 	}
+
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
