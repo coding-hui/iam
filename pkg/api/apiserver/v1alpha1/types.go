@@ -52,7 +52,7 @@ type UserBase struct {
 	Email                   string     `json:"email"`
 	Phone                   string     `json:"phone"`
 	Disabled                bool       `json:"disabled"`
-	LastLoginTime           *time.Time `json:"last_login_time,omitempty"`
+	LastLoginTime           *time.Time `json:"lastLoginTime,omitempty"`
 }
 
 // UserList is the whole list of all users which have been stored in stroage.

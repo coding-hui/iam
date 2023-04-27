@@ -42,7 +42,7 @@ type User struct {
 
 	Disabled bool `json:"disabled" gorm:"column:disabled"`
 
-	LastLoginTime *time.Time `json:"last_login_time,omitempty" gorm:"column:last_login_time"`
+	LastLoginTime *time.Time `json:"lastLoginTime,omitempty" gorm:"column:last_login_time"`
 }
 
 // TableName maps to mysql table name.
