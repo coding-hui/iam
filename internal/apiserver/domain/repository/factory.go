@@ -9,6 +9,7 @@ var client Factory
 // Factory defines the repository interface.
 type Factory interface {
 	UserRepository() UserRepository
+	CasbinRepository() CasbinRepository
 	Close() error
 }
 

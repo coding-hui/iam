@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	repository2 "github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	"github.com/coding-hui/iam/internal/pkg/code"
 
@@ -24,7 +24,7 @@ type mysqldb struct {
 }
 
 // GetMySQLFactory create mysql factory with the given config.
-func GetMySQLFactory(ctx context.Context, cfg datastore.Config) (repository2.Factory, error) {
+func GetMySQLFactory(ctx context.Context, cfg datastore.Config) (repository.Factory, error) {
 	err := createDatabase(cfg)
 	if err != nil {
 		return nil, err
@@ -49,8 +49,12 @@ func GetMySQLFactory(ctx context.Context, cfg datastore.Config) (repository2.Fac
 	return m, nil
 }
 
-func (m *mysqldb) UserRepository() repository2.UserRepository {
+func (m *mysqldb) UserRepository() repository.UserRepository {
 	return newUserRepository(m.client)
+}
+
+func (m *mysqldb) CasbinRepository() repository.CasbinRepository {
+	return newCasbinRepository(m.client)
 }
 
 func (m *mysqldb) Close() error {
