@@ -57,6 +57,10 @@ func (m *mysqldb) CasbinRepository() repository.CasbinRepository {
 	return newCasbinRepository(m.client)
 }
 
+func (m *mysqldb) ResourceRepository() repository.ResourceRepository {
+	return newResourceRepository(m.client)
+}
+
 func (m *mysqldb) Close() error {
 	db, err := m.client.DB()
 	if err != nil {

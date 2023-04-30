@@ -12,5 +12,5 @@ import (
 )
 
 func TestInitAPIBean(t *testing.T) {
-	assert.Equal(t, len(InitAPIBean(config.Config{})), 3)
+	assert.Equal(t, len(InitAPIBean(config.Config{})), 4)
 }

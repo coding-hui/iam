@@ -35,3 +35,15 @@ const (
 	// ErrPolicyNotFound - 404: Policy not found.
 	ErrPolicyNotFound int = iota + 110201
 )
+
+// iam-apiserver: resource errors.
+const (
+	// ErrResourceNotFound - 404: Resource not found.
+	ErrResourceNotFound int = iota + 110001
+
+	// ErrResourceAlreadyExist - 400: Resource already exist.
+	ErrResourceAlreadyExist
+
+	// ErrResourceNameIsEmpty - 400: Resource name is empty.
+	ErrResourceNameIsEmpty
+)

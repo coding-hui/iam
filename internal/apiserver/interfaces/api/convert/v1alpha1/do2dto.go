@@ -21,3 +21,25 @@ func ConvertUserModelToBase(user *model.User) *v1alpha1.UserBase {
 		Disabled:      user.Disabled,
 	}
 }
+
+// ConvertResourceModelToBase assemble the Resource model to DTO
+func ConvertResourceModelToBase(resource *model.Resource) *v1alpha1.ResourceBase {
+	return &v1alpha1.ResourceBase{
+		ObjectMeta:  resource.ObjectMeta,
+		Code:        resource.Code,
+		Api:         resource.Api,
+		Type:        resource.Type,
+		Description: resource.Description,
+		Actions:     ConvertToActions(resource.Actions),
+	}
+}
+
+// ConvertToActions assemble the Action model to DTO
+func ConvertToActions(actions []model.Action) []v1alpha1.Action {
+	var list []v1alpha1.Action
+	for _, act := range actions {
+		list = append(list, v1alpha1.Action{Name: act.Name, Description: act.Description})
+	}
+
+	return list
+}

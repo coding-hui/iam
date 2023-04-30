@@ -129,3 +129,59 @@ type RefreshTokenResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+// CreateResourceRequest create resource request
+type CreateResourceRequest struct {
+	Name        string   `json:"name" validate:"required,name"`
+	Code        string   `json:"code" validate:"required"`
+	Type        string   `json:"type" validate:"required"`
+	Api         string   `json:"api" validate:"required"`
+	Description string   `json:"description"`
+	IsDefault   bool     `json:"isDefault,omitempty"`
+	Actions     []Action `json:"actions,omitempty" validate:"required"`
+}
+
+// UpdateResourceRequest update resource request
+type UpdateResourceRequest struct {
+	Name        string   `json:"name" validate:"required,name"`
+	Code        string   `json:"code" validate:"required"`
+	Type        string   `json:"type" validate:"required"`
+	Api         string   `json:"api" validate:"required"`
+	Description string   `json:"description"`
+	IsDefault   bool     `json:"isDefault,omitempty"`
+	Actions     []Action `json:"actions,omitempty" validate:"required"`
+}
+
+// ResourceBase represents a resource restful resource.
+type ResourceBase struct {
+	// Standard object's metadata.
+	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
+	// Code resource code.
+	Code string `json:"code" validate:"required"`
+	// Type unique identification of resource API.
+	Api string `json:"api" validate:"required"`
+	// Type resource type.
+	Type string `json:"type" validate:"required"`
+	// Description resource description.
+	Description string `json:"description"`
+	// Actions resource access mode.
+	Actions []Action `json:"action,omitempty" validate:"required"`
+}
+
+// Action resource access mode
+type Action struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+// ResourceList is the whole list of all resource which have been stored in stroage.
+type ResourceList struct {
+	// May add TypeMeta in the future.
+	// metav1.TypeMeta `json:",inline"`
+
+	// Standard list metadata.
+	// +optional
+	metav1alpha1.ListMeta `json:",inline"`
+
+	Items []*ResourceBase `json:"items"`
+}

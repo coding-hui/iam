@@ -12,5 +12,5 @@ import (
 )
 
 func TestInitServiceBean(t *testing.T) {
-	assert.Equal(t, len(InitServiceBean(config.Config{})), 2)
+	assert.Equal(t, len(InitServiceBean(config.Config{})), 3)
 }

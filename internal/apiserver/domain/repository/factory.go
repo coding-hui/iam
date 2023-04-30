@@ -10,6 +10,7 @@ var client Factory
 type Factory interface {
 	UserRepository() UserRepository
 	CasbinRepository() CasbinRepository
+	ResourceRepository() ResourceRepository
 	Close() error
 }
 

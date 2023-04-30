@@ -66,6 +66,7 @@ func InitAPIBean(c config.Config) []interface{} {
 	// Authentication
 	RegisterAPI(NewAuthentication(c))
 	RegisterAPI(NewUser())
+	RegisterAPI(NewResource())
 
 	var beans []interface{}
 	for i := range registeredAPI {
