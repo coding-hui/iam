@@ -1,3 +1,7 @@
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
 ARG BASE_IMAGE
 # Build the manager binary
 FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.19.4 as builder

@@ -5,7 +5,6 @@
 # ==============================================================================
 # Makefile helper functions for release
 #
-#
 
 .PHONY: release.run
 release.run: release.verify release.ensure-tag

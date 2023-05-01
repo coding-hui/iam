@@ -5,7 +5,7 @@
 # ==============================================================================
 # Makefile helper functions for copyright
 #
-#
+
 .PHONY: copyright.verify
 copyright.verify: tools.verify.addlicense
 	@echo "===========> Verifying the boilerplate headers for all files"

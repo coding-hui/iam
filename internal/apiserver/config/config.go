@@ -68,6 +68,16 @@ func (s *Config) AddFlags(fs *pflag.FlagSet, c *Config) {
 	fs.StringVar(&s.BindAddr, "bind-addr", c.BindAddr, "The bind address used to serve the http APIs.")
 	fs.StringVar(&s.MetricPath, "metrics-path", c.MetricPath, "The path to expose the metrics.")
 	fs.StringVar(&s.Datastore.Type, "datastore-type", c.Datastore.Type, "Metadata storage driver type, support mysqldb and mongodb")
-	fs.StringVar(&s.Datastore.Database, "datastore-database", c.Datastore.Database, "Metadata storage database name, takes effect when the storage driver is mongodb.")
-	fs.StringVar(&s.Datastore.URL, "datastore-url", c.Datastore.URL, "Metadata storage database url,takes effect when the storage driver is mongodb.")
+	fs.StringVar(
+		&s.Datastore.Database,
+		"datastore-database",
+		c.Datastore.Database,
+		"Metadata storage database name, takes effect when the storage driver is mongodb.",
+	)
+	fs.StringVar(
+		&s.Datastore.URL,
+		"datastore-url",
+		c.Datastore.URL,
+		"Metadata storage database url,takes effect when the storage driver is mongodb.",
+	)
 }

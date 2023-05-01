@@ -81,7 +81,7 @@ install.cfssl:
 
 .PHONY: install.addlicense
 install.addlicense:
-	@$(GO) install github.com/marmotedu/addlicense@latest
+	@$(GO) install github.com/google/addlicense@latest
 
 .PHONY: install.goimports
 install.goimports:

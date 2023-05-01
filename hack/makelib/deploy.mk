@@ -8,7 +8,7 @@
 
 KUBECTL := kubectl
 NAMESPACE ?= iam
-CONTEXT ?= marmotedu.dev
+CONTEXT ?= wecoding.dev
 
 DEPLOYS=iam-apiserver iam-authz-server iam-pump iam-watcher
 

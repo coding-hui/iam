@@ -48,14 +48,20 @@ func authCheckFilter(c *gin.Context) {
 	if tokenHeader != "" {
 		splitted := strings.Split(tokenHeader, " ")
 		if len(splitted) != 2 {
-			api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"), c)
+			api.FailWithErrCode(
+				errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
+				c,
+			)
 			c.Abort()
 			return
 		}
 		tokenValue = splitted[1]
 	}
 	if tokenValue == "" {
-		api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"), c)
+		api.FailWithErrCode(
+			errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
+			c,
+		)
 		c.Abort()
 		return
 	}
@@ -66,12 +72,17 @@ func authCheckFilter(c *gin.Context) {
 		return
 	}
 	if token.GrantType != service.GrantTypeAccess {
-		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Invalid authorization header"), c)
+		api.FailWithErrCode(
+			errors.WithCode(code.ErrPermissionDenied, "Invalid authorization header"),
+			c,
+		)
 		c.Abort()
 		return
 	}
 
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserName, token.Username))
+	c.Request = c.Request.WithContext(
+		context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserName, token.Username),
+	)
 
 	c.Next()
 }
@@ -124,7 +135,10 @@ func parseWithBody(c *gin.Context) (v1alpha1.AuthenticateRequest, error) {
 }
 
 func (a *authentication) refreshToken(c *gin.Context) {
-	base, err := a.AuthenticationService.RefreshToken(c.Request.Context(), c.GetHeader("RefreshToken"))
+	base, err := a.AuthenticationService.RefreshToken(
+		c.Request.Context(),
+		c.GetHeader("RefreshToken"),
+	)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -136,7 +150,10 @@ func (a *authentication) refreshToken(c *gin.Context) {
 func (a *authentication) userInfo(c *gin.Context) {
 	userName, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserName).(string)
 	if !ok {
-		api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"), c)
+		api.FailWithErrCode(
+			errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
+			c,
+		)
 		return
 	}
 	user, err := a.UserService.Get(c.Request.Context(), userName, metav1alpha1.GetOptions{})

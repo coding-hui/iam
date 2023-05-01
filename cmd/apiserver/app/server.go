@@ -77,7 +77,11 @@ func Run(s *options.ServerRunOptions) error {
 }
 
 func run(ctx context.Context, s *options.ServerRunOptions, errChan chan error) error {
-	klog.Infof("IAM information: version: %v, gitRevision: %v", version.IAMVersion, version.GitRevision)
+	klog.Infof(
+		"IAM information: version: %v, gitRevision: %v",
+		version.IAMVersion,
+		version.GitRevision,
+	)
 
 	if s.GenericServerRunOptions.PrintVersion {
 		version.PrintVersionAndExit()

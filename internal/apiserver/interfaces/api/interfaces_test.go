@@ -5,8 +5,9 @@
 package api
 
 import (
-	"gotest.tools/assert"
 	"testing"
+
+	"gotest.tools/assert"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 )

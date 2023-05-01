@@ -95,7 +95,8 @@ func main() {
 	g := Generator{
 		trimPrefix: *trimprefix,
 	}
-	// TODO(suzmue): accept other patterns for packages (directories, list of files, import paths, etc).
+	// TODO(suzmue): accept other patterns for packages (directories, list of files, import paths,
+	// etc).
 	if len(args) == 1 && isDirectory(args[0]) {
 		dir = args[0]
 	} else {
@@ -136,11 +137,18 @@ func main() {
 	outputName := *output
 	if outputName == "" {
 		absDir, _ := filepath.Abs(dir)
-		baseName := fmt.Sprintf("%s_generated.go", strings.ReplaceAll(filepath.Base(absDir), "-", "_"))
+		baseName := fmt.Sprintf(
+			"%s_generated.go",
+			strings.ReplaceAll(filepath.Base(absDir), "-", "_"),
+		)
 		if len(flag.Args()) == 1 {
 			baseName = fmt.Sprintf(
 				"%s_generated.go",
-				strings.ReplaceAll(filepath.Base(strings.TrimSuffix(flag.Args()[0], ".go")), "-", "_"),
+				strings.ReplaceAll(
+					filepath.Base(strings.TrimSuffix(flag.Args()[0], ".go")),
+					"-",
+					"_",
+				),
 			)
 		}
 
@@ -249,7 +257,9 @@ func (g *Generator) generate(typeName string) {
 		log.Fatalf("no values defined for type %s", typeName)
 	}
 	// Generate code that will fail if the constants change value.
-	g.Printf("\t// init register error codes defines in this source code to `github.com/coding-hui/common/errors`\n")
+	g.Printf(
+		"\t// init register error codes defines in this source code to `github.com/coding-hui/common/errors`\n",
+	)
 	g.Printf("func init() {\n")
 	for _, v := range values {
 		code, description := v.ParseComment()
@@ -326,7 +336,10 @@ func (v *Value) String() string {
 func (v *Value) ParseComment() (string, string) {
 	reg := regexp.MustCompile(`\w\s*-\s*(\d{3})\s*:\s*([A-Z].*)\s*\.\n*`)
 	if !reg.MatchString(v.comment) {
-		log.Printf("constant '%s' have wrong comment format, register with 500 as default", v.originalName)
+		log.Printf(
+			"constant '%s' have wrong comment format, register with 500 as default",
+			v.originalName,
+		)
 
 		return "500", "Internal server error"
 	}
@@ -413,7 +426,11 @@ func (f *File) genDecl(node ast.Node) bool {
 			i64, isInt := constant.Int64Val(value)
 			u64, isUint := constant.Uint64Val(value)
 			if !isInt && !isUint {
-				log.Fatalf("internal error: value of %s is not an integer: %s", name, value.String())
+				log.Fatalf(
+					"internal error: value of %s is not an integer: %s",
+					name,
+					value.String(),
+				)
 			}
 			if !isInt {
 				u64 = uint64(i64)

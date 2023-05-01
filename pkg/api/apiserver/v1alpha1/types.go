@@ -42,16 +42,16 @@ const (
 
 // CreateUserRequest create user request
 type CreateUserRequest struct {
-	Name     string `json:"name" validate:"required,name"`
-	Alias    string `json:"alias,omitempty" validate:"min=1,max=30" optional:"true"`
-	Email    string `json:"email" validate:"required,email,min=1,max=100"`
-	Password string `json:"password" validate:"required"`
+	Name     string `json:"name"            validate:"required,name"`
+	Alias    string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
+	Email    string `json:"email"           validate:"required,email,min=1,max=100"`
+	Password string `json:"password"        validate:"required"`
 }
 
 // UpdateUserRequest update user request
 type UpdateUserRequest struct {
-	Alias string `json:"alias,omitempty" validate:"min=1,max=30" optional:"true"`
-	Email string `json:"email" validate:"required,email,min=1,max=100"`
+	Alias string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
+	Email string `json:"email"           validate:"required,email,min=1,max=100"`
 }
 
 // UserBase represents a user restful resource.
@@ -81,8 +81,8 @@ type UserList struct {
 }
 
 type LoginRecord struct {
-	metav1alpha1.TypeMeta   `json:",inline"`
-	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
+	metav1alpha1.TypeMeta   `                json:",inline"`
+	metav1alpha1.ObjectMeta `                json:"metadata,omitempty"`
 	Spec                    LoginRecordSpec `json:"spec"`
 }
 
@@ -145,40 +145,40 @@ type RefreshTokenResponse struct {
 
 // CreateResourceRequest create resource request
 type CreateResourceRequest struct {
-	Name        string   `json:"name" validate:"required,name"`
-	Method      string   `json:"method" validate:"required"`
-	Type        string   `json:"type" validate:"required"`
-	Api         string   `json:"api" validate:"required"`
+	Name        string   `json:"name"                validate:"required,name"`
+	Method      string   `json:"method"              validate:"required"`
+	Type        string   `json:"type"                validate:"required"`
+	Api         string   `json:"api"                 validate:"required"`
 	Description string   `json:"description"`
 	IsDefault   bool     `json:"isDefault,omitempty"`
-	Actions     []Action `json:"actions,omitempty" validate:"required"`
+	Actions     []Action `json:"actions,omitempty"   validate:"required"`
 }
 
 // UpdateResourceRequest update resource request
 type UpdateResourceRequest struct {
-	Name        string   `json:"name" validate:"required,name"`
-	Method      string   `json:"method" validate:"required"`
-	Type        string   `json:"type" validate:"required"`
-	Api         string   `json:"api" validate:"required"`
+	Name        string   `json:"name"                validate:"required,name"`
+	Method      string   `json:"method"              validate:"required"`
+	Type        string   `json:"type"                validate:"required"`
+	Api         string   `json:"api"                 validate:"required"`
 	Description string   `json:"description"`
 	IsDefault   bool     `json:"isDefault,omitempty"`
-	Actions     []Action `json:"actions,omitempty" validate:"required"`
+	Actions     []Action `json:"actions,omitempty"   validate:"required"`
 }
 
 // ResourceBase represents a resource restful resource.
 type ResourceBase struct {
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
+	metav1alpha1.ObjectMeta `         json:"metadata,omitempty"`
 	// Method resource method.
-	Method string `json:"method" validate:"required"`
+	Method string `json:"method"             validate:"required"`
 	// Type unique identification of resource API.
-	Api string `json:"api" validate:"required"`
+	Api string `json:"api"                validate:"required"`
 	// Type resource type.
-	Type string `json:"type" validate:"required"`
+	Type string `json:"type"               validate:"required"`
 	// Description resource description.
 	Description string `json:"description"`
 	// Actions resource access mode.
-	Actions []Action `json:"action,omitempty" validate:"required"`
+	Actions []Action `json:"action,omitempty"   validate:"required"`
 }
 
 // Action resource access mode

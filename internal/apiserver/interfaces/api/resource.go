@@ -9,6 +9,7 @@ import (
 
 	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
@@ -72,7 +73,11 @@ func (r *resource) updateResource(c *gin.Context) {
 
 // deleteResource delete resource by name
 func (r *resource) deleteResource(c *gin.Context) {
-	err := r.ResourceService.Delete(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
+	err := r.ResourceService.Delete(
+		c.Request.Context(),
+		c.Param("name"),
+		metav1alpha1.DeleteOptions{},
+	)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -83,7 +88,11 @@ func (r *resource) deleteResource(c *gin.Context) {
 
 // getResource get resource info
 func (r *resource) getResource(c *gin.Context) {
-	resource, err := r.ResourceService.Get(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
+	resource, err := r.ResourceService.Get(
+		c.Request.Context(),
+		c.Param("name"),
+		metav1alpha1.GetOptions{},
+	)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

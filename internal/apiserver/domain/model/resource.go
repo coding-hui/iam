@@ -55,10 +55,10 @@ func (r *Resource) AfterCreate(tx *gorm.DB) error {
 }
 
 type Action struct {
-	ID          uint64 `json:"id,omitempty" gorm:"primary_key;AUTO_INCREMENT;column:id"`
+	ID          uint64 `json:"id,omitempty"         gorm:"primary_key;AUTO_INCREMENT;column:id"`
 	ResourceId  uint64 `json:"resourceId,omitempty" gorm:"column:resource_id"`
-	Name        string `json:"name" gorm:"column:name"`
-	Description string `json:"description" gorm:"column:description"`
+	Name        string `json:"name"                 gorm:"column:name"`
+	Description string `json:"description"          gorm:"column:description"`
 }
 
 // TableName maps to mysql table name.

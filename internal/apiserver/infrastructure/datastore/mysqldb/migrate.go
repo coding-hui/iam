@@ -23,7 +23,10 @@ func mysqlEmptyDsn(cfg datastore.Config) string {
 
 // createDatabase create database if not exists
 func createDatabase(cfg datastore.Config) error {
-	createSql := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;", cfg.Database)
+	createSql := fmt.Sprintf(
+		"CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;",
+		cfg.Database,
+	)
 	db, err := sql.Open("mysql", mysqlEmptyDsn(cfg))
 	if err != nil {
 		return err

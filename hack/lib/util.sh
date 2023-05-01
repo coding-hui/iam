@@ -262,7 +262,7 @@ iam::util::remove-gen-docs() {
 # repo, e.g. "upstream" or "origin".
 iam::util::git_upstream_remote_name() {
   git remote -v | grep fetch |\
-    grep -E 'github.com[/:]marmotedu/iam|marmotedu.io/iam' |\
+    grep -E 'github.com[/:]coding-hui/iam|wecoding.top/iam' |\
     head -n 1 | awk '{print $1}'
 }
 

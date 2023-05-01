@@ -76,7 +76,10 @@ func (a *authenticationServiceImpl) newLocalHandler(loginReq v1alpha1.Authentica
 	}, nil
 }
 
-func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v1alpha1.AuthenticateRequest) (*v1alpha1.AuthenticateResponse, error) {
+func (a *authenticationServiceImpl) Authenticate(
+	ctx context.Context,
+	loginReq v1alpha1.AuthenticateRequest,
+) (*v1alpha1.AuthenticateResponse, error) {
 	var handler authHandler
 	var err error
 	handler, err = a.newLocalHandler(loginReq)
@@ -91,7 +94,11 @@ func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := a.generateJWTToken(userBase.Name, GrantTypeRefresh, a.cfg.JwtOptions.MaxRefresh)
+	refreshToken, err := a.generateJWTToken(
+		userBase.Name,
+		GrantTypeRefresh,
+		a.cfg.JwtOptions.MaxRefresh,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -130,9 +137,13 @@ func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken
 
 // ParseToken parses and verifies a token
 func ParseToken(tokenString string) (*model.CustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &model.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(signedKey), nil
-	})
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&model.CustomClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(signedKey), nil
+		},
+	)
 	if err != nil {
 		var ve *jwt.ValidationError
 		if jwtErr := errors.As(err, &ve); jwtErr {

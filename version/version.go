@@ -6,9 +6,10 @@ package version
 
 import (
 	"fmt"
-	"github.com/hashicorp/go-version"
 	"os"
 	"runtime"
+
+	"github.com/hashicorp/go-version"
 )
 
 var (

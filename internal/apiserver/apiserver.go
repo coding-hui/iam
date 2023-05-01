@@ -142,6 +142,10 @@ func (s *restServer) configSwagger() {
 func (s *restServer) startHTTP(ctx context.Context) error {
 	// Start HTTP apiserver
 	klog.Infof("HTTP APIs are being served on: %s, ctx: %s", s.cfg.BindAddr, ctx)
-	server := &http.Server{Addr: s.cfg.BindAddr, Handler: s.webEngine, ReadHeaderTimeout: 2 * time.Second}
+	server := &http.Server{
+		Addr:              s.cfg.BindAddr,
+		Handler:           s.webEngine,
+		ReadHeaderTimeout: 2 * time.Second,
+	}
 	return server.ListenAndServe()
 }

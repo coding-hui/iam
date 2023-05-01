@@ -6,6 +6,7 @@ package v1alpha1
 
 import (
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
