@@ -15,7 +15,7 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/utils"
 )
 
-// requestLog write to console
+// requestLog write to console.
 func requestLog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if (c.Request.Header.Get("Upgrade") == "websocket" && c.Request.Header.Get("Upgrade") == "Upgrade") ||

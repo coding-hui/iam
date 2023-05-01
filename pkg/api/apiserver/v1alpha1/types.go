@@ -10,27 +10,29 @@ import (
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
-var (
-	// CtxKeyUserName request context key of username
-	CtxKeyUserName = "username"
-)
+// CtxKeyUserName request context key of username.
+var CtxKeyUserName = "username"
 
+// UserRole user role.
 type UserRole string
 
 // These are the valid phases of a user role.
 const (
+	// PlatformAdmin platform admin.
 	PlatformAdmin UserRole = "platform"
-	TenantAdmin   UserRole = "tenant"
-	Default       UserRole = "default"
+	// TenantAdmin tenant admin.
+	TenantAdmin UserRole = "tenant"
+	// Default default user.
+	Default UserRole = "default"
 )
 
 func (r UserRole) String() string {
 	return string(r)
 }
 
+// UserState user account state.
 type UserState string
 
-// These are the valid phases of a user.
 const (
 	// UserActive means the user is available.
 	UserActive UserState = "Active"
@@ -40,7 +42,7 @@ const (
 	UserAuthLimitExceeded UserState = "AuthLimitExceeded"
 )
 
-// CreateUserRequest create user request
+// CreateUserRequest create user request.
 type CreateUserRequest struct {
 	Name     string `json:"name"            validate:"required,name"`
 	Alias    string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
@@ -48,7 +50,7 @@ type CreateUserRequest struct {
 	Password string `json:"password"        validate:"required"`
 }
 
-// UpdateUserRequest update user request
+// UpdateUserRequest update user request.
 type UpdateUserRequest struct {
 	Alias string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
 	Email string `json:"email"           validate:"required,email,min=1,max=100"`
@@ -80,42 +82,49 @@ type UserList struct {
 	Items []*UserBase `json:"items"`
 }
 
-type LoginRecord struct {
-	metav1alpha1.TypeMeta   `                json:",inline"`
-	metav1alpha1.ObjectMeta `                json:"metadata,omitempty"`
-	Spec                    LoginRecordSpec `json:"spec"`
+// TenantBase represents a tenant restful resource.
+type TenantBase struct {
+	// Standard object's metadata.
+	metav1alpha1.ObjectMeta `       json:"metadata,omitempty"`
+	// Owner tenant owner name.
+	Owner string `json:"owner,omitempty"    gorm:"column:owner"       validate:"required"`
+	// Disabled tenant state.
+	Disabled bool `json:"disabled"           gorm:"column:disabled"`
+	// Description tenant description.
+	Description string `json:"description"        gorm:"column:description"`
 }
 
-type LoginRecordSpec struct {
-	// Which authentication method used, BasicAuth/OAuth/Token
-	Type LoginType `json:"type"`
-	// Provider of authentication, Local/Ldap/Github etc.
-	Provider string `json:"provider"`
-	// Source IP of client
-	SourceIP string `json:"sourceIP"`
-	// User agent of login attempt
-	UserAgent string `json:"userAgent,omitempty"`
-	// Successful login attempt or not
-	Success bool `json:"success"`
-	// States failed login attempt reason
-	Reason string `json:"reason"`
+// TenantList is the whole list of all tenants which have been stored in stroage.
+type TenantList struct {
+	// May add TypeMeta in the future.
+	// metav1.TypeMeta `json:",inline"`
+
+	// Standard list metadata.
+	// +optional
+	metav1alpha1.ListMeta `json:",inline"`
+
+	Items []*TenantBase `json:"items"`
 }
 
+// LoginType authenticate type.
 type LoginType string
 
 const (
+	// BasicAuth basic auth type.
 	BasicAuth LoginType = "Basic"
-	OAuth     LoginType = "OAuth"
-	Token     LoginType = "Token"
+	// OAuth oauth2 auth type.
+	OAuth LoginType = "OAuth"
+	// Token jwt token auth type.
+	Token LoginType = "Token"
 )
 
-// AuthenticateRequest is the request body for login
+// AuthenticateRequest is the request body for login.
 type AuthenticateRequest struct {
 	Username string `json:"username,omitempty" optional:"true"`
 	Password string `json:"password,omitempty" optional:"true"`
 }
 
-// AuthenticateResponse is the response of login request
+// AuthenticateResponse is the response of login request.
 type AuthenticateResponse struct {
 	// User user info
 	User *UserBase `json:"user"`
@@ -137,13 +146,13 @@ type AuthenticateResponse struct {
 	ExpiresIn int `json:"expires_in,omitempty"`
 }
 
-// RefreshTokenResponse is the response of refresh token request
+// RefreshTokenResponse is the response of refresh token request.
 type RefreshTokenResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
 
-// CreateResourceRequest create resource request
+// CreateResourceRequest create resource request.
 type CreateResourceRequest struct {
 	Name        string   `json:"name"                validate:"required,name"`
 	Method      string   `json:"method"              validate:"required"`
@@ -154,7 +163,7 @@ type CreateResourceRequest struct {
 	Actions     []Action `json:"actions,omitempty"   validate:"required"`
 }
 
-// UpdateResourceRequest update resource request
+// UpdateResourceRequest update resource request.
 type UpdateResourceRequest struct {
 	Name        string   `json:"name"                validate:"required,name"`
 	Method      string   `json:"method"              validate:"required"`
@@ -181,7 +190,7 @@ type ResourceBase struct {
 	Actions []Action `json:"action,omitempty"   validate:"required"`
 }
 
-// Action resource access mode
+// Action resource access mode.
 type Action struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`

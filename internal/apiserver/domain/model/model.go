@@ -8,18 +8,17 @@ import (
 	"fmt"
 )
 
-// TableNamePrefix table name prefix
+// TableNamePrefix table name prefix.
 var TableNamePrefix = "iam_"
 
 var registeredModels = map[string]Interface{}
 
-// Interface model interface
+// Interface model interface.
 type Interface interface {
 	TableName() string
-	ShortTableName() string
 }
 
-// RegisterModel register model
+// RegisterModel register model.
 func RegisterModel(models ...Interface) {
 	for _, model := range models {
 		if _, exist := registeredModels[model.TableName()]; exist {
@@ -29,7 +28,7 @@ func RegisterModel(models ...Interface) {
 	}
 }
 
-// GetRegisterModels will return the register models
+// GetRegisterModels will return the register models.
 func GetRegisterModels() map[string]Interface {
 	return registeredModels
 }

@@ -20,7 +20,7 @@ import (
 	"github.com/coding-hui/iam/version"
 )
 
-// NewAPIServerCommand creates a *cobra.Command object with default parameters
+// NewAPIServerCommand creates a *cobra.Command object with default parameters.
 func NewAPIServerCommand() *cobra.Command {
 	s := options.NewServerRunOptions()
 	cmd := &cobra.Command{
@@ -61,7 +61,7 @@ func Run(s *options.ServerRunOptions) error {
 			errChan <- fmt.Errorf("failed to run apiserver: %w", err)
 		}
 	}()
-	var term = make(chan os.Signal, 1)
+	term := make(chan os.Signal, 1)
 	signal.Notify(term, os.Interrupt, syscall.SIGTERM)
 
 	select {

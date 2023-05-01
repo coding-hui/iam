@@ -9,7 +9,7 @@ import (
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
 
-// ConvertUserModelToBase assemble the User model to DTO
+// ConvertUserModelToBase assemble the User model to DTO.
 func ConvertUserModelToBase(user *model.User) *v1alpha1.UserBase {
 	return &v1alpha1.UserBase{
 		ObjectMeta:    user.ObjectMeta,
@@ -22,7 +22,7 @@ func ConvertUserModelToBase(user *model.User) *v1alpha1.UserBase {
 	}
 }
 
-// ConvertResourceModelToBase assemble the Resource model to DTO
+// ConvertResourceModelToBase assemble the Resource model to DTO.
 func ConvertResourceModelToBase(resource *model.Resource) *v1alpha1.ResourceBase {
 	return &v1alpha1.ResourceBase{
 		ObjectMeta:  resource.ObjectMeta,
@@ -34,9 +34,9 @@ func ConvertResourceModelToBase(resource *model.Resource) *v1alpha1.ResourceBase
 	}
 }
 
-// ConvertToActions assemble the Action model to DTO
+// ConvertToActions assemble the Action model to DTO.
 func ConvertToActions(actions []model.Action) []v1alpha1.Action {
-	var list []v1alpha1.Action
+	list := make([]v1alpha1.Action, 0, len(actions))
 	for _, act := range actions {
 		list = append(list, v1alpha1.Action{Name: act.Name, Description: act.Description})
 	}

@@ -25,7 +25,7 @@ type resourceRepositoryImpl struct {
 	db *gorm.DB
 }
 
-// newResourceRepository new User Repository
+// newResourceRepository new User Repository.
 func newResourceRepository(db *gorm.DB) repository.ResourceRepository {
 	return &resourceRepositoryImpl{db}
 }
@@ -106,7 +106,7 @@ func (r *resourceRepositoryImpl) DeleteCollection(ctx context.Context, names []s
 		Error
 }
 
-// Get get resource
+// Get get resource.
 func (r *resourceRepositoryImpl) Get(ctx context.Context, name string, _ metav1alpha1.GetOptions) (*model.Resource, error) {
 	resource := &model.Resource{}
 	if name == "" {
@@ -124,7 +124,7 @@ func (r *resourceRepositoryImpl) Get(ctx context.Context, name string, _ metav1a
 	return resource, nil
 }
 
-// List list resources
+// List list resources.
 func (r *resourceRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error) {
 	resources := &[]model.Resource{}
 	res := &v1alpha1.ResourceList{}

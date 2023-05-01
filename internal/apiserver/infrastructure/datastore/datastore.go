@@ -4,7 +4,7 @@
 
 package datastore
 
-// Config datastore config
+// Config datastore config.
 type Config struct {
 	Type     string
 	URL      string

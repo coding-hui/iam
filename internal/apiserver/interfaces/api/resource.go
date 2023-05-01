@@ -21,7 +21,7 @@ type resource struct {
 	ResourceService service.ResourceService `inject:""`
 }
 
-// NewResource is the of resource
+// NewResource is the of resource.
 func NewResource() Interface {
 	return &resource{}
 }
@@ -37,7 +37,7 @@ func (r *resource) RegisterApiGroup(g *gin.Engine) {
 	}
 }
 
-// createResource create new resource
+// createResource create new resource.
 func (r *resource) createResource(c *gin.Context) {
 	createReq := v1alpha1.CreateResourceRequest{}
 	err := c.ShouldBindJSON(&createReq)
@@ -54,7 +54,7 @@ func (r *resource) createResource(c *gin.Context) {
 	api.Ok(c)
 }
 
-// updateResource update resource info
+// updateResource update resource info.
 func (r *resource) updateResource(c *gin.Context) {
 	updateReq := v1alpha1.UpdateResourceRequest{}
 	err := c.ShouldBindJSON(&updateReq)
@@ -71,7 +71,7 @@ func (r *resource) updateResource(c *gin.Context) {
 	api.Ok(c)
 }
 
-// deleteResource delete resource by name
+// deleteResource delete resource by name.
 func (r *resource) deleteResource(c *gin.Context) {
 	err := r.ResourceService.Delete(
 		c.Request.Context(),
@@ -86,7 +86,7 @@ func (r *resource) deleteResource(c *gin.Context) {
 	api.Ok(c)
 }
 
-// getResource get resource info
+// getResource get resource info.
 func (r *resource) getResource(c *gin.Context) {
 	resource, err := r.ResourceService.Get(
 		c.Request.Context(),
@@ -101,7 +101,7 @@ func (r *resource) getResource(c *gin.Context) {
 	api.OkWithData(resource, c)
 }
 
-// listResource list resource page
+// listResource list resource page.
 func (r *resource) listResource(c *gin.Context) {
 	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
 	if err != nil {

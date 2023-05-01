@@ -16,12 +16,12 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 )
 
-// mysqlEmptyDsn msyql empty dsn for create databases
+// mysqlEmptyDsn msyql empty dsn for create databases.
 func mysqlEmptyDsn(cfg datastore.Config) string {
 	return cfg.URL[:strings.Index(cfg.URL, "/")+1]
 }
 
-// createDatabase create database if not exists
+// createDatabase create database if not exists.
 func createDatabase(cfg datastore.Config) error {
 	createSql := fmt.Sprintf(
 		"CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;",
@@ -34,7 +34,7 @@ func createDatabase(cfg datastore.Config) error {
 	defer func(db *sql.DB) {
 		err = db.Close()
 		if err != nil {
-			fmt.Println(err)
+			klog.Error(err)
 		}
 	}(db)
 	if err = db.Ping(); err != nil {
@@ -44,7 +44,7 @@ func createDatabase(cfg datastore.Config) error {
 	return err
 }
 
-// migrate will migrate the tables to new db
+// migrate will migrate the tables to new db.
 func migrate(client *gorm.DB) {
 	models := model.GetRegisterModels()
 	for _, k := range models {

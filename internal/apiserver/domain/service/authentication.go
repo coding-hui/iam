@@ -26,15 +26,15 @@ const (
 	jwtIssuer = "iam-issuer"
 	audience  = "iam.api.wecoding.top"
 
-	// GrantTypeAccess is the grant type for access token
+	// GrantTypeAccess is the grant type for access token.
 	GrantTypeAccess = "access"
-	// GrantTypeRefresh is the grant type for refresh token
+	// GrantTypeRefresh is the grant type for refresh token.
 	GrantTypeRefresh = "refresh"
 )
 
 var signedKey string
 
-// AuthenticationService authentication service
+// AuthenticationService authentication service.
 type AuthenticationService interface {
 	Authenticate(ctx context.Context, loginReq v1alpha1.AuthenticateRequest) (*v1alpha1.AuthenticateResponse, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*v1alpha1.RefreshTokenResponse, error)
@@ -46,7 +46,7 @@ type authenticationServiceImpl struct {
 	UserService UserService        `inject:""`
 }
 
-// NewAuthenticationService new authentication service
+// NewAuthenticationService new authentication service.
 func NewAuthenticationService(c config.Config) AuthenticationService {
 	signedKey = c.JwtOptions.Key
 	return &authenticationServiceImpl{cfg: c}
@@ -132,10 +132,10 @@ func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken
 			RefreshToken: refreshToken,
 		}, nil
 	}
-	return nil, err
+	return nil, nil
 }
 
-// ParseToken parses and verifies a token
+// ParseToken parses and verifies a token.
 func ParseToken(tokenString string) (*model.CustomClaims, error) {
 	token, err := jwt.ParseWithClaims(
 		tokenString,

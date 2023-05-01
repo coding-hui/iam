@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	//RegisterModel(&Tenant{})
+	// RegisterModel(&Tenant{})
 }
 
 // Tenant represents a tenant restful resource. It is also used as gorm model.
@@ -34,10 +34,6 @@ type Tenant struct {
 // TableName maps to mysql table name.
 func (u *Tenant) TableName() string {
 	return TableNamePrefix + "tenant"
-}
-
-func (u *Tenant) ShortTableName() string {
-	return TableNamePrefix + "t"
 }
 
 // AfterCreate run after create database record.

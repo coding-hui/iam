@@ -12,7 +12,7 @@ import (
 
 type ping struct{}
 
-// NewPing ping
+// NewPing ping.
 func NewPing() Interface {
 	return &ping{}
 }
@@ -21,7 +21,7 @@ func (p *ping) RegisterApiGroup(g *gin.Engine) {
 	g.GET("/ping", p.ping)
 }
 
-// ping
+// ping.
 func (p *ping) ping(c *gin.Context) {
 	api.OkWithData("pong", c)
 }

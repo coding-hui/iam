@@ -11,6 +11,7 @@ import (
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
 
+// CreateResourceModel assemble the DTO to Resource Model.
 func CreateResourceModel(req v1alpha1.CreateResourceRequest) *model.Resource {
 	return &model.Resource{
 		ObjectMeta: metav1alpha1.ObjectMeta{
@@ -25,8 +26,9 @@ func CreateResourceModel(req v1alpha1.CreateResourceRequest) *model.Resource {
 	}
 }
 
+// ConvertToActionModel assemble the DTO to Action Model.
 func ConvertToActionModel(actions []v1alpha1.Action) []model.Action {
-	var list []model.Action
+	list := make([]model.Action, 0, len(actions))
 	for _, act := range actions {
 		list = append(list, model.Action{Name: act.Name, Description: act.Description})
 	}

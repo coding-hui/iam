@@ -29,7 +29,7 @@ e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 m = g(r.sub, p.sub) && (keyMatch2(r.obj, p.obj) || keyMatch(r.obj, p.obj)) && (r.act == p.act || p.act == "*")
 `
 
-// Setup Initialize casbin
+// Setup Initialize casbin.
 func Setup(db *gorm.DB, prefix, tableName string) *casbin.SyncedEnforcer {
 	Apter, err := gormadapter.NewAdapterByDBUseTableName(db, prefix, tableName)
 	if err != nil && err.Error() != "invalid DDL" {

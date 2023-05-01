@@ -39,7 +39,7 @@ const (
 // iam-apiserver: resource errors.
 const (
 	// ErrResourceNotFound - 404: Resource not found.
-	ErrResourceNotFound int = iota + 110001
+	ErrResourceNotFound int = iota + 110301
 
 	// ErrResourceAlreadyExist - 400: Resource already exist.
 	ErrResourceAlreadyExist

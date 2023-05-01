@@ -5,10 +5,16 @@
 package permission
 
 const (
-	Create    = "Create"
-	Update    = "Update"
-	Delete    = "Delete"
-	List      = "List"
-	Search    = "Search"
+	// Create can create resource permissions.
+	Create = "Create"
+	// Update can update resource permissions.
+	Update = "Update"
+	// Delete can delete resource permissions.
+	Delete = "Delete"
+	// List can list resource permissions.
+	List = "List"
+	// Search can search resource permissions.
+	Search = "Search"
+	// GetDetail can get detail resource permissions.
 	GetDetail = "GetDetail"
 )

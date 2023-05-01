@@ -15,7 +15,7 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/utils/env"
 )
 
-// Config config for apiserver
+// Config config for apiserver.
 type Config struct {
 	// api apiserver bind address
 	BindAddr string
@@ -30,7 +30,7 @@ type Config struct {
 	PrintVersion bool
 }
 
-// NewConfig  returns a Config struct with default values
+// NewConfig  returns a Config struct with default values.
 func NewConfig() *Config {
 	return &Config{
 		BindAddr:   "0.0.0.0:8000",
@@ -38,7 +38,7 @@ func NewConfig() *Config {
 		Datastore: datastore.Config{
 			Type:     "mysqldb",
 			Database: "iam_1",
-			//URL:      "mongodb://root:root@localhost:27017/",
+			// URL:      "mongodb://root:root@localhost:27017/",
 			URL: "root:123456@tcp(127.0.0.1:3306)/iam_1?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms",
 		},
 		JwtOptions: options.JwtOptions{
@@ -52,7 +52,7 @@ func NewConfig() *Config {
 	}
 }
 
-// Validate validate generic apiserver run options
+// Validate validate generic apiserver run options.
 func (s *Config) Validate() []error {
 	var errs []error
 
@@ -63,7 +63,7 @@ func (s *Config) Validate() []error {
 	return errs
 }
 
-// AddFlags adds flags to the specified FlagSet
+// AddFlags adds flags to the specified FlagSet.
 func (s *Config) AddFlags(fs *pflag.FlagSet, c *Config) {
 	fs.StringVar(&s.BindAddr, "bind-addr", c.BindAddr, "The bind address used to serve the http APIs.")
 	fs.StringVar(&s.MetricPath, "metrics-path", c.MetricPath, "The path to expose the metrics.")

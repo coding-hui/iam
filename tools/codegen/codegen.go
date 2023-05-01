@@ -16,7 +16,6 @@ import (
 	"go/token"
 	"go/types"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -154,7 +153,7 @@ func main() {
 
 		outputName = filepath.Join(dir, strings.ToLower(baseName))
 	}
-	err := ioutil.WriteFile(outputName, src, 0o600)
+	err := os.WriteFile(outputName, src, 0o600)
 	if err != nil {
 		log.Fatalf("writing output: %s", err)
 	}

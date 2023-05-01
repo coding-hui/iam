@@ -28,7 +28,7 @@ type authentication struct {
 	cfg config.Config
 }
 
-// NewAuthentication is the  of authentication
+// NewAuthentication is the  of authentication.
 func NewAuthentication(c config.Config) Interface {
 	return &authentication{cfg: c}
 }

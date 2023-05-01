@@ -50,10 +50,6 @@ func (u *User) TableName() string {
 	return TableNamePrefix + "user"
 }
 
-func (u *User) ShortTableName() string {
-	return TableNamePrefix + "usr"
-}
-
 // AfterCreate run after create database record.
 func (u *User) AfterCreate(tx *gorm.DB) error {
 	u.InstanceID = idutil.GetInstanceID(u.ID, "user-")
@@ -61,7 +57,7 @@ func (u *User) AfterCreate(tx *gorm.DB) error {
 	return tx.Save(u).Error
 }
 
-// CustomClaims is the custom claims
+// CustomClaims is the custom claims.
 type CustomClaims struct {
 	jwt.RegisteredClaims
 	// Private Claim Names

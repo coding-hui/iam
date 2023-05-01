@@ -17,7 +17,7 @@ import (
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
 
-// ResourceService Resource manage api
+// ResourceService Resource manage api.
 type ResourceService interface {
 	Create(ctx context.Context, req v1alpha1.CreateResourceRequest) error
 	Update(ctx context.Context, name string, req v1alpha1.UpdateResourceRequest) error
@@ -31,7 +31,7 @@ type resourceServiceImpl struct {
 	Store repository.Factory `inject:"repository"`
 }
 
-// NewResourceService new Resource service
+// NewResourceService new Resource service.
 func NewResourceService() ResourceService {
 	return &resourceServiceImpl{}
 }
@@ -90,7 +90,7 @@ func (r *resourceServiceImpl) Get(ctx context.Context, name string, opts metav1a
 	return resource, nil
 }
 
-// List list resources
+// List list resources.
 func (r *resourceServiceImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error) {
 	users, err := r.Store.ResourceRepository().List(ctx, metav1alpha1.ListOptions{
 		Offset: opts.Offset,

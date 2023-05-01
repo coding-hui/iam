@@ -13,12 +13,12 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/config"
 )
 
-// ServerRunOptions contains everything necessary to create and run api apiserver
+// ServerRunOptions contains everything necessary to create and run api apiserver.
 type ServerRunOptions struct {
 	GenericServerRunOptions *config.Config
 }
 
-// NewServerRunOptions creates a new ServerRunOptions object with default parameters
+// NewServerRunOptions creates a new ServerRunOptions object with default parameters.
 func NewServerRunOptions() *ServerRunOptions {
 	s := &ServerRunOptions{
 		GenericServerRunOptions: config.NewConfig(),
@@ -26,7 +26,7 @@ func NewServerRunOptions() *ServerRunOptions {
 	return s
 }
 
-// Flags returns the complete NamedFlagSets
+// Flags returns the complete NamedFlagSets.
 func (s *ServerRunOptions) Flags() (fss cliflag.NamedFlagSets) {
 	fs := fss.FlagSet("generic")
 	s.GenericServerRunOptions.AddFlags(fs, s.GenericServerRunOptions)

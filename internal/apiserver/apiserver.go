@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/http/httputil"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -29,21 +28,20 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/utils/env"
 )
 
-// APIServer interface for call api apiserver
+// APIServer interface for call api apiserver.
 type APIServer interface {
 	Run(context.Context, chan error) error
 }
 
-// restServer rest apiserver
+// restServer rest apiserver.
 type restServer struct {
 	webEngine        *gin.Engine
 	beanContainer    *container.Container
 	cfg              config.Config
 	repositoryFactor repository.Factory
-	dexProxy         *httputil.ReverseProxy
 }
 
-// New create api apiserver with config data
+// New create api apiserver with config data.
 func New(cfg config.Config) (a APIServer) {
 	if cfg.Mode == env.ModeProd.String() {
 		gin.SetMode(gin.ReleaseMode)
@@ -58,7 +56,7 @@ func New(cfg config.Config) (a APIServer) {
 
 func (s *restServer) buildIoCContainer() (err error) {
 	// infrastructure
-	if err := s.beanContainer.ProvideWithName("RestServer", s); err != nil {
+	if err = s.beanContainer.ProvideWithName("RestServer", s); err != nil {
 		return fmt.Errorf("fail to provides the RestServer bean to the container: %w", err)
 	}
 
@@ -74,27 +72,27 @@ func (s *restServer) buildIoCContainer() (err error) {
 		return fmt.Errorf("not support datastore type %s", s.cfg.Datastore.Type)
 	}
 	s.repositoryFactor = factory
-	if err := s.beanContainer.ProvideWithName("repository", s.repositoryFactor); err != nil {
+	if err = s.beanContainer.ProvideWithName("repository", s.repositoryFactor); err != nil {
 		return fmt.Errorf("fail to provides the datastore bean to the container: %w", err)
 	}
 	repository.SetClient(factory)
 
 	// domain
-	if err := s.beanContainer.Provides(service.InitServiceBean(s.cfg)...); err != nil {
+	if err = s.beanContainer.Provides(service.InitServiceBean(s.cfg)...); err != nil {
 		return fmt.Errorf("fail to provides the service bean to the container: %w", err)
 	}
 
 	// interfaces
-	if err := s.beanContainer.Provides(apisv1.InitAPIBean(s.cfg)...); err != nil {
+	if err = s.beanContainer.Provides(apisv1.InitAPIBean(s.cfg)...); err != nil {
 		return fmt.Errorf("fail to provides the api bean to the container: %w", err)
 	}
 
 	// event
-	if err := s.beanContainer.Provides(event.InitEvent(s.cfg)...); err != nil {
+	if err = s.beanContainer.Provides(event.InitEvent(s.cfg)...); err != nil {
 		return fmt.Errorf("fail to provides the event bean to the container: %w", err)
 	}
 
-	if err := s.beanContainer.Populate(); err != nil {
+	if err = s.beanContainer.Populate(); err != nil {
 		return fmt.Errorf("fail to populate the bean container: %w", err)
 	}
 	return nil
@@ -116,7 +114,7 @@ func (s *restServer) Run(ctx context.Context, errChan chan error) error {
 	return s.startHTTP(ctx)
 }
 
-// RegisterAPIRoute register the API route
+// RegisterAPIRoute register the API route.
 func (s *restServer) RegisterAPIRoute() {
 	// Init middleware
 	middleware.InitMiddleware(s.webEngine)

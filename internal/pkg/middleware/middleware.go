@@ -6,9 +6,10 @@ package middleware
 
 import "github.com/gin-gonic/gin"
 
+// InitMiddleware initialize middleware.
 func InitMiddleware(r *gin.Engine) {
 	// Custom Error Wrapper
-	r.Use(CustomError)
+	r.Use(GinRecovery)
 	// NoCache is a middleware function that appends headers
 	r.Use(NoCache)
 	// 跨域处理

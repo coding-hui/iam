@@ -15,6 +15,7 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/code"
 )
 
+// Response Http API common response.
 type Response struct {
 	// Success request is successful
 	Success bool `json:"success"`
@@ -36,6 +37,7 @@ type Response struct {
 	Reference string `json:"reference,omitempty"`
 }
 
+// Result build result info.
 func Result(code int, data interface{}, msg string, c *gin.Context) {
 	c.JSON(http.StatusOK, Response{
 		Success: true,
@@ -45,22 +47,27 @@ func Result(code int, data interface{}, msg string, c *gin.Context) {
 	})
 }
 
+// Ok return success.
 func Ok(c *gin.Context) {
 	Result(code.ErrSuccess, nil, "success", c)
 }
 
+// OkWithMessage return success with message.
 func OkWithMessage(message string, c *gin.Context) {
 	Result(code.ErrSuccess, nil, message, c)
 }
 
+// OkWithData return success with data.
 func OkWithData(data interface{}, c *gin.Context) {
 	Result(code.ErrSuccess, data, "success", c)
 }
 
+// OkWithDetailed return success with data and message.
 func OkWithDetailed(data interface{}, message string, c *gin.Context) {
 	Result(code.ErrSuccess, data, message, c)
 }
 
+// OkWithPage return success with page.
 func OkWithPage(result interface{}, total int64, c *gin.Context) {
 	c.JSON(http.StatusOK, Response{
 		Success: true,
@@ -71,6 +78,7 @@ func OkWithPage(result interface{}, total int64, c *gin.Context) {
 	})
 }
 
+// OkWithPageDetailed return success with page.
 func OkWithPageDetailed(result interface{}, total int64, message string, c *gin.Context) {
 	c.JSON(http.StatusOK, Response{
 		Success: true,
@@ -81,10 +89,12 @@ func OkWithPageDetailed(result interface{}, total int64, message string, c *gin.
 	})
 }
 
+// Fail return fail.
 func Fail(c *gin.Context) {
 	Result(code.ErrUnknown, map[string]interface{}{}, "failed", c)
 }
 
+// FailWithMessage return fail with message.
 func FailWithMessage(message string, c *gin.Context) {
 	Result(code.ErrUnknown, map[string]interface{}{}, message, c)
 }

@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	// GitRevision is the commit of repo
+	// GitRevision is the commit of repo.
 	GitRevision = "UNKNOWN"
 	// IAMVersion is the version of cli.
 	IAMVersion = "UNKNOWN"
@@ -25,7 +25,7 @@ var (
 // PrintVersionAndExit prints versions from the array returned by Info() and exit.
 func PrintVersionAndExit() {
 	for _, i := range Info(apiVersion) {
-		fmt.Printf("%v\n", i)
+		_ = fmt.Sprintf("%v\n", i)
 	}
 	os.Exit(0)
 }
@@ -42,14 +42,15 @@ func Info(apiVersion string) []string {
 	}
 }
 
-// IsOfficialIAMVersion checks whether the provided version string follows a IAM version pattern
+// IsOfficialIAMVersion checks whether the provided version string follows a IAM version pattern.
 func IsOfficialIAMVersion(versionStr string) bool {
 	_, err := version.NewSemver(versionStr)
+
 	return err == nil
 }
 
 // GetOfficialIAMVersion extracts the IAM version from the provided string
-// More precisely, this method returns the segments and prerelease info w/o metadata
+// More precisely, this method returns the segments and prerelease info w/o metadata.
 func GetOfficialIAMVersion(versionStr string) (string, error) {
 	s, err := version.NewSemver(versionStr)
 	if err != nil {
@@ -60,5 +61,6 @@ func GetOfficialIAMVersion(versionStr string) (string, error) {
 	if metadata != "" {
 		metadata = "+" + metadata
 	}
+
 	return v[:len(v)-len(metadata)], nil
 }

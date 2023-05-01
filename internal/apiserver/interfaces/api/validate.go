@@ -40,7 +40,7 @@ func init() {
 	}
 }
 
-// ValidateName custom check name field
+// ValidateName custom check name field.
 func ValidateName(fl validator.FieldLevel) bool {
 	value := fl.Field().String()
 	if len(value) > 31 || len(value) < 2 {
@@ -49,7 +49,7 @@ func ValidateName(fl validator.FieldLevel) bool {
 	return nameRegexp.MatchString(value)
 }
 
-// ValidateAlias custom check alias field
+// ValidateAlias custom check alias field.
 func ValidateAlias(fl validator.FieldLevel) bool {
 	value := fl.Field().String()
 	if value != "" && (len(value) > 64 || len(value) < 2) {
@@ -58,7 +58,7 @@ func ValidateAlias(fl validator.FieldLevel) bool {
 	return true
 }
 
-// ValidateEmail custom check email field
+// ValidateEmail custom check email field.
 func ValidateEmail(fl validator.FieldLevel) bool {
 	value := fl.Field().String()
 	if value == "" {
@@ -67,7 +67,7 @@ func ValidateEmail(fl validator.FieldLevel) bool {
 	return emailRegexp.MatchString(value)
 }
 
-// ValidatePassword custom check password field
+// ValidatePassword custom check password field.
 func ValidatePassword(fl validator.FieldLevel) bool {
 	value := fl.Field().String()
 	if value == "" {

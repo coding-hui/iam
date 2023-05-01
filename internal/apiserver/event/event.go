@@ -17,12 +17,12 @@ type Worker interface {
 	Start(ctx context.Context, errChan chan error)
 }
 
-// InitEvent init all event worker
+// InitEvent init all event worker.
 func InitEvent(cfg config.Config) []interface{} {
 	return []interface{}{}
 }
 
-// StartEventWorker start all event worker
+// StartEventWorker start all event worker.
 func StartEventWorker(ctx context.Context, errChan chan error) {
 	for i := range workers {
 		go workers[i].Start(ctx, errChan)

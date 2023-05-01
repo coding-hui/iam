@@ -13,19 +13,19 @@ import (
 // versionPrefix API version prefix.
 var versionPrefix = "/api/v1"
 
-// Interface the API should define the http route
+// Interface the API should define the http route.
 type Interface interface {
 	RegisterApiGroup(*gin.Engine)
 }
 
 var registeredAPI []Interface
 
-// RegisterAPI register API handler
+// RegisterAPI register API handler.
 func RegisterAPI(apis Interface) {
 	registeredAPI = append(registeredAPI, apis)
 }
 
-// GetRegisteredAPI return all API handlers
+// GetRegisteredAPI return all API handlers.
 func GetRegisteredAPI() []Interface {
 	return registeredAPI
 }
@@ -41,7 +41,7 @@ func InitAPIBean(c config.Config) []interface{} {
 	RegisterAPI(NewUser())
 	RegisterAPI(NewResource())
 
-	var beans []interface{}
+	beans := make([]interface{}, 0, len(registeredAPI))
 	for i := range registeredAPI {
 		beans = append(beans, registeredAPI[i])
 	}

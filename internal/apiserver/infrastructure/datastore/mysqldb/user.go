@@ -24,7 +24,7 @@ type userRepositoryImpl struct {
 	db *gorm.DB
 }
 
-// newUserRepository new User Repository
+// newUserRepository new User Repository.
 func newUserRepository(db *gorm.DB) repository.UserRepository {
 	return &userRepositoryImpl{db}
 }
@@ -86,7 +86,7 @@ func (u *userRepositoryImpl) DeleteCollection(ctx context.Context, usernames []s
 	return u.db.WithContext(ctx).Where("name in (?)", usernames).Delete(&model.User{}).Error
 }
 
-// Get get user
+// Get get user.
 func (u *userRepositoryImpl) Get(ctx context.Context, username string, _ metav1alpha1.GetOptions) (*model.User, error) {
 	user := &model.User{}
 	if username == "" {
@@ -104,7 +104,7 @@ func (u *userRepositoryImpl) Get(ctx context.Context, username string, _ metav1a
 	return user, nil
 }
 
-// List list users
+// List list users.
 func (u *userRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
 	list := &v1alpha1.UserList{}
 

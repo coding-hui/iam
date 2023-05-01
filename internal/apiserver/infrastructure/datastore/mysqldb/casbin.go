@@ -21,7 +21,7 @@ type casbinRepositoryImpl struct {
 	enforcer *casbin.SyncedEnforcer
 }
 
-// newCasbinRepository new SyncedEnforcer Repository
+// newCasbinRepository new SyncedEnforcer Repository.
 func newCasbinRepository(db *gorm.DB) repository.CasbinRepository {
 	return &casbinRepositoryImpl{db: db}
 }

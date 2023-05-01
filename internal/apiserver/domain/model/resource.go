@@ -43,10 +43,6 @@ func (r *Resource) TableName() string {
 	return TableNamePrefix + "resource"
 }
 
-func (r *Resource) ShortTableName() string {
-	return TableNamePrefix + "res"
-}
-
 // AfterCreate run after create database record.
 func (r *Resource) AfterCreate(tx *gorm.DB) error {
 	r.InstanceID = idutil.GetInstanceID(r.ID, "resource-")
@@ -54,6 +50,7 @@ func (r *Resource) AfterCreate(tx *gorm.DB) error {
 	return tx.Save(r).Error
 }
 
+// Action resource all operator actions.
 type Action struct {
 	ID          uint64 `json:"id,omitempty"         gorm:"primary_key;AUTO_INCREMENT;column:id"`
 	ResourceId  uint64 `json:"resourceId,omitempty" gorm:"column:resource_id"`
@@ -64,8 +61,4 @@ type Action struct {
 // TableName maps to mysql table name.
 func (a *Action) TableName() string {
 	return TableNamePrefix + "resource_actions"
-}
-
-func (a *Action) ShortTableName() string {
-	return TableNamePrefix + "act"
 }
