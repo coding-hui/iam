@@ -15,6 +15,19 @@ var (
 	CtxKeyUserName = "username"
 )
 
+type UserRole string
+
+// These are the valid phases of a user role.
+const (
+	PlatformAdmin UserRole = "platform"
+	TenantAdmin   UserRole = "tenant"
+	Default       UserRole = "default"
+)
+
+func (r UserRole) String() string {
+	return string(r)
+}
+
 type UserState string
 
 // These are the valid phases of a user.
@@ -133,7 +146,7 @@ type RefreshTokenResponse struct {
 // CreateResourceRequest create resource request
 type CreateResourceRequest struct {
 	Name        string   `json:"name" validate:"required,name"`
-	Code        string   `json:"code" validate:"required"`
+	Method      string   `json:"method" validate:"required"`
 	Type        string   `json:"type" validate:"required"`
 	Api         string   `json:"api" validate:"required"`
 	Description string   `json:"description"`
@@ -144,7 +157,7 @@ type CreateResourceRequest struct {
 // UpdateResourceRequest update resource request
 type UpdateResourceRequest struct {
 	Name        string   `json:"name" validate:"required,name"`
-	Code        string   `json:"code" validate:"required"`
+	Method      string   `json:"method" validate:"required"`
 	Type        string   `json:"type" validate:"required"`
 	Api         string   `json:"api" validate:"required"`
 	Description string   `json:"description"`
@@ -156,8 +169,8 @@ type UpdateResourceRequest struct {
 type ResourceBase struct {
 	// Standard object's metadata.
 	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
-	// Code resource code.
-	Code string `json:"code" validate:"required"`
+	// Method resource method.
+	Method string `json:"method" validate:"required"`
 	// Type unique identification of resource API.
 	Api string `json:"api" validate:"required"`
 	// Type resource type.

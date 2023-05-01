@@ -126,20 +126,7 @@ func (s *restServer) RegisterAPIRoute() {
 
 	// Register all custom api
 	for _, api := range apisv1.GetRegisteredAPI() {
-		r := s.webEngine.Group(api.GetApiGroup().BaseUrl)
-		if len(api.GetApiGroup().Filters) > 0 {
-			for _, filter := range api.GetApiGroup().Filters {
-				r.Use(filter)
-			}
-		}
-		for _, v := range api.GetApiGroup().Apis {
-			if len(v.Filters) > 0 {
-				for _, filter := range v.Filters {
-					r.Use(filter)
-				}
-			}
-			r.Handle(v.Method, v.Path, v.Handler)
-		}
+		api.RegisterApiGroup(s.webEngine)
 	}
 
 	klog.Infof("init router successful")

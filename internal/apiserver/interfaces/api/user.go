@@ -25,40 +25,15 @@ func NewUser() Interface {
 	return &user{}
 }
 
-func (u *user) GetApiGroup() InitApiGroup {
-	v1 := InitApiGroup{
-		BaseUrl: versionPrefix + "/users",
-		Filters: gin.HandlersChain{authCheckFilter},
-		Apis: []InitApi{
-			{
-				Method:  POST,
-				Path:    "",
-				Handler: u.createUser,
-			},
-			{
-				Method:  PUT,
-				Path:    "/:name",
-				Handler: u.updateUser,
-			},
-			{
-				Method:  DELETE,
-				Path:    "/:name",
-				Handler: u.deleteUser,
-			},
-			{
-				Method:  GET,
-				Path:    "/:name",
-				Handler: u.getUser,
-			},
-			{
-				Method:  GET,
-				Path:    "",
-				Handler: u.listUser,
-			},
-		},
+func (u *user) RegisterApiGroup(g *gin.Engine) {
+	v1 := g.Group(versionPrefix + "/users").Use(authCheckFilter)
+	{
+		v1.POST("", u.createUser)
+		v1.PUT("/:name", u.updateUser)
+		v1.DELETE("/:name", u.deleteUser)
+		v1.GET("/:name", u.getUser)
+		v1.GET("", u.listUser)
 	}
-
-	return v1
 }
 
 // createUser create new user

@@ -15,7 +15,7 @@ func CreateResourceModel(req v1alpha1.CreateResourceRequest) *model.Resource {
 		ObjectMeta: metav1alpha1.ObjectMeta{
 			Name: req.Name,
 		},
-		Code:        req.Code,
+		Method:      req.Method,
 		Type:        req.Type,
 		Api:         req.Api,
 		IsDefault:   req.IsDefault,

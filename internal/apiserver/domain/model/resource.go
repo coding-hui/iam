@@ -20,14 +20,14 @@ type Resource struct {
 	// Standard object's metadata.
 	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
 
-	// Code resource code.
-	Code string `json:"code" gorm:"column:code" validate:"required"`
-
 	// Type resource type.
 	Type string `json:"type" gorm:"column:type" validate:"required"`
 
 	// Type unique identification of resource API.
 	Api string `json:"api" gorm:"column:api" validate:"required"`
+
+	// Method resource method.
+	Method string `json:"method" gorm:"column:method" validate:"required"`
 
 	IsDefault bool `json:"isDefault" gorm:"column:is_default"`
 

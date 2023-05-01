@@ -25,37 +25,14 @@ func NewResource() Interface {
 	return &resource{}
 }
 
-func (r *resource) GetApiGroup() InitApiGroup {
-	return InitApiGroup{
-		BaseUrl: versionPrefix + "/resources",
-		Filters: gin.HandlersChain{authCheckFilter},
-		Apis: []InitApi{
-			{
-				Method:  POST,
-				Path:    "",
-				Handler: r.createResource,
-			},
-			{
-				Method:  PUT,
-				Path:    "/:name",
-				Handler: r.updateResource,
-			},
-			{
-				Method:  DELETE,
-				Path:    "/:name",
-				Handler: r.deleteResource,
-			},
-			{
-				Method:  GET,
-				Path:    "/:name",
-				Handler: r.getResource,
-			},
-			{
-				Method:  GET,
-				Path:    "",
-				Handler: r.listResource,
-			},
-		},
+func (r *resource) RegisterApiGroup(g *gin.Engine) {
+	v1 := g.Group(versionPrefix + "/resources").Use(authCheckFilter)
+	{
+		v1.POST("", r.createResource)
+		v1.PUT("/:name", r.updateResource)
+		v1.DELETE("/:name", r.deleteResource)
+		v1.GET("/:name", r.getResource)
+		v1.GET("", r.listResource)
 	}
 }
 

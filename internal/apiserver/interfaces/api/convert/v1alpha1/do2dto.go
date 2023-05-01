@@ -26,7 +26,7 @@ func ConvertUserModelToBase(user *model.User) *v1alpha1.UserBase {
 func ConvertResourceModelToBase(resource *model.Resource) *v1alpha1.ResourceBase {
 	return &v1alpha1.ResourceBase{
 		ObjectMeta:  resource.ObjectMeta,
-		Code:        resource.Code,
+		Method:      resource.Method,
 		Api:         resource.Api,
 		Type:        resource.Type,
 		Description: resource.Description,

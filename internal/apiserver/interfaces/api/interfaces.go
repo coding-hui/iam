@@ -10,39 +10,12 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/config"
 )
 
-const (
-	GET    string = "GET"
-	POST   string = "POST"
-	PUT    string = "PUT"
-	DELETE string = "DELETE"
-)
-
 // versionPrefix API version prefix.
 var versionPrefix = "/api/v1"
 
-// GetAPIPrefix return the prefix of the api route path
-func GetAPIPrefix() []string {
-	return []string{versionPrefix, "/v1"}
-}
-
-// InitApiGroup the API should define the http route
-type InitApiGroup struct {
-	BaseUrl string
-	Apis    []InitApi
-	Filters gin.HandlersChain
-}
-
-// InitApi the API should define the http route
-type InitApi struct {
-	Method  string
-	Path    string
-	Filters gin.HandlersChain
-	Handler gin.HandlerFunc
-}
-
 // Interface the API should define the http route
 type Interface interface {
-	GetApiGroup() InitApiGroup
+	RegisterApiGroup(*gin.Engine)
 }
 
 var registeredAPI []Interface

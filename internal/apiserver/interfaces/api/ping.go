@@ -5,8 +5,9 @@
 package api
 
 import (
-	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/gin-gonic/gin"
+
+	"github.com/coding-hui/iam/internal/pkg/api"
 )
 
 type ping struct{}
@@ -16,17 +17,8 @@ func NewPing() Interface {
 	return &ping{}
 }
 
-func (p *ping) GetApiGroup() InitApiGroup {
-	return InitApiGroup{
-		BaseUrl: "/ping",
-		Apis: []InitApi{
-			{
-				Method:  GET,
-				Path:    "",
-				Handler: p.ping,
-			},
-		},
-	}
+func (p *ping) RegisterApiGroup(g *gin.Engine) {
+	g.GET("/ping", p.ping)
 }
 
 // ping

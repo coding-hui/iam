@@ -33,27 +33,12 @@ func NewAuthentication(c config.Config) Interface {
 	return &authentication{cfg: c}
 }
 
-func (a *authentication) GetApiGroup() InitApiGroup {
-	return InitApiGroup{
-		BaseUrl: versionPrefix,
-		Apis: []InitApi{
-			{
-				Method:  POST,
-				Path:    "/login",
-				Handler: a.authenticate,
-			},
-			{
-				Method:  GET,
-				Path:    "/auth/refresh-token",
-				Handler: a.refreshToken,
-			},
-			{
-				Method:  GET,
-				Path:    "/auth/user-info",
-				Filters: gin.HandlersChain{authCheckFilter},
-				Handler: a.userInfo,
-			},
-		},
+func (a *authentication) RegisterApiGroup(g *gin.Engine) {
+	v1 := g.Group(versionPrefix)
+	{
+		v1.POST("/login", a.authenticate)
+		v1.GET("/auth/refresh-token", a.refreshToken)
+		v1.Use(authCheckFilter).GET("/auth/user-info", a.userInfo)
 	}
 }
 
