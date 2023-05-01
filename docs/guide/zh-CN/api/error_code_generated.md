@@ -28,6 +28,9 @@ IAM 系统支持的错误码列表如下：
 | ErrReachMaxCount | 110101 | 400 | Secret reach the max count |
 | ErrSecretNotFound | 110102 | 404 | Secret not found |
 | ErrPolicyNotFound | 110201 | 404 | Policy not found |
+| ErrResourceNotFound | 110001 | 404 | Resource not found |
+| ErrResourceAlreadyExist | 110002 | 400 | Resource already exist |
+| ErrResourceNameIsEmpty | 110003 | 400 | Resource name is empty |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |
