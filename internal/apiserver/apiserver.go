@@ -28,12 +28,12 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/utils/env"
 )
 
-// APIServer interface for call api apiserver.
+// APIServer interface for call iam-apiserver.
 type APIServer interface {
 	Run(context.Context, chan error) error
 }
 
-// restServer rest apiserver.
+// restServer rest iam-apiserver.
 type restServer struct {
 	webEngine        *gin.Engine
 	beanContainer    *container.Container
@@ -41,7 +41,7 @@ type restServer struct {
 	repositoryFactor repository.Factory
 }
 
-// New create api apiserver with config data.
+// New create iam-apiserver with config data.
 func New(cfg config.Config) (a APIServer) {
 	if cfg.Mode == env.ModeProd.String() {
 		gin.SetMode(gin.ReleaseMode)
@@ -138,7 +138,7 @@ func (s *restServer) configSwagger() {
 }
 
 func (s *restServer) startHTTP(ctx context.Context) error {
-	// Start HTTP apiserver
+	// Start HTTP iam-apiserver
 	klog.Infof("HTTP APIs are being served on: %s, ctx: %s", s.cfg.BindAddr, ctx)
 	server := &http.Server{
 		Addr:              s.cfg.BindAddr,

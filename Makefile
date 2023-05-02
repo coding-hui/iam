@@ -12,7 +12,7 @@ all: tidy gen.errcode add-copyright format lint build
 # Build options
 
 ROOT_PACKAGE=github.com/coding-hui/iam
-VERSION_PACKAGE=github.com/coding-hui/iam/version
+VERSION_PACKAGE=github.com/coding-hui/common/version
 
 # ==============================================================================
 # Includes
@@ -39,11 +39,11 @@ Options:
   BINS             The binaries to build. Default is all of cmd.
                    This option is available when using: make build/build.multiarch
                    Example: make build BINS="iam-apiserver iam-authz-server"
-  IMAGES           Backend images to make. Default is all of cmd starting with iam-.
+  IMAGES           Backend images to make. Default is all of cmd.
                    This option is available when using: make image/image.multiarch/push/push.multiarch
                    Example: make image.multiarch IMAGES="iam-apiserver iam-authz-server"
   REGISTRY_PREFIX  Docker registry prefix. Default is wecoding.
-                   Example: make push REGISTRY_PREFIX=ccr.ccs.tencentyun.com/coding-hui VERSION=v1.6.2
+                   Example: make push REGISTRY_PREFIX=devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo VERSION=v1.6.2
   PLATFORMS        The multiple platforms to build. Default is linux_amd64 and linux_arm64.
                    This option is available when using: make build.multiarch/image.multiarch/push.multiarch
                    Example: make image.multiarch IMAGES="iam-apiserver iam-pump" PLATFORMS="linux_amd64 linux_arm64"

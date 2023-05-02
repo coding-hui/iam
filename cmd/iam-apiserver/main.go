@@ -7,7 +7,7 @@ package main
 import (
 	"log"
 
-	"github.com/coding-hui/iam/cmd/apiserver/app"
+	"github.com/coding-hui/iam/cmd/iam-apiserver/app"
 )
 
 func main() {

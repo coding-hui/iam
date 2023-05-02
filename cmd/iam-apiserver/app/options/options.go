@@ -13,7 +13,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/config"
 )
 
-// ServerRunOptions contains everything necessary to create and run api apiserver.
+// ServerRunOptions contains everything necessary to create and run iam-apiserver.
 type ServerRunOptions struct {
 	GenericServerRunOptions *config.Config
 }

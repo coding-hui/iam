@@ -6,7 +6,7 @@ package options
 
 import utilerrors "k8s.io/apimachinery/pkg/util/errors"
 
-// Validate validates apiserver run options, to find options' misconfiguration.
+// Validate validates iam-apiserver run options, to find options' misconfiguration.
 func (s *ServerRunOptions) Validate() error {
 	var errors []error
 

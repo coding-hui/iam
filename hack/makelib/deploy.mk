@@ -7,10 +7,10 @@
 #
 
 KUBECTL := kubectl
-NAMESPACE ?= iam
+NAMESPACE ?= iam-system
 CONTEXT ?= wecoding.dev
 
-DEPLOYS=iam-apiserver iam-authz-server iam-pump iam-watcher
+DEPLOYS=iam-apiserver
 
 .PHONY: deploy.run.all
 deploy.run.all:

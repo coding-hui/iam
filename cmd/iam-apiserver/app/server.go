@@ -15,17 +15,19 @@ import (
 	"github.com/spf13/cobra"
 	"k8s.io/klog/v2"
 
-	"github.com/coding-hui/iam/cmd/apiserver/app/options"
+	"github.com/coding-hui/iam/cmd/iam-apiserver/app/options"
 	"github.com/coding-hui/iam/internal/apiserver"
-	"github.com/coding-hui/iam/version"
+
+	"github.com/coding-hui/common/version"
+	"github.com/coding-hui/common/version/verflag"
 )
 
 // NewAPIServerCommand creates a *cobra.Command object with default parameters.
 func NewAPIServerCommand() *cobra.Command {
 	s := options.NewServerRunOptions()
 	cmd := &cobra.Command{
-		Use: "apiserver",
-		Long: `The IAM API apiserver validates and configures data for the API objects. 
+		Use: "iam-apiserver",
+		Long: `The IAM API iam-apiserver validates and configures data for the API objects. 
 The API Server services REST operations and provides the frontend to the
 cluster's shared state through which all other components interact.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -48,7 +50,7 @@ cluster's shared state through which all other components interact.`,
 
 // Run runs the specified APIServer. This should never exit.
 func Run(s *options.ServerRunOptions) error {
-	// The apiserver is not terminal, there is no color default.
+	// The iam-apiserver is not terminal, there is no color default.
 	// Force set to false, this is useful for the dry-run API.
 	color.NoColor = false
 
@@ -58,7 +60,7 @@ func Run(s *options.ServerRunOptions) error {
 
 	go func() {
 		if err := run(ctx, s, errChan); err != nil {
-			errChan <- fmt.Errorf("failed to run apiserver: %w", err)
+			errChan <- fmt.Errorf("failed to run iam-apiserver: %w", err)
 		}
 	}()
 	term := make(chan os.Signal, 1)
@@ -77,14 +79,11 @@ func Run(s *options.ServerRunOptions) error {
 }
 
 func run(ctx context.Context, s *options.ServerRunOptions, errChan chan error) error {
-	klog.Infof(
-		"IAM information: version: %v, gitRevision: %v",
-		version.IAMVersion,
-		version.GitRevision,
-	)
+	klog.Infof("IAM information: Version: %v", version.Get().ToJSON())
 
 	if s.GenericServerRunOptions.PrintVersion {
-		version.PrintVersionAndExit()
+		// display application version information
+		verflag.PrintAndExitIfRequested()
 	}
 
 	server := apiserver.New(*s.GenericServerRunOptions)

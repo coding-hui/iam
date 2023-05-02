@@ -36,7 +36,7 @@ readonly IAM_SERVER_BINARIES=("${IAM_SERVER_TARGETS[@]##*/}")
 iam::golang::server_image_targets() {
   # NOTE: this contains cmd targets for iam::build::get_docker_wrapped_binaries
   local targets=(
-    cmd/apiserver
+    cmd/iam-apiserver
   )
   echo "${targets[@]}"
 }

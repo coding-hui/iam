@@ -15,9 +15,9 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/utils/env"
 )
 
-// Config config for apiserver.
+// Config config for iam-apiserver.
 type Config struct {
-	// api apiserver bind address
+	// iam-apiserver bind address
 	BindAddr string
 	// monitor metric path
 	MetricPath string
@@ -39,7 +39,7 @@ func NewConfig() *Config {
 			Type:     "mysqldb",
 			Database: "iam_1",
 			// URL:      "mongodb://root:root@localhost:27017/",
-			URL: "root:123456@tcp(127.0.0.1:3306)/iam_1?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms",
+			URL: "root:123456@tcp(localhost:3306)/iam_1?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms",
 		},
 		JwtOptions: options.JwtOptions{
 			Realm:      "iam jwt",
@@ -52,7 +52,7 @@ func NewConfig() *Config {
 	}
 }
 
-// Validate validate generic apiserver run options.
+// Validate validate generic iam-apiserver run options.
 func (s *Config) Validate() []error {
 	var errs []error
 

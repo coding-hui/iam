@@ -9,7 +9,7 @@
 DOCKER := docker
 DOCKER_SUPPORTED_API_VERSION ?= 1.32
 
-REGISTRY_PREFIX ?= coding-hui
+REGISTRY_PREFIX ?= devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo
 BASE_IMAGE = centos:centos8
 
 EXTRA_ARGS ?= --no-cache
@@ -35,7 +35,7 @@ endif
 .PHONY: image.verify
 image.verify:
 	$(eval API_VERSION := $(shell $(DOCKER) version | grep -E 'API version: {1,6}[0-9]' | head -n1 | awk '{print $$3} END { if (NR==0) print 0}' ))
-	$(eval PASS := $(shell echo "$(API_VERSION) > $(DOCKER_SUPPORTED_API_VERSION)" | bc))
+	$(eval PASS := $(shell awk "BEGIN {print $(API_VERSION) >= $(DOCKER_SUPPORTED_API_VERSION)}" ))
 	@if [ $(PASS) -ne 1 ]; then \
 		$(DOCKER) -v ;\
 		echo "Unsupported docker version. Docker API version should be greater than $(DOCKER_SUPPORTED_API_VERSION)"; \
@@ -62,10 +62,9 @@ image.build.%: go.build.%
 	$(eval IMAGE_PLAT := $(subst _,/,$(PLATFORM)))
 	@echo "===========> Building docker image $(IMAGE) $(VERSION) for $(IMAGE_PLAT)"
 	@mkdir -p $(TMP_DIR)/$(IMAGE)
-	@cat $(ROOT_DIR)/installer/docker/$(IMAGE)/Dockerfile\
-		| sed "s#BASE_IMAGE#$(BASE_IMAGE)#g" >$(TMP_DIR)/$(IMAGE)/Dockerfile
+	@cat $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile > $(TMP_DIR)/$(IMAGE)/Dockerfile
 	@cp $(OUTPUT_DIR)/platforms/$(IMAGE_PLAT)/$(IMAGE) $(TMP_DIR)/$(IMAGE)/
-	@DST_DIR=$(TMP_DIR)/$(IMAGE) $(ROOT_DIR)/installer/docker/$(IMAGE)/build.sh 2>/dev/null || true
+	@DST_DIR=$(TMP_DIR)/$(IMAGE) $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/build.sh 2>/dev/null || true
 	$(eval BUILD_SUFFIX := $(_DOCKER_BUILD_EXTRA_ARGS) --pull -t $(REGISTRY_PREFIX)/$(IMAGE)-$(ARCH):$(VERSION) $(TMP_DIR)/$(IMAGE))
 	@if [ $(shell $(GO) env GOARCH) != $(ARCH) ] ; then \
 		$(MAKE) image.daemon.verify ;\
