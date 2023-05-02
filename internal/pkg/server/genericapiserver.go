@@ -148,7 +148,7 @@ func (s *GenericAPIServer) Run() error {
 		klog.Infof("Start to listening the incoming requests on http address: %s", s.InsecureServingInfo.Address)
 
 		if err := s.insecureServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatal(err.Error())
+			klog.Fatalf(err.Error())
 
 			return err
 		}
@@ -167,7 +167,7 @@ func (s *GenericAPIServer) Run() error {
 		klog.Infof("Start to listening the incoming requests on https address: %s", s.SecureServingInfo.Address())
 
 		if err := s.secureServer.ListenAndServeTLS(cert, key); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatal(err.Error())
+			klog.Fatal(err.Error())
 
 			return err
 		}
