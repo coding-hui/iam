@@ -64,6 +64,7 @@ image.build.%: go.build.%
 	@mkdir -p $(TMP_DIR)/$(IMAGE)
 	@cat $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile > $(TMP_DIR)/$(IMAGE)/Dockerfile
 	@cp $(OUTPUT_DIR)/platforms/$(IMAGE_PLAT)/$(IMAGE) $(TMP_DIR)/$(IMAGE)/
+	@cp $(ROOT_DIR)/configs/$(IMAGE).yaml $(TMP_DIR)/$(IMAGE)/config.yaml
 	@DST_DIR=$(TMP_DIR)/$(IMAGE) $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/build.sh 2>/dev/null || true
 	$(eval BUILD_SUFFIX := $(_DOCKER_BUILD_EXTRA_ARGS) --pull -t $(REGISTRY_PREFIX)/$(IMAGE)-$(ARCH):$(VERSION) $(TMP_DIR)/$(IMAGE))
 	@if [ $(shell $(GO) env GOARCH) != $(ARCH) ] ; then \
