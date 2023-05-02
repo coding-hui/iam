@@ -21,46 +21,7 @@ import (
 	"github.com/coding-hui/common/version/verflag"
 )
 
-var (
-	progressMessage = color.GreenString("==>")
-
-	usageTemplate = fmt.Sprintf(`%s{{if .Runnable}}
-  %s{{end}}{{if .HasAvailableSubCommands}}
-  %s{{end}}{{if gt (len .Aliases) 0}}
-
-%s
-  {{.NameAndAliases}}{{end}}{{if .HasExample}}
-
-%s
-{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
-
-%s{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
-  %s {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
-
-%s
-{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasAvailableInheritedFlags}}
-
-%s
-{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
-
-%s{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
-  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
-
-Use "%s --help" for more information about a command.{{end}}
-`,
-		color.CyanString("Usage:"),
-		color.GreenString("{{.UseLine}}"),
-		color.GreenString("{{.CommandPath}} [command]"),
-		color.CyanString("Aliases:"),
-		color.CyanString("Examples:"),
-		color.CyanString("Available Commands:"),
-		color.GreenString("{{rpad .Name .NamePadding }}"),
-		color.CyanString("Flags:"),
-		color.CyanString("Global Flags:"),
-		color.CyanString("Additional help topics:"),
-		color.GreenString("{{.CommandPath}} [command]"),
-	)
-)
+var progressMessage = color.GreenString("==>")
 
 // App is the main structure of a cli application.
 // It is recommended that an app be created with the app.NewApp() function.
@@ -179,11 +140,10 @@ func (a *App) buildCommand() {
 		SilenceErrors: true,
 		Args:          a.args,
 	}
-	cmd.SetUsageTemplate(usageTemplate)
 	cmd.SetOut(os.Stdout)
 	cmd.SetErr(os.Stderr)
 	cmd.Flags().SortFlags = true
-	cliflag.InitFlags()
+	cliflag.InitFlags(cmd.Flags())
 
 	if len(a.commands) > 0 {
 		for _, command := range a.commands {
@@ -221,7 +181,8 @@ func (a *App) buildCommand() {
 // Run is used to launch the application.
 func (a *App) Run() {
 	if err := a.cmd.Execute(); err != nil {
-		klog.Errorf("%v %v\n", color.RedString("Error:"), err)
+		// nolint: forbidigo
+		fmt.Printf("%v %v\n", color.RedString("Error:"), err)
 		os.Exit(1)
 	}
 }
@@ -232,7 +193,6 @@ func (a *App) Command() *cobra.Command {
 }
 
 func (a *App) runCommand(cmd *cobra.Command, args []string) error {
-	printWorkingDir()
 	cliflag.PrintFlags(cmd.Flags())
 	if !a.noVersion {
 		// display application version information
@@ -287,11 +247,6 @@ func (a *App) applyOptionRules() error {
 	}
 
 	return nil
-}
-
-func printWorkingDir() {
-	wd, _ := os.Getwd()
-	klog.Infof("%v WorkingDir: %s", progressMessage, wd)
 }
 
 func addCmdTemplate(cmd *cobra.Command, namedFlagSets cliflag.NamedFlagSets) {
