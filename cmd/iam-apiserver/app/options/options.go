@@ -9,8 +9,7 @@ import (
 
 	"k8s.io/klog/v2"
 
-	cliflag "k8s.io/component-base/cli/flag"
-
+	cliflag "github.com/coding-hui/common/cli/flag"
 	"github.com/coding-hui/common/util/idutil"
 
 	genericoptions "github.com/coding-hui/iam/internal/pkg/options"

@@ -4,7 +4,7 @@
 
 package app
 
-import cliflag "k8s.io/component-base/cli/flag"
+import cliflag "github.com/coding-hui/common/cli/flag"
 
 // CliOptions abstracts configuration options for reading parameters from the
 // command line.

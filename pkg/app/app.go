@@ -11,10 +11,10 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	cliflag "k8s.io/component-base/cli/flag"
-	"k8s.io/component-base/cli/globalflag"
 	"k8s.io/klog/v2"
 
+	cliflag "github.com/coding-hui/common/cli/flag"
+	"github.com/coding-hui/common/cli/globalflag"
 	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/common/term"
 	"github.com/coding-hui/common/version"
