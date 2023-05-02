@@ -6,6 +6,9 @@ package middleware
 
 import "github.com/gin-gonic/gin"
 
+// Middlewares store registered middlewares.
+var Middlewares = defaultMiddlewares()
+
 // InitMiddleware initialize middleware.
 func InitMiddleware(r *gin.Engine) {
 	// Custom Error Wrapper
@@ -17,5 +20,15 @@ func InitMiddleware(r *gin.Engine) {
 	// Secure is a middleware function that appends security
 	r.Use(Secure)
 	// request log
-	r.Use(requestLog())
+	r.Use(RequestLog())
+}
+
+func defaultMiddlewares() map[string]gin.HandlerFunc {
+	return map[string]gin.HandlerFunc{
+		"recovery":  GinRecovery,
+		"secure":    Secure,
+		"options":   Options,
+		"nocache":   NoCache,
+		"requestid": RequestID(),
+	}
 }

@@ -7,14 +7,13 @@ package apiserver
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"time"
-
-	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/shutdown"
+	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 
 	"github.com/coding-hui/iam/docs/apidoc"
 	"github.com/coding-hui/iam/internal/apiserver/config"
@@ -24,8 +23,8 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
+	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
-	"github.com/coding-hui/iam/internal/pkg/utils/env"
 )
 
 // APIServer interface for call iam-apiserver.
@@ -33,44 +32,84 @@ type APIServer interface {
 	Run(context.Context, chan error) error
 }
 
-// restServer rest iam-apiserver.
-type restServer struct {
-	webEngine        *gin.Engine
-	beanContainer    *container.Container
+// apiServer rest iam-apiserver.
+type apiServer struct {
 	cfg              config.Config
+	gs               *shutdown.GracefulShutdown
+	wetServer        *genericapiserver.GenericAPIServer
+	beanContainer    *container.Container
 	repositoryFactor repository.Factory
 }
 
 // New create iam-apiserver with config data.
-func New(cfg config.Config) (a APIServer) {
-	if cfg.Mode == env.ModeProd.String() {
-		gin.SetMode(gin.ReleaseMode)
+func New(cfg *config.Config) (a APIServer, err error) {
+	gs := shutdown.New()
+	gs.AddShutdownManager(posixsignal.NewPosixSignalManager())
+
+	genericConfig, err := cfg.BuildGenericConfig(cfg)
+	if err != nil {
+		return nil, err
 	}
-	s := &restServer{
-		webEngine:     gin.New(),
+
+	genericServer, err := genericConfig.Complete().New()
+	if err != nil {
+		return nil, err
+	}
+
+	server := &apiServer{
+		wetServer:     genericServer,
 		beanContainer: container.NewContainer(),
-		cfg:           cfg,
+		cfg:           *cfg,
+		gs:            gs,
 	}
-	return s
+
+	return server, nil
 }
 
-func (s *restServer) buildIoCContainer() (err error) {
+func (s *apiServer) Run(ctx context.Context, errChan chan error) error {
+	s.gs.AddShutdownCallback(shutdown.ShutdownFunc(func(string) error {
+		s.wetServer.Close()
+		if s.repositoryFactor != nil {
+			_ = s.repositoryFactor.Close()
+		}
+
+		return nil
+	}))
+
+	// build the Ioc Container
+	if err := s.buildIoCContainer(); err != nil {
+		return fmt.Errorf("failed to build IoCContainer %w", err)
+	}
+
+	// init database
+	if err := service.InitData(ctx); err != nil {
+		return fmt.Errorf("failed to init database %w", err)
+	}
+
+	// register apis
+	s.registerAPIRoute()
+
+	go event.StartEventWorker(ctx, errChan)
+
+	return s.startAPIServer()
+}
+
+// buildIoCContainer build ioc container.
+func (s *apiServer) buildIoCContainer() (err error) {
 	// infrastructure
-	if err = s.beanContainer.ProvideWithName("RestServer", s); err != nil {
-		return fmt.Errorf("fail to provides the RestServer bean to the container: %w", err)
+	if err = s.beanContainer.ProvideWithName("apiServer", s); err != nil {
+		return fmt.Errorf("fail to provides the apiServer bean to the container: %w", err)
 	}
 
 	// datastore repository
 	var factory repository.Factory
-	switch s.cfg.Datastore.Type {
-	case "mysqldb":
-		factory, err = mysqldb.GetMySQLFactory(context.Background(), s.cfg.Datastore)
+	if s.cfg.MySQLOptions != nil {
+		factory, err = mysqldb.GetMySQLFactory(context.Background(), s.cfg.MySQLOptions)
 		if err != nil {
 			return fmt.Errorf("create mysqldb datastore instance failure %w", err)
 		}
-	default:
-		return fmt.Errorf("not support datastore type %s", s.cfg.Datastore.Type)
 	}
+
 	s.repositoryFactor = factory
 	if err = s.beanContainer.ProvideWithName("repository", s.repositoryFactor); err != nil {
 		return fmt.Errorf("fail to provides the datastore bean to the container: %w", err)
@@ -98,52 +137,36 @@ func (s *restServer) buildIoCContainer() (err error) {
 	return nil
 }
 
-func (s *restServer) Run(ctx context.Context, errChan chan error) error {
-	// build the Ioc Container
-	if err := s.buildIoCContainer(); err != nil {
-		return err
-	}
-
-	// init database
-	if err := service.InitData(ctx); err != nil {
-		return fmt.Errorf("fail to init database %w", err)
-	}
-
-	s.RegisterAPIRoute()
-
-	return s.startHTTP(ctx)
-}
-
-// RegisterAPIRoute register the API route.
-func (s *restServer) RegisterAPIRoute() {
+// registerAPIRoute register the API route.
+func (s *apiServer) registerAPIRoute() {
 	// Init middleware
-	middleware.InitMiddleware(s.webEngine)
+	middleware.InitMiddleware(s.wetServer.Engine)
 
 	// swagger router
 	s.configSwagger()
 
 	// Register all custom api
 	for _, api := range apisv1.GetRegisteredAPI() {
-		api.RegisterApiGroup(s.webEngine)
+		api.RegisterApiGroup(s.wetServer.Engine)
 	}
 
 	klog.Infof("init router successful")
 }
 
-func (s *restServer) configSwagger() {
+func (s *apiServer) configSwagger() {
 	apidoc.SwaggerInfo.Title = "IAM API Doc"
 	apidoc.SwaggerInfo.Description = "IAM ApiService API Doc."
 	apidoc.SwaggerInfo.Version = "v1alpha"
-	s.webEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
+	s.wetServer.Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
 }
 
-func (s *restServer) startHTTP(ctx context.Context) error {
-	// Start HTTP iam-apiserver
-	klog.Infof("HTTP APIs are being served on: %s, ctx: %s", s.cfg.BindAddr, ctx)
-	server := &http.Server{
-		Addr:              s.cfg.BindAddr,
-		Handler:           s.webEngine,
-		ReadHeaderTimeout: 2 * time.Second,
+// startAPIServer start api server.
+func (s *apiServer) startAPIServer() error {
+	// start shutdown managers
+	if err := s.gs.Start(); err != nil {
+		klog.Fatalf("start shutdown manager failed: %s", err.Error())
 	}
-	return server.ListenAndServe()
+
+	// web server
+	return s.wetServer.Run()
 }

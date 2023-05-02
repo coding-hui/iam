@@ -6,47 +6,54 @@ package mysqldb
 
 import (
 	"context"
+	"fmt"
 
-	"gorm.io/driver/mysql"
+	"github.com/coding-hui/iam/pkg/db"
+
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	"github.com/coding-hui/iam/internal/pkg/code"
+	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
 
 	"github.com/coding-hui/common/errors"
 )
 
 type mysqldb struct {
-	client   *gorm.DB
-	database string
+	client *gorm.DB
 }
 
 // GetMySQLFactory create mysql factory with the given config.
-func GetMySQLFactory(ctx context.Context, cfg datastore.Config) (repository.Factory, error) {
-	err := createDatabase(cfg)
-	if err != nil {
-		return nil, err
+func GetMySQLFactory(ctx context.Context, opts *genericoptions.MySQLOptions) (factory repository.Factory, lastErr error) {
+	lastErr = createDatabase(opts)
+	if lastErr != nil {
+		return nil, fmt.Errorf("failed to create database, error: %w", lastErr)
 	}
-	mysqlCfg := mysql.Config{
-		DSN:                       cfg.URL, // DSN data source name
-		DefaultStringSize:         191,     // string 类型字段的默认长度
-		SkipInitializeWithVersion: false,   // 根据版本自动配置
+
+	var dbIns *gorm.DB
+	options := &db.Options{
+		Host:                  opts.Host,
+		Username:              opts.Username,
+		Password:              opts.Password,
+		Database:              opts.Database,
+		MaxIdleConnections:    opts.MaxIdleConnections,
+		MaxOpenConnections:    opts.MaxOpenConnections,
+		MaxConnectionLifeTime: opts.MaxConnectionLifeTime,
+		LogLevel:              opts.LogLevel,
 	}
-	db, err := gorm.Open(mysql.New(mysqlCfg))
-	if err != nil {
-		return nil, err
+	dbIns, lastErr = db.New(options)
+
+	m := &mysqldb{client: dbIns}
+	if m == nil || lastErr != nil {
+		return nil, fmt.Errorf("failed to get mysql store fatory, mysqlFactory: %+v, error: %w", m, lastErr)
 	}
-	db.InstanceSet("gorm:table_options", "ENGINE=InnoDB")
-	migrate(db)
-	m := &mysqldb{
-		client:   db.WithContext(ctx),
-		database: cfg.Database,
-	}
+
+	migrate(m.client)
+
 	klog.Infof("create mysqldb datastore instance successful")
 
-	return m, nil
+	return m, lastErr
 }
 
 func (m *mysqldb) UserRepository() repository.UserRepository {

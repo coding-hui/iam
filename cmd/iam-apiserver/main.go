@@ -5,14 +5,14 @@
 package main
 
 import (
-	"log"
+	"math/rand"
+	"time"
 
 	"github.com/coding-hui/iam/cmd/iam-apiserver/app"
 )
 
 func main() {
-	cmd := app.NewAPIServerCommand()
-	if err := cmd.Execute(); err != nil {
-		log.Fatalln(err)
-	}
+	rand.Seed(time.Now().UTC().UnixNano())
+
+	app.NewAPIServerAPP("iam-apiserver").Run()
 }

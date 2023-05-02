@@ -4,13 +4,18 @@
 
 package options
 
-import utilerrors "k8s.io/apimachinery/pkg/util/errors"
+// Validate checks Options and return a slice of found errs.
+func (o *Options) Validate() []error {
+	var errs []error
 
-// Validate validates iam-apiserver run options, to find options' misconfiguration.
-func (s *ServerRunOptions) Validate() error {
-	var errors []error
+	errs = append(errs, o.GenericServerRunOptions.Validate()...)
+	errs = append(errs, o.GRPCOptions.Validate()...)
+	errs = append(errs, o.InsecureServing.Validate()...)
+	errs = append(errs, o.SecureServing.Validate()...)
+	errs = append(errs, o.MySQLOptions.Validate()...)
+	errs = append(errs, o.RedisOptions.Validate()...)
+	errs = append(errs, o.JwtOptions.Validate()...)
+	errs = append(errs, o.FeatureOptions.Validate()...)
 
-	errors = append(errors, s.GenericServerRunOptions.Validate()...)
-
-	return utilerrors.NewAggregate(errors)
+	return errs
 }

@@ -20,7 +20,7 @@ run:
   tests: true
 
   # list of build tags, all linters use it. Default is empty list.
-  build-tags: []
+  build-tags: [ ]
 
   # which dirs to skip: issues from them won't be reported;
   # can use regexp here: generated.*, regexp is applied on full path;
@@ -151,7 +151,6 @@ linters-settings:
   forbidigo:
     # Forbid the following identifiers (identifiers are written using regexp):
     forbid:
-      - ^print.*$
       - 'fmt\.Print.*'
       - fmt.Println.* # too much log noise
       - ginkgo\\.F.* # these are used just for local development
@@ -164,7 +163,7 @@ linters-settings:
     # put imports beginning with prefix after 3rd-party packages;
     # only support one prefix
     # if not set, use goimports.local-prefixes
-    prefix: github.com/marmotedu/iam
+    prefix: github.com/coding-hui/iam
   gocognit:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
     min-complexity: 30
@@ -293,38 +292,35 @@ linters-settings:
   goheader:
     values:
       const:
-        # define here const type values in format k:v, for example:
-        # COMPANY: MY COMPANY
+      # define here const type values in format k:v, for example:
+      # COMPANY: MY COMPANY
       regexp:
-        # define here regexp type values, for example
-        # AUTHOR: .*@mycompany\.com
+      # define here regexp type values, for example
+      # AUTHOR: .*@mycompany\.com
     template: # |-
-      # put here copyright header template for source code files, for example:
-      # Note: {{ YEAR }} is a builtin value that returns the year relative to the current machine time.
-      #
-      # {{ AUTHOR }} {{ COMPANY }} {{ YEAR }}
-      # SPDX-License-Identifier: Apache-2.0
+    # put here copyright header template for source code files, for example:
+    # Note: {{ YEAR }} is a builtin value that returns the year relative to the current machine time.
+    #
+    # {{ AUTHOR }} {{ COMPANY }} {{ YEAR }}
+    # SPDX-License-Identifier: Apache-2.0
 
-      # Licensed under the Apache License, Version 2.0 (the "License");
-      # you may not use this file except in compliance with the License.
-      # You may obtain a copy of the License at:
+    # Licensed under the Apache License, Version 2.0 (the "License");
+    # you may not use this file except in compliance with the License.
+    # You may obtain a copy of the License at:
 
-      #   http://www.apache.org/licenses/LICENSE-2.0
+    #   http://www.apache.org/licenses/LICENSE-2.0
 
-      # Unless required by applicable law or agreed to in writing, software
-      # distributed under the License is distributed on an "AS IS" BASIS,
-      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-      # See the License for the specific language governing permissions and
-      # limitations under the License.
+    # Unless required by applicable law or agreed to in writing, software
+    # distributed under the License is distributed on an "AS IS" BASIS,
+    # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    # See the License for the specific language governing permissions and
+    # limitations under the License.
     template-path:
-      # also as alternative of directive 'template' you may put the path to file with the template source
+    # also as alternative of directive 'template' you may put the path to file with the template source
   goimports:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
     local-prefixes: github.com/coding-hui/iam
-  golint:
-    # minimal confidence for issues, default is 0.8
-    min-confidence: 0.9
   gomnd:
     settings:
       mnd:
@@ -349,7 +345,7 @@ linters-settings:
     exclude-forbidden: false
   gomodguard:
     allowed:
-      modules:                                                        # List of allowed modules
+      modules: # List of allowed modules
         - gorm.io/gorm
         - gorm.io/driver/mysql
         - k8s.io/klog
@@ -357,7 +353,7 @@ linters-settings:
         - k8s.io/component-base
         - k8s.io/apimachinery
         # - gopkg.in/yaml.v2
-      domains:                                                        # List of allowed module domains
+      domains: # List of allowed module domains
         - google.golang.org
         - gopkg.in
         - golang.org
@@ -481,16 +477,16 @@ linters-settings:
     # By default, it allows using errors, empty interfaces, anonymous interfaces,
     # and interfaces provided by the standard library.
     allow:
-    - anon
-    - error
-    - empty
-    - stdlib
-    # You can specify idiomatic endings for interface
-    - (or|er)$
+      - anon
+      - error
+      - empty
+      - stdlib
+      # You can specify idiomatic endings for interface
+      - (or|er)$
 
     # Reject patterns
     reject:
-    - github.com\/user\/package\/v4\.Type
+      - github.com\/user\/package\/v4\.Type
 
   lll:
     # max line length, lines longer will be reported. Default is 120.
@@ -671,8 +667,8 @@ linters-settings:
       - .WithMessagef(
       - .WithStack(
     ignorePackageGlobs:
-        - encoding/*
-        - github.com/pkg/*
+      - encoding/*
+      - github.com/pkg/*
 
   wsl:
     # If true append is only allowed to be cuddled if appending value is
@@ -700,17 +696,17 @@ linters-settings:
     always: false
 
 
-  # The custom section can be used to define linter plugins to be loaded at runtime. See README doc
-  #  for more info.
-  #custom:
-    # Each custom linter should have a unique name.
-    #example:
+      # The custom section can be used to define linter plugins to be loaded at runtime. See README doc
+      #  for more info.
+      #custom:
+      # Each custom linter should have a unique name.
+      #example:
       # The path to the plugin *.so. Can be absolute or local. Required for each custom linter
-      #path: /path/to/example.so
-      # The description of the linter. Optional, just for documentation purposes.
-      #description: This is an example usage of a plugin linter.
-      # Intended to point to the repo location of the linter. Optional, just for documentation purposes.
-      #original-url: github.com/golangci/example-linter
+    #path: /path/to/example.so
+    # The description of the linter. Optional, just for documentation purposes.
+    #description: This is an example usage of a plugin linter.
+    # Intended to point to the repo location of the linter. Optional, just for documentation purposes.
+    #original-url: github.com/golangci/example-linter
 
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
@@ -733,8 +729,8 @@ linters:
     - exportloopref
     - forbidigo
     - funlen
-      #- gci
-      #- gochecknoinits
+    #- gci
+    #- gochecknoinits
     - gocognit
     - goconst
     - gocyclo
@@ -759,7 +755,6 @@ linters:
     - nakedret
     - nestif
     - nilerr
-    - noctx
     - nolintlint
     - paralleltest
     - prealloc
@@ -781,7 +776,6 @@ linters:
     - whitespace
     - bidichk
     - wastedassign
-    - golint
     - execinquery
     - nosprintfhostport
     - grouper
@@ -793,11 +787,11 @@ linters:
       #- nonamedreturns
       #- nilnil
       #- tenv
-      #- varnamelen
-      #- contextcheck
-      #- errname
-      #- ForceTypeAssert
-      #- nilassign
+    #- varnamelen
+    #- contextcheck
+    #- errname
+    #- ForceTypeAssert
+    #- nilassign
   fast: false
 
 issues:
@@ -813,18 +807,18 @@ issues:
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
     - linters:
-      - errorlint
+        - errorlint
       path: (pkg/validator/.*)\.go
     - linters:
-      - revive
+        - revive
       path: (log/.*)\.go
 
     - linters:
-      - wrapcheck
+        - wrapcheck
       path: (cmd/.*|pkg/.*)\.go
 
     - linters:
-      - typecheck
+        - typecheck
         #path: (pkg/storage/.*)\.go
       path: (internal/.*|pkg/.*)\.go
 
@@ -928,5 +922,5 @@ severity:
   # Only affects out formats that support setting severity information.
   rules:
     - linters:
-      - dupl
+        - dupl
       severity: info

@@ -13,21 +13,26 @@ import (
 	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
-	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
+	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
 )
 
 // mysqlEmptyDsn msyql empty dsn for create databases.
-func mysqlEmptyDsn(cfg datastore.Config) string {
-	return cfg.URL[:strings.Index(cfg.URL, "/")+1]
+func mysqlEmptyDsn(opts *genericoptions.MySQLOptions) string {
+	host := opts.Host
+	idx := strings.Index(opts.Host, "/")
+	if idx > 0 {
+		host = opts.Host[:idx+1]
+	}
+	return fmt.Sprintf("%s:%s@tcp(%s)/", opts.Username, opts.Password, host)
 }
 
 // createDatabase create database if not exists.
-func createDatabase(cfg datastore.Config) error {
+func createDatabase(opts *genericoptions.MySQLOptions) error {
 	createSql := fmt.Sprintf(
 		"CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;",
-		cfg.Database,
+		opts.Database,
 	)
-	db, err := sql.Open("mysql", mysqlEmptyDsn(cfg))
+	db, err := sql.Open("mysql", mysqlEmptyDsn(opts))
 	if err != nil {
 		return err
 	}
