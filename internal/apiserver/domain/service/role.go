@@ -66,6 +66,48 @@ func (r *roleServiceImpl) newUserRoleHandlerImpl(role *model.Role, targetInstanc
 
 // Init initialize role data.
 func (r *roleServiceImpl) Init(ctx context.Context) error {
+	// initialize default roles before
+	initRoles := []v1alpha1.UserRole{v1alpha1.PlatformAdmin, v1alpha1.TenantAdmin, v1alpha1.Default}
+	for _, role := range initRoles {
+		_, err := r.Store.RoleRepository().GetByName(ctx, role.String(), metav1alpha1.GetOptions{})
+		if err != nil && errors.IsCode(err, code.ErrRoleNotFound) {
+			createReq := v1alpha1.CreateRoleRequest{
+				Owner:       DefaultAdmin,
+				Name:        role.String(),
+				DisplayName: "",
+				Description: "",
+			}
+			err = r.CreateRole(ctx, createReq)
+			if err != nil {
+				return errors.WithMessagef(err, "Failed to initialize default role %s", role.String())
+			}
+			klog.Infof("initialize %s role done", role.String())
+		}
+	}
+
+	// find platform role
+	platformRole, err := r.Store.RoleRepository().GetByName(ctx, v1alpha1.PlatformAdmin.String(), metav1alpha1.GetOptions{})
+	if err != nil {
+		return errors.WithMessagef(err, "Failed to get %s role info.", v1alpha1.PlatformAdmin.String())
+	}
+
+	// find default platform admin
+	admin, err := r.Store.UserRepository().Get(ctx, DefaultAdmin, metav1alpha1.GetOptions{})
+	if err != nil || admin == nil {
+		return errors.WithMessagef(err, "Failed to get default admin info. Please check UserService is initialized.")
+	}
+
+	// assign the platform role to the default administrator
+	assignRoleReq := v1alpha1.AssignRoleRequest{
+		InstanceID: platformRole.InstanceID,
+		Targets:    nil,
+	}
+	err = r.AssignRole(ctx, platformRole, assignRoleReq)
+	if err != nil {
+		return errors.WithMessagef(err, "Failed to assign the platform role to the default administrator.")
+	}
+	klog.Infof("assign the platform role to the default administrator done")
+
 	return nil
 }
 
