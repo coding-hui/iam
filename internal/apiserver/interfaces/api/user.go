@@ -27,7 +27,7 @@ func NewUser() Interface {
 }
 
 func (u *user) RegisterApiGroup(g *gin.Engine) {
-	v1 := g.Group(versionPrefix + "/users").Use(authCheckFilter)
+	v1 := g.Group(versionPrefix+"/users").Use(authCheckFilter, permissionCheckFilter)
 	{
 		v1.POST("", u.createUser)
 		v1.PUT("/:name", u.updateUser)

@@ -30,7 +30,7 @@ func NewRole() Interface {
 }
 
 func (r *role) RegisterApiGroup(g *gin.Engine) {
-	v1 := g.Group(versionPrefix + "/roles").Use(authCheckFilter)
+	v1 := g.Group(versionPrefix+"/roles").Use(authCheckFilter, permissionCheckFilter)
 	{
 		v1.POST("", r.createRole)
 		v1.PUT("/:instanceId", r.updateRole)

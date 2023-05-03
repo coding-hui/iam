@@ -100,7 +100,7 @@ func (r *roleServiceImpl) Init(ctx context.Context) error {
 	// assign the platform role to the default administrator
 	assignRoleReq := v1alpha1.AssignRoleRequest{
 		InstanceID: platformRole.InstanceID,
-		Targets:    nil,
+		Targets:    []string{admin.InstanceID},
 	}
 	err = r.AssignRole(ctx, platformRole, assignRoleReq)
 	if err != nil {
@@ -254,6 +254,13 @@ func (u *userRoleHandlerImpl) assign(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	e := u.store.CasbinRepository().SyncedEnforcer()
+	for _, userInstanceId := range u.targetInstanceIds {
+		_, err = e.AddRoleForUser(userInstanceId, u.role.InstanceID)
+		if err != nil {
+			klog.Errorf("Failed assign role %s to user %s", u.role.Name, userInstanceId)
+		}
+	}
 	klog.Infof("AssignRole the %s role to %d users", u.role.Name, count)
 
 	return nil
@@ -263,6 +270,13 @@ func (u *userRoleHandlerImpl) revoke(ctx context.Context) error {
 	count, err := u.store.RoleRepository().RevokeUserRoles(ctx, u.role, u.targetInstanceIds)
 	if err != nil {
 		return err
+	}
+	e := u.store.CasbinRepository().SyncedEnforcer()
+	for _, userInstanceId := range u.targetInstanceIds {
+		_, err = e.DeleteRoleForUser(userInstanceId, u.role.InstanceID)
+		if err != nil {
+			klog.Errorf("Failed to revoke the %s role rights of the %s", u.role.Name, userInstanceId)
+		}
 	}
 	klog.Infof("RevokeRole the %s role removes %d users", u.role.Name, count)
 
@@ -288,7 +302,7 @@ func (r *roleServiceImpl) determineRoleHandlerByInstanceId(role *model.Role, ins
 			}
 			handlers[handler] = ts
 		default:
-			klog.Warningf("Unsupported revoke target %s", ri)
+			klog.Warningf("Unsupported target %s", ri)
 		}
 	}
 

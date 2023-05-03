@@ -62,7 +62,7 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 	// Private Claim Names
 	// TokenType defined the type of the token
-	TokenType string `json:"token_type,omitempty"`
-	Username  string `json:"username"`
-	GrantType string `json:"grant_type"`
+	TokenType      string `json:"token_type,omitempty"`
+	UserInstanceId string `json:"user_instance_id"`
+	GrantType      string `json:"grant_type"`
 }

@@ -17,7 +17,7 @@ var text = `
 r = sub, obj, act
 
 [policy_definition]
-p = sub, obj, act, eft
+p = sub, obj, act
 
 [role_definition]
 g = _, _

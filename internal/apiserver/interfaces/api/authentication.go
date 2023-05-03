@@ -10,8 +10,10 @@ import (
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
@@ -38,7 +40,7 @@ func (a *authentication) RegisterApiGroup(g *gin.Engine) {
 	{
 		v1.POST("/login", a.authenticate)
 		v1.GET("/auth/refresh-token", a.refreshToken)
-		v1.Use(authCheckFilter).GET("/auth/user-info", a.userInfo)
+		v1.GET("/auth/user-info", authCheckFilter, a.userInfo)
 	}
 }
 
@@ -48,20 +50,14 @@ func authCheckFilter(c *gin.Context) {
 	if tokenHeader != "" {
 		splitted := strings.Split(tokenHeader, " ")
 		if len(splitted) != 2 {
-			api.FailWithErrCode(
-				errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
-				c,
-			)
+			api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"), c)
 			c.Abort()
 			return
 		}
 		tokenValue = splitted[1]
 	}
 	if tokenValue == "" {
-		api.FailWithErrCode(
-			errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
-			c,
-		)
+		api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"), c)
 		c.Abort()
 		return
 	}
@@ -72,17 +68,39 @@ func authCheckFilter(c *gin.Context) {
 		return
 	}
 	if token.GrantType != service.GrantTypeAccess {
-		api.FailWithErrCode(
-			errors.WithCode(code.ErrPermissionDenied, "Invalid authorization header"),
-			c,
-		)
+		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Invalid authorization header"), c)
 		c.Abort()
 		return
 	}
 
-	c.Request = c.Request.WithContext(
-		context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserName, token.Username),
-	)
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserInstanceId, token.UserInstanceId))
+
+	c.Next()
+}
+
+func permissionCheckFilter(c *gin.Context) {
+	sub, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserInstanceId).(string)
+	if !ok {
+		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user role"), c)
+		c.Abort()
+		return
+	}
+	obj := c.Request.URL.Path
+	act := c.Request.Method
+
+	e := repository.Client().CasbinRepository().SyncedEnforcer()
+	pass, err := e.Enforce(sub, obj, act)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		c.Abort()
+		return
+	}
+	if !pass {
+		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Permission denied. role: %s", sub), c)
+		c.Abort()
+		return
+	}
+	klog.Infof("Permission verification. path: %s", c.Request.URL.Path)
 
 	c.Next()
 }
@@ -148,7 +166,7 @@ func (a *authentication) refreshToken(c *gin.Context) {
 }
 
 func (a *authentication) userInfo(c *gin.Context) {
-	userName, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserName).(string)
+	userName, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserInstanceId).(string)
 	if !ok {
 		api.FailWithErrCode(
 			errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),

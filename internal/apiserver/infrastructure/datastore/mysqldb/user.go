@@ -62,7 +62,7 @@ func (u *userRepositoryImpl) Delete(ctx context.Context, username string, opts m
 	if opts.Unscoped {
 		u.db = u.db.Unscoped()
 	}
-	if currentUser := ctx.Value(&v1alpha1.CtxKeyUserName); currentUser != "" && currentUser == username {
+	if currentUser := ctx.Value(&v1alpha1.CtxKeyUserInstanceId); currentUser != "" && currentUser == username {
 		return errors.WithCode(code.ErrDeleteOneself, "User %s failed to be deleted and cannot delete itself", currentUser)
 	}
 	err := u.db.WithContext(ctx).Where("name = ?", username).Delete(&model.User{}).Error

@@ -27,7 +27,7 @@ func NewResource() Interface {
 }
 
 func (r *resource) RegisterApiGroup(g *gin.Engine) {
-	v1 := g.Group(versionPrefix + "/resources").Use(authCheckFilter)
+	v1 := g.Group(versionPrefix+"/resources").Use(authCheckFilter, permissionCheckFilter)
 	{
 		v1.POST("", r.createResource)
 		v1.PUT("/:name", r.updateResource)

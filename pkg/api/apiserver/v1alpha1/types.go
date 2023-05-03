@@ -11,8 +11,10 @@ import (
 )
 
 var (
-	// CtxKeyUserName request context key of username.
-	CtxKeyUserName = "username"
+	// CtxKeyUserRole request context key of user role.
+	CtxKeyUserRole = "user_role"
+	// CtxKeyUserInstanceId request context key of username.
+	CtxKeyUserInstanceId = "user_instance_id"
 	// CtxKeyRole request context key of role.
 	CtxKeyRole = "role"
 )
