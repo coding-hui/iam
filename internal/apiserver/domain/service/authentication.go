@@ -14,7 +14,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	convert "github.com/coding-hui/iam/internal/apiserver/interfaces/api/convert/v1alpha1"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 
@@ -201,7 +201,7 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1alpha1.UserBase
 		return nil, err
 	}
 
-	return convert.ConvertUserModelToBase(user), nil
+	return assembler.ConvertUserModelToBase(user), nil
 }
 
 func passwordVerify(hash, password string) error {

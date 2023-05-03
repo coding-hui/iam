@@ -15,7 +15,7 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	convert "github.com/coding-hui/iam/internal/apiserver/interfaces/api/convert/v1alpha1"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
@@ -152,7 +152,7 @@ func (r *resourceRepositoryImpl) List(ctx context.Context, opts metav1alpha1.Lis
 	}
 
 	for _, resource := range *resources {
-		res.Items = append(res.Items, convert.ConvertResourceModelToBase(&resource))
+		res.Items = append(res.Items, assembler.ConvertResourceModelToBase(&resource))
 	}
 
 	return res, nil

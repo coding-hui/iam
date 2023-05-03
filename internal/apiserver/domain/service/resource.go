@@ -12,7 +12,7 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	convert "github.com/coding-hui/iam/internal/apiserver/interfaces/api/convert/v1alpha1"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
@@ -37,7 +37,7 @@ func NewResourceService() ResourceService {
 }
 
 func (r *resourceServiceImpl) Create(ctx context.Context, req v1alpha1.CreateResourceRequest) error {
-	resource := convert.CreateResourceModel(req)
+	resource := assembler.CreateResourceModel(req)
 	err := r.Store.ResourceRepository().Create(ctx, resource, metav1alpha1.CreateOptions{})
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func (r *resourceServiceImpl) Update(ctx context.Context, name string, req v1alp
 	if req.Description != "" {
 		resource.Description = req.Description
 	}
-	resource.Actions = convert.ConvertToActionModel(req.Actions)
+	resource.Actions = assembler.ConvertToActionModel(req.Actions)
 	if err := r.Store.ResourceRepository().Update(ctx, resource, metav1alpha1.UpdateOptions{}); err != nil {
 		return err
 	}
