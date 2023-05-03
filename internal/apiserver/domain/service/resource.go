@@ -19,12 +19,12 @@ import (
 
 // ResourceService Resource manage api.
 type ResourceService interface {
-	Create(ctx context.Context, req v1alpha1.CreateResourceRequest) error
-	Update(ctx context.Context, name string, req v1alpha1.UpdateResourceRequest) error
-	Delete(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error
-	DeleteCollection(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error
-	Get(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Resource, error)
-	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error)
+	CreateResource(ctx context.Context, req v1alpha1.CreateResourceRequest) error
+	UpdateResource(ctx context.Context, name string, req v1alpha1.UpdateResourceRequest) error
+	DeleteResource(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error
+	BatchDeleteResources(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error
+	GetResource(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Resource, error)
+	ListResources(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error)
 }
 
 type resourceServiceImpl struct {
@@ -36,7 +36,8 @@ func NewResourceService() ResourceService {
 	return &resourceServiceImpl{}
 }
 
-func (r *resourceServiceImpl) Create(ctx context.Context, req v1alpha1.CreateResourceRequest) error {
+// CreateResource create a new resource
+func (r *resourceServiceImpl) CreateResource(ctx context.Context, req v1alpha1.CreateResourceRequest) error {
 	resource := assembler.CreateResourceModel(req)
 	err := r.Store.ResourceRepository().Create(ctx, resource, metav1alpha1.CreateOptions{})
 	if err != nil {
@@ -46,8 +47,9 @@ func (r *resourceServiceImpl) Create(ctx context.Context, req v1alpha1.CreateRes
 	return nil
 }
 
-func (r *resourceServiceImpl) Update(ctx context.Context, name string, req v1alpha1.UpdateResourceRequest) error {
-	resource, err := r.Get(ctx, name, metav1alpha1.GetOptions{})
+// UpdateResource update resources.
+func (r *resourceServiceImpl) UpdateResource(ctx context.Context, name string, req v1alpha1.UpdateResourceRequest) error {
+	resource, err := r.GetResource(ctx, name, metav1alpha1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -65,7 +67,8 @@ func (r *resourceServiceImpl) Update(ctx context.Context, name string, req v1alp
 	return nil
 }
 
-func (r *resourceServiceImpl) Delete(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error {
+// DeleteResource delete resources.
+func (r *resourceServiceImpl) DeleteResource(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error {
 	if err := r.Store.ResourceRepository().Delete(ctx, name, opts); err != nil {
 		return err
 	}
@@ -73,7 +76,8 @@ func (r *resourceServiceImpl) Delete(ctx context.Context, name string, opts meta
 	return nil
 }
 
-func (r *resourceServiceImpl) DeleteCollection(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error {
+// BatchDeleteResources batch delete resources.
+func (r *resourceServiceImpl) BatchDeleteResources(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error {
 	if err := r.Store.ResourceRepository().DeleteCollection(ctx, names, opts); err != nil {
 		return err
 	}
@@ -81,7 +85,8 @@ func (r *resourceServiceImpl) DeleteCollection(ctx context.Context, names []stri
 	return nil
 }
 
-func (r *resourceServiceImpl) Get(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Resource, error) {
+// GetResource get resource.
+func (r *resourceServiceImpl) GetResource(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Resource, error) {
 	resource, err := r.Store.ResourceRepository().Get(ctx, name, opts)
 	if err != nil {
 		return nil, errors.WrapC(err, code.ErrResourceNotFound, "Resource `%s` not found", name)
@@ -90,8 +95,8 @@ func (r *resourceServiceImpl) Get(ctx context.Context, name string, opts metav1a
 	return resource, nil
 }
 
-// List list resources.
-func (r *resourceServiceImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error) {
+// ListResources list resources.
+func (r *resourceServiceImpl) ListResources(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error) {
 	users, err := r.Store.ResourceRepository().List(ctx, metav1alpha1.ListOptions{
 		Offset: opts.Offset,
 		Limit:  opts.Limit,

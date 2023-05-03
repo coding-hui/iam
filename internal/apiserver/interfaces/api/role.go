@@ -106,7 +106,7 @@ func (r *role) listRole(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := r.RoleService.List(c.Request.Context(), metav1alpha1.ListOptions{
+	resp, err := r.RoleService.ListRoles(c.Request.Context(), metav1alpha1.ListOptions{
 		Limit:  &pageSize,
 		Offset: &page,
 	})

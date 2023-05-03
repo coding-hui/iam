@@ -36,7 +36,7 @@ type UserService interface {
 	DeleteUser(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error
 	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
 	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
-	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
+	ListUsers(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	Init(ctx context.Context) error
 }
@@ -135,8 +135,8 @@ func (u *userServiceImpl) GetUser(ctx context.Context, username string, opts met
 	return user, nil
 }
 
-// List list users.
-func (u *userServiceImpl) List(ctx context.Context, listOptions metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
+// ListUsers list users.
+func (u *userServiceImpl) ListUsers(ctx context.Context, listOptions metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
 	users, err := u.Store.UserRepository().List(ctx, listOptions)
 	if err != nil {
 		return nil, err

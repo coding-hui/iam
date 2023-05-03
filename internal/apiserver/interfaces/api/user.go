@@ -108,7 +108,7 @@ func (u *user) listUser(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := u.UserService.List(c.Request.Context(), metav1alpha1.ListOptions{
+	resp, err := u.UserService.ListUsers(c.Request.Context(), metav1alpha1.ListOptions{
 		Limit:  &pageSize,
 		Offset: &page,
 	})

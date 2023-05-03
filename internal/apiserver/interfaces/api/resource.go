@@ -45,7 +45,7 @@ func (r *resource) createResource(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	err = r.ResourceService.Create(c.Request.Context(), createReq)
+	err = r.ResourceService.CreateResource(c.Request.Context(), createReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -62,7 +62,7 @@ func (r *resource) updateResource(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	err = r.ResourceService.Update(c.Request.Context(), c.Param("name"), updateReq)
+	err = r.ResourceService.UpdateResource(c.Request.Context(), c.Param("name"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -73,7 +73,7 @@ func (r *resource) updateResource(c *gin.Context) {
 
 // deleteResource delete resource by name.
 func (r *resource) deleteResource(c *gin.Context) {
-	err := r.ResourceService.Delete(
+	err := r.ResourceService.DeleteResource(
 		c.Request.Context(),
 		c.Param("name"),
 		metav1alpha1.DeleteOptions{},
@@ -88,7 +88,7 @@ func (r *resource) deleteResource(c *gin.Context) {
 
 // getResource get resource info.
 func (r *resource) getResource(c *gin.Context) {
-	resource, err := r.ResourceService.Get(
+	resource, err := r.ResourceService.GetResource(
 		c.Request.Context(),
 		c.Param("name"),
 		metav1alpha1.GetOptions{},
@@ -108,7 +108,7 @@ func (r *resource) listResource(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := r.ResourceService.List(c.Request.Context(), metav1alpha1.ListOptions{
+	resp, err := r.ResourceService.ListResources(c.Request.Context(), metav1alpha1.ListOptions{
 		Limit:  &pageSize,
 		Offset: &page,
 	})

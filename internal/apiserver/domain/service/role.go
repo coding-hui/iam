@@ -27,7 +27,7 @@ type RoleService interface {
 	BatchDeleteRoles(ctx context.Context, roleNames []string, opts metav1alpha1.DeleteOptions) error
 	GetRole(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Role, error)
 	DetailRole(ctx context.Context, role *model.Role, opts metav1alpha1.GetOptions) (*v1alpha1.DetailRoleResponse, error)
-	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
+	ListRoles(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	AssignRole(ctx context.Context, role *model.Role, assignReq v1alpha1.AssignRoleRequest) error
 	RevokeRole(ctx context.Context, role *model.Role, revokeReq v1alpha1.RevokeRoleRequest) error
 	Init(ctx context.Context) error
@@ -160,8 +160,8 @@ func (r *roleServiceImpl) DetailRole(
 	return detail, nil
 }
 
-// List list roles.
-func (r *roleServiceImpl) List(ctx context.Context, listOptions metav1alpha1.ListOptions) (*v1alpha1.RoleList, error) {
+// ListRoles list roles.
+func (r *roleServiceImpl) ListRoles(ctx context.Context, listOptions metav1alpha1.ListOptions) (*v1alpha1.RoleList, error) {
 	roles, err := r.Store.RoleRepository().List(ctx, metav1alpha1.ListOptions{
 		Offset: listOptions.Offset,
 		Limit:  listOptions.Limit,
