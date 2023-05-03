@@ -8,14 +8,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/coding-hui/iam/pkg/db"
-
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
+	"github.com/coding-hui/iam/pkg/db"
 
 	"github.com/coding-hui/common/errors"
 )
@@ -66,6 +65,10 @@ func (m *mysqldb) CasbinRepository() repository.CasbinRepository {
 
 func (m *mysqldb) ResourceRepository() repository.ResourceRepository {
 	return newResourceRepository(m.client)
+}
+
+func (m *mysqldb) RoleRepository() repository.RoleRepository {
+	return newRoleRepository(m.client)
 }
 
 func (m *mysqldb) Close() error {

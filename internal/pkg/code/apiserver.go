@@ -47,3 +47,30 @@ const (
 	// ErrResourceNameIsEmpty - 400: Resource name is empty.
 	ErrResourceNameIsEmpty
 )
+
+// iam-apiserver: role errors.
+const (
+	// ErrRoleNotFound - 404: Role not found.
+	ErrRoleNotFound int = iota + 110401
+
+	// ErrRoleAlreadyExist - 400: Role already exist.
+	ErrRoleAlreadyExist
+
+	// ErrRoleNameIsEmpty - 400: Role name is empty.
+	ErrRoleNameIsEmpty
+
+	// ErrRoleHasAssignedUser - 400: The role has been assigned to a user.
+	ErrRoleHasAssignedUser
+
+	// ErrAssignRoleFailed - 400: User role assignment fails. Please check the role status or contact the administrator.
+	ErrAssignRoleFailed
+
+	// ErrUnsupportedAssignTarget - 400: The assignment target is not supported. Only user or department are supported.
+	ErrUnsupportedAssignTarget
+
+	// ErrRevokeRoleFailed - 400: User role revoke fails. Please check the role status or contact the administrator.
+	ErrRevokeRoleFailed
+
+	// ErrUnsupportedRevokeTarget - 400: The revoke target is not supported. Only user or department are supported.
+	ErrUnsupportedRevokeTarget
+)

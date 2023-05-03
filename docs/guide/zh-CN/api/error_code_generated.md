@@ -31,6 +31,14 @@ IAM 系统支持的错误码列表如下：
 | ErrResourceNotFound | 110301 | 404 | Resource not found |
 | ErrResourceAlreadyExist | 110302 | 400 | Resource already exist |
 | ErrResourceNameIsEmpty | 110303 | 400 | Resource name is empty |
+| ErrRoleNotFound | 110401 | 404 | Role not found |
+| ErrRoleAlreadyExist | 110402 | 400 | Role already exist |
+| ErrRoleNameIsEmpty | 110403 | 400 | Role name is empty |
+| ErrRoleHasAssignedUser | 110404 | 400 | The role has been assigned to a user |
+| ErrAssignRoleFailed | 110405 | 400 | User role assignment fails. Please check the role status or contact the administrator |
+| ErrUnsupportedAssignTarget | 110406 | 400 | The assignment target is not supported. Only user or department are supported |
+| ErrRevokeRoleFailed | 110407 | 400 | User role revoke fails. Please check the role status or contact the administrator |
+| ErrUnsupportedRevokeTarget | 110408 | 400 | The revoke target is not supported. Only user or department are supported |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |

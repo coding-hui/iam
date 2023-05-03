@@ -6,6 +6,7 @@ package model
 
 import (
 	"fmt"
+	"strings"
 )
 
 // TableNamePrefix table name prefix.
@@ -31,4 +32,13 @@ func RegisterModel(models ...Interface) {
 // GetRegisterModels will return the register models.
 func GetRegisterModels() map[string]Interface {
 	return registeredModels
+}
+
+func GetResourceIdentifier(instanceID string) string {
+	if len(instanceID) == 0 {
+		return ""
+	}
+	ri := instanceID[:strings.Index(instanceID, "-")]
+
+	return ri
 }

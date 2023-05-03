@@ -9,9 +9,14 @@ import (
 
 	"gotest.tools/assert"
 
+	"github.com/coding-hui/iam/cmd/iam-apiserver/app/options"
 	"github.com/coding-hui/iam/internal/apiserver/config"
 )
 
 func TestInitServiceBean(t *testing.T) {
-	assert.Equal(t, len(InitServiceBean(config.Config{})), 3)
+	cfg, err := config.CreateConfigFromOptions(options.NewOptions())
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, len(InitServiceBean(*cfg)), 4)
 }

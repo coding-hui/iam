@@ -10,8 +10,17 @@ import (
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
-// CtxKeyUserName request context key of username.
-var CtxKeyUserName = "username"
+var (
+	// CtxKeyUserName request context key of username.
+	CtxKeyUserName = "username"
+	// CtxKeyRole request context key of role.
+	CtxKeyRole = "role"
+)
+
+const (
+	// UserTarget assign to user.
+	UserTarget string = "user"
+)
 
 // UserRole user role.
 type UserRole string
@@ -82,6 +91,11 @@ type UserList struct {
 	Items []*UserBase `json:"items"`
 }
 
+// ListUserOptions list user query options.
+type ListUserOptions struct {
+	metav1alpha1.ListOptions `json:",inline"`
+}
+
 // TenantBase represents a tenant restful resource.
 type TenantBase struct {
 	// Standard object's metadata.
@@ -104,6 +118,66 @@ type TenantList struct {
 	metav1alpha1.ListMeta `json:",inline"`
 
 	Items []*TenantBase `json:"items"`
+}
+
+// AssignRoleRequest assign role request.
+type AssignRoleRequest struct {
+	// InstanceID role instanceID.
+	InstanceID string `json:"instanceId" validate:"required"`
+	// Targets target resource instanceIds.
+	Targets []string `json:"targets"`
+}
+
+// RevokeRoleRequest revoke role request.
+type RevokeRoleRequest struct {
+	// InstanceID role instanceID.
+	InstanceID string `json:"instanceId" validate:"required"`
+	// Targets target resource instanceIds.
+	Targets []string `json:"targets"`
+}
+
+// CreateRoleRequest create role request.
+type CreateRoleRequest struct {
+	Name        string `json:"name"            validate:"required,name"`
+	Owner       string `json:"owner,omitempty" validate:"min=1,max=30"  optional:"true"`
+	DisplayName string `json:"displayName"                              optional:"true"`
+	Description string `json:"description"                              optional:"true"`
+}
+
+// UpdateRoleRequest update role request.
+type UpdateRoleRequest struct {
+	DisplayName string `json:"displayName" optional:"true"`
+	Description string `json:"description" optional:"true"`
+}
+
+// RoleBase represents a role restful resource.
+type RoleBase struct {
+	// Standard object's metadata.
+	metav1alpha1.ObjectMeta `       json:"metadata,omitempty"`
+	// Owner tenant owner name.
+	Owner string `json:"owner,omitempty"    gorm:"column:owner"       validate:"required"`
+	// Disabled tenant state.
+	Disabled bool `json:"disabled"           gorm:"column:disabled"`
+	// Description tenant description.
+	Description string `json:"description"        gorm:"column:description"`
+}
+
+// RoleList is the whole list of all roles which have been stored in stroage.
+type RoleList struct {
+	// May add TypeMeta in the future.
+	// metav1.TypeMeta `json:",inline"`
+
+	// Standard list metadata.
+	// +optional
+	metav1alpha1.ListMeta `json:",inline"`
+
+	Items []*RoleBase `json:"items"`
+}
+
+// DetailRoleResponse role detail.
+type DetailRoleResponse struct {
+	RoleBase
+	Users []UserBase `json:"users"`
 }
 
 // LoginType authenticate type.

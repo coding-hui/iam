@@ -19,10 +19,11 @@ func InitServiceBean(c config.Config) []interface{} {
 	authenticationService := NewAuthenticationService(c)
 	userService := NewUserService()
 	resourceService := NewResourceService()
+	roleService := NewRoleService()
 
-	needInitData = []DataInit{userService}
+	needInitData = []DataInit{userService, roleService}
 
-	return []interface{}{userService, authenticationService, resourceService}
+	return []interface{}{userService, authenticationService, resourceService, roleService}
 }
 
 // DataInit the service set that needs init data.

@@ -40,6 +40,7 @@ func InitAPIBean(c config.Config) []interface{} {
 	RegisterAPI(NewAuthentication(c))
 	RegisterAPI(NewUser())
 	RegisterAPI(NewResource())
+	RegisterAPI(NewRole())
 
 	beans := make([]interface{}, 0, len(registeredAPI))
 	for i := range registeredAPI {

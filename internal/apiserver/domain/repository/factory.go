@@ -11,6 +11,7 @@ type Factory interface {
 	UserRepository() UserRepository
 	CasbinRepository() CasbinRepository
 	ResourceRepository() ResourceRepository
+	RoleRepository() RoleRepository
 	Close() error
 }
 

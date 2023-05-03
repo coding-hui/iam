@@ -43,3 +43,13 @@ func ConvertToActions(actions []model.Action) []v1alpha1.Action {
 
 	return list
 }
+
+// ConvertRoleModelToBase assemble the Role model to DTO.
+func ConvertRoleModelToBase(role *model.Role) *v1alpha1.RoleBase {
+	return &v1alpha1.RoleBase{
+		ObjectMeta:  role.ObjectMeta,
+		Owner:       role.Owner,
+		Description: role.Description,
+		Disabled:    role.Disabled,
+	}
+}

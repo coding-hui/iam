@@ -9,7 +9,7 @@ require (
 	github.com/barnettZQG/inject v0.0.1
 	github.com/casbin/casbin/v2 v2.68.0
 	github.com/casbin/gorm-adapter/v3 v3.16.1
-	github.com/coding-hui/common v0.0.0-20230502154637-777b4b23b2c7
+	github.com/coding-hui/common v0.0.0-20230503101027-9c7e02e5b410
 	github.com/fatih/color v1.15.0
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.9.0

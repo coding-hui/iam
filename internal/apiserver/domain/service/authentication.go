@@ -187,7 +187,7 @@ func (a *authenticationServiceImpl) generateJWTToken(username, grantType string,
 }
 
 func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1alpha1.UserBase, error) {
-	user, err := l.userService.Get(ctx, l.username, metav1alpha1.GetOptions{})
+	user, err := l.userService.GetUser(ctx, l.username, metav1alpha1.GetOptions{})
 	if err != nil {
 		if errors.IsCode(err, code.ErrUserNotFound) {
 			return nil, errors.WithCode(code.ErrPasswordIncorrect, err.Error())

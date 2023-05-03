@@ -31,11 +31,11 @@ const (
 
 // UserService User manage api.
 type UserService interface {
-	Create(ctx context.Context, req v1alpha1.CreateUserRequest) error
-	Update(ctx context.Context, username string, req v1alpha1.UpdateUserRequest) error
-	Delete(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error
-	DeleteCollection(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
-	Get(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
+	CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) error
+	UpdateUser(ctx context.Context, username string, req v1alpha1.UpdateUserRequest) error
+	DeleteUser(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error
+	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
+	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
 	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	Init(ctx context.Context) error
@@ -52,14 +52,14 @@ func NewUserService() UserService {
 
 // Init initialize user data.
 func (u *userServiceImpl) Init(ctx context.Context) error {
-	_, err := u.Get(ctx, DefaultAdmin, metav1alpha1.GetOptions{})
+	_, err := u.GetUser(ctx, DefaultAdmin, metav1alpha1.GetOptions{})
 	if err != nil && errors.IsCode(err, code.ErrUserNotFound) {
 		user := v1alpha1.CreateUserRequest{
 			Name:     DefaultAdmin,
 			Password: DefaultAdminPwd,
 			Alias:    DefaultAdminUserAlias,
 		}
-		err = u.Create(ctx, user)
+		err = u.CreateUser(ctx, user)
 		if err != nil {
 			return errors.WithMessagef(err, "Failed to initialize default admin")
 		}
@@ -69,8 +69,8 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 	return nil
 }
 
-// Create create user.
-func (u *userServiceImpl) Create(ctx context.Context, req v1alpha1.CreateUserRequest) error {
+// CreateUser create user.
+func (u *userServiceImpl) CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) error {
 	encryptPassword, _ := auth.Encrypt(req.Password)
 	user := &model.User{
 		ObjectMeta: metav1alpha1.ObjectMeta{
@@ -88,9 +88,9 @@ func (u *userServiceImpl) Create(ctx context.Context, req v1alpha1.CreateUserReq
 	return nil
 }
 
-// Update update user.
-func (u *userServiceImpl) Update(ctx context.Context, username string, req v1alpha1.UpdateUserRequest) error {
-	user, err := u.Get(ctx, username, metav1alpha1.GetOptions{})
+// UpdateUser update user.
+func (u *userServiceImpl) UpdateUser(ctx context.Context, username string, req v1alpha1.UpdateUserRequest) error {
+	user, err := u.GetUser(ctx, username, metav1alpha1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -107,8 +107,8 @@ func (u *userServiceImpl) Update(ctx context.Context, username string, req v1alp
 	return nil
 }
 
-// Delete delete user.
-func (u *userServiceImpl) Delete(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error {
+// DeleteUser delete user.
+func (u *userServiceImpl) DeleteUser(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error {
 	if err := u.Store.UserRepository().Delete(ctx, username, opts); err != nil {
 		return err
 	}
@@ -116,8 +116,8 @@ func (u *userServiceImpl) Delete(ctx context.Context, username string, opts meta
 	return nil
 }
 
-// DeleteCollection batch delete user.
-func (u *userServiceImpl) DeleteCollection(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error {
+// BatchDeleteUsers batch delete user.
+func (u *userServiceImpl) BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error {
 	if err := u.Store.UserRepository().DeleteCollection(ctx, usernames, opts); err != nil {
 		return err
 	}
@@ -125,8 +125,8 @@ func (u *userServiceImpl) DeleteCollection(ctx context.Context, usernames []stri
 	return nil
 }
 
-// Get get user.
-func (u *userServiceImpl) Get(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error) {
+// GetUser get user.
+func (u *userServiceImpl) GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error) {
 	user, err := u.Store.UserRepository().Get(ctx, username, opts)
 	if err != nil {
 		return nil, err
@@ -137,10 +137,7 @@ func (u *userServiceImpl) Get(ctx context.Context, username string, opts metav1a
 
 // List list users.
 func (u *userServiceImpl) List(ctx context.Context, listOptions metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
-	users, err := u.Store.UserRepository().List(ctx, metav1alpha1.ListOptions{
-		Offset: listOptions.Offset,
-		Limit:  listOptions.Limit,
-	})
+	users, err := u.Store.UserRepository().List(ctx, listOptions)
 	if err != nil {
 		return nil, err
 	}

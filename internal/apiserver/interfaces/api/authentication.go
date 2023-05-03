@@ -156,7 +156,7 @@ func (a *authentication) userInfo(c *gin.Context) {
 		)
 		return
 	}
-	user, err := a.UserService.Get(c.Request.Context(), userName, metav1alpha1.GetOptions{})
+	user, err := a.UserService.GetUser(c.Request.Context(), userName, metav1alpha1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

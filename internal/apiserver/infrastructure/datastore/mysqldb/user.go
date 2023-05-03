@@ -110,14 +110,13 @@ func (u *userRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOpt
 
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
 
-	db := u.db.WithContext(ctx)
+	db := u.db.WithContext(ctx).Model(model.User{})
 	selector, _ := fields.ParseSelector(opts.FieldSelector)
 	username, _ := selector.RequiresExactMatch("name")
 	if username != "" {
 		db.Where("name like ?", "%"+username+"%")
 	}
-	db.Model(model.User{}).
-		Offset(ol.Offset).
+	db.Offset(ol.Offset).
 		Limit(ol.Limit).
 		Order("id desc").
 		Find(&list.Items).

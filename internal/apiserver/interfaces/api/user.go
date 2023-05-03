@@ -49,7 +49,7 @@ func (u *user) createUser(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = u.UserService.Create(c.Request.Context(), createReq)
+	err = u.UserService.CreateUser(c.Request.Context(), createReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -70,7 +70,7 @@ func (u *user) updateUser(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = u.UserService.Update(c.Request.Context(), c.Param("name"), updateReq)
+	err = u.UserService.UpdateUser(c.Request.Context(), c.Param("name"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -81,7 +81,7 @@ func (u *user) updateUser(c *gin.Context) {
 
 // deleteUser delete user by username.
 func (u *user) deleteUser(c *gin.Context) {
-	err := u.UserService.Delete(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
+	err := u.UserService.DeleteUser(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -92,7 +92,7 @@ func (u *user) deleteUser(c *gin.Context) {
 
 // getUser get user info.
 func (u *user) getUser(c *gin.Context) {
-	user, err := u.UserService.Get(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
+	user, err := u.UserService.GetUser(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
