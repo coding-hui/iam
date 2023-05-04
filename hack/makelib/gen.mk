@@ -7,8 +7,8 @@
 #
 
 .PHONY: gen.run
-#gen.run: gen.errcode gen.docgo
-gen.run: gen.clean gen.errcode gen.docgo.doc
+#gen.run: gen.errcode
+gen.run: gen.clean gen.errcode
 
 .PHONY: gen.errcode
 gen.errcode: gen.errcode.code gen.errcode.doc
@@ -32,24 +32,6 @@ gen.ca.%:
 
 .PHONY: gen.ca
 gen.ca: $(addprefix gen.ca., $(CERTIFICATES))
-
-.PHONY: gen.docgo.doc
-gen.docgo.doc:
-	@echo "===========> Generating missing doc.go for go packages"
-	@${ROOT_DIR}/hack/gendoc.sh
-
-.PHONY: gen.docgo.check
-gen.docgo.check: gen.docgo.doc
-	@n="$$(git ls-files --others '*/doc.go' | wc -l)"; \
-	if test "$$n" -gt 0; then \
-		git ls-files --others '*/doc.go' | sed -e 's/^/  /'; \
-		echo "$@: untracked doc.go file(s) exist in working directory" >&2 ; \
-		false ; \
-	fi
-
-.PHONY: gen.docgo.add
-gen.docgo.add:
-	@git ls-files --others '*/doc.go' | $(XARGS) -- git add
 
 .PHONY: gen.defaultconfigs
 gen.defaultconfigs:

@@ -143,6 +143,14 @@ type RevokeRoleRequest struct {
 	Targets []string `json:"targets"`
 }
 
+// AuthorizeResources authorize role resource request.
+type AuthorizeResources struct {
+	// InstanceID role instanceID.
+	InstanceID string `json:"instanceId" validate:"required"`
+	// Resources authorize resource.
+	Resources []string `json:"targets"`
+}
+
 // CreateRoleRequest create role request.
 type CreateRoleRequest struct {
 	Name        string `json:"name"            validate:"required,name"`

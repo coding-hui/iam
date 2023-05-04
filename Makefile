@@ -123,11 +123,12 @@ release:
 
 ## format: Gofmt (reformat) package sources (exclude vendor dir if existed).
 .PHONY: format
-format: tools.verify.golines tools.verify.goimports
+format: tools.verify.golines tools.verify.goimports tools.verify.swag
 	@echo "===========> Formating codes"
 	@$(FIND) -type f -name '*.go' | $(XARGS) gofmt -s -w
 	@$(FIND) -type f -name '*.go' | $(XARGS) goimports -w -local $(ROOT_PACKAGE)
 	@$(FIND) -type f -name '*.go' | $(XARGS) golines -w --max-len=140 --reformat-tags --shorten-comments --ignore-generated .
+	@swag fmt -d ${ROOT_DIR}/
 	@$(GO) mod edit -fmt
 
 ## verify-copyright: Verify the boilerplate headers for all files.
@@ -150,10 +151,10 @@ gen:
 ca:
 	@$(MAKE) gen.ca
 
-## swagger: Generate swagger document.
-.PHONY: swagger
-swagger:
-	@$(MAKE) swagger.run
+## swag: Generate swagger document.
+.PHONY: swag
+swag:
+	@$(MAKE) swag.run
 
 ## serve-swagger: Serve swagger spec and docs.
 .PHONY: swagger.serve

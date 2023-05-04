@@ -6,11 +6,16 @@
 # Makefile helper functions for swagger
 #
 
-.PHONY: swagger.run
-swagger.run: tools.verify.swagger
+.PHONY: swag.run
+swag.run: tools.verify.swagger
 	@echo "===========> Generating swagger API docs"
-	@swagger generate spec --scan-models -w $(ROOT_DIR)/cmd/genswaggertypedocs -o $(ROOT_DIR)/api/swagger/swagger.yaml
+	@swag i -g apiserver.go -dir ${ROOT_DIR}/internal/apiserver --parseDependency --parseInternal -o ${ROOT_DIR}/api/swagger
 
-.PHONY: swagger.serve
-swagger.serve: tools.verify.swagger
-	@swagger serve -F=redoc --no-open --port 36666 $(ROOT_DIR)/api/swagger/swagger.yaml
+.PHONY: swag.fmt
+swag.fmt: tools.verify.swagger
+	@echo "===========> Format swag comments"
+	@swag fmt -d ${ROOT_DIR}/
+
+.PHONY: swag.serve
+swag.serve: tools.verify.swagger
+	@swag serve -F=redoc --no-open --port 36666 $(ROOT_DIR)/api/swagger/swagger.yaml

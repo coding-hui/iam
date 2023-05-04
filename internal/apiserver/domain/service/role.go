@@ -30,6 +30,7 @@ type RoleService interface {
 	ListRoles(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	AssignRole(ctx context.Context, role *model.Role, assignReq v1alpha1.AssignRoleRequest) error
 	RevokeRole(ctx context.Context, role *model.Role, revokeReq v1alpha1.RevokeRoleRequest) error
+	AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1alpha1.AuthorizeResources) error
 	Init(ctx context.Context) error
 }
 
@@ -247,6 +248,23 @@ func (r *roleServiceImpl) RevokeRole(ctx context.Context, role *model.Role, revo
 	}
 
 	return lastErr
+}
+
+// AuthorizeRoleResources grant role resource permission.
+func (r *roleServiceImpl) AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1alpha1.AuthorizeResources) error {
+	handlers, err := r.determineRoleHandlerByInstanceId(role, authorizeReq.Resources)
+	if err != nil {
+		return errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
+	}
+
+	for h := range handlers {
+		err := h.revoke(ctx)
+		if err != nil {
+			klog.Errorf("Failed to revoke roles. err: %w", err)
+		}
+	}
+
+	return nil
 }
 
 func (u *userRoleHandlerImpl) assign(ctx context.Context) error {

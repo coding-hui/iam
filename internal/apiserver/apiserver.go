@@ -16,7 +16,7 @@ import (
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 
-	"github.com/coding-hui/iam/docs/apidoc"
+	"github.com/coding-hui/iam/api/swagger"
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
@@ -157,9 +157,9 @@ func (s *apiServer) registerAPIRoute() {
 }
 
 func (s *apiServer) configSwagger() {
-	apidoc.SwaggerInfo.Title = "IAM API Doc"
-	apidoc.SwaggerInfo.Description = "IAM ApiService API Doc."
-	apidoc.SwaggerInfo.Version = "v1alpha"
+	swagger.SwaggerInfo.Title = "IAM API Doc"
+	swagger.SwaggerInfo.Description = "IAM ApiService API Doc."
+	swagger.SwaggerInfo.Version = "v1alpha"
 	s.wetServer.Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
 }
 

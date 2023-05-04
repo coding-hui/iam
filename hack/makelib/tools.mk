@@ -20,9 +20,9 @@ tools.install.%:
 tools.verify.%:
 	@if ! which $* &>/dev/null; then $(MAKE) tools.install.$*; fi
 
-.PHONY: install.swagger
-install.swagger:
-	@$(GO) install github.com/go-swagger/go-swagger/cmd/swagger@latest
+.PHONY: install.swag
+install.swag:
+	@$(GO) install github.com/swaggo/swag/cmd/swag@latest
 
 .PHONY: install.golangci-lint
 install.golangci-lint:
