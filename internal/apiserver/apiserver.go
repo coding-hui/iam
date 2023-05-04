@@ -12,6 +12,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"k8s.io/klog/v2"
 
+	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 
@@ -81,13 +82,13 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) error {
 		return fmt.Errorf("failed to build IoCContainer %w", err)
 	}
 
-	// init database
-	if err := service.InitData(ctx); err != nil {
-		return fmt.Errorf("failed to init database %w", err)
-	}
-
 	// register apis
 	s.registerAPIRoute()
+
+	// init database
+	if err := service.InitData(s.withRoutesContext(ctx)); err != nil {
+		return fmt.Errorf("failed to init database %w", err)
+	}
 
 	go event.StartEventWorker(ctx, errChan)
 
@@ -134,6 +135,8 @@ func (s *apiServer) buildIoCContainer() (err error) {
 	if err = s.beanContainer.Populate(); err != nil {
 		return fmt.Errorf("fail to populate the bean container: %w", err)
 	}
+	klog.Infof("build IoC Container successful")
+
 	return nil
 }
 
@@ -150,7 +153,7 @@ func (s *apiServer) registerAPIRoute() {
 		api.RegisterApiGroup(s.wetServer.Engine)
 	}
 
-	klog.Infof("init router successful")
+	klog.Infof("register API route successful")
 }
 
 func (s *apiServer) configSwagger() {
@@ -158,6 +161,12 @@ func (s *apiServer) configSwagger() {
 	apidoc.SwaggerInfo.Description = "IAM ApiService API Doc."
 	apidoc.SwaggerInfo.Version = "v1alpha"
 	s.wetServer.Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
+}
+
+func (s *apiServer) withRoutesContext(ctx context.Context) context.Context {
+	ctx = context.WithValue(ctx, &v1alpha1.CtxKeyRoutes, s.wetServer.Routes())
+	ctx = context.WithValue(ctx, &v1alpha1.CtxKeyApiPrefix, apisv1.GetAPIPrefix())
+	return ctx
 }
 
 // startAPIServer start api server.

@@ -21,7 +21,7 @@ func InitServiceBean(c config.Config) []interface{} {
 	resourceService := NewResourceService()
 	roleService := NewRoleService()
 
-	needInitData = []DataInit{userService, roleService}
+	needInitData = []DataInit{userService, roleService, resourceService}
 
 	return []interface{}{userService, authenticationService, resourceService, roleService}
 }

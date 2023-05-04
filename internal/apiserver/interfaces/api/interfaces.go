@@ -13,6 +13,11 @@ import (
 // versionPrefix API version prefix.
 var versionPrefix = "/api/v1"
 
+// GetAPIPrefix return the prefix of the api route path.
+func GetAPIPrefix() []string {
+	return []string{versionPrefix, "/v1"}
+}
+
 // Interface the API should define the http route.
 type Interface interface {
 	RegisterApiGroup(*gin.Engine)

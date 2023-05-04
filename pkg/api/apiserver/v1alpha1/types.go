@@ -17,6 +17,11 @@ var (
 	CtxKeyUserInstanceId = "user_instance_id"
 	// CtxKeyRole request context key of role.
 	CtxKeyRole = "role"
+
+	// CtxKeyRoutes initialize context key of routes.
+	CtxKeyRoutes = "routes"
+	// CtxKeyApiPrefix initialize context key of api-prefix.
+	CtxKeyApiPrefix = "api_prefix"
 )
 
 const (
