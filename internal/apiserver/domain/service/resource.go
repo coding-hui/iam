@@ -85,11 +85,6 @@ func (r *resourceServiceImpl) CreateResource(ctx context.Context, req v1alpha1.C
 	if err != nil {
 		return err
 	}
-	e := r.Store.CasbinRepository().SyncedEnforcer()
-	_, err = e.AddNamedPolicy("p", v1alpha1.PlatformAdmin.String(), resource.Api, resource.Method)
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
