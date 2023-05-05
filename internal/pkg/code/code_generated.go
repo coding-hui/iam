@@ -48,6 +48,7 @@ func init() {
 	register(ErrInvalidAuthHeader, 401, "Invalid authorization header")
 	register(ErrMissingHeader, 401, "The `Authorization` header was empty")
 	register(ErrPasswordIncorrect, 401, "Invalid Username or Password")
+	register(ErrInvalidRefreshToken, 401, "Refresh token format is incorrect, please check")
 	register(ErrPermissionDenied, 403, "Permission denied")
 	register(ErrEncodingFailed, 500, "Encoding failed due to an error with the data")
 	register(ErrDecodingFailed, 500, "Decoding failed due to an error with the data")

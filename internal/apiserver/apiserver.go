@@ -16,7 +16,7 @@ import (
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 
-	"github.com/coding-hui/iam/api/swagger"
+	_ "github.com/coding-hui/iam/api/swagger"
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
@@ -27,6 +27,23 @@ import (
 	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
 )
+
+//	@title			IAM API
+//	@version		v1alpha
+//	@description	IAM ApiService API Doc.
+//	@termsOfService	http://iam.wecoding.top/
+
+//	@contact.name	coding-hui
+//	@contact.url	https://github.com/coding-hui/iam
+//	@contact.email	wecoding@yeah.net
+
+//	@license.name	MIT
+//	@license.url	https://en.wikipedia.org/wiki/MIT_License
+
+//	@securityDefinitions.apikey	BearerTokenAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Set Bearer token in the request header
 
 // APIServer interface for call iam-apiserver.
 type APIServer interface {
@@ -157,9 +174,6 @@ func (s *apiServer) registerAPIRoute() {
 }
 
 func (s *apiServer) configSwagger() {
-	swagger.SwaggerInfo.Title = "IAM API Doc"
-	swagger.SwaggerInfo.Description = "IAM ApiService API Doc."
-	swagger.SwaggerInfo.Version = "v1alpha"
 	s.wetServer.Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
 }
 

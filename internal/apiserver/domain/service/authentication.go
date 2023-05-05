@@ -128,7 +128,9 @@ func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken
 			RefreshToken: refreshToken,
 		}, nil
 	}
-	return nil, nil
+	return nil,
+		errors.WithCode(code.ErrInvalidRefreshToken,
+			"Incorrect refresh token format %s, expected in refresh format", claim.GrantType)
 }
 
 // ParseToken parses and verifies a token.

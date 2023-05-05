@@ -42,6 +42,16 @@ func (r *role) RegisterApiGroup(g *gin.Engine) {
 	}
 }
 
+//	@Tags			Roles
+//	@Summary		create role
+//	@Description	create role
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			data	body		v1alpha1.CreateRoleRequest	true	"role info"
+//	@Success		200		{object}	api.Response				"create a new role"
+//	@Router			/api/v1/roles [post]
+//	@Security		BearerTokenAuth
+//
 // createRole create new role.
 func (r *role) createRole(c *gin.Context) {
 	createReq := v1alpha1.CreateRoleRequest{}
@@ -59,6 +69,16 @@ func (r *role) createRole(c *gin.Context) {
 	api.Ok(c)
 }
 
+//	@Tags			Roles
+//	@Summary		update role
+//	@Description	update role
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			data	body		v1alpha1.UpdateRoleRequest	true	"role info"
+//	@Success		200		{object}	api.Response				"update role info"
+//	@Router			/api/v1/roles/{name}  [put]
+//	@Security		BearerTokenAuth
+//
 // updateRole update role info.
 func (r *role) updateRole(c *gin.Context) {
 	updateReq := v1alpha1.UpdateRoleRequest{}
@@ -76,6 +96,14 @@ func (r *role) updateRole(c *gin.Context) {
 	api.Ok(c)
 }
 
+//	@Tags			Roles
+//	@Summary		delete role
+//	@Description	delete role
+//	@Param			name	path		string			true	"name of a role"
+//	@Success		200		{object}	api.Response	"delete role"
+//	@Router			/api/v1/roles/{name} [delete]
+//	@Security		BearerTokenAuth
+//
 // deleteRole delete role by roleName.
 func (r *role) deleteRole(c *gin.Context) {
 	err := r.RoleService.DeleteRole(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
@@ -87,6 +115,14 @@ func (r *role) deleteRole(c *gin.Context) {
 	api.Ok(c)
 }
 
+//	@Tags			Roles
+//	@Summary		get role detail
+//	@Description	get role detail
+//	@Param			name	path		string								true	"name of a role"
+//	@Success		200		{object}	api.Response{data=model.Resource}	"role detail"
+//	@Router			/api/v1/roles/{name} [get]
+//	@Security		BearerTokenAuth
+//
 // detailRole get role detail info.
 func (r *role) detailRole(c *gin.Context) {
 	role := c.Request.Context().Value(&v1alpha1.CtxKeyRole).(*model.Role)
@@ -99,6 +135,16 @@ func (r *role) detailRole(c *gin.Context) {
 	api.OkWithData(detail, c)
 }
 
+//	@Tags			Roles
+//	@Summary		list role
+//	@Description	list role
+//	@Param			name	query		string									false	"fuzzy search based on name"
+//	@Param			offset	query		int										false	"query the page number"
+//	@Param			limit	query		int										false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=[]v1alpha1.RoleBase}	"roles"
+//	@Router			/api/v1/roles [get]
+//	@Security		BearerTokenAuth
+//
 // listRole list role page.
 func (r *role) listRole(c *gin.Context) {
 	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
@@ -118,6 +164,14 @@ func (r *role) listRole(c *gin.Context) {
 	api.OkWithPage(resp.Items, resp.TotalCount, c)
 }
 
+//	@Tags			Roles
+//	@Summary		assign role
+//	@Description	assign role
+//	@Param			data	body		v1alpha1.AssignRoleRequest	true	"assign role request"
+//	@Success		200		{object}	api.Response				"assign role"
+//	@Router			/api/v1/roles/{instanceId}/assign [post]
+//	@Security		BearerTokenAuth
+//
 // assignRole assign role.
 func (r *role) assignRole(c *gin.Context) {
 	assignReq := v1alpha1.AssignRoleRequest{}
@@ -136,6 +190,14 @@ func (r *role) assignRole(c *gin.Context) {
 	api.Ok(c)
 }
 
+//	@Tags			Roles
+//	@Summary		revoke role
+//	@Description	revoke role
+//	@Param			data	body		v1alpha1.RevokeRoleRequest	true	"revoke role request"
+//	@Success		200		{object}	api.Response				"revoke role"
+//	@Router			/api/v1/roles/{instanceId}/revoke [post]
+//	@Security		BearerTokenAuth
+//
 // revokeRole revoke role.
 func (r *role) revokeRole(c *gin.Context) {
 	revokeReq := v1alpha1.RevokeRoleRequest{}

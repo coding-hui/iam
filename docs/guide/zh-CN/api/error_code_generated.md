@@ -61,7 +61,8 @@ IAM 系统支持的错误码列表如下：
 | ErrInvalidAuthHeader | 100207 | 401 | Invalid authorization header |
 | ErrMissingHeader | 100208 | 401 | The `Authorization` header was empty |
 | ErrPasswordIncorrect | 100209 | 401 | Invalid Username or Password |
-| ErrPermissionDenied | 100210 | 403 | Permission denied |
+| ErrInvalidRefreshToken | 100210 | 401 | Refresh token format is incorrect, please check |
+| ErrPermissionDenied | 100211 | 403 | Permission denied |
 | ErrEncodingFailed | 100301 | 500 | Encoding failed due to an error with the data |
 | ErrDecodingFailed | 100302 | 500 | Decoding failed due to an error with the data |
 | ErrInvalidJSON | 100303 | 500 | Data is not valid JSON |

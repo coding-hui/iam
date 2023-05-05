@@ -37,7 +37,17 @@ func (u *user) RegisterApiGroup(g *gin.Engine) {
 	}
 }
 
-// createUser create new user.
+//	@Tags			Users
+//	@Summary		create user
+//	@Description	create user
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			data	body		v1alpha1.CreateUserRequest	true	"user info"
+//	@Success		200		{object}	api.Response				"create a nnw user"
+//	@Router			/api/v1/users [post]
+//	@Security		BearerTokenAuth
+//
+// createUser create a new user
 func (u *user) createUser(c *gin.Context) {
 	createReq := v1alpha1.CreateUserRequest{}
 	err := c.ShouldBindJSON(&createReq)
@@ -58,7 +68,18 @@ func (u *user) createUser(c *gin.Context) {
 	api.Ok(c)
 }
 
-// updateUser update user info.
+//	@Tags			Users
+//	@Summary		update user info
+//	@Description	update user info
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			name	path		string						true	"identifier of a user"
+//	@Param			data	body		v1alpha1.UpdateUserRequest	true	"user info"
+//	@Success		200		{object}	api.Response				"update user info"
+//	@Router			/api/v1/users/{name} [put]
+//	@Security		BearerTokenAuth
+//
+// updateUser update user info
 func (u *user) updateUser(c *gin.Context) {
 	updateReq := v1alpha1.UpdateUserRequest{}
 	err := c.ShouldBindJSON(&updateReq)
@@ -79,7 +100,15 @@ func (u *user) updateUser(c *gin.Context) {
 	api.Ok(c)
 }
 
-// deleteUser delete user by username.
+//	@Tags			Users
+//	@Summary		delete user
+//	@Description	delete user
+//	@Param			name	path		string			true	"identifier of a user"
+//	@Success		200		{object}	api.Response	"delete user"
+//	@Router			/api/v1/users/{name} [delete]
+//	@Security		BearerTokenAuth
+//
+// deleteUser delete user by identifier
 func (u *user) deleteUser(c *gin.Context) {
 	err := u.UserService.DeleteUser(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
 	if err != nil {
@@ -90,7 +119,15 @@ func (u *user) deleteUser(c *gin.Context) {
 	api.Ok(c)
 }
 
-// getUser get user info.
+//	@Tags			Users
+//	@Summary		get user detail
+//	@Description	get user detail
+//	@Param			name	path		string							true	"identifier of a user"
+//	@Success		200		{object}	api.Response{data=model.User}	"user detail"
+//	@Router			/api/v1/users/{name} [get]
+//	@Security		BearerTokenAuth
+//
+// getUser get user detail
 func (u *user) getUser(c *gin.Context) {
 	user, err := u.UserService.GetUser(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
 	if err != nil {
@@ -101,7 +138,19 @@ func (u *user) getUser(c *gin.Context) {
 	api.OkWithData(user, c)
 }
 
-// listUser list user page.
+//	@Tags			Users
+//	@Summary		list users
+//	@Description	list users
+//	@Param			name	query		string							false	"fuzzy search based on name"
+//	@Param			alias	query		string							false	"fuzzy search based on alias"
+//	@Param			email	query		string							false	"fuzzy search based on email"
+//	@Param			offset	query		int								false	"query the page number"
+//	@Param			limit	query		int								false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=[]model.User}	"users"
+//	@Router			/api/v1/users [get]
+//	@Security		BearerTokenAuth
+//
+// listUser list users page
 func (u *user) listUser(c *gin.Context) {
 	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
 	if err != nil {

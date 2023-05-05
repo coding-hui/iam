@@ -21,13 +21,13 @@ func (p *ping) RegisterApiGroup(g *gin.Engine) {
 	g.GET("/ping", p.ping)
 }
 
-// ping.
-//
 //	@Tags			System
 //	@Summary		check service is running
 //	@Description	check service is running
-//	@Success		200	{object}	api.Response	"{"code": "000", "data": [...]}
+//	@Success		200	{object}	api.Response	"pong"
 //	@Router			/ping [get]
+//
+// ping.
 func (p *ping) ping(c *gin.Context) {
 	api.OkWithData("pong", c)
 }

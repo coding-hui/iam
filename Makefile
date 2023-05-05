@@ -128,8 +128,8 @@ format: tools.verify.golines tools.verify.goimports tools.verify.swag
 	@$(FIND) -type f -name '*.go' | $(XARGS) gofmt -s -w
 	@$(FIND) -type f -name '*.go' | $(XARGS) goimports -w -local $(ROOT_PACKAGE)
 	@$(FIND) -type f -name '*.go' | $(XARGS) golines -w --max-len=140 --reformat-tags --shorten-comments --ignore-generated .
-	@swag fmt -d ${ROOT_DIR}/
 	@$(GO) mod edit -fmt
+	@swag fmt -d ${ROOT_DIR}/
 
 ## verify-copyright: Verify the boilerplate headers for all files.
 .PHONY: verify-copyright

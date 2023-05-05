@@ -105,6 +105,16 @@ func permissionCheckFilter(c *gin.Context) {
 	c.Next()
 }
 
+//	@Tags			Authentication
+//	@Summary		login system
+//	@Description	login by user account and password
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			data	body		v1alpha1.AuthenticateRequest						true	"login request"
+//	@Success		200		{object}	api.Response{data=v1alpha1.AuthenticateResponse}	"token info"
+//	@Router			/api/v1/login [post]
+//
+// authenticate login by user.
 func (a *authentication) authenticate(c *gin.Context) {
 	var login v1alpha1.AuthenticateRequest
 	var err error
@@ -152,6 +162,16 @@ func parseWithBody(c *gin.Context) (v1alpha1.AuthenticateRequest, error) {
 	return login, nil
 }
 
+//	@Tags			Authentication
+//	@Summary		refresh token
+//	@Description	refresh token
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			RefreshToken	header		string												true	"refresh token"
+//	@Success		200				{object}	api.Response{data=v1alpha1.RefreshTokenResponse}	"token info"
+//	@Router			/api/v1/auth/refresh-token [get]
+//
+// refreshToken refresh token.
 func (a *authentication) refreshToken(c *gin.Context) {
 	base, err := a.AuthenticationService.RefreshToken(
 		c.Request.Context(),

@@ -82,6 +82,9 @@ const (
 	// ErrPasswordIncorrect - 401: Invalid Username or Password.
 	ErrPasswordIncorrect
 
+	// ErrInvalidRefreshToken - 401: Refresh token format is incorrect, please check.
+	ErrInvalidRefreshToken
+
 	// ErrPermissionDenied - 403: Permission denied.
 	ErrPermissionDenied
 )

@@ -37,6 +37,16 @@ func (r *resource) RegisterApiGroup(g *gin.Engine) {
 	}
 }
 
+//	@Tags			Resources
+//	@Summary		create resource
+//	@Description	create resource
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			data	body		v1alpha1.CreateResourceRequest	true	"resource info"
+//	@Success		200		{object}	api.Response					"create a new resource"
+//	@Router			/api/v1/resources [post]
+//	@Security		BearerTokenAuth
+//
 // createResource create new resource.
 func (r *resource) createResource(c *gin.Context) {
 	createReq := v1alpha1.CreateResourceRequest{}
@@ -54,6 +64,16 @@ func (r *resource) createResource(c *gin.Context) {
 	api.Ok(c)
 }
 
+//	@Tags			Resources
+//	@Summary		update resource
+//	@Description	update resource
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			data	body		v1alpha1.UpdateResourceRequest	true	"resource info"
+//	@Success		200		{object}	api.Response					"update resource info"
+//	@Router			/api/v1/resources/{name}  [put]
+//	@Security		BearerTokenAuth
+//
 // updateResource update resource info.
 func (r *resource) updateResource(c *gin.Context) {
 	updateReq := v1alpha1.UpdateResourceRequest{}
@@ -71,6 +91,14 @@ func (r *resource) updateResource(c *gin.Context) {
 	api.Ok(c)
 }
 
+//	@Tags			Resources
+//	@Summary		delete resource
+//	@Description	delete resource
+//	@Param			name	path		string			true	"name of a resource"
+//	@Success		200		{object}	api.Response	"delete resource"
+//	@Router			/api/v1/resources/{name} [delete]
+//	@Security		BearerTokenAuth
+//
 // deleteResource delete resource by name.
 func (r *resource) deleteResource(c *gin.Context) {
 	err := r.ResourceService.DeleteResource(
@@ -86,6 +114,14 @@ func (r *resource) deleteResource(c *gin.Context) {
 	api.Ok(c)
 }
 
+//	@Tags			Resources
+//	@Summary		get resource detail
+//	@Description	get resource detail
+//	@Param			name	path		string								true	"name of a resource"
+//	@Success		200		{object}	api.Response{data=model.Resource}	"resource detail"
+//	@Router			/api/v1/resources/{name} [get]
+//	@Security		BearerTokenAuth
+//
 // getResource get resource info.
 func (r *resource) getResource(c *gin.Context) {
 	resource, err := r.ResourceService.GetResource(
@@ -101,6 +137,16 @@ func (r *resource) getResource(c *gin.Context) {
 	api.OkWithData(resource, c)
 }
 
+//	@Tags			Resources
+//	@Summary		list resource
+//	@Description	list resource
+//	@Param			name	query		string								false	"fuzzy search based on name"
+//	@Param			offset	query		int									false	"query the page number"
+//	@Param			limit	query		int									false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=[]model.Resource}	"resources"
+//	@Router			/api/v1/resources [get]
+//	@Security		BearerTokenAuth
+//
 // listResource list resource page.
 func (r *resource) listResource(c *gin.Context) {
 	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
