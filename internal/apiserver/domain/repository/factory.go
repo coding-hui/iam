@@ -12,6 +12,7 @@ type Factory interface {
 	CasbinRepository() CasbinRepository
 	ResourceRepository() ResourceRepository
 	RoleRepository() RoleRepository
+	PolicyRepository() PolicyRepository
 	Close() error
 }
 

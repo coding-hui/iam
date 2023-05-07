@@ -28,6 +28,8 @@ IAM 系统支持的错误码列表如下：
 | ErrReachMaxCount | 110101 | 400 | Secret reach the max count |
 | ErrSecretNotFound | 110102 | 404 | Secret not found |
 | ErrPolicyNotFound | 110201 | 404 | Policy not found |
+| ErrPolicyAlreadyExist | 110202 | 400 | Policy already exist |
+| ErrPolicyNameIsEmpty | 110203 | 400 | Policy name is empty |
 | ErrResourceNotFound | 110301 | 404 | Resource not found |
 | ErrResourceAlreadyExist | 110302 | 400 | Resource already exist |
 | ErrResourceNameIsEmpty | 110303 | 400 | Resource name is empty |

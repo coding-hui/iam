@@ -5,141 +5,86 @@
 package v1alpha1
 
 import (
-	"encoding/json"
-
-	"github.com/coding-hui/common/errors"
+	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
-// AllowAccess should be used as effect for policies that allow access.
-const AllowAccess = "allow"
+const (
+	// AllowAccess should be used as effect for policies that allow access.
+	AllowAccess string = "allow"
+	// DenyAccess should be used as effect for policies that deny access.
+	DenyAccess string = "deny"
+)
 
-// DenyAccess should be used as effect for policies that deny access.
-const DenyAccess = "deny"
+// PolicyType define policy type.
+type PolicyType string
+
+const (
+	// SystemBuildIn system default policy type.
+	SystemBuildIn PolicyType = "SYSTEM"
+)
 
 // CreatePolicyRequest create policy request.
 type CreatePolicyRequest struct {
-	Type        string     `json:"type"`
-	Description string     `json:"description"`
-	Subjects    []string   `json:"subjects"`
-	Effect      string     `json:"effect"`
-	Resources   []string   `json:"resources"`
-	Actions     []string   `json:"actions"`
-	Conditions  Conditions `json:"conditions"`
-	Meta        []byte     `json:"meta"`
+	Name        string   `json:"name"        validate:"required,name"`
+	Description string   `json:"description" validate:"min=1,max=30"  optional:"true"`
+	Type        string   `json:"type"        validate:"required"`
+	Subjects    []string `json:"subjects"    validate:"required"`
+	Effect      string   `json:"effect"                               optional:"true"`
+	Resources   []string `json:"resources"   validate:"required"`
+	Actions     []string `json:"actions"     validate:"required"`
+	Status      string   `json:"status"                               optional:"true"`
+	Owner       string   `json:"owner"                                optional:"true"`
+	Meta        string   `json:"meta"                                 optional:"true"`
 }
 
-// Policy represent a policy model.
-type Policy struct {
-	ID          string     `json:"id"`
-	Type        string     `json:"type"`
-	Description string     `json:"description"`
-	Subjects    []string   `json:"subjects"`
-	Effect      string     `json:"effect"`
-	Resources   []string   `json:"resources"`
-	Actions     []string   `json:"actions"`
-	Conditions  Conditions `json:"conditions"`
-	Meta        []byte     `json:"meta"`
+// UpdatePolicyRequest update policy request.
+type UpdatePolicyRequest struct {
+	Description string   `json:"description" validate:"min=1,max=30" optional:"true"`
+	Type        string   `json:"type"        validate:"required"`
+	Subjects    []string `json:"subjects"    validate:"required"`
+	Effect      string   `json:"effect"                              optional:"true"`
+	Resources   []string `json:"resources"   validate:"required"`
+	Actions     []string `json:"actions"     validate:"required"`
+	Meta        string   `json:"meta"                                optional:"true"`
 }
 
-// UnmarshalJSON overwrite own policy with values of the given in policy in JSON format
-func (p *Policy) UnmarshalJSON(data []byte) error {
-	var pol = struct {
-		ID          string     `json:"id" gorethink:"id"`
-		Type        string     `json:"type" gorethink:"type"`
-		Description string     `json:"description" gorethink:"description"`
-		Subjects    []string   `json:"subjects" gorethink:"subjects"`
-		Effect      string     `json:"effect" gorethink:"effect"`
-		Resources   []string   `json:"resources" gorethink:"resources"`
-		Actions     []string   `json:"actions" gorethink:"actions"`
-		Conditions  Conditions `json:"conditions" gorethink:"conditions"`
-		Meta        []byte     `json:"meta" gorethink:"meta"`
-	}{
-		Conditions: Conditions{},
-	}
+// PolicyBase represents a policy restful resource.
+type PolicyBase struct {
+	// May add TypeMeta in the future.
+	// metav1alpha1.TypeMeta `json:",inline"`
 
-	if err := json.Unmarshal(data, &pol); err != nil {
-		return errors.WithStack(err)
-	}
+	// Standard object's metadata.
+	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
 
-	*p = *&Policy{
-		ID:          pol.ID,
-		Type:        pol.Type,
-		Description: pol.Description,
-		Subjects:    pol.Subjects,
-		Effect:      pol.Effect,
-		Resources:   pol.Resources,
-		Actions:     pol.Actions,
-		Conditions:  pol.Conditions,
-		Meta:        pol.Meta,
-	}
-	return nil
+	Subjects  []string `json:"subjects"`
+	Resources []string `json:"resources"`
+	Actions   []string `json:"actions"`
+	Effect    string   `json:"effect"`
+
+	Type        string `json:"type"`
+	Status      string `json:"status"`
+	Owner       string `json:"owner"`
+	Description string `json:"description"`
+
+	// casbin required
+	Adapter     string     `json:"adapter"`
+	Model       string     `json:"model"`
+	PolicyRules [][]string `json:"policyRules"`
 }
 
-// UnmarshalMeta parses the policies []byte encoded metadata and stores the result in the value pointed to by v.
-func (p *Policy) UnmarshalMeta(v interface{}) error {
-	if err := json.Unmarshal(p.Meta, &v); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
+// DetailPolicyResponse policy detail.
+type DetailPolicyResponse struct {
+	PolicyBase
 }
 
-// GetID returns the policies id.
-func (p *Policy) GetID() string {
-	return p.ID
-}
+// PolicyList is the whole list of all policies which have been stored in stroage.
+type PolicyList struct {
+	// May add TypeMeta in the future.
+	// metav1.TypeMeta `json:",inline"`
 
-// GetType returns the policies type.
-func (p *Policy) GetType() string {
-	return p.Type
-}
+	// Standard list metadata.
+	// +optional
+	metav1alpha1.ListMeta `json:",inline"`
 
-// GetDescription returns the policies description.
-func (p *Policy) GetDescription() string {
-	return p.Description
-}
-
-// GetSubjects returns the policies subjects.
-func (p *Policy) GetSubjects() []string {
-	return p.Subjects
-}
-
-// AllowAccess returns true if the policy effect is allow, otherwise false.
-func (p *Policy) AllowAccess() bool {
-	return p.Effect == AllowAccess
-}
-
-// GetEffect returns the policies effect which might be 'allow' or 'deny'.
-func (p *Policy) GetEffect() string {
-	return p.Effect
-}
-
-// GetResources returns the policies resources.
-func (p *Policy) GetResources() []string {
-	return p.Resources
-}
-
-// GetActions returns the policies actions.
-func (p *Policy) GetActions() []string {
-	return p.Actions
-}
-
-// GetConditions returns the policies conditions.
-func (p *Policy) GetConditions() Conditions {
-	return p.Conditions
-}
-
-// GetMeta returns the policies arbitrary metadata set by the user.
-func (p *Policy) GetMeta() []byte {
-	return p.Meta
-}
-
-// GetEndDelimiter returns the delimiter which identifies the end of a regular expression.
-func (p *Policy) GetEndDelimiter() byte {
-	return '>'
-}
-
-// GetStartDelimiter returns the delimiter which identifies the beginning of a regular expression.
-func (p *Policy) GetStartDelimiter() byte {
-	return '<'
+	Items []*PolicyBase `json:"items"`
 }

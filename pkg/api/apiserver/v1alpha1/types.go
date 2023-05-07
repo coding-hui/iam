@@ -17,6 +17,8 @@ var (
 	CtxKeyUserInstanceId = "user_instance_id"
 	// CtxKeyRole request context key of role.
 	CtxKeyRole = "role"
+	// CtxKeyPolicy request context key of policy.
+	CtxKeyPolicy = "policy"
 
 	// CtxKeyRoutes initialize context key of routes.
 	CtxKeyRoutes = "routes"

@@ -100,6 +100,200 @@
                 }
             }
         },
+        "/api/v1/policies": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "List policies",
+                "tags": [
+                    "Policies"
+                ],
+                "summary": "List policies",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "fuzzy search based on name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "query the page number",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "query the page size number",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "policies",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1alpha1.PolicyList"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Create a policy",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Policies"
+                ],
+                "summary": "Create a policy",
+                "parameters": [
+                    {
+                        "description": "policy rule",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1alpha1.CreatePolicyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Create a nnw policy",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/policies/{name}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Get a Policy",
+                "tags": [
+                    "Policies"
+                ],
+                "summary": "Get a Policy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name of a policy",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Policy detail",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1alpha1.DetailPolicyResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Update a Policy",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Policies"
+                ],
+                "summary": "Update a Policy",
+                "parameters": [
+                    {
+                        "description": "Policy rule",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1alpha1.UpdatePolicyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Update policy info",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Delete Policy",
+                "tags": [
+                    "Policies"
+                ],
+                "summary": "Delete Policy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name of a policy",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Policy successfully deleted",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/resources": {
             "get": {
                 "security": [
@@ -1038,6 +1232,59 @@
                 }
             }
         },
+        "v1alpha1.CreatePolicyRequest": {
+            "type": "object",
+            "required": [
+                "actions",
+                "name",
+                "resources",
+                "subjects",
+                "type"
+            ],
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
+                "effect": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "resources": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "v1alpha1.CreateResourceRequest": {
             "type": "object",
             "required": [
@@ -1122,6 +1369,144 @@
                 }
             }
         },
+        "v1alpha1.DetailPolicyResponse": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "adapter": {
+                    "description": "casbin required",
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "effect": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Standard object's metadata.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.ObjectMeta"
+                        }
+                    ]
+                },
+                "model": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "policyRules": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1alpha1.PolicyBase": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "adapter": {
+                    "description": "casbin required",
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "effect": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Standard object's metadata.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.ObjectMeta"
+                        }
+                    ]
+                },
+                "model": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "policyRules": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "resources": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1alpha1.PolicyList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.PolicyBase"
+                    }
+                },
+                "totalCount": {
+                    "type": "integer"
+                }
+            }
+        },
         "v1alpha1.RefreshTokenResponse": {
             "type": "object",
             "properties": {
@@ -1176,6 +1561,49 @@
                 },
                 "owner": {
                     "description": "Owner tenant owner name.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1alpha1.UpdatePolicyRequest": {
+            "type": "object",
+            "required": [
+                "actions",
+                "resources",
+                "subjects",
+                "type"
+            ],
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
+                "effect": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "string"
+                },
+                "resources": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "subjects": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
                     "type": "string"
                 }
             }

@@ -47,7 +47,7 @@ func (u *user) RegisterApiGroup(g *gin.Engine) {
 //	@Router			/api/v1/users [post]
 //	@Security		BearerTokenAuth
 //
-// createUser create a new user
+// createUser create a new user.
 func (u *user) createUser(c *gin.Context) {
 	createReq := v1alpha1.CreateUserRequest{}
 	err := c.ShouldBindJSON(&createReq)
@@ -79,7 +79,7 @@ func (u *user) createUser(c *gin.Context) {
 //	@Router			/api/v1/users/{name} [put]
 //	@Security		BearerTokenAuth
 //
-// updateUser update user info
+// updateUser update user info.
 func (u *user) updateUser(c *gin.Context) {
 	updateReq := v1alpha1.UpdateUserRequest{}
 	err := c.ShouldBindJSON(&updateReq)
@@ -108,7 +108,7 @@ func (u *user) updateUser(c *gin.Context) {
 //	@Router			/api/v1/users/{name} [delete]
 //	@Security		BearerTokenAuth
 //
-// deleteUser delete user by identifier
+// deleteUser delete user by identifier.
 func (u *user) deleteUser(c *gin.Context) {
 	err := u.UserService.DeleteUser(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
 	if err != nil {
@@ -127,7 +127,7 @@ func (u *user) deleteUser(c *gin.Context) {
 //	@Router			/api/v1/users/{name} [get]
 //	@Security		BearerTokenAuth
 //
-// getUser get user detail
+// getUser get user detail.
 func (u *user) getUser(c *gin.Context) {
 	user, err := u.UserService.GetUser(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
 	if err != nil {
@@ -150,7 +150,7 @@ func (u *user) getUser(c *gin.Context) {
 //	@Router			/api/v1/users [get]
 //	@Security		BearerTokenAuth
 //
-// listUser list users page
+// listUser list users page.
 func (u *user) listUser(c *gin.Context) {
 	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
 	if err != nil {

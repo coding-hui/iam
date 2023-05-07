@@ -15,6 +15,8 @@ func init() {
 	register(ErrReachMaxCount, 400, "Secret reach the max count")
 	register(ErrSecretNotFound, 404, "Secret not found")
 	register(ErrPolicyNotFound, 404, "Policy not found")
+	register(ErrPolicyAlreadyExist, 400, "Policy already exist")
+	register(ErrPolicyNameIsEmpty, 400, "Policy name is empty")
 	register(ErrResourceNotFound, 404, "Resource not found")
 	register(ErrResourceAlreadyExist, 400, "Resource already exist")
 	register(ErrResourceNameIsEmpty, 400, "Resource name is empty")

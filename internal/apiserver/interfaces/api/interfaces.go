@@ -47,6 +47,9 @@ func InitAPIBean(c config.Config) []interface{} {
 	RegisterAPI(NewResource())
 	RegisterAPI(NewRole())
 
+	// policies
+	RegisterAPI(NewPolicy())
+
 	beans := make([]interface{}, 0, len(registeredAPI))
 	for i := range registeredAPI {
 		beans = append(beans, registeredAPI[i])

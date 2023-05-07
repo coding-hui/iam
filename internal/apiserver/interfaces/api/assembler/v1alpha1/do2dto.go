@@ -53,3 +53,19 @@ func ConvertRoleModelToBase(role *model.Role) *v1alpha1.RoleBase {
 		Disabled:    role.Disabled,
 	}
 }
+
+// ConvertPolicyModelToBase assemble the Policy model to DTO.
+func ConvertPolicyModelToBase(policy *model.Policy) *v1alpha1.PolicyBase {
+	return &v1alpha1.PolicyBase{
+		ObjectMeta:  policy.ObjectMeta,
+		Subjects:    policy.Subjects,
+		Resources:   policy.Resources,
+		Actions:     policy.Actions,
+		Effect:      policy.Effect,
+		Type:        policy.Type,
+		Status:      policy.Status,
+		Owner:       policy.Owner,
+		Description: policy.Description,
+		PolicyRules: policy.GetPolicyRules(),
+	}
+}
