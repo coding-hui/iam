@@ -160,7 +160,7 @@ func (s *GenericAPIServer) Run() error {
 
 	eg.Go(func() error {
 		key, cert := s.SecureServingInfo.CertKey.KeyFile, s.SecureServingInfo.CertKey.CertFile
-		if !s.SecureServingInfo.Enabled || cert == "" || key == "" || s.SecureServingInfo.BindPort == 0 {
+		if cert == "" || key == "" || s.SecureServingInfo.BindPort == 0 {
 			return nil
 		}
 

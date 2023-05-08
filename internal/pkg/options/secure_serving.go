@@ -65,6 +65,7 @@ func NewSecureServingOptions() *SecureServingOptions {
 func (s *SecureServingOptions) ApplyTo(c *server.Config) error {
 	// SecureServing is required to serve https
 	c.SecureServing = &server.SecureServingInfo{
+		Enabled:     s.Required,
 		BindAddress: s.BindAddress,
 		BindPort:    s.BindPort,
 		CertKey: server.CertKey{
