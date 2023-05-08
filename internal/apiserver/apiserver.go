@@ -40,6 +40,8 @@ import (
 //	@license.name	MIT
 //	@license.url	https://en.wikipedia.org/wiki/MIT_License
 
+//	@host	localhost:8000
+
 //	@securityDefinitions.apikey	BearerTokenAuth
 //	@in							header
 //	@name						Authorization

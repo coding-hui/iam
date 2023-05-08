@@ -527,6 +527,7 @@ definitions:
       tenantId:
         type: integer
     type: object
+host: localhost:8000
 info:
   contact:
     email: wecoding@yeah.net
