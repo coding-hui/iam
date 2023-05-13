@@ -159,6 +159,10 @@ func (s *GenericAPIServer) Run() error {
 	})
 
 	eg.Go(func() error {
+		if !s.SecureServingInfo.Required {
+			klog.Infof("Secure server is not enabled.")
+			return nil
+		}
 		key, cert := s.SecureServingInfo.CertKey.KeyFile, s.SecureServingInfo.CertKey.CertFile
 		if cert == "" || key == "" || s.SecureServingInfo.BindPort == 0 {
 			return nil

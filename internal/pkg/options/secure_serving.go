@@ -20,7 +20,7 @@ type SecureServingOptions struct {
 	// BindPort is ignored when Listener is set, will serve HTTPS even with 0.
 	BindPort int `json:"bind-port"    mapstructure:"bind-port"`
 	// Required set to true means that BindPort cannot be zero.
-	Required bool
+	Required bool `json:"required"     mapstructure:"required"`
 	// ServerCert is the TLS cert info for serving secure traffic
 	ServerCert GeneratableKeyCert `json:"tls"          mapstructure:"tls"`
 	// AdvertiseAddress net.IP
@@ -65,7 +65,7 @@ func NewSecureServingOptions() *SecureServingOptions {
 func (s *SecureServingOptions) ApplyTo(c *server.Config) error {
 	// SecureServing is required to serve https
 	c.SecureServing = &server.SecureServingInfo{
-		Enabled:     s.Required,
+		Required:    s.Required,
 		BindAddress: s.BindAddress,
 		BindPort:    s.BindPort,
 		CertKey: server.CertKey{

@@ -49,7 +49,7 @@ type CertKey struct {
 
 // SecureServingInfo holds configuration of the TLS server.
 type SecureServingInfo struct {
-	Enabled     bool
+	Required    bool
 	BindAddress string
 	BindPort    int
 	CertKey     CertKey
