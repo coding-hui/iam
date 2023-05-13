@@ -24,6 +24,7 @@ readonly IAM_SUPPORTED_CLIENT_PLATFORMS=(
 iam::golang::server_targets() {
   local targets=(
     iam-apiserver
+    iam-authzserver
   )
   echo "${targets[@]}"
 }
@@ -37,6 +38,7 @@ iam::golang::server_image_targets() {
   # NOTE: this contains cmd targets for iam::build::get_docker_wrapped_binaries
   local targets=(
     cmd/iam-apiserver
+    cmd/iam-authzserver
   )
   echo "${targets[@]}"
 }
