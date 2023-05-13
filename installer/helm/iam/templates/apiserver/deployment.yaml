@@ -1,0 +1,90 @@
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "iam.apiServerFullname" . }}
+  labels:
+    {{- include "iam.apiServerLabels" . | nindent 4 }}
+spec:
+  {{- if not .Values.apiServer.autoscaling.enabled }}
+  replicas: {{ .Values.apiServer.replicas }}
+  {{- end }}
+  {{- with .Values.apiServer.deploymentStrategy }}
+  strategy:
+  {{ toYaml . | trim | indent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "iam.apiServerSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.apiServer.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "iam.apiServerSelectorLabels" . | nindent 8 }}
+        {{- with .Values.apiServer.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "iam.serviceAccountName" . }}
+      {{- with .Values.apiServer.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{ end }}
+      containers:
+        - name: apiserver
+          image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          {{- with .Values.apiServer.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.apiServer.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          readinessProbe:
+            {{- toYaml .Values.apiServer.readinessProbe | nindent 12 }}
+          livenessProbe:
+            {{- toYaml .Values.apiServer.livenessProbe | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.apiServer.containerSecurityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.apiServer.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/iam
+      {{- with .Values.apiServer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiServer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiServer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiServer.dnsConfig }}
+      dnsConfig:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "iam.apiServerFullname" . }}
+

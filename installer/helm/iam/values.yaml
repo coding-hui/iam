@@ -1,0 +1,157 @@
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+# Default values for iam.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  imageRegistry: ""
+  imagePullSecrets: [ ]
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  storageClass: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: { }
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Use either this ingress or the gateway, but not both at once.
+# If you enable this, make sure to disable the gateway.
+# You'll need to supply authn configuration for your ingress controller.
+ingress:
+  enabled: false
+  #  ingressClassName: nginx
+  annotations: { }
+  #    nginx.ingress.kubernetes.io/auth-type: basic
+  #    nginx.ingress.kubernetes.io/auth-secret: loki-distributed-basic-auth
+  #    nginx.ingress.kubernetes.io/auth-secret-type: auth-map
+  #    nginx.ingress.kubernetes.io/configuration-snippet: |
+  #    proxy_set_header X-Scope-OrgID $remote_user;
+  paths:
+    apiserver:
+      - /api/v1
+    frontend:
+      - /iam
+  hosts:
+    - iam.example.com
+  # tls:
+  #   - secretName: loki-distributed-tls
+  #     hosts:
+  #       - loki.example.com
+
+# Configuration for the ApiServer
+apiServer:
+  # -- Specifies whether the ApiServer should be enabled
+  enabled: true
+  # -- Number of replicas for the ApiServer
+  replicas: 1
+  autoscaling:
+    # -- Enable autoscaling for the ApiServer
+    enabled: false
+    # -- Minimum autoscaling replicas for the ApiServer
+    minReplicas: 1
+    # -- Maximum autoscaling replicas for the ApiServer
+    maxReplicas: 3
+    # -- Target CPU utilisation percentage for the ApiServer
+    targetCPUUtilizationPercentage: 60
+    # -- Target memory utilisation percentage for the ApiServer
+    targetMemoryUtilizationPercentage:
+  # -- See `kubectl explain deployment.spec.strategy` for more,
+  # ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  deploymentStrategy:
+    type: RollingUpdate
+  image:
+    # -- The ApiServer image repository
+    repository: devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo/iam-ApiServer-amd64
+    # -- The ApiServer image pull policy
+    pullPolicy: Always
+    # -- The ApiServer image tag
+    tag: "latest"
+  # -- The name of the PriorityClass for ApiServer pods
+  priorityClassName: null
+  # -- Labels for ApiServer pods
+  podLabels: { }
+  # -- Annotations for ApiServer pods
+  podAnnotations: { }
+  # -- Additional CLI args for the ApiServer
+  extraArgs: [ ]
+  # -- Environment variables to add to the ApiServer pods
+  extraEnv: [ ]
+  # -- Environment variables from secrets or configmaps to add to the ApiServer pods
+  extraEnvFrom: [ ]
+  # -- Volumes to add to the ApiServer pods
+  extraVolumes: [ ]
+  # -- Volume mounts to add to the ApiServer pods
+  extraVolumeMounts: [ ]
+  # -- The SecurityContext for ApiServer containers
+  podSecurityContext:
+    fsGroup: 101
+    runAsGroup: 101
+    runAsNonRoot: true
+    runAsUser: 101
+  # -- The SecurityContext for ApiServer containers
+  containerSecurityContext:
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+    allowPrivilegeEscalation: false
+  # -- Resource requests and limits for the ApiServer
+  resources: { }
+  # -- Grace period to allow the ApiServer to shutdown before it is killed
+  terminationGracePeriodSeconds: 30
+  # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
+  # @default -- Hard node and soft zone anti-affinity
+  affinity: { }
+  # -- Pod Disruption Budget maxUnavailable
+  maxUnavailable: null
+  # -- Node selector for ApiServer pods
+  nodeSelector: { }
+  # -- Tolerations for ApiServer pods
+  tolerations: [ ]
+  # -- DNSConfig for ApiServer pods
+  dnsConfig: { }
+  # ApiServer service configuration
+  service:
+    # -- Port of the ApiServer service
+    port: 8000
+    # -- Type of the ApiServer service
+    type: NodePort
+    # -- ClusterIP of the ApiServer service
+    clusterIP: null
+    # -- Node port if service type is NodePort
+    nodePort: null
+    # -- Load balancer IPO address if service type is LoadBalancer
+    loadBalancerIP: null
+    # -- Load balancer allow traffic from CIDR list if service type is LoadBalancer
+    loadBalancerSourceRanges: [ ]
+    # -- Set appProtocol for the service
+    appProtocol: null
+    # -- Annotations for the ApiServer service
+    annotations: { }
+    # -- Labels for ApiServer service
+    labels: { }
+  # Configures the readiness probe for the ApiServer
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 15
+    timeoutSeconds: 1
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 30

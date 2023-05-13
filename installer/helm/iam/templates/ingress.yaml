@@ -1,0 +1,60 @@
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+{{- if .Values.ingress.enabled }}
+{{- $ingressApiIsStable := eq (include "iam.ingress.isStable" .) "true" -}}
+{{- $ingressSupportsIngressClassName := eq (include "iam.ingress.supportsIngressClassName" .) "true" -}}
+{{- $ingressSupportsPathType := eq (include "iam.ingress.supportsPathType" .) "true" -}}
+apiVersion: {{ include "iam.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ include "iam.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "iam.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and $ingressSupportsIngressClassName .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  {{- end -}}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- with .secretName }}
+      secretName: {{ . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range $.Values.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          {{- range $svcName, $paths := $.Values.ingress.paths }}
+            {{- range $paths }}
+          - path: {{ . }}
+            {{- if $ingressSupportsPathType }}
+            pathType: Prefix
+            {{- end }}
+            backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ include "iam.fullname" $ }}-{{ $svcName }}
+                port:
+                  number: 3100
+              {{- else }}
+              serviceName: {{ include "iam.fullname" $ }}-{{ $svcName }}
+              servicePort: 3100
+              {{- end }}
+              {{- end }}
+           {{- end }}
+    {{- end }}
+{{- end }}

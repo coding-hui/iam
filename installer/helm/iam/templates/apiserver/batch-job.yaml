@@ -1,0 +1,27 @@
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "iam.apiServerFullname" . }}-init
+  labels:
+    {{- include "iam.apiServerLabels" . | nindent 4 }}
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: {{ include "iam.serviceAccountName" . }}
+      priorityClassName: system-cluster-critical
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+        - name: main
+          image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
+          command: [ "./gen-admission-secret.sh", "--service", "{{ .Release.Name }}-admission-service", "--namespace",
+                     "{{ .Release.Namespace }}", "--secret", "" ]
