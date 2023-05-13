@@ -66,12 +66,12 @@ image.build.%: go.build.%
 	@cp -rf $(OUTPUT_DIR)/platforms/$(IMAGE_PLAT)/$(IMAGE) $(TMP_DIR)/$(IMAGE)/
 	@cp -rf $(ROOT_DIR)/configs/$(IMAGE).yaml $(TMP_DIR)/$(IMAGE)/config.yaml
 	@DST_DIR=$(TMP_DIR)/$(IMAGE) $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/build.sh 2>/dev/null || true
-	$(eval BUILD_SUFFIX := $(_DOCKER_BUILD_EXTRA_ARGS) --pull -t $(REGISTRY_PREFIX)/$(IMAGE)-$(ARCH):$(VERSION) $(TMP_DIR)/$(IMAGE))
+	$(eval BUILD_SUFFIX := $(_DOCKER_BUILD_EXTRA_ARGS) --pull $(TMP_DIR)/$(IMAGE))
 	@if [ $(shell $(GO) env GOARCH) != $(ARCH) ] ; then \
 		$(MAKE) image.daemon.verify ;\
-		$(DOCKER) build --platform $(IMAGE_PLAT) $(BUILD_SUFFIX) ; \
+		$(DOCKER) build --platform $(IMAGE_PLAT) -t $(REGISTRY_PREFIX)/$(IMAGE)-$(ARCH):$(VERSION) $(BUILD_SUFFIX) ; \
 	else \
-		$(DOCKER) build $(BUILD_SUFFIX) ; \
+		$(DOCKER) build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) $(BUILD_SUFFIX) ; \
 	fi
 
 .PHONY: image.push
@@ -83,7 +83,7 @@ image.push.multiarch: image.verify go.build.verify $(foreach p,$(PLATFORMS),$(ad
 .PHONY: image.push.%
 image.push.%: image.build.%
 	@echo "===========> Pushing image $(IMAGE) $(VERSION) to $(REGISTRY_PREFIX)"
-	$(DOCKER) push $(REGISTRY_PREFIX)/$(IMAGE)-$(ARCH):$(VERSION)
+	$(DOCKER) push $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION)
 
 .PHONY: image.manifest.push
 image.manifest.push: export DOCKER_CLI_EXPERIMENTAL := enabled
