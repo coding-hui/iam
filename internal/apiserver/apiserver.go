@@ -56,7 +56,7 @@ type APIServer interface {
 type apiServer struct {
 	cfg              config.Config
 	gs               *shutdown.GracefulShutdown
-	wetServer        *genericapiserver.GenericAPIServer
+	webServer        *genericapiserver.GenericAPIServer
 	beanContainer    *container.Container
 	repositoryFactor repository.Factory
 }
@@ -77,7 +77,7 @@ func New(cfg *config.Config) (a APIServer, err error) {
 	}
 
 	server := &apiServer{
-		wetServer:     genericServer,
+		webServer:     genericServer,
 		beanContainer: container.NewContainer(),
 		cfg:           *cfg,
 		gs:            gs,
@@ -88,7 +88,7 @@ func New(cfg *config.Config) (a APIServer, err error) {
 
 func (s *apiServer) Run(ctx context.Context, errChan chan error) error {
 	s.gs.AddShutdownCallback(shutdown.ShutdownFunc(func(string) error {
-		s.wetServer.Close()
+		s.webServer.Close()
 		if s.repositoryFactor != nil {
 			_ = s.repositoryFactor.Close()
 		}
@@ -162,25 +162,25 @@ func (s *apiServer) buildIoCContainer() (err error) {
 // registerAPIRoute register the API route.
 func (s *apiServer) registerAPIRoute() {
 	// Init middleware
-	middleware.InitMiddleware(s.wetServer.Engine)
+	middleware.InitMiddleware(s.webServer.Engine)
 
 	// swagger router
 	s.configSwagger()
 
 	// Register all custom api
 	for _, api := range apisv1.GetRegisteredAPI() {
-		api.RegisterApiGroup(s.wetServer.Engine)
+		api.RegisterApiGroup(s.webServer.Engine)
 	}
 
 	klog.Infof("register API route successful")
 }
 
 func (s *apiServer) configSwagger() {
-	s.wetServer.Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
+	s.webServer.Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
 }
 
 func (s *apiServer) withRoutesContext(ctx context.Context) context.Context {
-	ctx = context.WithValue(ctx, &v1alpha1.CtxKeyRoutes, s.wetServer.Routes())
+	ctx = context.WithValue(ctx, &v1alpha1.CtxKeyRoutes, s.webServer.Routes())
 	ctx = context.WithValue(ctx, &v1alpha1.CtxKeyApiPrefix, apisv1.GetAPIPrefix())
 	return ctx
 }
@@ -193,5 +193,5 @@ func (s *apiServer) startAPIServer() error {
 	}
 
 	// web server
-	return s.wetServer.Run()
+	return s.webServer.Run()
 }
