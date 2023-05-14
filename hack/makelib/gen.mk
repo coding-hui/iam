@@ -6,6 +6,10 @@
 # Makefile helper functions for generate necessary files
 #
 
+PROTOC_INC_PATH=$(dir $(shell which protoc 2>/dev/null))/../include
+API_DEPS=pkg/api/proto/apiserver/v1alpha1/cache.proto
+API_DEPSRCS=$(API_DEPS:.proto=.pb.go)
+
 .PHONY: gen.run
 #gen.run: gen.errcode
 gen.run: gen.clean gen.errcode
@@ -41,3 +45,12 @@ gen.defaultconfigs:
 gen.clean:
 	@rm -rf ./api/client/{clientset,informers,listers}
 	@$(FIND) -type f -name '*_generated.go' -delete
+
+$(API_DEPSRCS): $(API_DEPS)
+	@echo "===========> Generate protobuf files"
+	@protoc --go_out=$(OUTPUT_DIR) --go-grpc_out=$(OUTPUT_DIR) $(@:.pb.go=.proto)
+	@cp $(OUTPUT_DIR)/$(ROOT_PACKAGE)/$(dir $@)/*.go $(dir $@)
+	@rm -rf $(OUTPUT_DIR)/$(ROOT_PACKAGE)
+
+.PHONY: gen.proto
+ gen.proto: $(API_DEPSRCS)

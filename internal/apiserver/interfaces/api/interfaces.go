@@ -50,6 +50,9 @@ func InitAPIBean(c config.Config) []interface{} {
 	// policies
 	RegisterAPI(NewPolicy())
 
+	// grpc cache
+	RegisterAPI(NewCacheServer())
+
 	beans := make([]interface{}, 0, len(registeredAPI))
 	for i := range registeredAPI {
 		beans = append(beans, registeredAPI[i])

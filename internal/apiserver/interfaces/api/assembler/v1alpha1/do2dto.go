@@ -7,6 +7,7 @@ package v1alpha1
 import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
 )
 
 // ConvertUserModelToBase assemble the User model to DTO.
@@ -67,5 +68,21 @@ func ConvertPolicyModelToBase(policy *model.Policy) *v1alpha1.PolicyBase {
 		Owner:       policy.Owner,
 		Description: policy.Description,
 		PolicyRules: policy.GetPolicyRules(),
+	}
+}
+
+// ConvertPolicyModelToProtoInfo assemble the Policy to rpc info.
+func ConvertPolicyModelToProtoInfo(policy *model.Policy) *pb.PolicyInfo {
+	return &pb.PolicyInfo{
+		Name:        policy.Name,
+		Subjects:    policy.Subjects,
+		Resources:   policy.Resources,
+		Actions:     policy.Actions,
+		Effect:      policy.Effect,
+		Type:        policy.Type,
+		Status:      policy.Status,
+		Owner:       policy.Owner,
+		Description: policy.Description,
+		Adapter:     policy.Adapter,
 	}
 }

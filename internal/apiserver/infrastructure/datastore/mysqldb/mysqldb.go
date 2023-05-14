@@ -11,9 +11,9 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
-	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
+	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/pkg/db"
 
 	"github.com/coding-hui/common/errors"
@@ -21,12 +21,10 @@ import (
 
 type mysqldb struct {
 	client *gorm.DB
-	cfg    config.Config
 }
 
 // GetMySQLFactory create mysql factory with the given config.
-func GetMySQLFactory(_ context.Context, c config.Config) (factory repository.Factory, lastErr error) {
-	opts := c.MySQLOptions
+func GetMySQLFactory(_ context.Context, opts *genericoptions.MySQLOptions) (factory repository.Factory, lastErr error) {
 	lastErr = createDatabase(opts)
 	if lastErr != nil {
 		return nil, fmt.Errorf("failed to create database, error: %w", lastErr)
@@ -45,7 +43,7 @@ func GetMySQLFactory(_ context.Context, c config.Config) (factory repository.Fac
 	}
 	dbIns, lastErr = db.New(options)
 
-	m := &mysqldb{client: dbIns, cfg: c}
+	m := &mysqldb{client: dbIns}
 	if m == nil || lastErr != nil {
 		return nil, fmt.Errorf("failed to get mysql store fatory, mysqlFactory: %+v, error: %w", m, lastErr)
 	}
@@ -62,7 +60,7 @@ func (m *mysqldb) UserRepository() repository.UserRepository {
 }
 
 func (m *mysqldb) CasbinRepository() repository.CasbinRepository {
-	return newCasbinRepository(m.client, m.cfg.RedisOptions)
+	return newCasbinRepository(m.client)
 }
 
 func (m *mysqldb) ResourceRepository() repository.ResourceRepository {

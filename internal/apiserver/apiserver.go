@@ -57,6 +57,7 @@ type apiServer struct {
 	cfg              config.Config
 	gs               *shutdown.GracefulShutdown
 	webServer        *genericapiserver.GenericAPIServer
+	gRPCAPIServer    *grpcAPIServer
 	beanContainer    *container.Container
 	repositoryFactor repository.Factory
 }
@@ -71,13 +72,24 @@ func New(cfg *config.Config) (a APIServer, err error) {
 		return nil, err
 	}
 
+	gRPCConfig, err := buildGRPCConfig(cfg)
+	if err != nil {
+		return nil, err
+	}
+
 	genericServer, err := genericConfig.Complete().New()
+	if err != nil {
+		return nil, err
+	}
+
+	gRPCAPIServer, err := gRPCConfig.complete().New()
 	if err != nil {
 		return nil, err
 	}
 
 	server := &apiServer{
 		webServer:     genericServer,
+		gRPCAPIServer: gRPCAPIServer,
 		beanContainer: container.NewContainer(),
 		cfg:           *cfg,
 		gs:            gs,
@@ -89,6 +101,7 @@ func New(cfg *config.Config) (a APIServer, err error) {
 func (s *apiServer) Run(ctx context.Context, errChan chan error) error {
 	s.gs.AddShutdownCallback(shutdown.ShutdownFunc(func(string) error {
 		s.webServer.Close()
+		s.gRPCAPIServer.Close()
 		if s.repositoryFactor != nil {
 			_ = s.repositoryFactor.Close()
 		}
@@ -124,7 +137,7 @@ func (s *apiServer) buildIoCContainer() (err error) {
 	// datastore repository
 	var factory repository.Factory
 	if s.cfg.MySQLOptions != nil {
-		factory, err = mysqldb.GetMySQLFactory(context.Background(), s.cfg)
+		factory, err = mysqldb.GetMySQLFactory(context.Background(), s.cfg.MySQLOptions)
 		if err != nil {
 			return fmt.Errorf("create mysqldb datastore instance failure %w", err)
 		}
@@ -187,6 +200,9 @@ func (s *apiServer) withRoutesContext(ctx context.Context) context.Context {
 
 // startAPIServer start api server.
 func (s *apiServer) startAPIServer() error {
+	// start gRPC server
+	go s.gRPCAPIServer.Run()
+
 	// start shutdown managers
 	if err := s.gs.Start(); err != nil {
 		klog.Fatalf("start shutdown manager failed: %s", err.Error())

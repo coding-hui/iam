@@ -5,17 +5,13 @@
 package mysqldb
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/casbin/casbin/v2"
-	rediswatcher "github.com/casbin/redis-watcher/v2"
-	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	"github.com/coding-hui/iam/internal/pkg/channel"
 	"github.com/coding-hui/iam/internal/pkg/mycasbin"
 	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
 )
@@ -28,27 +24,27 @@ type casbinRepositoryImpl struct {
 }
 
 // newCasbinRepository new SyncedEnforcer Repository.
-func newCasbinRepository(db *gorm.DB, redisOpts *genericoptions.RedisOptions) repository.CasbinRepository {
-	return &casbinRepositoryImpl{db: db, redisOpts: redisOpts}
+func newCasbinRepository(db *gorm.DB) repository.CasbinRepository {
+	return &casbinRepositoryImpl{db: db}
 }
 
 func (c *casbinRepositoryImpl) SyncedEnforcer() *casbin.SyncedEnforcer {
 	c.once.Do(func() {
 		c.enforcer = mycasbin.Setup(c.db, model.TableNamePrefix, "casbin_rules")
 
-		// Initialize the watcher.
-		// Use the Redis host as parameter.
-		w, _ := rediswatcher.NewPublishWatcher(
-			fmt.Sprintf("%s:%d", c.redisOpts.Host, c.redisOpts.Port),
-			rediswatcher.WatcherOptions{
-				Options: redis.Options{
-					Password: c.redisOpts.Password,
-				},
-				Channel: channel.RedisPubSubChannel,
-			})
-
-		// Set the watcher for the enforcer.
-		_ = c.enforcer.SetWatcher(w)
+		//// Initialize the watcher.
+		//// Use the Redis host as parameter.
+		//w, _ := rediswatcher.NewPublishWatcher(
+		//	fmt.Sprintf("%s:%d", c.redisOpts.Host, c.redisOpts.Port),
+		//	rediswatcher.WatcherOptions{
+		//		Options: redis.Options{
+		//			Password: c.redisOpts.Password,
+		//		},
+		//		Channel: channel.RedisPubSubChannel,
+		//	})
+		//
+		//// Set the watcher for the enforcer.
+		//_ = c.enforcer.SetWatcher(w)
 	})
 	return c.enforcer
 }

@@ -1,0 +1,77 @@
+// Copyright (c) 2023 coding-hui. All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file.
+
+syntax = "proto3";
+
+package proto.apiserver.v1alpha1;
+
+option go_package = "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1;v1alpha1";
+
+//go:generate protoc --go_out=. *.proto
+//go:generate protoc --go-grpc_out=. *.proto
+
+// Cache implements a cache rpc service.
+service Cache{
+  rpc DetailPolicy(GetPolicyRequest) returns (PolicyInfo) {}
+  rpc ListPolicies(ListPoliciesRequest) returns (ListPoliciesResponse) {}
+}
+
+// ListSecretsRequest defines ListSecrets request struct.
+message ListSecretsRequest {
+  optional int64 offset = 1;
+  optional int64 limit = 2;
+}
+
+// SecretInfo contains secret details.
+message SecretInfo {
+  string name = 1;
+  string secret_id = 2;
+  string username = 3;
+  string secret_key = 4;
+  int64 expires = 5;
+  string description = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+// ListSecretsResponse defines ListSecrets response struct.
+message ListSecretsResponse {
+  int64 total_count = 1;
+  repeated  SecretInfo items = 2;
+}
+
+// ListPoliciesRequest defines ListPolicies request struct.
+message ListPoliciesRequest {
+  optional int64 offset = 1;
+  optional int64 limit = 2;
+}
+
+// GetPolicyRequest defines GetPolicy request struct.
+message GetPolicyRequest {
+  string name = 1;
+}
+
+// PolicyInfo contains policy details.
+message PolicyInfo {
+  string name = 1;
+  repeated string subjects = 2;
+  repeated string resources = 3;
+  repeated string actions = 4;
+  string effect = 5;
+
+  string   type = 6;
+  string status = 7;
+  string  owner = 8;
+  string description = 9;
+
+  // casbin required
+  string  adapter = 10;
+  string  model = 11;
+}
+
+// ListPoliciesResponse defines ListPolicies response struct.
+message ListPoliciesResponse {
+  int64 total_count = 1;
+  repeated  PolicyInfo items = 2;
+}
