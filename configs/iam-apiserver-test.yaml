@@ -23,7 +23,7 @@ insecure:
 
 # HTTPS 配置
 secure:
-  enabled: true
+  required: false
   bind-address: 0.0.0.0 # HTTPS 安全模式的 IP 地址，默认为 0.0.0.0
   bind-port: 8443 # 使用 HTTPS 安全模式的端口号，设置为 0 表示不启用 HTTPS，默认为 8443
   tls:
@@ -44,11 +44,11 @@ mysql:
   max-connection-life-time: 10s # 空闲连接最大存活时间，默认 10s
   log-level: 4 # GORM log level, 1: silent, 2:error, 3:warn, 4:info
 
-  # Redis 配置
-  #redis:
-  #  host: 127.0.0.1:63 # redis 地址，默认 127.0.0.1:6379
-  #  port: ${REDIS_PORT} # redis 端口，默认 6379
-  #  password: ${REDIS_PASSWORD} # redis 密码
+# Redis 配置
+redis:
+  host: 127.0.0.1 # redis 地址，默认 127.0.0.1:6379
+  port: 6379 # redis 端口，默认 6379
+  password:
   #addrs:
   #master-name: # redis 集群 master 名称
   #username: # redis 登录用户名
