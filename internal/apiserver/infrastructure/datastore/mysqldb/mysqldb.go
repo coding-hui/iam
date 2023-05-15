@@ -11,9 +11,9 @@ import (
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 
+	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/pkg/db"
 
 	"github.com/coding-hui/common/errors"
@@ -21,29 +21,30 @@ import (
 
 type mysqldb struct {
 	client *gorm.DB
+	cfg    config.Config
 }
 
 // GetMySQLFactory create mysql factory with the given config.
-func GetMySQLFactory(_ context.Context, opts *genericoptions.MySQLOptions) (factory repository.Factory, lastErr error) {
-	lastErr = createDatabase(opts)
+func GetMySQLFactory(_ context.Context, c config.Config) (factory repository.Factory, lastErr error) {
+	lastErr = createDatabase(c.MySQLOptions)
 	if lastErr != nil {
 		return nil, fmt.Errorf("failed to create database, error: %w", lastErr)
 	}
 
 	var dbIns *gorm.DB
 	options := &db.Options{
-		Host:                  opts.Host,
-		Username:              opts.Username,
-		Password:              opts.Password,
-		Database:              opts.Database,
-		MaxIdleConnections:    opts.MaxIdleConnections,
-		MaxOpenConnections:    opts.MaxOpenConnections,
-		MaxConnectionLifeTime: opts.MaxConnectionLifeTime,
-		LogLevel:              opts.LogLevel,
+		Host:                  c.MySQLOptions.Host,
+		Username:              c.MySQLOptions.Username,
+		Password:              c.MySQLOptions.Password,
+		Database:              c.MySQLOptions.Database,
+		MaxIdleConnections:    c.MySQLOptions.MaxIdleConnections,
+		MaxOpenConnections:    c.MySQLOptions.MaxOpenConnections,
+		MaxConnectionLifeTime: c.MySQLOptions.MaxConnectionLifeTime,
+		LogLevel:              c.MySQLOptions.LogLevel,
 	}
 	dbIns, lastErr = db.New(options)
 
-	m := &mysqldb{client: dbIns}
+	m := &mysqldb{client: dbIns, cfg: c}
 	if m == nil || lastErr != nil {
 		return nil, fmt.Errorf("failed to get mysql store fatory, mysqlFactory: %+v, error: %w", m, lastErr)
 	}
@@ -60,7 +61,7 @@ func (m *mysqldb) UserRepository() repository.UserRepository {
 }
 
 func (m *mysqldb) CasbinRepository() repository.CasbinRepository {
-	return newCasbinRepository(m.client)
+	return newCasbinRepository(m.client, m.cfg.RedisOptions)
 }
 
 func (m *mysqldb) ResourceRepository() repository.ResourceRepository {
