@@ -15,6 +15,7 @@ option go_package = "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1;
 service Cache{
   rpc DetailPolicy(GetPolicyRequest) returns (PolicyInfo) {}
   rpc ListPolicies(ListPoliciesRequest) returns (ListPoliciesResponse) {}
+  rpc ListPolicyRules(ListPolicyRulesRequest) returns (ListPolicyRulesResponse) {}
 }
 
 // ListSecretsRequest defines ListSecrets request struct.
@@ -47,6 +48,12 @@ message ListPoliciesRequest {
   optional int64 limit = 2;
 }
 
+// ListPolicyRulesRequest defines ListPolicyRules request struct.
+message ListPolicyRulesRequest {
+  optional int64 offset = 1;
+  optional int64 limit = 2;
+}
+
 // GetPolicyRequest defines GetPolicy request struct.
 message GetPolicyRequest {
   string name = 1;
@@ -74,4 +81,21 @@ message PolicyInfo {
 message ListPoliciesResponse {
   int64 total_count = 1;
   repeated  PolicyInfo items = 2;
+}
+
+// PolicyRuleInfo contains PolicyRule details.
+message PolicyRuleInfo {
+  string pType = 1;
+  string v0 = 2;
+  string v1 = 3;
+  string v2 = 4;
+  string v3 = 5;
+  string v4 = 6;
+  string v5 = 7;
+}
+
+// ListPolicyRulesResponse defines ListPolicyRules response struct.
+message ListPolicyRulesResponse {
+  int64 total_count = 1;
+  repeated  PolicyRuleInfo items = 2;
 }

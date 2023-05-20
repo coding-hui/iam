@@ -6,22 +6,25 @@ require (
 	github.com/AlekSi/pointer v1.2.0
 	github.com/appleboy/gin-jwt/v2 v2.9.1
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
+	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/barnettZQG/inject v0.0.1
 	github.com/casbin/casbin/v2 v2.68.0
 	github.com/casbin/gorm-adapter/v3 v3.16.1
+	github.com/casbin/redis-watcher/v2 v2.5.0
 	github.com/coding-hui/common v0.0.0-20230503101027-9c7e02e5b410
 	github.com/fatih/color v1.15.0
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-playground/validator/v10 v10.12.0
 	github.com/golang-jwt/jwt/v4 v4.4.3
-	github.com/gomodule/redigo v1.8.2
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-cmp v0.5.9
 	github.com/lib/pq v1.10.7
 	github.com/novalagung/gubrak v1.0.0
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.23.0
 	github.com/pkg/errors v0.9.1
+	github.com/redis/go-redis/v9 v9.0.4
 	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
@@ -50,6 +53,7 @@ require (
 	github.com/bytedance/sonic v1.8.6 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/facebookgo/structtag v0.0.0-20150214074306-217e25fb9691 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect

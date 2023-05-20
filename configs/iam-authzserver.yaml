@@ -4,8 +4,11 @@
 
 # iam-authzserver 全配置
 
+# IAM rpc 服务地址
+rpcserver: localhost:8081 # iam-apiserver grpc 服务器地址和端口
+
 # TLS客户端证书文件
-client-ca-file: /var/run/iam
+client-ca-file: _output/cert/ca.pem
 
 # RESTful 服务配置
 server:
@@ -20,15 +23,15 @@ insecure:
 
 # HTTPS 配置
 secure:
-  required: false
+  required: true
   bind-address: 0.0.0.0
-  bind-port: 0
+  bind-port: 9443
   tls:
     #cert-dir: .iam/cert # TLS 证书所在的目录，默认值为 /var/run/iam
     #pair-name: iam # TLS 私钥对名称，默认 iam
     cert-key:
-      cert-file: /var/run/iam
-      private-key-file: /var/run/iam
+      cert-file: _output/cert/iam-authz-server.pem
+      private-key-file: _output/cert/iam-authz-server-key.pem
 
 # Redis 配置
 redis:

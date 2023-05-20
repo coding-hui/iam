@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// Initialize the model from a string.
-var Text = `
+// ModelText Initialize the model from a string.
+var ModelText = `
 [request_definition]
 r = sub, obj, act
 
@@ -35,7 +35,7 @@ func Setup(db *gorm.DB, prefix, tableName string) *casbin.SyncedEnforcer {
 	if err != nil && err.Error() != "invalid DDL" {
 		panic(err)
 	}
-	m, err := model.NewModelFromString(Text)
+	m, err := model.NewModelFromString(ModelText)
 	if err != nil {
 		panic(err)
 	}

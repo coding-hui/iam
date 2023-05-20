@@ -25,6 +25,7 @@ type PolicyService interface {
 	GetPolicy(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Policy, error)
 	DetailPolicy(ctx context.Context, policy *model.Policy, opts metav1alpha1.GetOptions) (*v1alpha1.DetailPolicyResponse, error)
 	ListPolicies(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.PolicyList, error)
+	ListPolicyRules(ctx context.Context, opts metav1alpha1.ListOptions) ([]model.PolicyRule, error)
 }
 
 type policyServiceImpl struct {
@@ -157,4 +158,51 @@ func (p *policyServiceImpl) ListPolicies(ctx context.Context, opts metav1alpha1.
 	}
 
 	return policies, nil
+}
+
+// ListPolicyRules list policy rules.
+func (p *policyServiceImpl) ListPolicyRules(ctx context.Context, opts metav1alpha1.ListOptions) ([]model.PolicyRule, error) {
+	e := p.Store.CasbinRepository().SyncedEnforcer()
+
+	var rules []model.PolicyRule
+
+	pRules := e.GetPolicy()
+	for _, v := range pRules {
+		line := savePolicyLine("p", v)
+		rules = append(rules, line)
+	}
+
+	gRules := e.GetGroupingPolicy()
+	for _, v := range gRules {
+		line := savePolicyLine("g", v)
+		rules = append(rules, line)
+	}
+
+	return rules, nil
+}
+
+func savePolicyLine(ptype string, rule []string) model.PolicyRule {
+	line := model.PolicyRule{}
+
+	line.PType = ptype
+	if len(rule) > 0 {
+		line.V0 = rule[0]
+	}
+	if len(rule) > 1 {
+		line.V1 = rule[1]
+	}
+	if len(rule) > 2 {
+		line.V2 = rule[2]
+	}
+	if len(rule) > 3 {
+		line.V3 = rule[3]
+	}
+	if len(rule) > 4 {
+		line.V4 = rule[4]
+	}
+	if len(rule) > 5 {
+		line.V5 = rule[5]
+	}
+
+	return line
 }

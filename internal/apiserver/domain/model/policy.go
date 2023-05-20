@@ -20,6 +20,17 @@ func init() {
 	RegisterModel(&Policy{})
 }
 
+// PolicyRule is used to determine which policy line to load.
+type PolicyRule struct {
+	PType string
+	V0    string
+	V1    string
+	V2    string
+	V3    string
+	V4    string
+	V5    string
+}
+
 // Policy represent a policy model.
 type Policy struct {
 	// May add TypeMeta in the future.

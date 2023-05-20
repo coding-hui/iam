@@ -12,6 +12,7 @@ package v1alpha1
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,8 +24,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Cache_DetailPolicy_FullMethodName = "/proto.apiserver.v1alpha1.Cache/DetailPolicy"
-	Cache_ListPolicies_FullMethodName = "/proto.apiserver.v1alpha1.Cache/ListPolicies"
+	Cache_DetailPolicy_FullMethodName    = "/proto.apiserver.v1alpha1.Cache/DetailPolicy"
+	Cache_ListPolicies_FullMethodName    = "/proto.apiserver.v1alpha1.Cache/ListPolicies"
+	Cache_ListPolicyRules_FullMethodName = "/proto.apiserver.v1alpha1.Cache/ListPolicyRules"
 )
 
 // CacheClient is the client API for Cache service.
@@ -33,6 +35,7 @@ const (
 type CacheClient interface {
 	DetailPolicy(ctx context.Context, in *GetPolicyRequest, opts ...grpc.CallOption) (*PolicyInfo, error)
 	ListPolicies(ctx context.Context, in *ListPoliciesRequest, opts ...grpc.CallOption) (*ListPoliciesResponse, error)
+	ListPolicyRules(ctx context.Context, in *ListPolicyRulesRequest, opts ...grpc.CallOption) (*ListPolicyRulesResponse, error)
 }
 
 type cacheClient struct {
@@ -61,12 +64,22 @@ func (c *cacheClient) ListPolicies(ctx context.Context, in *ListPoliciesRequest,
 	return out, nil
 }
 
+func (c *cacheClient) ListPolicyRules(ctx context.Context, in *ListPolicyRulesRequest, opts ...grpc.CallOption) (*ListPolicyRulesResponse, error) {
+	out := new(ListPolicyRulesResponse)
+	err := c.cc.Invoke(ctx, Cache_ListPolicyRules_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CacheServer is the server API for Cache service.
 // All implementations must embed UnimplementedCacheServer
 // for forward compatibility
 type CacheServer interface {
 	DetailPolicy(context.Context, *GetPolicyRequest) (*PolicyInfo, error)
 	ListPolicies(context.Context, *ListPoliciesRequest) (*ListPoliciesResponse, error)
+	ListPolicyRules(context.Context, *ListPolicyRulesRequest) (*ListPolicyRulesResponse, error)
 	mustEmbedUnimplementedCacheServer()
 }
 
@@ -79,6 +92,9 @@ func (UnimplementedCacheServer) DetailPolicy(context.Context, *GetPolicyRequest)
 }
 func (UnimplementedCacheServer) ListPolicies(context.Context, *ListPoliciesRequest) (*ListPoliciesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPolicies not implemented")
+}
+func (UnimplementedCacheServer) ListPolicyRules(context.Context, *ListPolicyRulesRequest) (*ListPolicyRulesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPolicyRules not implemented")
 }
 func (UnimplementedCacheServer) mustEmbedUnimplementedCacheServer() {}
 
@@ -129,6 +145,24 @@ func _Cache_ListPolicies_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Cache_ListPolicyRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPolicyRulesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CacheServer).ListPolicyRules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Cache_ListPolicyRules_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CacheServer).ListPolicyRules(ctx, req.(*ListPolicyRulesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Cache_ServiceDesc is the grpc.ServiceDesc for Cache service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -143,6 +177,10 @@ var Cache_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListPolicies",
 			Handler:    _Cache_ListPolicies_Handler,
+		},
+		{
+			MethodName: "ListPolicyRules",
+			Handler:    _Cache_ListPolicyRules_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

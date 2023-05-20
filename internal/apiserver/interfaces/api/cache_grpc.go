@@ -85,3 +85,35 @@ func (c *Cache) ListPolicies(ctx context.Context, r *pb.ListPoliciesRequest) (*p
 		Items:      items,
 	}, nil
 }
+
+// ListPolicyRules returns all policy rules.
+func (c *Cache) ListPolicyRules(ctx context.Context, r *pb.ListPolicyRulesRequest) (*pb.ListPolicyRulesResponse, error) {
+	klog.Info("list policy rules function called.")
+	opts := metav1alpha1.ListOptions{
+		Offset: r.Offset,
+		Limit:  r.Limit,
+	}
+
+	rules, err := c.PolicyService.ListPolicyRules(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	items := make([]*pb.PolicyRuleInfo, 0)
+	for _, r := range rules {
+		items = append(items, &pb.PolicyRuleInfo{
+			PType: r.PType,
+			V0:    r.V0,
+			V1:    r.V1,
+			V2:    r.V2,
+			V3:    r.V3,
+			V4:    r.V4,
+			V5:    r.V5,
+		})
+	}
+
+	return &pb.ListPolicyRulesResponse{
+		TotalCount: int64(len(rules)),
+		Items:      items,
+	}, nil
+}
