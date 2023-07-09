@@ -34,6 +34,7 @@ IAM 系统支持的错误码列表如下：
 | ErrResourceAlreadyExist | 110302 | 400 | Resource already exist |
 | ErrResourceNameIsEmpty | 110303 | 400 | Resource name is empty |
 | ErrResourceInstanceIdIsEmpty | 110304 | 400 | Resource instanceId is empty |
+| ErrResourceHasAssignedPolicy | 110305 | 400 | The resource has been assigned permission policies |
 | ErrRoleNotFound | 110401 | 404 | Role not found |
 | ErrRoleAlreadyExist | 110402 | 400 | Role already exist |
 | ErrRoleNameIsEmpty | 110403 | 400 | Role name is empty |

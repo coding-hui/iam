@@ -96,7 +96,7 @@ func (p *policy) updatePolicy(c *gin.Context) {
 
 //	@Tags			Policies
 //	@Summary		DeletePolicy
-//	@Description	Delete policy by instanceId
+//	@Description	DeleteByInstanceId policy by instanceId
 //	@Param			name	path		string			true	"name of a policy"
 //	@Success		200		{object}	api.Response	"Policy successfully deleted"
 //	@Router			/api/v1/policies/{instanceId} [DELETE]

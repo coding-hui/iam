@@ -160,3 +160,17 @@ func (p *policyRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListO
 		Items:    items,
 	}, db.Error
 }
+
+// CountStatementByResource get statement count by resource.
+func (p *policyRepositoryImpl) CountStatementByResource(ctx context.Context, resource ...string) (int64, error) {
+	var count int64
+	db := p.db.WithContext(ctx).Model(&model.Statement{})
+	db.Where("resource in ?", resource)
+	db.Where("policy_id is not null")
+	err := db.Count(&count).Error
+	if err != nil {
+		return -1, err
+	}
+
+	return count, nil
+}

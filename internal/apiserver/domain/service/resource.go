@@ -129,8 +129,12 @@ func (r *resourceServiceImpl) UpdateResource(ctx context.Context, instanceId str
 }
 
 // DeleteResource delete resources.
-func (r *resourceServiceImpl) DeleteResource(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error {
-	if err := r.Store.ResourceRepository().Delete(ctx, name, opts); err != nil {
+func (r *resourceServiceImpl) DeleteResource(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
+	count, _ := r.Store.PolicyRepository().CountStatementByResource(ctx, instanceId)
+	if count > 0 {
+		return errors.WithCode(code.ErrResourceHasAssignedPolicy, "Resource [%s] has been assigned permission policies", instanceId)
+	}
+	if err := r.Store.ResourceRepository().DeleteByInstanceId(ctx, instanceId, opts); err != nil {
 		return err
 	}
 

@@ -96,7 +96,7 @@ func (r *resource) updateResource(c *gin.Context) {
 
 //	@Tags			Resource
 //	@Summary		DeleteResource
-//	@Description	Delete resource
+//	@Description	DeleteByInstanceId resource
 //	@Param			name	path		string			true	"name of a resource"
 //	@Success		200		{object}	api.Response	"delete resource"
 //	@Router			/api/v1/resources/{instanceId} [delete]

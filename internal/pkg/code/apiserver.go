@@ -55,6 +55,9 @@ const (
 
 	// ErrResourceInstanceIdIsEmpty - 400: Resource instanceId is empty.
 	ErrResourceInstanceIdIsEmpty
+
+	// ErrResourceHasAssignedPolicy - 400: The resource has been assigned permission policies.
+	ErrResourceHasAssignedPolicy
 )
 
 // iam-apiserver: role errors.

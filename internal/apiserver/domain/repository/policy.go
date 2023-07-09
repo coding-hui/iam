@@ -23,4 +23,5 @@ type PolicyRepository interface {
 	GetByName(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Policy, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Policy, error)
 	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.PolicyList, error)
+	CountStatementByResource(ctx context.Context, resource ...string) (int64, error)
 }

@@ -98,7 +98,7 @@ func (r *role) updateRole(c *gin.Context) {
 
 //	@Tags			Roles
 //	@Summary		DeleteRole
-//	@Description	Delete role
+//	@Description	DeleteByInstanceId role
 //	@Param			name	path		string			true	"identifier of a role"
 //	@Success		200		{object}	api.Response	"delete role"
 //	@Router			/api/v1/roles/{instanceId} [delete]

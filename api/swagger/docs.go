@@ -279,7 +279,7 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "Delete policy by instanceId",
+                "description": "DeleteByInstanceId policy by instanceId",
                 "tags": [
                     "Policies"
                 ],
@@ -476,7 +476,7 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "Delete resource",
+                "description": "DeleteByInstanceId resource",
                 "tags": [
                     "Resource"
                 ],
@@ -673,7 +673,7 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "Delete role",
+                "description": "DeleteByInstanceId role",
                 "tags": [
                     "Roles"
                 ],
@@ -955,7 +955,7 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "Delete user",
+                "description": "DeleteByInstanceId user",
                 "tags": [
                     "Users"
                 ],

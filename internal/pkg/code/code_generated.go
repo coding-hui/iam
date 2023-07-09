@@ -21,6 +21,7 @@ func init() {
 	register(ErrResourceAlreadyExist, 400, "Resource already exist")
 	register(ErrResourceNameIsEmpty, 400, "Resource name is empty")
 	register(ErrResourceInstanceIdIsEmpty, 400, "Resource instanceId is empty")
+	register(ErrResourceHasAssignedPolicy, 400, "The resource has been assigned permission policies")
 	register(ErrRoleNotFound, 404, "Role not found")
 	register(ErrRoleAlreadyExist, 400, "Role already exist")
 	register(ErrRoleNameIsEmpty, 400, "Role name is empty")

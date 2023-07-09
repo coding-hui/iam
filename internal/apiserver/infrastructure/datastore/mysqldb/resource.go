@@ -69,8 +69,8 @@ func (r *resourceRepositoryImpl) Update(ctx context.Context, resource *model.Res
 	return nil
 }
 
-// Delete deletes the resource by the resource identifier.
-func (r *resourceRepositoryImpl) Delete(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
+// DeleteByInstanceId deletes the resource by the resource identifier.
+func (r *resourceRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
 	if opts.Unscoped {
 		r.db = r.db.Unscoped()
 	}

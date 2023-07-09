@@ -102,7 +102,7 @@ func (u *user) updateUser(c *gin.Context) {
 
 //	@Tags			Users
 //	@Summary		DeleteUser
-//	@Description	Delete user
+//	@Description	DeleteByInstanceId user
 //	@Param			name	path		string			true	"identifier of a user"
 //	@Success		200		{object}	api.Response	"delete user"
 //	@Router			/api/v1/users/{instanceId} [delete]
