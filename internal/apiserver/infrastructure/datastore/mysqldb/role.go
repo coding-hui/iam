@@ -57,12 +57,12 @@ func (u *roleRepositoryImpl) Update(ctx context.Context, role *model.Role, _ met
 	return nil
 }
 
-// Delete deletes the role by the role identifier.
-func (u *roleRepositoryImpl) Delete(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error {
+// DeleteByInstanceId deletes the role by the role identifier.
+func (u *roleRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
 	if opts.Unscoped {
 		u.db = u.db.Unscoped()
 	}
-	err := u.db.WithContext(ctx).Where("name = ?", name).Delete(&model.Role{}).Error
+	err := u.db.WithContext(ctx).Where("instance_id = ?", instanceId).Delete(&model.Role{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrRoleNotFound, err.Error())

@@ -68,9 +68,6 @@ func (c *Cache) ListPolicies(ctx context.Context, r *pb.ListPoliciesRequest) (*p
 		items = append(items, &pb.PolicyInfo{
 			Name:        pol.Name,
 			Subjects:    pol.Subjects,
-			Resources:   pol.Resources,
-			Actions:     pol.Actions,
-			Effect:      pol.Effect,
 			Type:        pol.Type,
 			Status:      pol.Status,
 			Owner:       pol.Owner,

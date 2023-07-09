@@ -32,7 +32,7 @@ func newPolicyRepository(db *gorm.DB) repository.PolicyRepository {
 
 // Create creates a new policy.
 func (p *policyRepositoryImpl) Create(ctx context.Context, policy *model.Policy, _ metav1alpha1.CreateOptions) error {
-	if oldPolicy, _ := p.Get(ctx, policy.Name, metav1alpha1.GetOptions{}); oldPolicy != nil {
+	if oldPolicy, _ := p.GetByName(ctx, policy.Name, metav1alpha1.GetOptions{}); oldPolicy != nil {
 		return errors.WithCode(code.ErrPolicyAlreadyExist, "Policy %s already exist", policy.Name)
 	}
 	if err := p.db.WithContext(ctx).Create(&policy).Error; err != nil {
@@ -45,9 +45,23 @@ func (p *policyRepositoryImpl) Create(ctx context.Context, policy *model.Policy,
 	return nil
 }
 
+// CreateBatch creates a new policy.
+func (p *policyRepositoryImpl) CreateBatch(ctx context.Context, policy []*model.Policy, _ metav1alpha1.CreateOptions) error {
+	if err := p.db.WithContext(ctx).CreateInBatches(&policy, 500).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Update updates an policy information.
 func (p *policyRepositoryImpl) Update(ctx context.Context, policy *model.Policy, _ metav1alpha1.UpdateOptions) error {
-	if err := p.db.WithContext(ctx).Save(policy).Error; err != nil {
+	err := p.db.WithContext(ctx).Model(policy).Association("Statements").Replace(policy.Statements)
+	if err != nil {
+		return err
+	}
+	err = p.db.WithContext(ctx).Model(policy).Save(policy).Error
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrPolicyNotFound, err.Error())
 		}
@@ -84,9 +98,27 @@ func (p *policyRepositoryImpl) DeleteCollection(ctx context.Context, names []str
 	return p.db.WithContext(ctx).Where("name in (?)", names).Delete(&model.User{}).Error
 }
 
-// Get get policy.
-func (p *policyRepositoryImpl) Get(ctx context.Context, name string, _ metav1alpha1.GetOptions) (policy *model.Policy, err error) {
-	err = p.db.WithContext(ctx).Where("name = ?", name).First(&policy).Error
+// GetByName get policy.
+func (p *policyRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1alpha1.GetOptions) (policy *model.Policy, err error) {
+	err = p.db.WithContext(ctx).Preload("Statements").Where("name = ?", name).First(&policy).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code.ErrPolicyNotFound, err.Error())
+		}
+
+		return nil, err
+	}
+
+	return policy, err
+}
+
+// GetByInstanceId get policy.
+func (p *policyRepositoryImpl) GetByInstanceId(
+	ctx context.Context,
+	instanceId string,
+	_ metav1alpha1.GetOptions,
+) (policy *model.Policy, err error) {
+	err = p.db.WithContext(ctx).Debug().Preload("Statements").Where("instance_id = ?", instanceId).First(&policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrPolicyNotFound, err.Error())

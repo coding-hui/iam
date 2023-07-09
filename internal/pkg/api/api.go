@@ -30,11 +30,16 @@ type Response struct {
 	// Data return data object
 	Data interface{} `json:"data,omitempty"`
 
-	// Total total of page
-	Total int64 `json:"total,omitempty"`
-
 	// Reference returns the reference document which maybe useful to solve this error.
 	Reference string `json:"reference,omitempty"`
+}
+
+// PageInfo Http API common page info.
+type PageInfo struct {
+	// List all records
+	List interface{} `json:"list"`
+	// Total all count
+	Total int64 `json:"total"`
 }
 
 // Result build result info.
@@ -45,6 +50,14 @@ func Result(code int, data interface{}, msg string, c *gin.Context) {
 		Msg:     msg,
 		Data:    data,
 	})
+}
+
+// PageResult build page result info.
+func PageResult(code int, result interface{}, total int64, msg string, c *gin.Context) {
+	Result(code, PageInfo{
+		List:  result,
+		Total: total,
+	}, msg, c)
 }
 
 // Ok return success.
@@ -69,24 +82,12 @@ func OkWithDetailed(data interface{}, message string, c *gin.Context) {
 
 // OkWithPage return success with page.
 func OkWithPage(result interface{}, total int64, c *gin.Context) {
-	c.JSON(http.StatusOK, Response{
-		Success: true,
-		Code:    code.ErrSuccess,
-		Msg:     "success",
-		Data:    result,
-		Total:   total,
-	})
+	PageResult(code.ErrSuccess, result, total, "success", c)
 }
 
 // OkWithPageDetailed return success with page.
 func OkWithPageDetailed(result interface{}, total int64, message string, c *gin.Context) {
-	c.JSON(http.StatusOK, Response{
-		Success: true,
-		Code:    code.ErrSuccess,
-		Msg:     message,
-		Data:    result,
-		Total:   total,
-	})
+	PageResult(code.ErrSuccess, result, total, message, c)
 }
 
 // Fail return fail.

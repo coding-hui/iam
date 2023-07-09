@@ -1,7 +1,3 @@
-# Copyright (c) 2023 coding-hui. All rights reserved.
-# Use of this source code is governed by a MIT style
-# license that can be found in the LICENSE file.
-
 definitions:
   api.Response:
     properties:
@@ -22,9 +18,6 @@ definitions:
       success:
         description: Success request is successful
         type: boolean
-      total:
-        description: Total total of page
-        type: integer
     type: object
   model.Action:
     properties:
@@ -62,23 +55,15 @@ definitions:
       type:
         description: Type resource type.
         type: string
-    required:
-    - api
-    - method
-    - type
     type: object
   model.User:
     properties:
       alias:
-        maxLength: 30
-        minLength: 1
         type: string
       disabled:
         type: boolean
       email:
         description: 'Required: true'
-        maxLength: 100
-        minLength: 1
         type: string
       lastLoginTime:
         type: string
@@ -95,9 +80,8 @@ definitions:
         type: integer
       tenantId:
         type: integer
-    required:
-    - email
-    - password
+      userType:
+        type: string
     type: object
   v1.Extend:
     additionalProperties: true
@@ -228,6 +212,10 @@ definitions:
         items:
           type: string
         type: array
+      statements:
+        items:
+          $ref: '#/definitions/v1alpha1.Statement'
+        type: array
       status:
         type: string
       subjects:
@@ -240,6 +228,7 @@ definitions:
     - actions
     - name
     - resources
+    - statements
     - subjects
     - type
     type: object
@@ -286,19 +275,18 @@ definitions:
   v1alpha1.CreateUserRequest:
     properties:
       alias:
-        maxLength: 30
-        minLength: 1
         type: string
       email:
-        maxLength: 100
-        minLength: 1
         type: string
       name:
         type: string
       password:
         type: string
+      phone:
+        type: string
+      userType:
+        type: string
     required:
-    - email
     - name
     - password
     type: object
@@ -429,6 +417,21 @@ definitions:
     required:
     - owner
     type: object
+  v1alpha1.Statement:
+    properties:
+      actions:
+        items:
+          type: string
+        type: array
+      effect:
+        type: string
+      resources:
+        type: string
+    required:
+    - actions
+    - effect
+    - resources
+    type: object
   v1alpha1.UpdatePolicyRequest:
     properties:
       actions:
@@ -490,6 +493,8 @@ definitions:
         type: string
       displayName:
         type: string
+      owner:
+        type: string
     type: object
   v1alpha1.UpdateUserRequest:
     properties:
@@ -500,6 +505,8 @@ definitions:
       email:
         maxLength: 100
         minLength: 1
+        type: string
+      phone:
         type: string
     required:
     - email
@@ -526,6 +533,8 @@ definitions:
         type: integer
       tenantId:
         type: integer
+      userType:
+        type: string
     type: object
 host: localhost:8000
 info:
@@ -545,7 +554,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: refresh token
+      description: RefreshToken
       parameters:
       - description: refresh token
         in: header
@@ -562,14 +571,14 @@ paths:
                 data:
                   $ref: '#/definitions/v1alpha1.RefreshTokenResponse'
               type: object
-      summary: refresh token
+      summary: RefreshToken
       tags:
       - Authentication
   /api/v1/login:
     post:
       consumes:
       - application/json
-      description: login by user account and password
+      description: Login by user account and password
       parameters:
       - description: login request
         in: body
@@ -587,7 +596,7 @@ paths:
                 data:
                   $ref: '#/definitions/v1alpha1.AuthenticateResponse'
               type: object
-      summary: login system
+      summary: LoginSystem
       tags:
       - Authentication
   /api/v1/policies:
@@ -618,7 +627,7 @@ paths:
               type: object
       security:
       - BearerTokenAuth: []
-      summary: List policies
+      summary: ListPolicies
       tags:
       - Policies
     post:
@@ -639,12 +648,12 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: Create a policy
+      summary: CreatePolicy
       tags:
       - Policies
   /api/v1/policies/{name}:
     delete:
-      description: Delete Policy
+      description: Delete policy by instanceId
       parameters:
       - description: name of a policy
         in: path
@@ -658,11 +667,11 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: Delete Policy
+      summary: DeletePolicy
       tags:
       - Policies
     get:
-      description: Get a Policy
+      description: Get a policy by name
       parameters:
       - description: name of a policy
         in: path
@@ -681,7 +690,7 @@ paths:
               type: object
       security:
       - BearerTokenAuth: []
-      summary: Get a Policy
+      summary: GetPolicyInfo
       tags:
       - Policies
     put:
@@ -702,12 +711,12 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: Update a Policy
+      summary: UpdatePolicy
       tags:
       - Policies
   /api/v1/resources:
     get:
-      description: list resource
+      description: List resources
       parameters:
       - description: fuzzy search based on name
         in: query
@@ -735,13 +744,13 @@ paths:
               type: object
       security:
       - BearerTokenAuth: []
-      summary: list resource
+      summary: ListResources
       tags:
       - Resources
     post:
       consumes:
       - application/json
-      description: create resource
+      description: Create resource
       parameters:
       - description: resource info
         in: body
@@ -756,12 +765,12 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: create resource
+      summary: CreateResource
       tags:
       - Resources
-  /api/v1/resources/{name}:
+  /api/v1/resources/{instanceId}:
     delete:
-      description: delete resource
+      description: Delete resource
       parameters:
       - description: name of a resource
         in: path
@@ -775,11 +784,11 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: delete resource
+      summary: DeleteResource
       tags:
       - Resources
     get:
-      description: get resource detail
+      description: Get resource info
       parameters:
       - description: name of a resource
         in: path
@@ -798,13 +807,13 @@ paths:
               type: object
       security:
       - BearerTokenAuth: []
-      summary: get resource detail
+      summary: GetResourceInfo
       tags:
       - Resources
     put:
       consumes:
       - application/json
-      description: update resource
+      description: Update resource
       parameters:
       - description: resource info
         in: body
@@ -819,12 +828,12 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: update resource
+      summary: UpdateResource
       tags:
       - Resources
   /api/v1/roles:
     get:
-      description: list role
+      description: List role
       parameters:
       - description: fuzzy search based on name
         in: query
@@ -852,13 +861,13 @@ paths:
               type: object
       security:
       - BearerTokenAuth: []
-      summary: list role
+      summary: ListRoles
       tags:
       - Roles
     post:
       consumes:
       - application/json
-      description: create role
+      description: Create role
       parameters:
       - description: role info
         in: body
@@ -873,54 +882,14 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: create role
+      summary: CreateRole
       tags:
       - Roles
-  /api/v1/roles/{instanceId}/assign:
-    post:
-      description: assign role
-      parameters:
-      - description: assign role request
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/v1alpha1.AssignRoleRequest'
-      responses:
-        "200":
-          description: assign role
-          schema:
-            $ref: '#/definitions/api.Response'
-      security:
-      - BearerTokenAuth: []
-      summary: assign role
-      tags:
-      - Roles
-  /api/v1/roles/{instanceId}/revoke:
-    post:
-      description: revoke role
-      parameters:
-      - description: revoke role request
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/v1alpha1.RevokeRoleRequest'
-      responses:
-        "200":
-          description: revoke role
-          schema:
-            $ref: '#/definitions/api.Response'
-      security:
-      - BearerTokenAuth: []
-      summary: revoke role
-      tags:
-      - Roles
-  /api/v1/roles/{name}:
+  /api/v1/roles/{instanceId}:
     delete:
-      description: delete role
+      description: Delete role
       parameters:
-      - description: name of a role
+      - description: identifier of a role
         in: path
         name: name
         required: true
@@ -932,13 +901,13 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: delete role
+      summary: DeleteRole
       tags:
       - Roles
     get:
-      description: get role detail
+      description: Get role info
       parameters:
-      - description: name of a role
+      - description: identifier of a role
         in: path
         name: name
         required: true
@@ -955,13 +924,13 @@ paths:
               type: object
       security:
       - BearerTokenAuth: []
-      summary: get role detail
+      summary: GetRoleInfo
       tags:
       - Roles
     put:
       consumes:
       - application/json
-      description: update role
+      description: Update role
       parameters:
       - description: role info
         in: body
@@ -976,12 +945,52 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: update role
+      summary: UpdateRole
+      tags:
+      - Roles
+  /api/v1/roles/{instanceId}/assign:
+    post:
+      description: Assign role
+      parameters:
+      - description: assign role request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1alpha1.AssignRoleRequest'
+      responses:
+        "200":
+          description: assign role
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: AssignRole
+      tags:
+      - Roles
+  /api/v1/roles/{instanceId}/revoke:
+    post:
+      description: Revoke role
+      parameters:
+      - description: revoke role request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1alpha1.RevokeRoleRequest'
+      responses:
+        "200":
+          description: revoke role
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: RevokeRole
       tags:
       - Roles
   /api/v1/users:
     get:
-      description: list users
+      description: List users
       parameters:
       - description: fuzzy search based on name
         in: query
@@ -1017,13 +1026,13 @@ paths:
               type: object
       security:
       - BearerTokenAuth: []
-      summary: list users
+      summary: ListUsers
       tags:
       - Users
     post:
       consumes:
       - application/json
-      description: create user
+      description: Create user
       parameters:
       - description: user info
         in: body
@@ -1038,12 +1047,12 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: create user
+      summary: CreateUser
       tags:
       - Users
-  /api/v1/users/{name}:
+  /api/v1/users/{instanceId}:
     delete:
-      description: delete user
+      description: Delete user
       parameters:
       - description: identifier of a user
         in: path
@@ -1057,11 +1066,11 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: delete user
+      summary: DeleteUser
       tags:
       - Users
     get:
-      description: get user detail
+      description: Get user info
       parameters:
       - description: identifier of a user
         in: path
@@ -1080,13 +1089,13 @@ paths:
               type: object
       security:
       - BearerTokenAuth: []
-      summary: get user detail
+      summary: GetUserInfo
       tags:
       - Users
     put:
       consumes:
       - application/json
-      description: update user info
+      description: Update user info
       parameters:
       - description: identifier of a user
         in: path
@@ -1106,18 +1115,18 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: update user info
+      summary: UpdateUser
       tags:
       - Users
   /ping:
     get:
-      description: check service is running
+      description: Check service is running
       responses:
         "200":
           description: pong
           schema:
             $ref: '#/definitions/api.Response'
-      summary: check service is running
+      summary: Ping
       tags:
       - System
 securityDefinitions:

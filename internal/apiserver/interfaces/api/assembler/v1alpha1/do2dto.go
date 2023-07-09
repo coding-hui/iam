@@ -18,6 +18,8 @@ func ConvertUserModelToBase(user *model.User) *v1alpha1.UserBase {
 		Status:        user.Status,
 		Alias:         user.Alias,
 		Email:         user.Email,
+		Phone:         user.Phone,
+		UserType:      user.UserType,
 		LastLoginTime: user.LastLoginTime,
 		Disabled:      user.Disabled,
 	}
@@ -57,12 +59,19 @@ func ConvertRoleModelToBase(role *model.Role) *v1alpha1.RoleBase {
 
 // ConvertPolicyModelToBase assemble the Policy model to DTO.
 func ConvertPolicyModelToBase(policy *model.Policy) *v1alpha1.PolicyBase {
+	statements := make([]v1alpha1.Statement, 0, len(policy.Statements))
+	for _, statement := range policy.Statements {
+		statements = append(statements, v1alpha1.Statement{
+			Effect:             statement.Effect,
+			Resource:           statement.Resource,
+			ResourceIdentifier: statement.ResourceIdentifier,
+			Actions:            statement.Actions,
+		})
+	}
 	return &v1alpha1.PolicyBase{
 		ObjectMeta:  policy.ObjectMeta,
 		Subjects:    policy.Subjects,
-		Resources:   policy.Resources,
-		Actions:     policy.Actions,
-		Effect:      policy.Effect,
+		Statements:  statements,
 		Type:        policy.Type,
 		Status:      policy.Status,
 		Owner:       policy.Owner,
@@ -76,9 +85,6 @@ func ConvertPolicyModelToProtoInfo(policy *model.Policy) *pb.PolicyInfo {
 	return &pb.PolicyInfo{
 		Name:        policy.Name,
 		Subjects:    policy.Subjects,
-		Resources:   policy.Resources,
-		Actions:     policy.Actions,
-		Effect:      policy.Effect,
 		Type:        policy.Type,
 		Status:      policy.Status,
 		Owner:       policy.Owner,

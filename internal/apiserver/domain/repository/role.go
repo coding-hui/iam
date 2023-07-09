@@ -17,7 +17,7 @@ import (
 type RoleRepository interface {
 	Create(ctx context.Context, role *model.Role, opts metav1alpha1.CreateOptions) error
 	Update(ctx context.Context, role *model.Role, opts metav1alpha1.UpdateOptions) error
-	Delete(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error
+	DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error
 	GetByName(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Role, error)
 	GetByInstanceID(ctx context.Context, instanceID string, opts metav1alpha1.GetOptions) (*model.Role, error)

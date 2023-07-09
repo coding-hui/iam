@@ -33,15 +33,15 @@ func (p *policy) RegisterApiGroup(g *gin.Engine) {
 	v1 := g.Group(versionPrefix + "/policies")
 	{
 		v1.POST("", p.createPolicy)
-		v1.PUT("/:name", p.updatePolicy)
-		v1.DELETE("/:name", p.deletePolicy)
-		v1.GET("/:name", p.policyCheckFilter, p.detailPolicy)
+		v1.PUT("/:instanceId", p.updatePolicy)
+		v1.DELETE("/:instanceId", p.deletePolicy)
+		v1.GET("/:instanceId", p.policyCheckFilter, p.detailPolicy)
 		v1.GET("", p.listPolicies)
 	}
 }
 
 //	@Tags			Policies
-//	@Summary		Create a policy
+//	@Summary		CreatePolicy
 //	@Description	Create a policy
 //	@Accept			application/json
 //	@Product		application/json
@@ -68,13 +68,13 @@ func (p *policy) createPolicy(c *gin.Context) {
 }
 
 //	@Tags			Policies
-//	@Summary		Update a Policy
+//	@Summary		UpdatePolicy
 //	@Description	Update a Policy
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1alpha1.UpdatePolicyRequest	true	"Policy rule"
 //	@Success		200		{object}	api.Response					"Update policy info"
-//	@Router			/api/v1/policies/{name} [put]
+//	@Router			/api/v1/policies/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
 // updatePolicy update policy info.
@@ -85,7 +85,7 @@ func (p *policy) updatePolicy(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	err = p.PolicyService.UpdatePolicy(c.Request.Context(), c.Param("name"), updateReq)
+	err = p.PolicyService.UpdatePolicy(c.Request.Context(), c.Param("instanceId"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -95,18 +95,18 @@ func (p *policy) updatePolicy(c *gin.Context) {
 }
 
 //	@Tags			Policies
-//	@Summary		Delete Policy
-//	@Description	Delete Policy
+//	@Summary		DeletePolicy
+//	@Description	Delete policy by instanceId
 //	@Param			name	path		string			true	"name of a policy"
 //	@Success		200		{object}	api.Response	"Policy successfully deleted"
-//	@Router			/api/v1/policies/{name} [DELETE]
+//	@Router			/api/v1/policies/{instanceId} [DELETE]
 //	@Security		BearerTokenAuth
 //
 // deletePolicy delete policy by identifier.
 func (p *policy) deletePolicy(c *gin.Context) {
 	err := p.PolicyService.DeletePolicy(
 		c.Request.Context(),
-		c.Param("name"),
+		c.Param("instanceId"),
 		metav1alpha1.DeleteOptions{},
 	)
 	if err != nil {
@@ -118,11 +118,11 @@ func (p *policy) deletePolicy(c *gin.Context) {
 }
 
 //	@Tags			Policies
-//	@Summary		Get a Policy
-//	@Description	Get a Policy
+//	@Summary		GetPolicyInfo
+//	@Description	GetByName a policy by name
 //	@Param			name	path		string												true	"name of a policy"
 //	@Success		200		{object}	api.Response{data=v1alpha1.DetailPolicyResponse}	"Policy detail"
-//	@Router			/api/v1/policies/{name} [get]
+//	@Router			/api/v1/policies/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
 // detailPolicy get policy detail info.
@@ -138,7 +138,7 @@ func (p *policy) detailPolicy(c *gin.Context) {
 }
 
 //	@Tags			Policies
-//	@Summary		List policies
+//	@Summary		ListPolicies
 //	@Description	List policies
 //	@Param			name	query		string									false	"fuzzy search based on name"
 //	@Param			offset	query		int										false	"query the page number"
@@ -167,7 +167,7 @@ func (p *policy) listPolicies(c *gin.Context) {
 }
 
 func (p *policy) policyCheckFilter(c *gin.Context) {
-	policy, err := p.PolicyService.GetPolicy(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
+	policy, err := p.PolicyService.GetPolicy(c.Request.Context(), c.Param("instanceId"), metav1alpha1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		c.Abort()

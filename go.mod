@@ -8,6 +8,7 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/barnettZQG/inject v0.0.1
+	github.com/bitly/go-simplejson v0.5.1
 	github.com/casbin/casbin/v2 v2.68.0
 	github.com/casbin/gorm-adapter/v3 v3.16.1
 	github.com/casbin/redis-watcher/v2 v2.5.0
@@ -17,7 +18,6 @@ require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-playground/validator/v10 v10.12.0
 	github.com/golang-jwt/jwt/v4 v4.4.3
-	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-cmp v0.5.9
 	github.com/lib/pq v1.10.7
 	github.com/novalagung/gubrak v1.0.0

@@ -74,11 +74,18 @@ func authCheckFilter(c *gin.Context) {
 	}
 
 	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserInstanceId, token.UserInstanceId))
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserType, token.UserType))
 
 	c.Next()
 }
 
 func permissionCheckFilter(c *gin.Context) {
+	userType, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserType).(string)
+	if ok && userType == v1alpha1.PlatformAdmin.String() {
+		c.Next()
+		return
+	}
+
 	sub, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserInstanceId).(string)
 	if !ok {
 		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user role"), c)
@@ -106,8 +113,8 @@ func permissionCheckFilter(c *gin.Context) {
 }
 
 //	@Tags			Authentication
-//	@Summary		login system
-//	@Description	login by user account and password
+//	@Summary		LoginSystem
+//	@Description	Login by user account and password
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1alpha1.AuthenticateRequest						true	"login request"
@@ -163,8 +170,8 @@ func parseWithBody(c *gin.Context) (v1alpha1.AuthenticateRequest, error) {
 }
 
 //	@Tags			Authentication
-//	@Summary		refresh token
-//	@Description	refresh token
+//	@Summary		RefreshToken
+//	@Description	RefreshToken
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			RefreshToken	header		string												true	"refresh token"
@@ -186,7 +193,7 @@ func (a *authentication) refreshToken(c *gin.Context) {
 }
 
 func (a *authentication) userInfo(c *gin.Context) {
-	userName, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserInstanceId).(string)
+	instanceId, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserInstanceId).(string)
 	if !ok {
 		api.FailWithErrCode(
 			errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
@@ -194,7 +201,7 @@ func (a *authentication) userInfo(c *gin.Context) {
 		)
 		return
 	}
-	user, err := a.UserService.GetUser(c.Request.Context(), userName, metav1alpha1.GetOptions{})
+	user, err := a.UserService.GetUserByInstanceId(c.Request.Context(), instanceId, metav1alpha1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

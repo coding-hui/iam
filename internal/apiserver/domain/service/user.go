@@ -32,10 +32,11 @@ const (
 // UserService User manage api.
 type UserService interface {
 	CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) error
-	UpdateUser(ctx context.Context, username string, req v1alpha1.UpdateUserRequest) error
+	UpdateUser(ctx context.Context, instanceId string, req v1alpha1.UpdateUserRequest) error
 	DeleteUser(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error
 	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
 	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
+	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
 	ListUsers(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	Init(ctx context.Context) error
@@ -58,6 +59,7 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 			Name:     DefaultAdmin,
 			Password: DefaultAdminPwd,
 			Alias:    DefaultAdminUserAlias,
+			UserType: v1alpha1.PlatformAdmin.String(),
 		}
 		err = u.CreateUser(ctx, user)
 		if err != nil {
@@ -79,6 +81,7 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1alpha1.CreateUse
 		Password: encryptPassword,
 		Alias:    req.Alias,
 		Email:    req.Email,
+		UserType: req.UserType,
 		Disabled: false,
 	}
 	if err := u.Store.UserRepository().Create(ctx, user, metav1alpha1.CreateOptions{}); err != nil {
@@ -89,8 +92,8 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1alpha1.CreateUse
 }
 
 // UpdateUser update user.
-func (u *userServiceImpl) UpdateUser(ctx context.Context, username string, req v1alpha1.UpdateUserRequest) error {
-	user, err := u.GetUser(ctx, username, metav1alpha1.GetOptions{})
+func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req v1alpha1.UpdateUserRequest) error {
+	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -99,6 +102,9 @@ func (u *userServiceImpl) UpdateUser(ctx context.Context, username string, req v
 	}
 	if req.Email != "" {
 		user.Email = req.Email
+	}
+	if req.Email != "" {
+		user.Phone = req.Phone
 	}
 	if err := u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{}); err != nil {
 		return err
@@ -109,7 +115,7 @@ func (u *userServiceImpl) UpdateUser(ctx context.Context, username string, req v
 
 // DeleteUser delete user.
 func (u *userServiceImpl) DeleteUser(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error {
-	if err := u.Store.UserRepository().Delete(ctx, username, opts); err != nil {
+	if err := u.Store.UserRepository().DeleteByInstanceId(ctx, username, opts); err != nil {
 		return err
 	}
 
@@ -127,7 +133,17 @@ func (u *userServiceImpl) BatchDeleteUsers(ctx context.Context, usernames []stri
 
 // GetUser get user.
 func (u *userServiceImpl) GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error) {
-	user, err := u.Store.UserRepository().Get(ctx, username, opts)
+	user, err := u.Store.UserRepository().GetByName(ctx, username, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// GetUserByInstanceId get user by instanceId.
+func (u *userServiceImpl) GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error) {
+	user, err := u.Store.UserRepository().GetByInstanceId(ctx, instanceId, opts)
 	if err != nil {
 		return nil, err
 	}

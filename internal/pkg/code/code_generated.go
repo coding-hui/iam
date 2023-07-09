@@ -20,6 +20,7 @@ func init() {
 	register(ErrResourceNotFound, 404, "Resource not found")
 	register(ErrResourceAlreadyExist, 400, "Resource already exist")
 	register(ErrResourceNameIsEmpty, 400, "Resource name is empty")
+	register(ErrResourceInstanceIdIsEmpty, 400, "Resource instanceId is empty")
 	register(ErrRoleNotFound, 404, "Role not found")
 	register(ErrRoleAlreadyExist, 400, "Role already exist")
 	register(ErrRoleNameIsEmpty, 400, "Role name is empty")

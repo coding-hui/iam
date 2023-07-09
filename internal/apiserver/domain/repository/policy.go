@@ -16,9 +16,11 @@ import (
 // PolicyRepository defines the policy repository interface.
 type PolicyRepository interface {
 	Create(ctx context.Context, p *model.Policy, opts metav1alpha1.CreateOptions) error
+	CreateBatch(ctx context.Context, p []*model.Policy, opts metav1alpha1.CreateOptions) error
 	Update(ctx context.Context, p *model.Policy, opts metav1alpha1.UpdateOptions) error
 	Delete(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error
-	Get(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Policy, error)
+	GetByName(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Policy, error)
+	GetByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Policy, error)
 	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.PolicyList, error)
 }

@@ -21,18 +21,18 @@ type Resource struct {
 	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Type resource type.
-	Type string `json:"type" gorm:"column:type" validate:"required"`
+	Type string `json:"type" gorm:"column:type;type:varchar(20)"`
 
 	// Type unique identification of resource API.
-	Api string `json:"api" gorm:"column:api" validate:"required"`
+	Api string `json:"api" gorm:"column:api;type:varchar(512)"`
 
 	// Method resource method.
-	Method string `json:"method" gorm:"column:method" validate:"required"`
+	Method string `json:"method" gorm:"column:method;type:varchar(10)"`
 
-	IsDefault bool `json:"isDefault" gorm:"column:is_default"`
+	IsDefault bool `json:"isDefault" gorm:"column:is_default;type:bool"`
 
 	// Description resource description.
-	Description string `json:"description" gorm:"column:description"`
+	Description string `json:"description" gorm:"column:description;type:varchar(512)"`
 
 	// Actions resource access mode.
 	Actions []Action `json:"actions" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
@@ -52,10 +52,10 @@ func (r *Resource) AfterCreate(tx *gorm.DB) error {
 
 // Action resource all operator actions.
 type Action struct {
-	ID          uint64 `json:"id,omitempty"         gorm:"primary_key;AUTO_INCREMENT;column:id"`
-	ResourceId  uint64 `json:"resourceId,omitempty" gorm:"column:resource_id"`
-	Name        string `json:"name"                 gorm:"column:name"`
-	Description string `json:"description"          gorm:"column:description"`
+	ID          uint64 `json:"id"          gorm:"primary_key;AUTO_INCREMENT;column:id"`
+	ResourceId  uint64 `json:"resourceId"  gorm:"column:resource_id;type:varchar(64)"`
+	Name        string `json:"name"        gorm:"column:name;type:varchar(64)"`
+	Description string `json:"description" gorm:"column:description;type:varchar(512)"`
 }
 
 // TableName maps to mysql table name.

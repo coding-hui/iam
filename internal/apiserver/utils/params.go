@@ -13,8 +13,8 @@ import (
 
 const (
 	defaultPageSize = "10"
-	pageParam       = "offset"
-	pageSizeParam   = "limit"
+	pageParam       = "current"
+	pageSizeParam   = "pageSize"
 )
 
 // ExtractPagingParams extract `page` and `pageSize` params from request
@@ -46,5 +46,5 @@ func ExtractPagingParams(c *gin.Context, minPageSize, maxPageSize int64) (int64,
 	if pageSize > maxPageSize {
 		pageSize = maxPageSize
 	}
-	return page, pageSize, nil
+	return (page - 1) * pageSize64, pageSize, nil
 }

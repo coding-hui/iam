@@ -70,11 +70,11 @@ func (r *resourceRepositoryImpl) Update(ctx context.Context, resource *model.Res
 }
 
 // Delete deletes the resource by the resource identifier.
-func (r *resourceRepositoryImpl) Delete(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error {
+func (r *resourceRepositoryImpl) Delete(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
 	if opts.Unscoped {
 		r.db = r.db.Unscoped()
 	}
-	resource, err := r.Get(ctx, name, metav1alpha1.GetOptions{})
+	resource, err := r.GetByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return errors.WithCode(code.ErrResourceNotFound, err.Error())
 	}
@@ -106,13 +106,35 @@ func (r *resourceRepositoryImpl) DeleteCollection(ctx context.Context, names []s
 		Error
 }
 
-// Get get resource.
-func (r *resourceRepositoryImpl) Get(ctx context.Context, name string, _ metav1alpha1.GetOptions) (*model.Resource, error) {
+// GetByName get resource.
+func (r *resourceRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1alpha1.GetOptions) (*model.Resource, error) {
 	resource := &model.Resource{}
 	if name == "" {
 		return nil, errors.WithCode(code.ErrResourceNameIsEmpty, "Resource name is empty")
 	}
 	err := r.db.WithContext(ctx).Preload("Actions").Where("name = ?", name).First(&resource).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code.ErrResourceNotFound, err.Error())
+		}
+
+		return nil, err
+	}
+
+	return resource, nil
+}
+
+// GetByInstanceId get resource.
+func (r *resourceRepositoryImpl) GetByInstanceId(
+	ctx context.Context,
+	instanceId string,
+	_ metav1alpha1.GetOptions,
+) (*model.Resource, error) {
+	resource := &model.Resource{}
+	if instanceId == "" {
+		return nil, errors.WithCode(code.ErrResourceNameIsEmpty, "Resource instanceId is empty")
+	}
+	err := r.db.WithContext(ctx).Preload("Actions").Where("instance_id = ?", instanceId).First(&resource).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrResourceNotFound, err.Error())

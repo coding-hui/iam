@@ -5,11 +5,14 @@
 package api
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 
+	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
@@ -30,16 +33,16 @@ func (r *resource) RegisterApiGroup(g *gin.Engine) {
 	v1 := g.Group(versionPrefix+"/resources").Use(authCheckFilter, permissionCheckFilter)
 	{
 		v1.POST("", r.createResource)
-		v1.PUT("/:name", r.updateResource)
-		v1.DELETE("/:name", r.deleteResource)
-		v1.GET("/:name", r.getResource)
+		v1.PUT("/:instanceId", r.updateResource)
+		v1.DELETE("/:instanceId", r.deleteResource)
+		v1.GET("/:instanceId", r.resourceCheckFilter, r.detailResource)
 		v1.GET("", r.listResource)
 	}
 }
 
-//	@Tags			Resources
-//	@Summary		create resource
-//	@Description	create resource
+//	@Tags			Resource
+//	@Summary		CreateResource
+//	@Description	Create resource
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1alpha1.CreateResourceRequest	true	"resource info"
@@ -64,14 +67,14 @@ func (r *resource) createResource(c *gin.Context) {
 	api.Ok(c)
 }
 
-//	@Tags			Resources
-//	@Summary		update resource
-//	@Description	update resource
+//	@Tags			Resource
+//	@Summary		UpdateResource
+//	@Description	Update resource
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1alpha1.UpdateResourceRequest	true	"resource info"
 //	@Success		200		{object}	api.Response					"update resource info"
-//	@Router			/api/v1/resources/{name}  [put]
+//	@Router			/api/v1/resources/{instanceId}  [put]
 //	@Security		BearerTokenAuth
 //
 // updateResource update resource info.
@@ -82,7 +85,7 @@ func (r *resource) updateResource(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	err = r.ResourceService.UpdateResource(c.Request.Context(), c.Param("name"), updateReq)
+	err = r.ResourceService.UpdateResource(c.Request.Context(), c.Param("instanceId"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -91,19 +94,19 @@ func (r *resource) updateResource(c *gin.Context) {
 	api.Ok(c)
 }
 
-//	@Tags			Resources
-//	@Summary		delete resource
-//	@Description	delete resource
+//	@Tags			Resource
+//	@Summary		DeleteResource
+//	@Description	Delete resource
 //	@Param			name	path		string			true	"name of a resource"
 //	@Success		200		{object}	api.Response	"delete resource"
-//	@Router			/api/v1/resources/{name} [delete]
+//	@Router			/api/v1/resources/{instanceId} [delete]
 //	@Security		BearerTokenAuth
 //
 // deleteResource delete resource by name.
 func (r *resource) deleteResource(c *gin.Context) {
 	err := r.ResourceService.DeleteResource(
 		c.Request.Context(),
-		c.Param("name"),
+		c.Param("instanceId"),
 		metav1alpha1.DeleteOptions{},
 	)
 	if err != nil {
@@ -114,32 +117,29 @@ func (r *resource) deleteResource(c *gin.Context) {
 	api.Ok(c)
 }
 
-//	@Tags			Resources
-//	@Summary		get resource detail
-//	@Description	get resource detail
+//	@Tags			Resource
+//	@Summary		GetResourceInfo
+//	@Description	GetByName resource info
 //	@Param			name	path		string								true	"name of a resource"
 //	@Success		200		{object}	api.Response{data=model.Resource}	"resource detail"
-//	@Router			/api/v1/resources/{name} [get]
+//	@Router			/api/v1/resources/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
-// getResource get resource info.
-func (r *resource) getResource(c *gin.Context) {
-	resource, err := r.ResourceService.GetResource(
-		c.Request.Context(),
-		c.Param("name"),
-		metav1alpha1.GetOptions{},
-	)
+// detailResource get resource info.
+func (r *resource) detailResource(c *gin.Context) {
+	resource := c.Request.Context().Value(&v1alpha1.CtxKeyResource).(*model.Resource)
+	detail, err := r.ResourceService.DetailResource(c.Request.Context(), resource, metav1alpha1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
 
-	api.OkWithData(resource, c)
+	api.OkWithData(detail, c)
 }
 
-//	@Tags			Resources
-//	@Summary		list resource
-//	@Description	list resource
+//	@Tags			Resource
+//	@Summary		ListResources
+//	@Description	List resources
 //	@Param			name	query		string								false	"fuzzy search based on name"
 //	@Param			offset	query		int									false	"query the page number"
 //	@Param			limit	query		int									false	"query the page size number"
@@ -164,4 +164,19 @@ func (r *resource) listResource(c *gin.Context) {
 	}
 
 	api.OkWithPage(resp.Items, resp.TotalCount, c)
+}
+
+func (r *resource) resourceCheckFilter(c *gin.Context) {
+	resource, err := r.ResourceService.GetResource(
+		c.Request.Context(),
+		c.Param("instanceId"),
+		metav1alpha1.GetOptions{},
+	)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		c.Abort()
+		return
+	}
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyResource, resource))
+	c.Next()
 }

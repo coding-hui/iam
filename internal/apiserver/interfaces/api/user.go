@@ -30,16 +30,16 @@ func (u *user) RegisterApiGroup(g *gin.Engine) {
 	v1 := g.Group(versionPrefix+"/users").Use(authCheckFilter, permissionCheckFilter)
 	{
 		v1.POST("", u.createUser)
-		v1.PUT("/:name", u.updateUser)
-		v1.DELETE("/:name", u.deleteUser)
-		v1.GET("/:name", u.getUser)
+		v1.PUT("/:instanceId", u.updateUser)
+		v1.DELETE("/:instanceId", u.deleteUser)
+		v1.GET("/:instanceId", u.getUser)
 		v1.GET("", u.listUser)
 	}
 }
 
 //	@Tags			Users
-//	@Summary		create user
-//	@Description	create user
+//	@Summary		CreateUser
+//	@Description	Create user
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1alpha1.CreateUserRequest	true	"user info"
@@ -69,14 +69,14 @@ func (u *user) createUser(c *gin.Context) {
 }
 
 //	@Tags			Users
-//	@Summary		update user info
-//	@Description	update user info
+//	@Summary		UpdateUser
+//	@Description	Update user info
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			name	path		string						true	"identifier of a user"
 //	@Param			data	body		v1alpha1.UpdateUserRequest	true	"user info"
 //	@Success		200		{object}	api.Response				"update user info"
-//	@Router			/api/v1/users/{name} [put]
+//	@Router			/api/v1/users/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
 // updateUser update user info.
@@ -91,7 +91,7 @@ func (u *user) updateUser(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = u.UserService.UpdateUser(c.Request.Context(), c.Param("name"), updateReq)
+	err = u.UserService.UpdateUser(c.Request.Context(), c.Param("instanceId"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -101,16 +101,16 @@ func (u *user) updateUser(c *gin.Context) {
 }
 
 //	@Tags			Users
-//	@Summary		delete user
-//	@Description	delete user
+//	@Summary		DeleteUser
+//	@Description	Delete user
 //	@Param			name	path		string			true	"identifier of a user"
 //	@Success		200		{object}	api.Response	"delete user"
-//	@Router			/api/v1/users/{name} [delete]
+//	@Router			/api/v1/users/{instanceId} [delete]
 //	@Security		BearerTokenAuth
 //
 // deleteUser delete user by identifier.
 func (u *user) deleteUser(c *gin.Context) {
-	err := u.UserService.DeleteUser(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
+	err := u.UserService.DeleteUser(c.Request.Context(), c.Param("instanceId"), metav1alpha1.DeleteOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -120,16 +120,16 @@ func (u *user) deleteUser(c *gin.Context) {
 }
 
 //	@Tags			Users
-//	@Summary		get user detail
-//	@Description	get user detail
+//	@Summary		GetUserInfo
+//	@Description	GetByName user info
 //	@Param			name	path		string							true	"identifier of a user"
 //	@Success		200		{object}	api.Response{data=model.User}	"user detail"
-//	@Router			/api/v1/users/{name} [get]
+//	@Router			/api/v1/users/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
 // getUser get user detail.
 func (u *user) getUser(c *gin.Context) {
-	user, err := u.UserService.GetUser(c.Request.Context(), c.Param("name"), metav1alpha1.GetOptions{})
+	user, err := u.UserService.GetUserByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1alpha1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -139,8 +139,8 @@ func (u *user) getUser(c *gin.Context) {
 }
 
 //	@Tags			Users
-//	@Summary		list users
-//	@Description	list users
+//	@Summary		ListUsers
+//	@Description	List users
 //	@Param			name	query		string							false	"fuzzy search based on name"
 //	@Param			alias	query		string							false	"fuzzy search based on alias"
 //	@Param			email	query		string							false	"fuzzy search based on email"

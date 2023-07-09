@@ -90,11 +90,11 @@ func (a *authenticationServiceImpl) Authenticate(
 	if err != nil {
 		return nil, err
 	}
-	accessToken, err := a.generateJWTToken(userBase.InstanceID, GrantTypeAccess, a.cfg.JwtOptions.Timeout)
+	accessToken, err := a.generateJWTToken(userBase.InstanceID, userBase.UserType, GrantTypeAccess, a.cfg.JwtOptions.Timeout)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := a.generateJWTToken(userBase.InstanceID, GrantTypeRefresh, a.cfg.JwtOptions.MaxRefresh)
+	refreshToken, err := a.generateJWTToken(userBase.InstanceID, userBase.UserType, GrantTypeRefresh, a.cfg.JwtOptions.MaxRefresh)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken
 		return nil, err
 	}
 	if claim.GrantType == GrantTypeRefresh {
-		accessToken, err := a.generateJWTToken(claim.UserInstanceId, GrantTypeAccess, time.Hour)
+		accessToken, err := a.generateJWTToken(claim.UserInstanceId, claim.UserType, GrantTypeAccess, time.Hour)
 		if err != nil {
 			return nil, err
 		}
@@ -165,7 +165,7 @@ func ParseToken(tokenString string) (*model.CustomClaims, error) {
 	return nil, errors.WithCode(code.ErrTokenInvalid, err.Error())
 }
 
-func (a *authenticationServiceImpl) generateJWTToken(userInstanceId, grantType string, expiresIn time.Duration) (string, error) {
+func (a *authenticationServiceImpl) generateJWTToken(userInstanceId, userType, grantType string, expiresIn time.Duration) (string, error) {
 	issueAt := time.Now()
 	claims := model.CustomClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -178,6 +178,7 @@ func (a *authenticationServiceImpl) generateJWTToken(userInstanceId, grantType s
 		},
 		UserInstanceId: userInstanceId,
 		GrantType:      grantType,
+		UserType:       userType,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

@@ -26,22 +26,14 @@ type User struct {
 	// Standard object's metadata.
 	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
 
-	TenantId uint64 `json:"tenantId,omitempty" gorm:"column:tenant_id"`
-
-	Status int `json:"status" gorm:"column:status" validate:"omitempty"`
-
-	Alias string `json:"alias" gorm:"column:alias" validate:"min=1,max=30"`
-
-	// Required: true
-	Password string `json:"password,omitempty" gorm:"column:password" validate:"required"`
-
-	// Required: true
-	Email string `json:"email" gorm:"column:email" validate:"required,email,min=1,max=100"`
-
-	Phone string `json:"phone" gorm:"column:phone" validate:"omitempty"`
-
-	Disabled bool `json:"disabled" gorm:"column:disabled"`
-
+	TenantId      uint64     `json:"tenantId,omitempty"      gorm:"column:tenant_id;type:varchar(64)"`
+	Status        int        `json:"status"                  gorm:"column:status;"`
+	Alias         string     `json:"alias"                   gorm:"column:alias;type:varchar(64)"`
+	Password      string     `json:"password,omitempty"      gorm:"column:password;type:varchar(256)"`
+	Email         string     `json:"email"                   gorm:"column:email;type:varchar(64)"`
+	Phone         string     `json:"phone"                   gorm:"column:phone;type:varchar(20)"`
+	UserType      string     `json:"userType"                gorm:"column:user_type;type:varchar(20)"`
+	Disabled      bool       `json:"disabled"                gorm:"column:disabled;type:bool"`
 	LastLoginTime *time.Time `json:"lastLoginTime,omitempty" gorm:"column:last_login_time"`
 }
 
@@ -64,5 +56,6 @@ type CustomClaims struct {
 	// TokenType defined the type of the token
 	TokenType      string `json:"token_type,omitempty"`
 	UserInstanceId string `json:"user_instance_id"`
+	UserType       string `json:"user_type"`
 	GrantType      string `json:"grant_type"`
 }

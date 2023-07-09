@@ -23,29 +23,34 @@ const (
 	SystemBuildIn PolicyType = "SYSTEM"
 )
 
+type Statement struct {
+	Effect             string   `json:"effect"             validate:"required"`
+	Resource           string   `json:"resource"           validate:"required"`
+	ResourceIdentifier string   `json:"resourceIdentifier" validate:"required"`
+	Actions            []string `json:"actions"            validate:"required"`
+}
+
 // CreatePolicyRequest create policy request.
 type CreatePolicyRequest struct {
-	Name        string   `json:"name"        validate:"required,name"`
-	Description string   `json:"description" validate:"min=1,max=30"  optional:"true"`
-	Type        string   `json:"type"        validate:"required"`
-	Subjects    []string `json:"subjects"    validate:"required"`
-	Effect      string   `json:"effect"                               optional:"true"`
-	Resources   []string `json:"resources"   validate:"required"`
-	Actions     []string `json:"actions"     validate:"required"`
-	Status      string   `json:"status"                               optional:"true"`
-	Owner       string   `json:"owner"                                optional:"true"`
-	Meta        string   `json:"meta"                                 optional:"true"`
+	Name        string      `json:"name"        validate:"required,name"`
+	Description string      `json:"description" validate:"min=1,max=30"  optional:"true"`
+	Type        string      `json:"type"        validate:"required"`
+	Statements  []Statement `json:"statements"  validate:"required"`
+	Subjects    []string    `json:"subjects"    validate:"required"`
+	Status      string      `json:"status"                               optional:"true"`
+	Owner       string      `json:"owner"                                optional:"true"`
+	Meta        string      `json:"meta"                                 optional:"true"`
 }
 
 // UpdatePolicyRequest update policy request.
 type UpdatePolicyRequest struct {
-	Description string   `json:"description" validate:"min=1,max=30" optional:"true"`
-	Type        string   `json:"type"        validate:"required"`
-	Subjects    []string `json:"subjects"    validate:"required"`
-	Effect      string   `json:"effect"                              optional:"true"`
-	Resources   []string `json:"resources"   validate:"required"`
-	Actions     []string `json:"actions"     validate:"required"`
-	Meta        string   `json:"meta"                                optional:"true"`
+	Description string      `json:"description" validate:"min=1,max=30" optional:"true"`
+	Type        string      `json:"type"        validate:"required"`
+	Subjects    []string    `json:"subjects"    validate:"required"`
+	Statements  []Statement `json:"statements"  validate:"required"`
+	Status      string      `json:"status"                              optional:"true"`
+	Owner       string      `json:"owner"                               optional:"true"`
+	Meta        string      `json:"meta"                                optional:"true"`
 }
 
 // PolicyBase represents a policy restful resource.
@@ -56,10 +61,8 @@ type PolicyBase struct {
 	// Standard object's metadata.
 	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
 
-	Subjects  []string `json:"subjects"`
-	Resources []string `json:"resources"`
-	Actions   []string `json:"actions"`
-	Effect    string   `json:"effect"`
+	Subjects   []string    `json:"subjects"`
+	Statements []Statement `json:"statements"`
 
 	Type        string `json:"type"`
 	Status      string `json:"status"`
@@ -75,6 +78,7 @@ type PolicyBase struct {
 // DetailPolicyResponse policy detail.
 type DetailPolicyResponse struct {
 	PolicyBase
+	Resources []ResourceBase `json:"resources,omitempty"`
 }
 
 // PolicyList is the whole list of all policies which have been stored in stroage.

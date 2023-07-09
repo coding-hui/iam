@@ -23,14 +23,10 @@ type Role struct {
 	// Standard object's metadata.
 	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
 
-	DisplayName string `json:"displayName" gorm:"column:display_name;varchar(100)"`
-
-	// Required: true
-	Owner string `json:"owner,omitempty" gorm:"column:owner;varchar(64)" validate:"required"`
-
-	Disabled bool `json:"disabled" gorm:"column:disabled"`
-
-	Description string `json:"description" gorm:"column:description;varchar(255)"`
+	DisplayName string `json:"displayName"     gorm:"column:display_name;type:varchar(100)"`
+	Owner       string `json:"owner,omitempty" gorm:"column:owner;type:varchar(64)"`
+	Disabled    bool   `json:"disabled"        gorm:"column:disabled;type:bool"`
+	Description string `json:"description"     gorm:"column:description;type:varchar(512)"`
 
 	Users []User `json:"-" gorm:"many2many:sys_user_role;references:instance_id"`
 }

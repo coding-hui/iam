@@ -23,12 +23,9 @@ type Tenant struct {
 	// Standard object's metadata.
 	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
 
-	// Required: true
-	Owner string `json:"owner,omitempty" gorm:"column:owner" validate:"required"`
-
-	Disabled bool `json:"disabled" gorm:"column:disabled"`
-
-	Description string `json:"description" gorm:"column:description"`
+	Owner       string `json:"owner,omitempty" gorm:"column:owner;type:varchar(64)"`
+	Disabled    bool   `json:"disabled"        gorm:"column:disabled;type:bool"`
+	Description string `json:"description"     gorm:"column:description;type:varchar(512)"`
 }
 
 // TableName maps to mysql table name.

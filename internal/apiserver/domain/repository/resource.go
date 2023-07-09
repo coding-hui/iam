@@ -20,6 +20,7 @@ type ResourceRepository interface {
 	Update(ctx context.Context, resource *model.Resource, opts metav1alpha1.UpdateOptions) error
 	Delete(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error
-	Get(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Resource, error)
+	GetByName(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Resource, error)
+	GetByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Resource, error)
 	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error)
 }

@@ -5,9 +5,13 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"os"
+	"regexp"
 	"strings"
 
+	"github.com/bitly/go-simplejson"
 	"github.com/gin-gonic/gin"
 	"k8s.io/klog/v2"
 
@@ -21,13 +25,18 @@ import (
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 )
 
+const (
+	API_RESOURCE_DIR = "api/swagger/swagger.json"
+)
+
 // ResourceService Resource manage api.
 type ResourceService interface {
 	CreateResource(ctx context.Context, req v1alpha1.CreateResourceRequest) error
-	UpdateResource(ctx context.Context, name string, req v1alpha1.UpdateResourceRequest) error
-	DeleteResource(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error
+	UpdateResource(ctx context.Context, instanceId string, req v1alpha1.UpdateResourceRequest) error
+	DeleteResource(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error
 	BatchDeleteResources(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error
-	GetResource(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Resource, error)
+	GetResource(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Resource, error)
+	DetailResource(ctx context.Context, resource *model.Resource, opts metav1alpha1.GetOptions) (*v1alpha1.DetailResourceResponse, error)
 	ListResources(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error)
 	Init(ctx context.Context) error
 }
@@ -49,13 +58,23 @@ func (r *resourceServiceImpl) Init(ctx context.Context) error {
 		klog.Warning("Failed to get the registered route from the init context.")
 		return nil
 	}
+	jsonFile, _ := os.ReadFile(API_RESOURCE_DIR)
+	apiDocs, _ := simplejson.NewFromReader(bytes.NewReader(jsonFile))
 	for _, route := range routes {
+		urlPath := route.Path
+		idPatten := "(.*)/:(\\w+)"
+		reg, _ := regexp.Compile(idPatten)
+		if reg.MatchString(urlPath) {
+			urlPath = reg.ReplaceAllString(route.Path, "${1}/{${2}}")
+		}
+		apiName, _ := apiDocs.Get("paths").Get(urlPath).Get(strings.ToLower(route.Method)).Get("summary").String()
+		apiDesc, _ := apiDocs.Get("paths").Get(urlPath).Get(strings.ToLower(route.Method)).Get("description").String()
 		createReq := v1alpha1.CreateResourceRequest{
-			Name:        route.Handler[strings.LastIndex(route.Handler, ".")+1:],
+			Name:        apiName,
 			Method:      route.Method,
-			Type:        "API",
+			Type:        string(v1alpha1.API),
 			Api:         route.Path,
-			Description: route.Handler,
+			Description: apiDesc,
 			IsDefault:   true,
 			Actions:     nil,
 		}
@@ -66,7 +85,7 @@ func (r *resourceServiceImpl) Init(ctx context.Context) error {
 		if !found {
 			continue
 		}
-		_, err := r.GetResource(ctx, createReq.Name, metav1alpha1.GetOptions{})
+		_, err := r.Store.ResourceRepository().GetByName(ctx, createReq.Name, metav1alpha1.GetOptions{})
 		if err != nil && errors.IsCode(err, code.ErrResourceNotFound) {
 			if err := r.CreateResource(ctx, createReq); err != nil {
 				klog.Warningf("Failed to create api resource. [Api: %s Method: %s Handler: %s]", route.Path, route.Method, route.Handler)
@@ -80,7 +99,7 @@ func (r *resourceServiceImpl) Init(ctx context.Context) error {
 
 // CreateResource create a new resource.
 func (r *resourceServiceImpl) CreateResource(ctx context.Context, req v1alpha1.CreateResourceRequest) error {
-	resource := assembler.CreateResourceModel(req)
+	resource := assembler.ConvertResourceModel(req)
 	err := r.Store.ResourceRepository().Create(ctx, resource, metav1alpha1.CreateOptions{})
 	if err != nil {
 		return err
@@ -90,8 +109,8 @@ func (r *resourceServiceImpl) CreateResource(ctx context.Context, req v1alpha1.C
 }
 
 // UpdateResource update resources.
-func (r *resourceServiceImpl) UpdateResource(ctx context.Context, name string, req v1alpha1.UpdateResourceRequest) error {
-	resource, err := r.GetResource(ctx, name, metav1alpha1.GetOptions{})
+func (r *resourceServiceImpl) UpdateResource(ctx context.Context, instanceId string, req v1alpha1.UpdateResourceRequest) error {
+	resource, err := r.GetResource(ctx, instanceId, metav1alpha1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -128,18 +147,32 @@ func (r *resourceServiceImpl) BatchDeleteResources(ctx context.Context, names []
 }
 
 // GetResource get resource.
-func (r *resourceServiceImpl) GetResource(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Resource, error) {
-	resource, err := r.Store.ResourceRepository().Get(ctx, name, opts)
+func (r *resourceServiceImpl) GetResource(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Resource, error) {
+	resource, err := r.Store.ResourceRepository().GetByInstanceId(ctx, instanceId, opts)
 	if err != nil {
-		return nil, errors.WrapC(err, code.ErrResourceNotFound, "Resource `%s` not found", name)
+		return nil, errors.WrapC(err, code.ErrResourceNotFound, "Resource `%s` not found", instanceId)
 	}
 
 	return resource, nil
 }
 
+// DetailResource get resource detail.
+func (r *resourceServiceImpl) DetailResource(
+	_ context.Context,
+	resource *model.Resource,
+	_ metav1alpha1.GetOptions,
+) (*v1alpha1.DetailResourceResponse, error) {
+	base := assembler.ConvertResourceModelToBase(resource)
+	detail := &v1alpha1.DetailResourceResponse{
+		ResourceBase: *base,
+	}
+
+	return detail, nil
+}
+
 // ListResources list resources.
 func (r *resourceServiceImpl) ListResources(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error) {
-	users, err := r.Store.ResourceRepository().List(ctx, metav1alpha1.ListOptions{
+	resources, err := r.Store.ResourceRepository().List(ctx, metav1alpha1.ListOptions{
 		Offset: opts.Offset,
 		Limit:  opts.Limit,
 	})
@@ -147,5 +180,5 @@ func (r *resourceServiceImpl) ListResources(ctx context.Context, opts metav1alph
 		return nil, err
 	}
 
-	return users, nil
+	return resources, nil
 }

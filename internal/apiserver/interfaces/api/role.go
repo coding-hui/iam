@@ -43,8 +43,8 @@ func (r *role) RegisterApiGroup(g *gin.Engine) {
 }
 
 //	@Tags			Roles
-//	@Summary		create role
-//	@Description	create role
+//	@Summary		CreateRole
+//	@Description	Create role
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1alpha1.CreateRoleRequest	true	"role info"
@@ -70,13 +70,13 @@ func (r *role) createRole(c *gin.Context) {
 }
 
 //	@Tags			Roles
-//	@Summary		update role
-//	@Description	update role
+//	@Summary		UpdateRole
+//	@Description	Update role
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1alpha1.UpdateRoleRequest	true	"role info"
 //	@Success		200		{object}	api.Response				"update role info"
-//	@Router			/api/v1/roles/{name}  [put]
+//	@Router			/api/v1/roles/{instanceId}  [put]
 //	@Security		BearerTokenAuth
 //
 // updateRole update role info.
@@ -87,7 +87,7 @@ func (r *role) updateRole(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	err = r.RoleService.UpdateRole(c.Request.Context(), c.Param("name"), updateReq)
+	err = r.RoleService.UpdateRole(c.Request.Context(), c.Param("instanceId"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -97,16 +97,16 @@ func (r *role) updateRole(c *gin.Context) {
 }
 
 //	@Tags			Roles
-//	@Summary		delete role
-//	@Description	delete role
-//	@Param			name	path		string			true	"name of a role"
+//	@Summary		DeleteRole
+//	@Description	Delete role
+//	@Param			name	path		string			true	"identifier of a role"
 //	@Success		200		{object}	api.Response	"delete role"
-//	@Router			/api/v1/roles/{name} [delete]
+//	@Router			/api/v1/roles/{instanceId} [delete]
 //	@Security		BearerTokenAuth
 //
-// deleteRole delete role by roleName.
+// deleteRole delete role by instanceId.
 func (r *role) deleteRole(c *gin.Context) {
-	err := r.RoleService.DeleteRole(c.Request.Context(), c.Param("name"), metav1alpha1.DeleteOptions{})
+	err := r.RoleService.DeleteRoleByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1alpha1.DeleteOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -116,11 +116,11 @@ func (r *role) deleteRole(c *gin.Context) {
 }
 
 //	@Tags			Roles
-//	@Summary		get role detail
-//	@Description	get role detail
-//	@Param			name	path		string								true	"name of a role"
+//	@Summary		GetRoleInfo
+//	@Description	GetByName role info
+//	@Param			name	path		string								true	"identifier of a role"
 //	@Success		200		{object}	api.Response{data=model.Resource}	"role detail"
-//	@Router			/api/v1/roles/{name} [get]
+//	@Router			/api/v1/roles/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
 // detailRole get role detail info.
@@ -136,8 +136,8 @@ func (r *role) detailRole(c *gin.Context) {
 }
 
 //	@Tags			Roles
-//	@Summary		list role
-//	@Description	list role
+//	@Summary		ListRoles
+//	@Description	List role
 //	@Param			name	query		string									false	"fuzzy search based on name"
 //	@Param			offset	query		int										false	"query the page number"
 //	@Param			limit	query		int										false	"query the page size number"
@@ -165,8 +165,8 @@ func (r *role) listRole(c *gin.Context) {
 }
 
 //	@Tags			Roles
-//	@Summary		assign role
-//	@Description	assign role
+//	@Summary		AssignRole
+//	@Description	Assign role
 //	@Param			data	body		v1alpha1.AssignRoleRequest	true	"assign role request"
 //	@Success		200		{object}	api.Response				"assign role"
 //	@Router			/api/v1/roles/{instanceId}/assign [post]
@@ -191,8 +191,8 @@ func (r *role) assignRole(c *gin.Context) {
 }
 
 //	@Tags			Roles
-//	@Summary		revoke role
-//	@Description	revoke role
+//	@Summary		RevokeRole
+//	@Description	Revoke role
 //	@Param			data	body		v1alpha1.RevokeRoleRequest	true	"revoke role request"
 //	@Success		200		{object}	api.Response				"revoke role"
 //	@Router			/api/v1/roles/{instanceId}/revoke [post]
@@ -217,7 +217,7 @@ func (r *role) revokeRole(c *gin.Context) {
 }
 
 func (r *role) roleCheckFilter(c *gin.Context) {
-	role, err := r.RoleService.GetRole(c.Request.Context(), c.Param("instanceId"), metav1alpha1.GetOptions{})
+	role, err := r.RoleService.GetRoleByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1alpha1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		c.Abort()

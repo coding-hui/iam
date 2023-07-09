@@ -22,8 +22,8 @@ func (p *ping) RegisterApiGroup(g *gin.Engine) {
 }
 
 //	@Tags			System
-//	@Summary		check service is running
-//	@Description	check service is running
+//	@Summary		Ping
+//	@Description	Check service is running
 //	@Success		200	{object}	api.Response	"pong"
 //	@Router			/ping [get]
 //

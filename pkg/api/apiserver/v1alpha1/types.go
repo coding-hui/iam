@@ -5,6 +5,7 @@
 package v1alpha1
 
 import (
+	"encoding/json"
 	"time"
 
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
@@ -15,10 +16,14 @@ var (
 	CtxKeyUserRole = "user_role"
 	// CtxKeyUserInstanceId request context key of username.
 	CtxKeyUserInstanceId = "user_instance_id"
+	// CtxKeyUserType request context key of user type.
+	CtxKeyUserType = "user_type"
 	// CtxKeyRole request context key of role.
 	CtxKeyRole = "role"
 	// CtxKeyPolicy request context key of policy.
 	CtxKeyPolicy = "policy"
+	// CtxKeyResource request context key of resource.
+	CtxKeyResource = "resource"
 
 	// CtxKeyRoutes initialize context key of routes.
 	CtxKeyRoutes = "routes"
@@ -31,20 +36,20 @@ const (
 	UserTarget string = "user"
 )
 
-// UserRole user role.
-type UserRole string
+// UserType user type.
+type UserType string
 
 // These are the valid phases of a user role.
 const (
 	// PlatformAdmin platform admin.
-	PlatformAdmin UserRole = "platform"
+	PlatformAdmin UserType = "platform"
 	// TenantAdmin tenant admin.
-	TenantAdmin UserRole = "tenant"
+	TenantAdmin UserType = "tenant"
 	// Default default user.
-	Default UserRole = "default"
+	Default UserType = "default"
 )
 
-func (r UserRole) String() string {
+func (r UserType) String() string {
 	return string(r)
 }
 
@@ -60,18 +65,41 @@ const (
 	UserAuthLimitExceeded UserState = "AuthLimitExceeded"
 )
 
+// LoginType authenticate type.
+type LoginType string
+
+const (
+	// BasicAuth basic auth type.
+	BasicAuth LoginType = "Basic"
+	// OAuth oauth2 auth type.
+	OAuth LoginType = "OAuth"
+	// Token jwt token auth type.
+	Token LoginType = "Token"
+)
+
+// ResourceType resource type.
+type ResourceType string
+
+const (
+	// API api resource
+	API ResourceType = "API"
+)
+
 // CreateUserRequest create user request.
 type CreateUserRequest struct {
 	Name     string `json:"name"            validate:"required,name"`
-	Alias    string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
-	Email    string `json:"email"           validate:"required,email,min=1,max=100"`
 	Password string `json:"password"        validate:"required"`
+	Alias    string `json:"alias,omitempty"                          optional:"true"`
+	Email    string `json:"email"                                    optional:"true"`
+	Phone    string `json:"phone"`
+	UserType string `json:"userType"`
 }
 
 // UpdateUserRequest update user request.
 type UpdateUserRequest struct {
 	Alias string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
 	Email string `json:"email"           validate:"required,email,min=1,max=100"`
+	Phone string `json:"phone"`
 }
 
 // UserBase represents a user restful resource.
@@ -84,6 +112,7 @@ type UserBase struct {
 	Password                string     `json:"password,omitempty"`
 	Email                   string     `json:"email"`
 	Phone                   string     `json:"phone"`
+	UserType                string     `json:"userType"`
 	Disabled                bool       `json:"disabled"`
 	LastLoginTime           *time.Time `json:"lastLoginTime,omitempty"`
 }
@@ -165,6 +194,7 @@ type CreateRoleRequest struct {
 type UpdateRoleRequest struct {
 	DisplayName string `json:"displayName" optional:"true"`
 	Description string `json:"description" optional:"true"`
+	Owner       string `json:"owner"       optional:"true"`
 }
 
 // RoleBase represents a role restful resource.
@@ -196,18 +226,6 @@ type DetailRoleResponse struct {
 	RoleBase
 	Users []UserBase `json:"users"`
 }
-
-// LoginType authenticate type.
-type LoginType string
-
-const (
-	// BasicAuth basic auth type.
-	BasicAuth LoginType = "Basic"
-	// OAuth oauth2 auth type.
-	OAuth LoginType = "OAuth"
-	// Token jwt token auth type.
-	Token LoginType = "Token"
-)
 
 // AuthenticateRequest is the request body for login.
 type AuthenticateRequest struct {
@@ -278,13 +296,23 @@ type ResourceBase struct {
 	// Description resource description.
 	Description string `json:"description"`
 	// Actions resource access mode.
-	Actions []Action `json:"action,omitempty"   validate:"required"`
+	Actions []Action `json:"actions,omitempty"  validate:"required"`
+}
+
+// DetailResourceResponse resource detail.
+type DetailResourceResponse struct {
+	ResourceBase
 }
 
 // Action resource access mode.
 type Action struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+}
+
+func (a *Action) String() string {
+	data, _ := json.Marshal(a)
+	return string(data)
 }
 
 // ResourceList is the whole list of all resource which have been stored in stroage.

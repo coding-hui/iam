@@ -22,7 +22,7 @@ type PolicyService interface {
 	CreatePolicy(ctx context.Context, req v1alpha1.CreatePolicyRequest) error
 	UpdatePolicy(ctx context.Context, idOrName string, req v1alpha1.UpdatePolicyRequest) error
 	DeletePolicy(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error
-	GetPolicy(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Policy, error)
+	GetPolicy(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Policy, error)
 	DetailPolicy(ctx context.Context, policy *model.Policy, opts metav1alpha1.GetOptions) (*v1alpha1.DetailPolicyResponse, error)
 	ListPolicies(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.PolicyList, error)
 	ListPolicyRules(ctx context.Context, opts metav1alpha1.ListOptions) ([]model.PolicyRule, error)
@@ -39,24 +39,14 @@ func NewPolicyService() PolicyService {
 
 // CreatePolicy create a new policy.
 func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1alpha1.CreatePolicyRequest) error {
-	policy := &model.Policy{
-		ObjectMeta: metav1alpha1.ObjectMeta{
-			Name: req.Name,
-		},
-		Subjects:    req.Subjects,
-		Resources:   req.Resources,
-		Actions:     req.Actions,
-		Effect:      req.Effect,
-		Type:        req.Type,
-		Status:      req.Status,
-		Owner:       req.Owner,
-		Description: req.Description,
+	if len(req.Statements) < 0 {
+		return nil
 	}
+	policy := assembler.ConvertPolicyModel(req)
 	err := p.Store.PolicyRepository().Create(ctx, policy, metav1alpha1.CreateOptions{})
 	if err != nil {
 		return err
 	}
-
 	e := p.Store.CasbinRepository().SyncedEnforcer()
 	res, err := e.AddPolicies(policy.GetPolicyRules())
 	if err != nil {
@@ -70,19 +60,22 @@ func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1alpha1.Creat
 }
 
 // UpdatePolicy update policy.
-func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, name string, req v1alpha1.UpdatePolicyRequest) error {
-	oldPolicy, err := p.Store.PolicyRepository().Get(ctx, name, metav1alpha1.GetOptions{})
+func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, req v1alpha1.UpdatePolicyRequest) error {
+	oldPolicy, err := p.Store.PolicyRepository().GetByInstanceId(ctx, idOrName, metav1alpha1.GetOptions{})
 	if err != nil {
-		return err
+		oldPolicy, err = p.Store.PolicyRepository().GetByName(ctx, idOrName, metav1alpha1.GetOptions{})
+		if err != nil {
+			return err
+		}
 	}
 	policy := &model.Policy{
 		ObjectMeta:  oldPolicy.ObjectMeta,
 		Subjects:    req.Subjects,
-		Resources:   req.Resources,
-		Actions:     req.Actions,
-		Effect:      req.Effect,
 		Type:        req.Type,
 		Description: req.Description,
+		Status:      req.Status,
+		Owner:       req.Owner,
+		Statements:  assembler.ConvertToStatementModel(req.Statements),
 	}
 	err = p.Store.PolicyRepository().Update(ctx, policy, metav1alpha1.UpdateOptions{})
 	if err != nil {
@@ -104,7 +97,7 @@ func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, name string, req v
 
 // DeletePolicy delete policy by id.
 func (p *policyServiceImpl) DeletePolicy(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error {
-	policy, err := p.Store.PolicyRepository().Get(ctx, name, metav1alpha1.GetOptions{})
+	policy, err := p.Store.PolicyRepository().GetByName(ctx, name, metav1alpha1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -127,8 +120,8 @@ func (p *policyServiceImpl) DeletePolicy(ctx context.Context, name string, opts 
 }
 
 // GetPolicy get policy by id.
-func (p *policyServiceImpl) GetPolicy(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Policy, error) {
-	policy, err := p.Store.PolicyRepository().Get(ctx, name, opts)
+func (p *policyServiceImpl) GetPolicy(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Policy, error) {
+	policy, err := p.Store.PolicyRepository().GetByInstanceId(ctx, instanceId, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -138,13 +131,19 @@ func (p *policyServiceImpl) GetPolicy(ctx context.Context, name string, opts met
 
 // DetailPolicy get policy details.
 func (p *policyServiceImpl) DetailPolicy(
-	_ context.Context,
+	ctx context.Context,
 	policy *model.Policy,
-	opts metav1alpha1.GetOptions,
+	_ metav1alpha1.GetOptions,
 ) (*v1alpha1.DetailPolicyResponse, error) {
+	var resources []v1alpha1.ResourceBase
+	for _, statement := range policy.Statements {
+		r, _ := p.Store.ResourceRepository().GetByInstanceId(ctx, statement.Resource, metav1alpha1.GetOptions{})
+		resources = append(resources, *assembler.ConvertResourceModelToBase(r))
+	}
 	base := assembler.ConvertPolicyModelToBase(policy)
 	detail := &v1alpha1.DetailPolicyResponse{
 		PolicyBase: *base,
+		Resources:  resources,
 	}
 
 	return detail, nil

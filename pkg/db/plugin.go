@@ -63,6 +63,6 @@ func after(db *gorm.DB) {
 	if !ok {
 		return
 	}
-	// sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
+	// sql := db.Dialector.Explain(db.Statements.SQL.String(), db.Statements.Vars...)
 	klog.Infof("sql cost time: %fs", time.Since(ts).Seconds())
 }

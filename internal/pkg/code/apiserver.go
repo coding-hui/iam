@@ -52,6 +52,9 @@ const (
 
 	// ErrResourceNameIsEmpty - 400: Resource name is empty.
 	ErrResourceNameIsEmpty
+
+	// ErrResourceInstanceIdIsEmpty - 400: Resource instanceId is empty.
+	ErrResourceInstanceIdIsEmpty
 )
 
 // iam-apiserver: role errors.

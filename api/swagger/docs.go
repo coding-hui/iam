@@ -27,14 +27,14 @@ const docTemplate = `{
     "paths": {
         "/api/v1/auth/refresh-token": {
             "get": {
-                "description": "refresh token",
+                "description": "RefreshToken",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "refresh token",
+                "summary": "RefreshToken",
                 "parameters": [
                     {
                         "type": "string",
@@ -68,14 +68,14 @@ const docTemplate = `{
         },
         "/api/v1/login": {
             "post": {
-                "description": "login by user account and password",
+                "description": "Login by user account and password",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "login system",
+                "summary": "LoginSystem",
                 "parameters": [
                     {
                         "description": "login request",
@@ -120,7 +120,7 @@ const docTemplate = `{
                 "tags": [
                     "Policies"
                 ],
-                "summary": "List policies",
+                "summary": "ListPolicies",
                 "parameters": [
                     {
                         "type": "string",
@@ -175,7 +175,7 @@ const docTemplate = `{
                 "tags": [
                     "Policies"
                 ],
-                "summary": "Create a policy",
+                "summary": "CreatePolicy",
                 "parameters": [
                     {
                         "description": "policy rule",
@@ -204,11 +204,11 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "Get a Policy",
+                "description": "GetByName a policy by name",
                 "tags": [
                     "Policies"
                 ],
-                "summary": "Get a Policy",
+                "summary": "GetPolicyInfo",
                 "parameters": [
                     {
                         "type": "string",
@@ -252,7 +252,7 @@ const docTemplate = `{
                 "tags": [
                     "Policies"
                 ],
-                "summary": "Update a Policy",
+                "summary": "UpdatePolicy",
                 "parameters": [
                     {
                         "description": "Policy rule",
@@ -279,11 +279,11 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "Delete Policy",
+                "description": "Delete policy by instanceId",
                 "tags": [
                     "Policies"
                 ],
-                "summary": "Delete Policy",
+                "summary": "DeletePolicy",
                 "parameters": [
                     {
                         "type": "string",
@@ -310,11 +310,11 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "list resource",
+                "description": "List resources",
                 "tags": [
-                    "Resources"
+                    "Resource"
                 ],
-                "summary": "list resource",
+                "summary": "ListResources",
                 "parameters": [
                     {
                         "type": "string",
@@ -365,14 +365,14 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "create resource",
+                "description": "Create resource",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "Resources"
+                    "Resource"
                 ],
-                "summary": "create resource",
+                "summary": "CreateResource",
                 "parameters": [
                     {
                         "description": "resource info",
@@ -394,18 +394,18 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/resources/{name}": {
+        "/api/v1/resources/{instanceId}": {
             "get": {
                 "security": [
                     {
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "get resource detail",
+                "description": "GetByName resource info",
                 "tags": [
-                    "Resources"
+                    "Resource"
                 ],
-                "summary": "get resource detail",
+                "summary": "GetResourceInfo",
                 "parameters": [
                     {
                         "type": "string",
@@ -442,14 +442,14 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "update resource",
+                "description": "Update resource",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "Resources"
+                    "Resource"
                 ],
-                "summary": "update resource",
+                "summary": "UpdateResource",
                 "parameters": [
                     {
                         "description": "resource info",
@@ -476,11 +476,11 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "delete resource",
+                "description": "Delete resource",
                 "tags": [
-                    "Resources"
+                    "Resource"
                 ],
-                "summary": "delete resource",
+                "summary": "DeleteResource",
                 "parameters": [
                     {
                         "type": "string",
@@ -507,11 +507,11 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "list role",
+                "description": "List role",
                 "tags": [
                     "Roles"
                 ],
-                "summary": "list role",
+                "summary": "ListRoles",
                 "parameters": [
                     {
                         "type": "string",
@@ -562,14 +562,14 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "create role",
+                "description": "Create role",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
                     "Roles"
                 ],
-                "summary": "create role",
+                "summary": "CreateRole",
                 "parameters": [
                     {
                         "description": "role info",
@@ -591,88 +591,22 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/roles/{instanceId}/assign": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "assign role",
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "assign role",
-                "parameters": [
-                    {
-                        "description": "assign role request",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1alpha1.AssignRoleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "assign role",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/roles/{instanceId}/revoke": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "revoke role",
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "revoke role",
-                "parameters": [
-                    {
-                        "description": "revoke role request",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1alpha1.RevokeRoleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "revoke role",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/roles/{name}": {
+        "/api/v1/roles/{instanceId}": {
             "get": {
                 "security": [
                     {
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "get role detail",
+                "description": "GetByName role info",
                 "tags": [
                     "Roles"
                 ],
-                "summary": "get role detail",
+                "summary": "GetRoleInfo",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name of a role",
+                        "description": "identifier of a role",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -705,14 +639,14 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "update role",
+                "description": "Update role",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
                     "Roles"
                 ],
-                "summary": "update role",
+                "summary": "UpdateRole",
                 "parameters": [
                     {
                         "description": "role info",
@@ -739,15 +673,15 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "delete role",
+                "description": "Delete role",
                 "tags": [
                     "Roles"
                 ],
-                "summary": "delete role",
+                "summary": "DeleteRole",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name of a role",
+                        "description": "identifier of a role",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -763,6 +697,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/roles/{instanceId}/assign": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Assign role",
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "AssignRole",
+                "parameters": [
+                    {
+                        "description": "assign role request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1alpha1.AssignRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "assign role",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/roles/{instanceId}/revoke": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Revoke role",
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "RevokeRole",
+                "parameters": [
+                    {
+                        "description": "revoke role request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1alpha1.RevokeRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "revoke role",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "security": [
@@ -770,11 +770,11 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "list users",
+                "description": "List users",
                 "tags": [
                     "Users"
                 ],
-                "summary": "list users",
+                "summary": "ListUsers",
                 "parameters": [
                     {
                         "type": "string",
@@ -837,14 +837,14 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "create user",
+                "description": "Create user",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
                     "Users"
                 ],
-                "summary": "create user",
+                "summary": "CreateUser",
                 "parameters": [
                     {
                         "description": "user info",
@@ -866,18 +866,18 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/{name}": {
+        "/api/v1/users/{instanceId}": {
             "get": {
                 "security": [
                     {
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "get user detail",
+                "description": "GetByName user info",
                 "tags": [
                     "Users"
                 ],
-                "summary": "get user detail",
+                "summary": "GetUserInfo",
                 "parameters": [
                     {
                         "type": "string",
@@ -914,14 +914,14 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "update user info",
+                "description": "Update user info",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
                     "Users"
                 ],
-                "summary": "update user info",
+                "summary": "UpdateUser",
                 "parameters": [
                     {
                         "type": "string",
@@ -955,11 +955,11 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "delete user",
+                "description": "Delete user",
                 "tags": [
                     "Users"
                 ],
-                "summary": "delete user",
+                "summary": "DeleteUser",
                 "parameters": [
                     {
                         "type": "string",
@@ -981,11 +981,11 @@ const docTemplate = `{
         },
         "/ping": {
             "get": {
-                "description": "check service is running",
+                "description": "Check service is running",
                 "tags": [
                     "System"
                 ],
-                "summary": "check service is running",
+                "summary": "Ping",
                 "responses": {
                     "200": {
                         "description": "pong",
@@ -1019,10 +1019,6 @@ const docTemplate = `{
                 "success": {
                     "description": "Success request is successful",
                     "type": "boolean"
-                },
-                "total": {
-                    "description": "Total total of page",
-                    "type": "integer"
                 }
             }
         },
@@ -1045,11 +1041,6 @@ const docTemplate = `{
         },
         "model.Resource": {
             "type": "object",
-            "required": [
-                "api",
-                "method",
-                "type"
-            ],
             "properties": {
                 "actions": {
                     "description": "Actions resource access mode.",
@@ -1089,24 +1080,16 @@ const docTemplate = `{
         },
         "model.User": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
             "properties": {
                 "alias": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
+                    "type": "string"
                 },
                 "disabled": {
                     "type": "boolean"
                 },
                 "email": {
                     "description": "Required: true",
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
+                    "type": "string"
                 },
                 "lastLoginTime": {
                     "type": "string"
@@ -1131,6 +1114,9 @@ const docTemplate = `{
                 },
                 "tenantId": {
                     "type": "integer"
+                },
+                "userType": {
+                    "type": "string"
                 }
             }
         },
@@ -1247,6 +1233,7 @@ const docTemplate = `{
                 "actions",
                 "name",
                 "resources",
+                "statements",
                 "subjects",
                 "type"
             ],
@@ -1278,6 +1265,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
+                    }
+                },
+                "statements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.Statements"
                     }
                 },
                 "status": {
@@ -1355,25 +1348,26 @@ const docTemplate = `{
         "v1alpha1.CreateUserRequest": {
             "type": "object",
             "required": [
-                "email",
                 "name",
                 "password"
             ],
             "properties": {
                 "alias": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
+                    "type": "string"
                 },
                 "email": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "userType": {
                     "type": "string"
                 }
             }
@@ -1574,6 +1568,28 @@ const docTemplate = `{
                 }
             }
         },
+        "v1alpha1.Statements": {
+            "type": "object",
+            "required": [
+                "actions",
+                "effect",
+                "resources"
+            ],
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "effect": {
+                    "type": "string"
+                },
+                "resources": {
+                    "type": "string"
+                }
+            }
+        },
         "v1alpha1.UpdatePolicyRequest": {
             "type": "object",
             "required": [
@@ -1661,6 +1677,9 @@ const docTemplate = `{
                 },
                 "displayName": {
                     "type": "string"
+                },
+                "owner": {
+                    "type": "string"
                 }
             }
         },
@@ -1679,6 +1698,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 1
+                },
+                "phone": {
+                    "type": "string"
                 }
             }
         },
@@ -1716,6 +1738,9 @@ const docTemplate = `{
                 },
                 "tenantId": {
                     "type": "integer"
+                },
+                "userType": {
+                    "type": "string"
                 }
             }
         }
