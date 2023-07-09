@@ -7,13 +7,16 @@ package service
 import (
 	"context"
 
+	"github.com/lib/pq"
 	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
+	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 
+	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
@@ -26,6 +29,7 @@ type PolicyService interface {
 	DetailPolicy(ctx context.Context, policy *model.Policy, opts metav1alpha1.GetOptions) (*v1alpha1.DetailPolicyResponse, error)
 	ListPolicies(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.PolicyList, error)
 	ListPolicyRules(ctx context.Context, opts metav1alpha1.ListOptions) ([]model.PolicyRule, error)
+	Init(ctx context.Context) error
 }
 
 type policyServiceImpl struct {
@@ -37,12 +41,49 @@ func NewPolicyService() PolicyService {
 	return &policyServiceImpl{}
 }
 
+// Init initialize resource data.
+func (p *policyServiceImpl) Init(ctx context.Context) error {
+	// find platform role
+	platformRole, err := p.Store.RoleRepository().GetByName(ctx, v1alpha1.PlatformAdmin.String(), metav1alpha1.GetOptions{})
+	if err != nil {
+		return errors.WithMessagef(err, "Failed to get %s role info.", v1alpha1.PlatformAdmin.String())
+	}
+	createReq := v1alpha1.CreatePolicyRequest{
+		Name:        DefaultAdmin,
+		Subjects:    []string{platformRole.InstanceID},
+		Type:        string(v1alpha1.SystemBuildInPolicy),
+		Owner:       DefaultAdmin,
+		Description: "System default admin policies",
+		Statements: []v1alpha1.Statement{
+			{
+				Effect:             v1alpha1.AllowAccess,
+				Resource:           "*",
+				ResourceIdentifier: "*:*",
+				Actions:            pq.StringArray{"*"},
+			},
+		},
+	}
+	_, err = p.Store.PolicyRepository().GetByName(ctx, createReq.Name, metav1alpha1.GetOptions{})
+	if err != nil && errors.IsCode(err, code.ErrPolicyNotFound) {
+		if err := p.CreatePolicy(ctx, createReq); err != nil {
+			klog.Warningf("Failed to create admin policy.")
+			return err
+		}
+	}
+	klog.Info("initialize system default policies done")
+
+	return nil
+}
+
 // CreatePolicy create a new policy.
 func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1alpha1.CreatePolicyRequest) error {
 	if len(req.Statements) < 0 {
 		return nil
 	}
 	policy := assembler.ConvertPolicyModel(req)
+	if len(policy.Type) == 0 {
+		policy.Type = string(v1alpha1.CustomPolicy)
+	}
 	err := p.Store.PolicyRepository().Create(ctx, policy, metav1alpha1.CreateOptions{})
 	if err != nil {
 		return err

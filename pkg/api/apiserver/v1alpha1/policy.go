@@ -19,8 +19,10 @@ const (
 type PolicyType string
 
 const (
-	// SystemBuildIn system default policy type.
-	SystemBuildIn PolicyType = "SYSTEM"
+	// SystemBuildInPolicy system default policy type.
+	SystemBuildInPolicy PolicyType = "SYSTEM"
+	// CustomPolicy user custom policy type.
+	CustomPolicy PolicyType = "CUSTOM"
 )
 
 type Statement struct {

@@ -22,7 +22,7 @@ func InitServiceBean(c config.Config) []interface{} {
 	roleService := NewRoleService()
 	policyService := NewPolicyService()
 
-	needInitData = []DataInit{userService, roleService, resourceService}
+	needInitData = []DataInit{userService, roleService, resourceService, policyService}
 
 	return []interface{}{userService, authenticationService, resourceService, roleService, policyService}
 }
