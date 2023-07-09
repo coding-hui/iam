@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	API_RESOURCE_DIR = "api/swagger/swagger.json"
+	ApiResourceDir = "api/swagger/swagger.json"
 )
 
 // ResourceService Resource manage api.
@@ -58,7 +58,7 @@ func (r *resourceServiceImpl) Init(ctx context.Context) error {
 		klog.Warning("Failed to get the registered route from the init context.")
 		return nil
 	}
-	jsonFile, _ := os.ReadFile(API_RESOURCE_DIR)
+	jsonFile, _ := os.ReadFile(ApiResourceDir)
 	apiDocs, _ := simplejson.NewFromReader(bytes.NewReader(jsonFile))
 	for _, route := range routes {
 		urlPath := route.Path
