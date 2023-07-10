@@ -178,6 +178,9 @@ func (p *policyServiceImpl) DetailPolicy(
 ) (*v1alpha1.DetailPolicyResponse, error) {
 	var resources []v1alpha1.ResourceBase
 	for _, statement := range policy.Statements {
+		if statement.Resource == "*" {
+			continue
+		}
 		r, _ := p.Store.ResourceRepository().GetByInstanceId(ctx, statement.Resource, metav1alpha1.GetOptions{})
 		resources = append(resources, *assembler.ConvertResourceModelToBase(r))
 	}
