@@ -109,16 +109,12 @@ func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, r
 			return err
 		}
 	}
-	policy := &model.Policy{
-		ObjectMeta:  oldPolicy.ObjectMeta,
-		Subjects:    req.Subjects,
-		Type:        req.Type,
-		Description: req.Description,
-		Status:      req.Status,
-		Owner:       req.Owner,
-		Statements:  assembler.ConvertToStatementModel(req.Statements),
-	}
-	err = p.Store.PolicyRepository().Update(ctx, policy, metav1alpha1.UpdateOptions{})
+	oldPolicy.Subjects = req.Subjects
+	oldPolicy.Description = req.Description
+	oldPolicy.Status = req.Status
+	oldPolicy.Owner = req.Owner
+	oldPolicy.Statements = assembler.ConvertToStatementModel(req.Statements)
+	err = p.Store.PolicyRepository().Update(ctx, oldPolicy, metav1alpha1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
@@ -128,7 +124,7 @@ func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, r
 	if err != nil {
 		return err
 	}
-	_, err = e.AddPolicies(policy.GetPolicyRules())
+	_, err = e.AddPolicies(oldPolicy.GetPolicyRules())
 	if err != nil {
 		return err
 	}

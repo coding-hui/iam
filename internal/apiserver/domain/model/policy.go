@@ -42,7 +42,7 @@ type Policy struct {
 
 	Subjects    pq.StringArray `json:"subjects"    gorm:"column:subjects;type:mediumtext"`
 	Type        string         `json:"type"        gorm:"column:type;type:varchar(20)"`
-	Status      string         `json:"status"      gorm:"column:status;type:varchar(20)"`
+	Status      string         `json:"status"      gorm:"column:status;type:varchar(20);default:0"`
 	Owner       string         `json:"owner"       gorm:"column:owner;type:varchar(100)"`
 	Description string         `json:"description" gorm:"column:description;type:varchar(100)"`
 
