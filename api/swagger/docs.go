@@ -197,7 +197,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/policies/{name}": {
+        "/api/v1/policies/{instanceId}": {
             "get": {
                 "security": [
                     {
@@ -347,10 +347,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.Resource"
-                                            }
+                                            "$ref": "#/definitions/v1alpha1.ResourceList"
                                         }
                                     }
                                 }
@@ -427,7 +424,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Resource"
+                                            "$ref": "#/definitions/v1alpha1.DetailResourceResponse"
                                         }
                                     }
                                 }
@@ -624,7 +621,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Resource"
+                                            "$ref": "#/definitions/v1alpha1.DetailRoleResponse"
                                         }
                                     }
                                 }
@@ -704,19 +701,19 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "Assign role",
+                "description": "Batch assign role",
                 "tags": [
                     "Roles"
                 ],
-                "summary": "AssignRole",
+                "summary": "BatchAssignRole",
                 "parameters": [
                     {
-                        "description": "assign role request",
+                        "description": "batch assign role request",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.AssignRoleRequest"
+                            "$ref": "#/definitions/v1alpha1.BatchAssignRoleRequest"
                         }
                     }
                 ],
@@ -819,10 +816,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.User"
-                                            }
+                                            "$ref": "#/definitions/v1alpha1.UserList"
                                         }
                                     }
                                 }
@@ -899,7 +893,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.User"
+                                            "$ref": "#/definitions/v1alpha1.UserBase"
                                         }
                                     }
                                 }
@@ -979,6 +973,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/{instanceId}/roles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Get user roles",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "GetUserRoles",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a user",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "user roles",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1alpha1.RoleList"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/ping": {
             "get": {
                 "description": "Check service is running",
@@ -1019,104 +1056,6 @@ const docTemplate = `{
                 "success": {
                     "description": "Success request is successful",
                     "type": "boolean"
-                }
-            }
-        },
-        "model.Action": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "resourceId": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.Resource": {
-            "type": "object",
-            "properties": {
-                "actions": {
-                    "description": "Actions resource access mode.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Action"
-                    }
-                },
-                "api": {
-                    "description": "Type unique identification of resource API.",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "Description resource description.",
-                    "type": "string"
-                },
-                "isDefault": {
-                    "type": "boolean"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "method": {
-                    "description": "Method resource method.",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "Type resource type.",
-                    "type": "string"
-                }
-            }
-        },
-        "model.User": {
-            "type": "object",
-            "properties": {
-                "alias": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "email": {
-                    "description": "Required: true",
-                    "type": "string"
-                },
-                "lastLoginTime": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "password": {
-                    "description": "Required: true",
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "tenantId": {
-                    "type": "integer"
-                },
-                "userType": {
-                    "type": "string"
                 }
             }
         },
@@ -1227,30 +1166,41 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.CreatePolicyRequest": {
+        "v1alpha1.BatchAssignRoleRequest": {
             "type": "object",
             "required": [
-                "actions",
-                "name",
-                "resources",
-                "statements",
-                "subjects",
-                "type"
+                "instanceIds"
             ],
             "properties": {
-                "actions": {
+                "instanceIds": {
+                    "description": "InstanceIds role instanceIds.",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
+                "targets": {
+                    "description": "Targets target resource instanceIds.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "v1alpha1.CreatePolicyRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "statements",
+                "subjects",
+                "type"
+            ],
+            "properties": {
                 "description": {
                     "type": "string",
                     "maxLength": 30,
                     "minLength": 1
-                },
-                "effect": {
-                    "type": "string"
                 },
                 "meta": {
                     "type": "string"
@@ -1261,16 +1211,10 @@ const docTemplate = `{
                 "owner": {
                     "type": "string"
                 },
-                "resources": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "statements": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Statements"
+                        "$ref": "#/definitions/v1alpha1.Statement"
                     }
                 },
                 "status": {
@@ -1375,20 +1319,11 @@ const docTemplate = `{
         "v1alpha1.DetailPolicyResponse": {
             "type": "object",
             "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "adapter": {
                     "description": "casbin required",
                     "type": "string"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "effect": {
                     "type": "string"
                 },
                 "metadata": {
@@ -1417,7 +1352,13 @@ const docTemplate = `{
                 "resources": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/v1alpha1.ResourceBase"
+                    }
+                },
+                "statements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.Statement"
                     }
                 },
                 "status": {
@@ -1434,23 +1375,90 @@ const docTemplate = `{
                 }
             }
         },
+        "v1alpha1.DetailResourceResponse": {
+            "type": "object",
+            "required": [
+                "actions",
+                "api",
+                "method",
+                "type"
+            ],
+            "properties": {
+                "actions": {
+                    "description": "Actions resource access mode.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.Action"
+                    }
+                },
+                "api": {
+                    "description": "Type unique identification of resource API.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description resource description.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Standard object's metadata.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.ObjectMeta"
+                        }
+                    ]
+                },
+                "method": {
+                    "description": "Method resource method.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type resource type.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1alpha1.DetailRoleResponse": {
+            "type": "object",
+            "required": [
+                "owner"
+            ],
+            "properties": {
+                "description": {
+                    "description": "Description tenant description.",
+                    "type": "string"
+                },
+                "disabled": {
+                    "description": "Disabled tenant state.",
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "description": "Standard object's metadata.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.ObjectMeta"
+                        }
+                    ]
+                },
+                "owner": {
+                    "description": "Owner tenant owner name.",
+                    "type": "string"
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.UserBase"
+                    }
+                }
+            }
+        },
         "v1alpha1.PolicyBase": {
             "type": "object",
             "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "adapter": {
                     "description": "casbin required",
                     "type": "string"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "effect": {
                     "type": "string"
                 },
                 "metadata": {
@@ -1476,10 +1484,10 @@ const docTemplate = `{
                         }
                     }
                 },
-                "resources": {
+                "statements": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/v1alpha1.Statement"
                     }
                 },
                 "status": {
@@ -1518,6 +1526,62 @@ const docTemplate = `{
                 },
                 "refresh_token": {
                     "type": "string"
+                }
+            }
+        },
+        "v1alpha1.ResourceBase": {
+            "type": "object",
+            "required": [
+                "actions",
+                "api",
+                "method",
+                "type"
+            ],
+            "properties": {
+                "actions": {
+                    "description": "Actions resource access mode.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.Action"
+                    }
+                },
+                "api": {
+                    "description": "Type unique identification of resource API.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description resource description.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Standard object's metadata.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.ObjectMeta"
+                        }
+                    ]
+                },
+                "method": {
+                    "description": "Method resource method.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type resource type.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1alpha1.ResourceList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.ResourceBase"
+                    }
+                },
+                "totalCount": {
+                    "type": "integer"
                 }
             }
         },
@@ -1568,12 +1632,27 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.Statements": {
+        "v1alpha1.RoleList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.RoleBase"
+                    }
+                },
+                "totalCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "v1alpha1.Statement": {
             "type": "object",
             "required": [
                 "actions",
                 "effect",
-                "resources"
+                "resource",
+                "resourceIdentifier"
             ],
             "properties": {
                 "actions": {
@@ -1585,7 +1664,10 @@ const docTemplate = `{
                 "effect": {
                     "type": "string"
                 },
-                "resources": {
+                "resource": {
+                    "type": "string"
+                },
+                "resourceIdentifier": {
                     "type": "string"
                 }
             }
@@ -1593,34 +1675,30 @@ const docTemplate = `{
         "v1alpha1.UpdatePolicyRequest": {
             "type": "object",
             "required": [
-                "actions",
-                "resources",
+                "statements",
                 "subjects",
                 "type"
             ],
             "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "description": {
                     "type": "string",
                     "maxLength": 30,
                     "minLength": 1
                 },
-                "effect": {
-                    "type": "string"
-                },
                 "meta": {
                     "type": "string"
                 },
-                "resources": {
+                "owner": {
+                    "type": "string"
+                },
+                "statements": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/v1alpha1.Statement"
                     }
+                },
+                "status": {
+                    "type": "string"
                 },
                 "subjects": {
                     "type": "array",
@@ -1741,6 +1819,20 @@ const docTemplate = `{
                 },
                 "userType": {
                     "type": "string"
+                }
+            }
+        },
+        "v1alpha1.UserList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1alpha1.UserBase"
+                    }
+                },
+                "totalCount": {
+                    "type": "integer"
                 }
             }
         }

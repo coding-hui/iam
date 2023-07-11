@@ -29,6 +29,7 @@ type RoleService interface {
 	DetailRole(ctx context.Context, role *model.Role, opts metav1alpha1.GetOptions) (*v1alpha1.DetailRoleResponse, error)
 	ListRoles(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	AssignRole(ctx context.Context, role *model.Role, assignReq v1alpha1.AssignRoleRequest) error
+	BatchAssignRole(ctx context.Context, assignReq v1alpha1.BatchAssignRoleRequest) error
 	RevokeRole(ctx context.Context, role *model.Role, revokeReq v1alpha1.RevokeRoleRequest) error
 	AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1alpha1.AuthorizeResources) error
 	Init(ctx context.Context) error
@@ -234,6 +235,26 @@ func (r *roleServiceImpl) AssignRole(ctx context.Context, role *model.Role, assi
 	}
 
 	return lastErr
+}
+
+// BatchAssignRole batch assign roles, which can be users or departments.
+func (r *roleServiceImpl) BatchAssignRole(ctx context.Context, batchAssignReq v1alpha1.BatchAssignRoleRequest) error {
+	instanceIds := batchAssignReq.InstanceIds
+	targets := batchAssignReq.Targets
+	for _, instanceId := range instanceIds {
+		role, err := r.GetRoleByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
+		if err != nil {
+			klog.Errorf("Failed to get role details using the id", instanceId)
+			return err
+		}
+		err = r.AssignRole(ctx, role, v1alpha1.AssignRoleRequest{Targets: targets})
+		if err != nil {
+			klog.Errorf("Failed to batch assign roles. err: %w", err)
+			return err
+		}
+	}
+
+	return nil
 }
 
 // RevokeRole revoke roles, which can be users or departments.

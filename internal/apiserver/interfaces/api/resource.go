@@ -120,8 +120,8 @@ func (r *resource) deleteResource(c *gin.Context) {
 //	@Tags			Resource
 //	@Summary		GetResourceInfo
 //	@Description	GetByName resource info
-//	@Param			name	path		string								true	"name of a resource"
-//	@Success		200		{object}	api.Response{data=model.Resource}	"resource detail"
+//	@Param			name	path		string												true	"name of a resource"
+//	@Success		200		{object}	api.Response{data=v1alpha1.DetailResourceResponse}	"resource detail"
 //	@Router			/api/v1/resources/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -140,10 +140,10 @@ func (r *resource) detailResource(c *gin.Context) {
 //	@Tags			Resource
 //	@Summary		ListResources
 //	@Description	List resources
-//	@Param			name	query		string								false	"fuzzy search based on name"
-//	@Param			offset	query		int									false	"query the page number"
-//	@Param			limit	query		int									false	"query the page size number"
-//	@Success		200		{object}	api.Response{data=[]model.Resource}	"resources"
+//	@Param			name	query		string										false	"fuzzy search based on name"
+//	@Param			offset	query		int											false	"query the page number"
+//	@Param			limit	query		int											false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=v1alpha1.ResourceList}	"resources"
 //	@Router			/api/v1/resources [get]
 //	@Security		BearerTokenAuth
 //

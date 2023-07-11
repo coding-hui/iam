@@ -38,6 +38,7 @@ func (r *role) RegisterApiGroup(g *gin.Engine) {
 		v1.GET("/:instanceId", r.roleCheckFilter, r.detailRole)
 		v1.GET("", r.listRole)
 		v1.POST("/:instanceId/assign", r.roleCheckFilter, r.assignRole)
+		v1.POST("/batch-assign", r.batchAssignRole)
 		v1.POST("/:instanceId/revoke", r.roleCheckFilter, r.revokeRole)
 	}
 }
@@ -118,8 +119,8 @@ func (r *role) deleteRole(c *gin.Context) {
 //	@Tags			Roles
 //	@Summary		GetRoleInfo
 //	@Description	GetByName role info
-//	@Param			name	path		string								true	"identifier of a role"
-//	@Success		200		{object}	api.Response{data=model.Resource}	"role detail"
+//	@Param			name	path		string											true	"identifier of a role"
+//	@Success		200		{object}	api.Response{data=v1alpha1.DetailRoleResponse}	"role detail"
 //	@Router			/api/v1/roles/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -182,6 +183,31 @@ func (r *role) assignRole(c *gin.Context) {
 	}
 	role := c.Request.Context().Value(&v1alpha1.CtxKeyRole).(*model.Role)
 	err = r.RoleService.AssignRole(c.Request.Context(), role, assignReq)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.Ok(c)
+}
+
+//	@Tags			Roles
+//	@Summary		BatchAssignRole
+//	@Description	Batch assign role
+//	@Param			data	body		v1alpha1.BatchAssignRoleRequest	true	"batch assign role request"
+//	@Success		200		{object}	api.Response					"assign role"
+//	@Router			/api/v1/roles/{instanceId}/assign [post]
+//	@Security		BearerTokenAuth
+//
+// batchAssignRole assign role.
+func (r *role) batchAssignRole(c *gin.Context) {
+	batchAssignReq := v1alpha1.BatchAssignRoleRequest{}
+	err := c.ShouldBindJSON(&batchAssignReq)
+	if err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		return
+	}
+	err = r.RoleService.BatchAssignRole(c.Request.Context(), batchAssignReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

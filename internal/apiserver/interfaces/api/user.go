@@ -34,6 +34,7 @@ func (u *user) RegisterApiGroup(g *gin.Engine) {
 		v1.DELETE("/:instanceId", u.deleteUser)
 		v1.GET("/:instanceId", u.getUser)
 		v1.GET("", u.listUser)
+		v1.GET("/:instanceId/roles", u.getUserRoles)
 	}
 }
 
@@ -122,8 +123,8 @@ func (u *user) deleteUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		GetUserInfo
 //	@Description	GetByName user info
-//	@Param			name	path		string							true	"identifier of a user"
-//	@Success		200		{object}	api.Response{data=model.User}	"user detail"
+//	@Param			name	path		string									true	"identifier of a user"
+//	@Success		200		{object}	api.Response{data=v1alpha1.UserBase}	"user detail"
 //	@Router			/api/v1/users/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -141,12 +142,12 @@ func (u *user) getUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		ListUsers
 //	@Description	List users
-//	@Param			name	query		string							false	"fuzzy search based on name"
-//	@Param			alias	query		string							false	"fuzzy search based on alias"
-//	@Param			email	query		string							false	"fuzzy search based on email"
-//	@Param			offset	query		int								false	"query the page number"
-//	@Param			limit	query		int								false	"query the page size number"
-//	@Success		200		{object}	api.Response{data=[]model.User}	"users"
+//	@Param			name	query		string									false	"fuzzy search based on name"
+//	@Param			alias	query		string									false	"fuzzy search based on alias"
+//	@Param			email	query		string									false	"fuzzy search based on email"
+//	@Param			offset	query		int										false	"query the page number"
+//	@Param			limit	query		int										false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=v1alpha1.UserList}	"users"
 //	@Router			/api/v1/users [get]
 //	@Security		BearerTokenAuth
 //
@@ -167,4 +168,23 @@ func (u *user) listUser(c *gin.Context) {
 	}
 
 	api.OkWithPage(resp.Items, resp.TotalCount, c)
+}
+
+//	@Tags			Users
+//	@Summary		GetUserRoles
+//	@Description	Get user roles
+//	@Param			name	path		string									true	"identifier of a user"
+//	@Success		200		{object}	api.Response{data=v1alpha1.RoleList}	"user roles"
+//	@Router			/api/v1/users/{instanceId}/roles [get]
+//	@Security		BearerTokenAuth
+//
+// getUserRoles get user roles.
+func (u *user) getUserRoles(c *gin.Context) {
+	roles, err := u.UserService.ListUserRoles(c.Request.Context(), c.Param("instanceId"), metav1alpha1.ListOptions{})
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.OkWithPage(roles.Items, roles.TotalCount, c)
 }

@@ -28,7 +28,7 @@ type Role struct {
 	Disabled    bool   `json:"disabled"        gorm:"column:disabled;type:bool"`
 	Description string `json:"description"     gorm:"column:description;type:varchar(512)"`
 
-	Users []User `json:"-" gorm:"many2many:sys_user_role;references:instance_id"`
+	Users []User `json:"-" gorm:"many2many:iam_user_role;references:instance_id"`
 }
 
 // TableName maps to mysql table name.

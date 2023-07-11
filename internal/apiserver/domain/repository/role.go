@@ -22,6 +22,7 @@ type RoleRepository interface {
 	GetByName(ctx context.Context, name string, opts metav1alpha1.GetOptions) (*model.Role, error)
 	GetByInstanceID(ctx context.Context, instanceID string, opts metav1alpha1.GetOptions) (*model.Role, error)
 	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
+	ListByUserInstanceId(ctx context.Context, userInstanceId string, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	AssignUserRoles(ctx context.Context, role *model.Role, userInstanceIds []string) (int64, error)
 	RevokeUserRoles(ctx context.Context, role *model.Role, userInstanceIds []string) (int64, error)
 }

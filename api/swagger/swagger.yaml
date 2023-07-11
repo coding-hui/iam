@@ -19,70 +19,6 @@ definitions:
         description: Success request is successful
         type: boolean
     type: object
-  model.Action:
-    properties:
-      description:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      resourceId:
-        type: integer
-    type: object
-  model.Resource:
-    properties:
-      actions:
-        description: Actions resource access mode.
-        items:
-          $ref: '#/definitions/model.Action'
-        type: array
-      api:
-        description: Type unique identification of resource API.
-        type: string
-      description:
-        description: Description resource description.
-        type: string
-      isDefault:
-        type: boolean
-      metadata:
-        allOf:
-        - $ref: '#/definitions/v1.ObjectMeta'
-        description: Standard object's metadata.
-      method:
-        description: Method resource method.
-        type: string
-      type:
-        description: Type resource type.
-        type: string
-    type: object
-  model.User:
-    properties:
-      alias:
-        type: string
-      disabled:
-        type: boolean
-      email:
-        description: 'Required: true'
-        type: string
-      lastLoginTime:
-        type: string
-      metadata:
-        allOf:
-        - $ref: '#/definitions/v1.ObjectMeta'
-        description: Standard object's metadata.
-      password:
-        description: 'Required: true'
-        type: string
-      phone:
-        type: string
-      status:
-        type: integer
-      tenantId:
-        type: integer
-      userType:
-        type: string
-    type: object
   v1.Extend:
     additionalProperties: true
     type: object
@@ -190,17 +126,26 @@ definitions:
         - $ref: '#/definitions/v1alpha1.UserBase'
         description: User user info
     type: object
-  v1alpha1.CreatePolicyRequest:
+  v1alpha1.BatchAssignRoleRequest:
     properties:
-      actions:
+      instanceIds:
+        description: InstanceIds role instanceIds.
         items:
           type: string
         type: array
+      targets:
+        description: Targets target resource instanceIds.
+        items:
+          type: string
+        type: array
+    required:
+    - instanceIds
+    type: object
+  v1alpha1.CreatePolicyRequest:
+    properties:
       description:
         maxLength: 30
         minLength: 1
-        type: string
-      effect:
         type: string
       meta:
         type: string
@@ -208,10 +153,6 @@ definitions:
         type: string
       owner:
         type: string
-      resources:
-        items:
-          type: string
-        type: array
       statements:
         items:
           $ref: '#/definitions/v1alpha1.Statement'
@@ -225,9 +166,7 @@ definitions:
       type:
         type: string
     required:
-    - actions
     - name
-    - resources
     - statements
     - subjects
     - type
@@ -292,16 +231,10 @@ definitions:
     type: object
   v1alpha1.DetailPolicyResponse:
     properties:
-      actions:
-        items:
-          type: string
-        type: array
       adapter:
         description: casbin required
         type: string
       description:
-        type: string
-      effect:
         type: string
       metadata:
         allOf:
@@ -319,7 +252,11 @@ definitions:
         type: array
       resources:
         items:
-          type: string
+          $ref: '#/definitions/v1alpha1.ResourceBase'
+        type: array
+      statements:
+        items:
+          $ref: '#/definitions/v1alpha1.Statement'
         type: array
       status:
         type: string
@@ -330,18 +267,63 @@ definitions:
       type:
         type: string
     type: object
-  v1alpha1.PolicyBase:
+  v1alpha1.DetailResourceResponse:
     properties:
       actions:
+        description: Actions resource access mode.
         items:
-          type: string
+          $ref: '#/definitions/v1alpha1.Action'
         type: array
+      api:
+        description: Type unique identification of resource API.
+        type: string
+      description:
+        description: Description resource description.
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/v1.ObjectMeta'
+        description: Standard object's metadata.
+      method:
+        description: Method resource method.
+        type: string
+      type:
+        description: Type resource type.
+        type: string
+    required:
+    - actions
+    - api
+    - method
+    - type
+    type: object
+  v1alpha1.DetailRoleResponse:
+    properties:
+      description:
+        description: Description tenant description.
+        type: string
+      disabled:
+        description: Disabled tenant state.
+        type: boolean
+      metadata:
+        allOf:
+        - $ref: '#/definitions/v1.ObjectMeta'
+        description: Standard object's metadata.
+      owner:
+        description: Owner tenant owner name.
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/v1alpha1.UserBase'
+        type: array
+    required:
+    - owner
+    type: object
+  v1alpha1.PolicyBase:
+    properties:
       adapter:
         description: casbin required
         type: string
       description:
-        type: string
-      effect:
         type: string
       metadata:
         allOf:
@@ -357,9 +339,9 @@ definitions:
             type: string
           type: array
         type: array
-      resources:
+      statements:
         items:
-          type: string
+          $ref: '#/definitions/v1alpha1.Statement'
         type: array
       status:
         type: string
@@ -385,6 +367,44 @@ definitions:
         type: string
       refresh_token:
         type: string
+    type: object
+  v1alpha1.ResourceBase:
+    properties:
+      actions:
+        description: Actions resource access mode.
+        items:
+          $ref: '#/definitions/v1alpha1.Action'
+        type: array
+      api:
+        description: Type unique identification of resource API.
+        type: string
+      description:
+        description: Description resource description.
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/v1.ObjectMeta'
+        description: Standard object's metadata.
+      method:
+        description: Method resource method.
+        type: string
+      type:
+        description: Type resource type.
+        type: string
+    required:
+    - actions
+    - api
+    - method
+    - type
+    type: object
+  v1alpha1.ResourceList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/v1alpha1.ResourceBase'
+        type: array
+      totalCount:
+        type: integer
     type: object
   v1alpha1.RevokeRoleRequest:
     properties:
@@ -417,6 +437,15 @@ definitions:
     required:
     - owner
     type: object
+  v1alpha1.RoleList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/v1alpha1.RoleBase'
+        type: array
+      totalCount:
+        type: integer
+    type: object
   v1alpha1.Statement:
     properties:
       actions:
@@ -425,31 +454,32 @@ definitions:
         type: array
       effect:
         type: string
-      resources:
+      resource:
+        type: string
+      resourceIdentifier:
         type: string
     required:
     - actions
     - effect
-    - resources
+    - resource
+    - resourceIdentifier
     type: object
   v1alpha1.UpdatePolicyRequest:
     properties:
-      actions:
-        items:
-          type: string
-        type: array
       description:
         maxLength: 30
         minLength: 1
         type: string
-      effect:
-        type: string
       meta:
         type: string
-      resources:
+      owner:
+        type: string
+      statements:
         items:
-          type: string
+          $ref: '#/definitions/v1alpha1.Statement'
         type: array
+      status:
+        type: string
       subjects:
         items:
           type: string
@@ -457,8 +487,7 @@ definitions:
       type:
         type: string
     required:
-    - actions
-    - resources
+    - statements
     - subjects
     - type
     type: object
@@ -535,6 +564,15 @@ definitions:
         type: integer
       userType:
         type: string
+    type: object
+  v1alpha1.UserList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/v1alpha1.UserBase'
+        type: array
+      totalCount:
+        type: integer
     type: object
 host: localhost:8000
 info:
@@ -651,9 +689,9 @@ paths:
       summary: CreatePolicy
       tags:
       - Policies
-  /api/v1/policies/{name}:
+  /api/v1/policies/{instanceId}:
     delete:
-      description: Delete policy by instanceId
+      description: DeleteByInstanceId policy by instanceId
       parameters:
       - description: name of a policy
         in: path
@@ -671,7 +709,7 @@ paths:
       tags:
       - Policies
     get:
-      description: Get a policy by name
+      description: GetByName a policy by name
       parameters:
       - description: name of a policy
         in: path
@@ -738,15 +776,13 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.Resource'
-                  type: array
+                  $ref: '#/definitions/v1alpha1.ResourceList'
               type: object
       security:
       - BearerTokenAuth: []
       summary: ListResources
       tags:
-      - Resources
+      - Resource
     post:
       consumes:
       - application/json
@@ -767,10 +803,10 @@ paths:
       - BearerTokenAuth: []
       summary: CreateResource
       tags:
-      - Resources
+      - Resource
   /api/v1/resources/{instanceId}:
     delete:
-      description: Delete resource
+      description: DeleteByInstanceId resource
       parameters:
       - description: name of a resource
         in: path
@@ -786,9 +822,9 @@ paths:
       - BearerTokenAuth: []
       summary: DeleteResource
       tags:
-      - Resources
+      - Resource
     get:
-      description: Get resource info
+      description: GetByName resource info
       parameters:
       - description: name of a resource
         in: path
@@ -803,13 +839,13 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.Resource'
+                  $ref: '#/definitions/v1alpha1.DetailResourceResponse'
               type: object
       security:
       - BearerTokenAuth: []
       summary: GetResourceInfo
       tags:
-      - Resources
+      - Resource
     put:
       consumes:
       - application/json
@@ -830,7 +866,7 @@ paths:
       - BearerTokenAuth: []
       summary: UpdateResource
       tags:
-      - Resources
+      - Resource
   /api/v1/roles:
     get:
       description: List role
@@ -887,7 +923,7 @@ paths:
       - Roles
   /api/v1/roles/{instanceId}:
     delete:
-      description: Delete role
+      description: DeleteByInstanceId role
       parameters:
       - description: identifier of a role
         in: path
@@ -905,7 +941,7 @@ paths:
       tags:
       - Roles
     get:
-      description: Get role info
+      description: GetByName role info
       parameters:
       - description: identifier of a role
         in: path
@@ -920,7 +956,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.Resource'
+                  $ref: '#/definitions/v1alpha1.DetailRoleResponse'
               type: object
       security:
       - BearerTokenAuth: []
@@ -950,14 +986,14 @@ paths:
       - Roles
   /api/v1/roles/{instanceId}/assign:
     post:
-      description: Assign role
+      description: Batch assign role
       parameters:
-      - description: assign role request
+      - description: batch assign role request
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.AssignRoleRequest'
+          $ref: '#/definitions/v1alpha1.BatchAssignRoleRequest'
       responses:
         "200":
           description: assign role
@@ -965,7 +1001,7 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: AssignRole
+      summary: BatchAssignRole
       tags:
       - Roles
   /api/v1/roles/{instanceId}/revoke:
@@ -1020,9 +1056,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.User'
-                  type: array
+                  $ref: '#/definitions/v1alpha1.UserList'
               type: object
       security:
       - BearerTokenAuth: []
@@ -1052,7 +1086,7 @@ paths:
       - Users
   /api/v1/users/{instanceId}:
     delete:
-      description: Delete user
+      description: DeleteByInstanceId user
       parameters:
       - description: identifier of a user
         in: path
@@ -1070,7 +1104,7 @@ paths:
       tags:
       - Users
     get:
-      description: Get user info
+      description: GetByName user info
       parameters:
       - description: identifier of a user
         in: path
@@ -1085,7 +1119,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.User'
+                  $ref: '#/definitions/v1alpha1.UserBase'
               type: object
       security:
       - BearerTokenAuth: []
@@ -1116,6 +1150,30 @@ paths:
       security:
       - BearerTokenAuth: []
       summary: UpdateUser
+      tags:
+      - Users
+  /api/v1/users/{instanceId}/roles:
+    get:
+      description: Get user roles
+      parameters:
+      - description: identifier of a user
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: user roles
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1alpha1.RoleList'
+              type: object
+      security:
+      - BearerTokenAuth: []
+      summary: GetUserRoles
       tags:
       - Users
   /ping:

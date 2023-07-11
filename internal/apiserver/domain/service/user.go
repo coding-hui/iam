@@ -38,6 +38,7 @@ type UserService interface {
 	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
 	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
 	ListUsers(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
+	ListUserRoles(ctx context.Context, instanceId string, listOptions metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	Init(ctx context.Context) error
 }
@@ -159,6 +160,20 @@ func (u *userServiceImpl) ListUsers(ctx context.Context, listOptions metav1alpha
 	}
 
 	return users, nil
+}
+
+// ListUserRoles list users.
+func (u *userServiceImpl) ListUserRoles(
+	ctx context.Context,
+	instanceId string,
+	listOptions metav1alpha1.ListOptions,
+) (*v1alpha1.RoleList, error) {
+	roles, err := u.Store.RoleRepository().ListByUserInstanceId(ctx, instanceId, listOptions)
+	if err != nil {
+		return nil, err
+	}
+
+	return roles, nil
 }
 
 // FlushLastLoginTime update user login time.

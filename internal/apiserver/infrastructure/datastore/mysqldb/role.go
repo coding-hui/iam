@@ -140,6 +140,30 @@ func (u *roleRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOpt
 	return list, db.Error
 }
 
+// ListByUserInstanceId list roles by user instanceId.
+func (u *roleRepositoryImpl) ListByUserInstanceId(
+	ctx context.Context,
+	userInstanceId string,
+	opts metav1alpha1.ListOptions,
+) (*v1alpha1.RoleList, error) {
+	list := &v1alpha1.RoleList{}
+	var roleIds []uint64
+
+	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
+	db := u.db.WithContext(ctx)
+	db.Raw("SELECT role_id FROM iam_user_role WHERE user_instance_id = ?", userInstanceId).Find(&roleIds)
+	db.Model(&model.Role{}).
+		Where("id in ?", roleIds).
+		Offset(ol.Offset).
+		Limit(ol.Limit).
+		Find(&list.Items).
+		Offset(-1).
+		Limit(-1).
+		Count(&list.TotalCount)
+
+	return list, db.Error
+}
+
 // AssignUserRoles assign user roles.
 func (u *roleRepositoryImpl) AssignUserRoles(ctx context.Context, role *model.Role, userInstanceIds []string) (int64, error) {
 	err := u.db.WithContext(ctx).Model(&model.User{}).Where("instance_id in ?", userInstanceIds).Find(&role.Users).Error
