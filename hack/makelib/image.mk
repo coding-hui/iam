@@ -9,11 +9,16 @@
 DOCKER := docker
 DOCKER_SUPPORTED_API_VERSION ?= 1.32
 
-REGISTRY_PREFIX ?= devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo
+REGISTRY_PREFIX ?= wecoding
 BASE_IMAGE = centos:centos8
 
 EXTRA_ARGS ?= --no-cache
 _DOCKER_BUILD_EXTRA_ARGS :=
+
+BUILDX_OUTPUT_TYPE ?= "registry"
+
+# Run `make image.push DOCKER_PLATFORMS="linux/amd64,linux/arm64" BUILDX_OUTPUT_TYPE=registry REGISTRY_PREFIX=[yourregistry]` to push multi-platform
+DOCKER_PLATFORMS ?= "linux/${GOARCH}"
 
 ifdef HTTP_PROXY
 _DOCKER_BUILD_EXTRA_ARGS += --build-arg HTTP_PROXY=${HTTP_PROXY}
@@ -84,35 +89,3 @@ image.push.multiarch: image.verify go.build.verify $(foreach p,$(PLATFORMS),$(ad
 image.push.%: image.build.%
 	@echo "===========> Pushing image $(IMAGE) $(VERSION) to $(REGISTRY_PREFIX)"
 	$(DOCKER) push $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION)
-
-.PHONY: image.manifest.push
-image.manifest.push: export DOCKER_CLI_EXPERIMENTAL := enabled
-image.manifest.push: image.verify go.build.verify \
-$(addprefix image.manifest.push., $(addprefix $(IMAGE_PLAT)., $(IMAGES)))
-
-.PHONY: image.manifest.push.%
-image.manifest.push.%: image.push.% image.manifest.remove.%
-	@echo "===========> Pushing manifest $(IMAGE) $(VERSION) to $(REGISTRY_PREFIX) and then remove the local manifest list"
-	@$(DOCKER) manifest create $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) \
-		$(REGISTRY_PREFIX)/$(IMAGE)-$(ARCH):$(VERSION)
-	@$(DOCKER) manifest annotate $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) \
-		$(REGISTRY_PREFIX)/$(IMAGE)-$(ARCH):$(VERSION) \
-		--os $(OS) --arch ${ARCH}
-	@$(DOCKER) manifest push --purge $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION)
-
-# Docker cli has a bug: https://github.com/docker/cli/issues/954
-# If you find your manifests were not updated,
-# Please manually delete them in $HOME/.docker/manifests/
-# and re-run.
-.PHONY: image.manifest.remove.%
-image.manifest.remove.%:
-	@rm -rf ${HOME}/.docker/manifests/docker.io_$(REGISTRY_PREFIX)_$(IMAGE)-$(VERSION)
-
-.PHONY: image.manifest.push.multiarch
-image.manifest.push.multiarch: image.push.multiarch $(addprefix image.manifest.push.multiarch., $(IMAGES))
-
-.PHONY: image.manifest.push.multiarch.%
-image.manifest.push.multiarch.%:
-	@echo "===========> Pushing manifest $* $(VERSION) to $(REGISTRY_PREFIX) and then remove the local manifest list"
-	REGISTRY_PREFIX=$(REGISTRY_PREFIX) PLATFROMS="$(PLATFORMS)" IMAGE=$* VERSION=$(VERSION) DOCKER_CLI_EXPERIMENTAL=enabled \
-	  $(ROOT_DIR)/build/lib/create-manifest.sh
