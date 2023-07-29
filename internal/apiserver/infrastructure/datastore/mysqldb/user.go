@@ -17,7 +17,6 @@ import (
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 
 	"github.com/coding-hui/common/errors"
-	"github.com/coding-hui/common/fields"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
@@ -31,18 +30,18 @@ func newUserRepository(db *gorm.DB) repository.UserRepository {
 }
 
 // Create creates a new user account.
-func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts metav1alpha1.CreateOptions) error {
+func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts metav1alpha1.CreateOptions) (*model.User, error) {
 	if oldUser, _ := u.GetByName(ctx, user.Name, metav1alpha1.GetOptions{}); oldUser != nil {
-		return errors.WithCode(code.ErrUserAlreadyExist, "User %s already exist", user.Name)
+		return nil, errors.WithCode(code.ErrUserAlreadyExist, "User %s already exist", user.Name)
 	}
 	if err := u.db.WithContext(ctx).Create(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return errors.WithCode(code.ErrUserAlreadyExist, err.Error())
+			return nil, errors.WithCode(code.ErrUserAlreadyExist, err.Error())
 		}
-		return err
+		return nil, err
 	}
 
-	return nil
+	return user, nil
 }
 
 // Update updates an user account information.
@@ -124,16 +123,26 @@ func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId str
 }
 
 // List list users.
-func (u *userRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
+func (u *userRepositoryImpl) List(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error) {
 	list := &v1alpha1.UserList{}
 
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
 
 	db := u.db.WithContext(ctx).Model(model.User{})
-	selector, _ := fields.ParseSelector(opts.FieldSelector)
-	username, _ := selector.RequiresExactMatch("name")
-	if username != "" {
-		db.Where("name like ?", "%"+username+"%")
+	if opts.Name != "" {
+		db.Where("name like ?", "%"+opts.Name+"%")
+	}
+	if opts.Alias != "" {
+		db.Where("alias like ?", "%"+opts.Alias+"%")
+	}
+	if opts.Email != "" {
+		db.Where("email like ?", "%"+opts.Email+"%")
+	}
+	if opts.Status != "" {
+		db.Where("status = ?", opts.Status)
+	}
+	if opts.InstanceID != "" {
+		db.Where("instance_id = ?", opts.InstanceID)
 	}
 	db.Offset(ol.Offset).
 		Limit(ol.Limit).

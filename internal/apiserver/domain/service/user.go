@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	"time"
 
 	"k8s.io/klog/v2"
@@ -31,13 +32,13 @@ const (
 
 // UserService User manage api.
 type UserService interface {
-	CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) error
+	CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) (*v1alpha1.CreateUserResponse, error)
 	UpdateUser(ctx context.Context, instanceId string, req v1alpha1.UpdateUserRequest) error
 	DeleteUser(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error
 	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
 	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
 	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
-	ListUsers(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
+	ListUsers(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error)
 	ListUserRoles(ctx context.Context, instanceId string, listOptions metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	Init(ctx context.Context) error
@@ -62,7 +63,7 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 			Alias:    DefaultAdminUserAlias,
 			UserType: v1alpha1.PlatformAdmin.String(),
 		}
-		err = u.CreateUser(ctx, user)
+		_, err = u.CreateUser(ctx, user)
 		if err != nil {
 			return errors.WithMessagef(err, "Failed to initialize default admin")
 		}
@@ -73,7 +74,7 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 }
 
 // CreateUser create user.
-func (u *userServiceImpl) CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) error {
+func (u *userServiceImpl) CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) (*v1alpha1.CreateUserResponse, error) {
 	encryptPassword, _ := auth.Encrypt(req.Password)
 	user := &model.User{
 		ObjectMeta: metav1alpha1.ObjectMeta{
@@ -85,11 +86,15 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1alpha1.CreateUse
 		UserType: req.UserType,
 		Disabled: false,
 	}
-	if err := u.Store.UserRepository().Create(ctx, user, metav1alpha1.CreateOptions{}); err != nil {
-		return err
+	createUser, err := u.Store.UserRepository().Create(ctx, user, metav1alpha1.CreateOptions{})
+	if err != nil {
+		return nil, err
 	}
+	base := assembler.ConvertUserModelToBase(createUser)
 
-	return nil
+	return &v1alpha1.CreateUserResponse{
+		UserBase: *base,
+	}, nil
 }
 
 // UpdateUser update user.
@@ -153,8 +158,8 @@ func (u *userServiceImpl) GetUserByInstanceId(ctx context.Context, instanceId st
 }
 
 // ListUsers list users.
-func (u *userServiceImpl) ListUsers(ctx context.Context, listOptions metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
-	users, err := u.Store.UserRepository().List(ctx, listOptions)
+func (u *userServiceImpl) ListUsers(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error) {
+	users, err := u.Store.UserRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err
 	}

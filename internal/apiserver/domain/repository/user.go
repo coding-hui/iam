@@ -15,11 +15,11 @@ import (
 
 // UserRepository defines the user repository interface.
 type UserRepository interface {
-	Create(ctx context.Context, user *model.User, opts metav1alpha1.CreateOptions) error
+	Create(ctx context.Context, user *model.User, opts metav1alpha1.CreateOptions) (*model.User, error)
 	Update(ctx context.Context, user *model.User, opts metav1alpha1.UpdateOptions) error
 	DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
 	GetByName(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
-	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
+	List(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error)
 }

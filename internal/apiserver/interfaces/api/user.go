@@ -60,13 +60,13 @@ func (u *user) createUser(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = u.UserService.CreateUser(c.Request.Context(), createReq)
+	user, err := u.UserService.CreateUser(c.Request.Context(), createReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
 
-	api.Ok(c)
+	api.OkWithData(user, c)
 }
 
 //	@Tags			Users
@@ -158,9 +158,14 @@ func (u *user) listUser(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := u.UserService.ListUsers(c.Request.Context(), metav1alpha1.ListOptions{
-		Limit:  &pageSize,
-		Offset: &page,
+	resp, err := u.UserService.ListUsers(c.Request.Context(), v1alpha1.ListUserOptions{
+		Limit:      &pageSize,
+		Offset:     &page,
+		InstanceID: c.Query("instanceId"),
+		Name:       c.Query("name"),
+		Email:      c.Query("email"),
+		Alias:      c.Query("alias"),
+		Status:     c.Query("status"),
 	})
 	if err != nil {
 		api.FailWithErrCode(err, c)

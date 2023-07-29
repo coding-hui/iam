@@ -95,6 +95,11 @@ type CreateUserRequest struct {
 	UserType string `json:"userType"`
 }
 
+// CreateUserResponse create user response.
+type CreateUserResponse struct {
+	UserBase
+}
+
 // UpdateUserRequest update user request.
 type UpdateUserRequest struct {
 	Alias string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
@@ -131,7 +136,13 @@ type UserList struct {
 
 // ListUserOptions list user query options.
 type ListUserOptions struct {
-	metav1alpha1.ListOptions `json:",inline"`
+	Offset     *int64 `json:"offset"`
+	Limit      *int64 `json:"limit"`
+	InstanceID string `json:"instanceId"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	Alias      string `json:"alias"`
+	Status     string `json:"status"`
 }
 
 // TenantBase represents a tenant restful resource.
