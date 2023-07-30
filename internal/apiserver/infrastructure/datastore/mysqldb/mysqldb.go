@@ -10,12 +10,11 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/coding-hui/iam/pkg/log"
-
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/db"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 )

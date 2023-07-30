@@ -7,12 +7,11 @@ package options
 import (
 	"encoding/json"
 
+	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
+	"github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/pkg/log"
 
 	cliflag "github.com/coding-hui/common/cli/flag"
-
-	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
-	"github.com/coding-hui/iam/internal/pkg/server"
 )
 
 // Options runs an iam api server.
@@ -23,6 +22,7 @@ type Options struct {
 	InsecureServing         *genericoptions.InsecureServingOptions `json:"insecure"       mapstructure:"insecure"`
 	SecureServing           *genericoptions.SecureServingOptions   `json:"secure"         mapstructure:"secure"`
 	RedisOptions            *genericoptions.RedisOptions           `json:"redis"          mapstructure:"redis"`
+	LogOptions              *log.Options                           `json:"log"            mapstructure:"log"`
 	FeatureOptions          *genericoptions.FeatureOptions         `json:"feature"        mapstructure:"feature"`
 }
 
@@ -38,6 +38,7 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 	o.FeatureOptions.AddFlags(fss.FlagSet("features"))
 	o.InsecureServing.AddFlags(fss.FlagSet("insecure serving"))
 	o.SecureServing.AddFlags(fss.FlagSet("secure serving"))
+	o.LogOptions.AddFlags(fss.FlagSet("log"))
 
 	// Note: the weird ""+ in below lines seems to be the only way to get gofmt to
 	// arrange these text blocks sensibly. Grrr.
@@ -75,6 +76,7 @@ func NewOptions() *Options {
 		InsecureServing:         genericoptions.NewInsecureServingOptions(),
 		SecureServing:           genericoptions.NewSecureServingOptions(),
 		RedisOptions:            genericoptions.NewRedisOptions(),
+		LogOptions:              log.NewOptions(),
 		FeatureOptions:          genericoptions.NewFeatureOptions(),
 	}
 

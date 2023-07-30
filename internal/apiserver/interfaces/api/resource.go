@@ -9,15 +9,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
-
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+
+	"github.com/coding-hui/common/errors"
+	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
 type resource struct {

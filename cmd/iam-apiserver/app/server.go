@@ -39,7 +39,7 @@ func NewAPIServerAPP(basename string) *app.App {
 // Run runs the specified APIServer. This should never exit.
 func Run(opts *options.Options) app.RunFunc {
 	return func(basename string) error {
-		log.Init(opts.Log)
+		log.Init(opts.LogOptions)
 		defer log.Flush()
 
 		errChan := make(chan error)

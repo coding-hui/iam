@@ -11,12 +11,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/coding-hui/iam/pkg/log"
-
 	"github.com/coding-hui/iam/cmd/iam-authzserver/app/options"
 	"github.com/coding-hui/iam/internal/authzserver"
 	"github.com/coding-hui/iam/internal/authzserver/config"
 	"github.com/coding-hui/iam/pkg/app"
+	"github.com/coding-hui/iam/pkg/log"
 )
 
 const commandDesc = `Authorization server to run casbin policies which can protecting your resources.
@@ -43,6 +42,9 @@ func NewAuthzServerAPP(basename string) *app.App {
 // Run runs the specified AuthzServer. This should never exit.
 func Run(opts *options.Options) app.RunFunc {
 	return func(basename string) error {
+		log.Init(opts.LogOptions)
+		defer log.Flush()
+
 		errChan := make(chan error)
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()

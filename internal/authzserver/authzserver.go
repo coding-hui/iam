@@ -8,10 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/coding-hui/iam/pkg/log"
-	"github.com/coding-hui/iam/pkg/shutdown"
-	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
-
 	"github.com/coding-hui/iam/internal/authzserver/adapter"
 	"github.com/coding-hui/iam/internal/authzserver/authorization"
 	"github.com/coding-hui/iam/internal/authzserver/authorization/authorizer"
@@ -21,6 +17,9 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/middleware"
 	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
+	"github.com/coding-hui/iam/pkg/log"
+	"github.com/coding-hui/iam/pkg/shutdown"
+	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 )
 
 // AuthzServer interface for call iam-authzserver.

@@ -7,13 +7,12 @@ package options
 import (
 	"encoding/json"
 
-	cliflag "github.com/coding-hui/common/cli/flag"
-	"github.com/coding-hui/common/util/idutil"
-
-	"github.com/coding-hui/iam/pkg/log"
-
 	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/internal/pkg/server"
+	"github.com/coding-hui/iam/pkg/log"
+
+	cliflag "github.com/coding-hui/common/cli/flag"
+	"github.com/coding-hui/common/util/idutil"
 )
 
 // Options runs an iam api server.
@@ -25,7 +24,7 @@ type Options struct {
 	MySQLOptions            *genericoptions.MySQLOptions           `json:"mysql"    mapstructure:"mysql"`
 	RedisOptions            *genericoptions.RedisOptions           `json:"redis"    mapstructure:"redis"`
 	JwtOptions              *genericoptions.JwtOptions             `json:"jwt"      mapstructure:"jwt"`
-	Log                     *log.Options                           `json:"log"      mapstructure:"log"`
+	LogOptions              *log.Options                           `json:"log"      mapstructure:"log"`
 	FeatureOptions          *genericoptions.FeatureOptions         `json:"feature"  mapstructure:"feature"`
 }
 
@@ -44,6 +43,7 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 	o.FeatureOptions.AddFlags(fss.FlagSet("features"))
 	o.InsecureServing.AddFlags(fss.FlagSet("insecure serving"))
 	o.SecureServing.AddFlags(fss.FlagSet("secure serving"))
+	o.LogOptions.AddFlags(fss.FlagSet("log"))
 
 	return fss
 }
@@ -77,7 +77,7 @@ func NewOptions() *Options {
 		MySQLOptions:            genericoptions.NewMySQLOptions(),
 		RedisOptions:            genericoptions.NewRedisOptions(),
 		JwtOptions:              genericoptions.NewJwtOptions(),
-		Log:                     log.NewOptions(),
+		LogOptions:              log.NewOptions(),
 		FeatureOptions:          genericoptions.NewFeatureOptions(),
 	}
 

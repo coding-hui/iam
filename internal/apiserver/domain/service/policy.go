@@ -9,13 +9,12 @@ import (
 
 	"github.com/lib/pq"
 
-	"github.com/coding-hui/iam/pkg/log"
-
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"

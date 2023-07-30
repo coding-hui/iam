@@ -9,16 +9,16 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/coding-hui/common/errors"
-	"github.com/coding-hui/common/fields"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
-
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+
+	"github.com/coding-hui/common/errors"
+	"github.com/coding-hui/common/fields"
+	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
 type resourceRepositoryImpl struct {
