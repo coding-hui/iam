@@ -7,7 +7,7 @@ package service
 import (
 	"context"
 
-	"k8s.io/klog/v2"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -83,7 +83,7 @@ func (r *roleServiceImpl) Init(ctx context.Context) error {
 			if err != nil {
 				return errors.WithMessagef(err, "Failed to initialize default role %s", role.String())
 			}
-			klog.Infof("initialize %s role done", role.String())
+			log.Infof("initialize %s role done", role.String())
 		}
 	}
 
@@ -108,7 +108,7 @@ func (r *roleServiceImpl) Init(ctx context.Context) error {
 	if err != nil {
 		return errors.WithMessagef(err, "Failed to assign the platform role to the default administrator.")
 	}
-	klog.Infof("assign the platform role to the default administrator done")
+	log.Infof("assign the platform role to the default administrator done")
 
 	return nil
 }
@@ -230,7 +230,7 @@ func (r *roleServiceImpl) AssignRole(ctx context.Context, role *model.Role, assi
 	for h := range handlers {
 		lastErr = h.assign(ctx)
 		if lastErr != nil {
-			klog.Errorf("Failed to assign roles. err: %w", lastErr)
+			log.Errorf("Failed to assign roles. err: %w", lastErr)
 		}
 	}
 
@@ -244,12 +244,12 @@ func (r *roleServiceImpl) BatchAssignRole(ctx context.Context, batchAssignReq v1
 	for _, instanceId := range instanceIds {
 		role, err := r.GetRoleByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
 		if err != nil {
-			klog.Errorf("Failed to get role details using the id", instanceId)
+			log.Errorf("Failed to get role details using the id", instanceId)
 			return err
 		}
 		err = r.AssignRole(ctx, role, v1alpha1.AssignRoleRequest{Targets: targets})
 		if err != nil {
-			klog.Errorf("Failed to batch assign roles. err: %w", err)
+			log.Errorf("Failed to batch assign roles. err: %w", err)
 			return err
 		}
 	}
@@ -267,7 +267,7 @@ func (r *roleServiceImpl) RevokeRole(ctx context.Context, role *model.Role, revo
 	for h := range handlers {
 		lastErr = h.revoke(ctx)
 		if lastErr != nil {
-			klog.Errorf("Failed to revoke roles. err: %w", lastErr)
+			log.Errorf("Failed to revoke roles. err: %w", lastErr)
 		}
 	}
 
@@ -284,7 +284,7 @@ func (r *roleServiceImpl) AuthorizeRoleResources(ctx context.Context, role *mode
 	for h := range handlers {
 		err := h.revoke(ctx)
 		if err != nil {
-			klog.Errorf("Failed to revoke roles. err: %w", err)
+			log.Errorf("Failed to revoke roles. err: %w", err)
 		}
 	}
 
@@ -300,10 +300,10 @@ func (u *userRoleHandlerImpl) assign(ctx context.Context) error {
 	for _, userInstanceId := range u.targetInstanceIds {
 		_, err = e.AddRoleForUser(userInstanceId, u.role.InstanceID)
 		if err != nil {
-			klog.Errorf("Failed assign role %s to user %s", u.role.Name, userInstanceId)
+			log.Errorf("Failed assign role %s to user %s", u.role.Name, userInstanceId)
 		}
 	}
-	klog.Infof("AssignRole the %s role to %d users", u.role.Name, count)
+	log.Infof("AssignRole the %s role to %d users", u.role.Name, count)
 
 	return nil
 }
@@ -317,10 +317,10 @@ func (u *userRoleHandlerImpl) revoke(ctx context.Context) error {
 	for _, userInstanceId := range u.targetInstanceIds {
 		_, err = e.DeleteRoleForUser(userInstanceId, u.role.InstanceID)
 		if err != nil {
-			klog.Errorf("Failed to revoke the %s role rights of the %s", u.role.Name, userInstanceId)
+			log.Errorf("Failed to revoke the %s role rights of the %s", u.role.Name, userInstanceId)
 		}
 	}
-	klog.Infof("RevokeRole the %s role removes %d users", u.role.Name, count)
+	log.Infof("RevokeRole the %s role removes %d users", u.role.Name, count)
 
 	return nil
 }
@@ -339,12 +339,12 @@ func (r *roleServiceImpl) determineRoleHandlerByInstanceId(role *model.Role, ins
 		case v1alpha1.UserTarget:
 			handler, err := r.newUserRoleHandlerImpl(role, ts)
 			if err != nil {
-				klog.Warningf("failed to new user role handler. err: %w", err)
+				log.Warnf("failed to new user role handler. err: %w", err)
 				continue
 			}
 			handlers[handler] = ts
 		default:
-			klog.Warningf("Unsupported target %s", ri)
+			log.Warnf("Unsupported target %s", ri)
 		}
 	}
 

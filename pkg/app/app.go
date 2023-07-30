@@ -11,7 +11,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	cliflag "github.com/coding-hui/common/cli/flag"
 	"github.com/coding-hui/common/cli/globalflag"
@@ -210,12 +211,12 @@ func (a *App) runCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	if !a.silence {
-		klog.Infof("%v Starting %s ...", progressMessage, a.name)
+		log.Infof("%v Starting %s ...", progressMessage, a.name)
 		if !a.noVersion {
-			klog.Infof("%v Version: `%s`", progressMessage, version.Get().ToJSON())
+			log.Infof("%v Version: `%s`", progressMessage, version.Get().ToJSON())
 		}
 		if !a.noConfig {
-			klog.Infof("%v Config file used: `%s`", progressMessage, viper.ConfigFileUsed())
+			log.Infof("%v Config file used: `%s`", progressMessage, viper.ConfigFileUsed())
 		}
 	}
 	if a.options != nil {
@@ -243,7 +244,7 @@ func (a *App) applyOptionRules() error {
 	}
 
 	if printableOptions, ok := a.options.(PrintableOptions); ok && !a.silence {
-		klog.Infof("%v Config: `%s`", progressMessage, printableOptions.String())
+		log.Infof("%v Config: `%s`", progressMessage, printableOptions.String())
 	}
 
 	return nil

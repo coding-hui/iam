@@ -7,7 +7,7 @@ package server
 import (
 	"net/http"
 
-	"k8s.io/klog/v2"
+	"github.com/coding-hui/iam/pkg/log"
 )
 
 // ServeHealthCheck runs a http server used to provide a api to check pump health status.
@@ -19,6 +19,6 @@ func ServeHealthCheck(healthPath string, healthAddress string) {
 	})
 
 	if err := http.ListenAndServe(healthAddress, nil); err != nil {
-		klog.Fatalf("Error serving health check endpoint: %s", err.Error())
+		log.Fatalf("Error serving health check endpoint: %s", err.Error())
 	}
 }

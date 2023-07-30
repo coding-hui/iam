@@ -10,10 +10,10 @@ import (
 
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
-	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/authzserver/store"
 	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+	"github.com/coding-hui/iam/pkg/log"
 )
 
 // Adapter represents the Redis adapter for policy storage.
@@ -72,7 +72,7 @@ func (a *Adapter) LoadPolicy(model model.Model) error {
 		line := toStringPolicyRule(r)
 		err := persist.LoadPolicyArray(line, model)
 		if err != nil {
-			klog.Warningf("failed to load policy array. policy=%s err=%w", err, r)
+			log.Warnf("failed to load policy array. policy=%s err=%w", err, r)
 		}
 	}
 

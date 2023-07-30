@@ -7,7 +7,7 @@ package db
 import (
 	"time"
 
-	"k8s.io/klog/v2"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"gorm.io/gorm"
 )
@@ -64,5 +64,5 @@ func after(db *gorm.DB) {
 		return
 	}
 	// sql := db.Dialector.Explain(db.Statements.SQL.String(), db.Statements.Vars...)
-	klog.Infof("sql cost time: %fs", time.Since(ts).Seconds())
+	log.Infof("sql cost time: %fs", time.Since(ts).Seconds())
 }

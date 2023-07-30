@@ -11,7 +11,8 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 )
 
 // Command is a sub command structure of a cli application.
@@ -102,7 +103,7 @@ func (c *Command) cobraCommand() *cobra.Command {
 func (c *Command) runCommand(cmd *cobra.Command, args []string) {
 	if c.runFunc != nil {
 		if err := c.runFunc(args); err != nil {
-			klog.Errorf("%v %v\n", color.RedString("Error:"), err)
+			log.Errorf("%v %v\n", color.RedString("Error:"), err)
 			os.Exit(1)
 		}
 	}

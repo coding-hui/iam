@@ -9,7 +9,8 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/avast/retry-go"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 
@@ -42,7 +43,7 @@ func (p *policies) DetailPolicy(ctx context.Context, name string) (*pb.PolicyInf
 		return nil, errors.Wrapf(err, "failed to get policy %s detail", name)
 	}
 
-	klog.Infof("Policy %s found", name)
+	log.Infof("Policy %s found", name)
 
 	return policy, nil
 }
@@ -70,7 +71,7 @@ func (p *policies) ListPolicies(ctx context.Context) (*pb.ListPoliciesResponse, 
 		return nil, errors.Wrap(err, "failed to list policies")
 	}
 
-	klog.Infof("Policies found (%d total)", len(resp.Items))
+	log.Infof("Policies found (%d total)", len(resp.Items))
 
 	return resp, nil
 }
@@ -98,7 +99,7 @@ func (p *policies) ListPolicyRules(ctx context.Context) (*pb.ListPolicyRulesResp
 		return nil, errors.Wrap(err, "failed to list policy rules")
 	}
 
-	klog.Infof("PolicyRules found (%d total)", len(resp.Items))
+	log.Infof("PolicyRules found (%d total)", len(resp.Items))
 
 	return resp, nil
 }

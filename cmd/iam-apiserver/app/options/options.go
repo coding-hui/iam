@@ -7,10 +7,10 @@ package options
 import (
 	"encoding/json"
 
-	"k8s.io/klog/v2"
-
 	cliflag "github.com/coding-hui/common/cli/flag"
 	"github.com/coding-hui/common/util/idutil"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/internal/pkg/server"
@@ -25,6 +25,7 @@ type Options struct {
 	MySQLOptions            *genericoptions.MySQLOptions           `json:"mysql"    mapstructure:"mysql"`
 	RedisOptions            *genericoptions.RedisOptions           `json:"redis"    mapstructure:"redis"`
 	JwtOptions              *genericoptions.JwtOptions             `json:"jwt"      mapstructure:"jwt"`
+	Log                     *log.Options                           `json:"log"      mapstructure:"log"`
 	FeatureOptions          *genericoptions.FeatureOptions         `json:"feature"  mapstructure:"feature"`
 }
 
@@ -50,7 +51,7 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 func (o *Options) String() string {
 	data, err := json.Marshal(o)
 	if err != nil {
-		klog.Errorf("failed to marshal iam-apiserver options. err: %w", err)
+		log.Errorf("failed to marshal iam-apiserver options. err: %w", err)
 		return ""
 	}
 
@@ -76,6 +77,7 @@ func NewOptions() *Options {
 		MySQLOptions:            genericoptions.NewMySQLOptions(),
 		RedisOptions:            genericoptions.NewRedisOptions(),
 		JwtOptions:              genericoptions.NewJwtOptions(),
+		Log:                     log.NewOptions(),
 		FeatureOptions:          genericoptions.NewFeatureOptions(),
 	}
 

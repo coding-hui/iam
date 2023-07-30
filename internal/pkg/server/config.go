@@ -13,7 +13,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/util/homedir"
 )
@@ -143,6 +144,6 @@ func LoadConfig(cfg string, defaultName string) {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
-		klog.Warningf("WARNING: viper failed to discover and load the configuration file: %s", err.Error())
+		log.Warnf("WARNING: viper failed to discover and load the configuration file: %s", err.Error())
 	}
 }

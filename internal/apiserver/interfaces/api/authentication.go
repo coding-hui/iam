@@ -10,7 +10,6 @@ import (
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -18,6 +17,7 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
@@ -107,7 +107,7 @@ func permissionCheckFilter(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	klog.Infof("Permission verification. path: %s", c.Request.URL.Path)
+	log.Infof("Permission verification. path: %s", c.Request.URL.Path)
 
 	c.Next()
 }

@@ -9,7 +9,8 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/iam/internal/authzserver/store"
 	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
@@ -39,20 +40,20 @@ func GetAPIServerFactoryOrDie(address string, clientCA string) store.Factory {
 
 		creds, err = credentials.NewClientTLSFromFile(clientCA, "")
 		if err != nil {
-			klog.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
+			log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
 		}
 
 		conn, err = grpc.Dial(address, grpc.WithBlock(), grpc.WithTransportCredentials(creds))
 		if err != nil {
-			klog.Fatalf("Connect to grpc server failed, error: %s", err.Error())
+			log.Fatalf("Connect to grpc server failed, error: %s", err.Error())
 		}
 
 		apiServerFactory = &datastore{pb.NewCacheClient(conn)}
-		klog.Infof("Connected to grpc server, address: %s", address)
+		log.Infof("Connected to grpc server, address: %s", address)
 	})
 
 	if apiServerFactory == nil {
-		klog.Fatalf("failed to get apiserver store fatory")
+		log.Fatalf("failed to get apiserver store fatory")
 	}
 
 	return apiServerFactory

@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/pkg/utils"
+	"github.com/coding-hui/iam/pkg/log"
 )
 
 // RequestLog write to console.
@@ -38,7 +38,7 @@ func RequestLog() gin.HandlerFunc {
 		statusCode := c.Writer.Status()
 		// 请求IP
 		clientIP := utils.ClientIP(c.Request)
-		klog.InfoS("request log",
+		log.Infow("request log",
 			"clientIP", utils.Sanitize(clientIP),
 			"uri", utils.Sanitize(reqUri),
 			"query", query,

@@ -9,11 +9,11 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+	"github.com/coding-hui/iam/pkg/log"
 
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
@@ -41,7 +41,7 @@ func NewCacheServer() *Cache {
 
 // DetailPolicy returns policy details.
 func (c *Cache) DetailPolicy(ctx context.Context, r *pb.GetPolicyRequest) (*pb.PolicyInfo, error) {
-	klog.Info("get policy detail function called.")
+	log.Info("get policy detail function called.")
 	policy, err := c.PolicyService.GetPolicy(ctx, r.GetName(), metav1alpha1.GetOptions{})
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (c *Cache) DetailPolicy(ctx context.Context, r *pb.GetPolicyRequest) (*pb.P
 
 // ListPolicies returns all policies.
 func (c *Cache) ListPolicies(ctx context.Context, r *pb.ListPoliciesRequest) (*pb.ListPoliciesResponse, error) {
-	klog.Info("list policies function called.")
+	log.Info("list policies function called.")
 	opts := metav1alpha1.ListOptions{
 		Offset: r.Offset,
 		Limit:  r.Limit,
@@ -85,7 +85,7 @@ func (c *Cache) ListPolicies(ctx context.Context, r *pb.ListPoliciesRequest) (*p
 
 // ListPolicyRules returns all policy rules.
 func (c *Cache) ListPolicyRules(ctx context.Context, r *pb.ListPolicyRulesRequest) (*pb.ListPolicyRulesResponse, error) {
-	klog.Info("list policy rules function called.")
+	log.Info("list policy rules function called.")
 	opts := metav1alpha1.ListOptions{
 		Offset: r.Offset,
 		Limit:  r.Limit,

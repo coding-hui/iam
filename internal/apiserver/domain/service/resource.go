@@ -13,7 +13,8 @@ import (
 
 	"github.com/bitly/go-simplejson"
 	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
@@ -55,7 +56,7 @@ func (r *resourceServiceImpl) Init(ctx context.Context) error {
 	routes := ctx.Value(&v1alpha1.CtxKeyRoutes).(gin.RoutesInfo)
 	apiPrefix := ctx.Value(&v1alpha1.CtxKeyApiPrefix).([]string)
 	if len(routes) == 0 {
-		klog.Warning("Failed to get the registered route from the init context.")
+		log.Warnf("Failed to get the registered route from the init context.")
 		return nil
 	}
 	jsonFile, _ := os.ReadFile(ApiResourceDir)
@@ -88,11 +89,11 @@ func (r *resourceServiceImpl) Init(ctx context.Context) error {
 		_, err := r.Store.ResourceRepository().GetByName(ctx, createReq.Name, metav1alpha1.GetOptions{})
 		if err != nil && errors.IsCode(err, code.ErrResourceNotFound) {
 			if err := r.CreateResource(ctx, createReq); err != nil {
-				klog.Warningf("Failed to create api resource. [Api: %s Method: %s Handler: %s]", route.Path, route.Method, route.Handler)
+				log.Warnf("Failed to create api resource. [Api: %s Method: %s Handler: %s]", route.Path, route.Method, route.Handler)
 			}
 		}
 	}
-	klog.Info("initialize system default api resource done")
+	log.Info("initialize system default api resource done")
 
 	return nil
 }

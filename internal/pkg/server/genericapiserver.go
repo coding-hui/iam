@@ -7,7 +7,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -16,10 +15,10 @@ import (
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"golang.org/x/sync/errgroup"
-	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/common/version"
@@ -85,7 +84,7 @@ func (s *GenericAPIServer) InstallAPIs() {
 // Setup do some setup work for gin engine.
 func (s *GenericAPIServer) Setup() {
 	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
-		klog.Infof("%-6s %-s --> %s (%d handlers)", httpMethod, absolutePath, handlerName, nuHandlers)
+		log.Infof("%-6s %-s --> %s (%d handlers)", httpMethod, absolutePath, handlerName, nuHandlers)
 	}
 }
 
@@ -99,12 +98,12 @@ func (s *GenericAPIServer) InstallMiddlewares() {
 	for _, m := range s.middlewares {
 		mw, ok := middleware.Middlewares[m]
 		if !ok {
-			klog.Warningf("can not find middleware: %s", m)
+			log.Warnf("can not find middleware: %s", m)
 
 			continue
 		}
 
-		klog.Infof("install middleware: %s", m)
+		log.Infof("install middleware: %s", m)
 		s.Use(mw)
 	}
 }
@@ -145,22 +144,22 @@ func (s *GenericAPIServer) Run() error {
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below
 	eg.Go(func() error {
-		klog.Infof("Start to listening the incoming requests on http address: %s", s.InsecureServingInfo.Address)
+		log.Infof("Start to listening the incoming requests on http address: %s", s.InsecureServingInfo.Address)
 
 		if err := s.insecureServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			klog.Fatalf(err.Error())
+			log.Fatalf(err.Error())
 
 			return err
 		}
 
-		klog.Infof("Server on %s stopped", s.InsecureServingInfo.Address)
+		log.Infof("Server on %s stopped", s.InsecureServingInfo.Address)
 
 		return nil
 	})
 
 	eg.Go(func() error {
 		if !s.SecureServingInfo.Required {
-			klog.Infof("Secure server is not enabled.")
+			log.Infof("Secure server is not enabled.")
 			return nil
 		}
 		key, cert := s.SecureServingInfo.CertKey.KeyFile, s.SecureServingInfo.CertKey.CertFile
@@ -168,15 +167,15 @@ func (s *GenericAPIServer) Run() error {
 			return nil
 		}
 
-		klog.Infof("Start to listening the incoming requests on https address: %s", s.SecureServingInfo.Address())
+		log.Infof("Start to listening the incoming requests on https address: %s", s.SecureServingInfo.Address())
 
 		if err := s.secureServer.ListenAndServeTLS(cert, key); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			klog.Fatal(err.Error())
+			log.Fatal(err.Error())
 
 			return err
 		}
 
-		klog.Infof("Server on %s stopped", s.SecureServingInfo.Address())
+		log.Infof("Server on %s stopped", s.SecureServingInfo.Address())
 
 		return nil
 	})
@@ -205,11 +204,11 @@ func (s *GenericAPIServer) Close() {
 	defer cancel()
 
 	if err := s.secureServer.Shutdown(ctx); err != nil {
-		klog.Warningf("Shutdown secure server failed: %s", err.Error())
+		log.Warnf("Shutdown secure server failed: %s", err.Error())
 	}
 
 	if err := s.insecureServer.Shutdown(ctx); err != nil {
-		klog.Warningf("Shutdown insecure server failed: %s", err.Error())
+		log.Warnf("Shutdown insecure server failed: %s", err.Error())
 	}
 }
 
@@ -230,7 +229,7 @@ func (s *GenericAPIServer) ping(ctx context.Context) error {
 
 		resp, err := http.DefaultClient.Do(req)
 		if err == nil && resp.StatusCode == http.StatusOK {
-			klog.Infof("The router has been deployed successfully.")
+			log.Infof("The router has been deployed successfully.")
 
 			resp.Body.Close()
 
@@ -238,7 +237,7 @@ func (s *GenericAPIServer) ping(ctx context.Context) error {
 		}
 
 		// Sleep for a second to continue the next ping.
-		klog.Info("Waiting for the router, retry in 1 second.")
+		log.Info("Waiting for the router, retry in 1 second.")
 		time.Sleep(1 * time.Second)
 
 		select {

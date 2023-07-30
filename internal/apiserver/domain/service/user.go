@@ -6,15 +6,14 @@ package service
 
 import (
 	"context"
-	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	"time"
-
-	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
@@ -67,7 +66,7 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 		if err != nil {
 			return errors.WithMessagef(err, "Failed to initialize default admin")
 		}
-		klog.Info("initialize default admin done")
+		log.Info("initialize default admin done")
 	}
 
 	return nil

@@ -8,7 +8,8 @@ import (
 	"context"
 
 	"github.com/lib/pq"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -66,11 +67,11 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 	_, err = p.Store.PolicyRepository().GetByName(ctx, createReq.Name, metav1alpha1.GetOptions{})
 	if err != nil && errors.IsCode(err, code.ErrPolicyNotFound) {
 		if err := p.CreatePolicy(ctx, createReq); err != nil {
-			klog.Warningf("Failed to create admin policy.")
+			log.Warnf("Failed to create admin policy.")
 			return err
 		}
 	}
-	klog.Info("initialize system default policies done")
+	log.Info("initialize system default policies done")
 
 	return nil
 }
@@ -94,7 +95,7 @@ func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1alpha1.Creat
 		return err
 	}
 	if !res {
-		klog.Warning("The authorization rule %s already exists and cannot be added", policy.Name)
+		log.Warnf("The authorization rule %s already exists and cannot be added", policy.Name)
 	}
 
 	return err
@@ -145,7 +146,7 @@ func (p *policyServiceImpl) DeletePolicy(ctx context.Context, name string, opts 
 		return err
 	}
 	if !areRulesRemoved {
-		klog.Warning("The rules is not removed. Check whether it exists. policyName: %s", policy.Name)
+		log.Warnf("The rules is not removed. Check whether it exists. policyName: %s", policy.Name)
 	}
 
 	err = p.Store.PolicyRepository().Delete(ctx, name, opts)

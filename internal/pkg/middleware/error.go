@@ -12,7 +12,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 
@@ -48,7 +49,7 @@ func customRecovery(err any, c *gin.Context) {
 	}
 
 	httpRequest, _ := httputil.DumpRequest(c.Request, false)
-	klog.Errorf("[Recovery] %s panic recovered. err: %s. request: %s.",
+	log.Errorf("[Recovery] %s panic recovered. err: %s. request: %s.",
 		timeFormat(time.Now()), err, httpRequest)
 	if brokenPipe {
 		// If the connection is dead, we can't write a status to it.

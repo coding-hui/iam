@@ -10,13 +10,14 @@ import (
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"k8s.io/klog/v2"
 
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	"github.com/coding-hui/iam/pkg/log"
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 
 	_ "github.com/coding-hui/iam/api/swagger"
+
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
@@ -167,7 +168,7 @@ func (s *apiServer) buildIoCContainer() (err error) {
 	if err = s.beanContainer.Populate(); err != nil {
 		return fmt.Errorf("fail to populate the bean container: %w", err)
 	}
-	klog.Infof("build IoC Container successful")
+	log.Infof("build IoC Container successful")
 
 	return nil
 }
@@ -185,7 +186,7 @@ func (s *apiServer) registerAPIRoute() {
 		api.RegisterApiGroup(s.webServer.Engine)
 	}
 
-	klog.Infof("register API route successful")
+	log.Infof("register API route successful")
 }
 
 func (s *apiServer) configSwagger() {
@@ -205,7 +206,7 @@ func (s *apiServer) startAPIServer() error {
 
 	// start shutdown managers
 	if err := s.gs.Start(); err != nil {
-		klog.Fatalf("start shutdown manager failed: %s", err.Error())
+		log.Fatalf("start shutdown manager failed: %s", err.Error())
 	}
 
 	// web server

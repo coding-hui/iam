@@ -10,7 +10,8 @@ import (
 	"strings"
 
 	"gorm.io/gorm"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
@@ -39,7 +40,7 @@ func createDatabase(opts *genericoptions.MySQLOptions) error {
 	defer func(db *sql.DB) {
 		err = db.Close()
 		if err != nil {
-			klog.Error(err)
+			log.Error(err.Error())
 		}
 	}(db)
 	if err = db.Ping(); err != nil {
@@ -55,9 +56,9 @@ func migrate(client *gorm.DB) {
 	for _, k := range models {
 		err := client.AutoMigrate(k)
 		if err != nil {
-			klog.Errorf("migrate db for mysqldb storage err: %v", err)
+			log.Errorf("migrate db for mysqldb storage err: %v", err)
 			continue
 		}
-		klog.Infof("migrating data for table %v", k.TableName())
+		log.Infof("migrating data for table %v", k.TableName())
 	}
 }

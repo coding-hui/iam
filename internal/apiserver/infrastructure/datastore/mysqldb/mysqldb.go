@@ -9,7 +9,8 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -51,7 +52,7 @@ func GetMySQLFactory(_ context.Context, c config.Config) (factory repository.Fac
 
 	migrate(m.client)
 
-	klog.Infof("create mysqldb datastore instance successful")
+	log.Infof("create mysqldb datastore instance successful")
 
 	return m, lastErr
 }

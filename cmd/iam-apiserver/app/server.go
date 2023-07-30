@@ -11,12 +11,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"k8s.io/klog/v2"
-
 	"github.com/coding-hui/iam/cmd/iam-apiserver/app/options"
 	"github.com/coding-hui/iam/internal/apiserver"
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/pkg/app"
+	"github.com/coding-hui/iam/pkg/log"
 )
 
 const commandDesc = `The IAM API iam-apiserver validates and configures data for the API objects. 
@@ -40,6 +39,9 @@ func NewAPIServerAPP(basename string) *app.App {
 // Run runs the specified APIServer. This should never exit.
 func Run(opts *options.Options) app.RunFunc {
 	return func(basename string) error {
+		log.Init(opts.Log)
+		defer log.Flush()
+
 		errChan := make(chan error)
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
@@ -54,12 +56,12 @@ func Run(opts *options.Options) app.RunFunc {
 
 		select {
 		case <-term:
-			klog.Infof("Received SIGTERM, exiting gracefully...")
+			log.Infof("Received SIGTERM, exiting gracefully...")
 		case err := <-errChan:
-			klog.Errorf("Received an error: %s, exiting gracefully...", err.Error())
+			log.Errorf("Received an error: %s, exiting gracefully...", err.Error())
 			return err
 		}
-		klog.Infof("See you next time!")
+		log.Infof("See you next time!")
 
 		return nil
 	}

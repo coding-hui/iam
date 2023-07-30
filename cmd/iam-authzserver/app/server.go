@@ -11,7 +11,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"k8s.io/klog/v2"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/iam/cmd/iam-authzserver/app/options"
 	"github.com/coding-hui/iam/internal/authzserver"
@@ -57,12 +57,12 @@ func Run(opts *options.Options) app.RunFunc {
 
 		select {
 		case <-term:
-			klog.Infof("Received SIGTERM, exiting gracefully...")
+			log.Infof("Received SIGTERM, exiting gracefully...")
 		case err := <-errChan:
-			klog.Errorf("Received an error: %s, exiting gracefully...", err.Error())
+			log.Errorf("Received an error: %s, exiting gracefully...", err.Error())
 			return err
 		}
-		klog.Infof("See you next time!")
+		log.Infof("See you next time!")
 
 		return nil
 	}

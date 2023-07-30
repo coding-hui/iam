@@ -7,7 +7,7 @@ package options
 import (
 	"encoding/json"
 
-	"k8s.io/klog/v2"
+	"github.com/coding-hui/iam/pkg/log"
 
 	cliflag "github.com/coding-hui/common/cli/flag"
 
@@ -54,7 +54,7 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 func (o *Options) String() string {
 	data, err := json.Marshal(o)
 	if err != nil {
-		klog.Errorf("failed to marshal iam-authzserver options. err: %w", err)
+		log.Errorf("failed to marshal iam-authzserver options. err: %w", err)
 		return ""
 	}
 

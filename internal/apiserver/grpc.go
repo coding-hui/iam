@@ -11,7 +11,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
-	"k8s.io/klog/v2"
+
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
@@ -34,21 +35,21 @@ type grpcAPIServer struct {
 func (s *grpcAPIServer) Run() {
 	listen, err := net.Listen("tcp", s.address)
 	if err != nil {
-		klog.Fatalf("failed to listen: %s", err.Error())
+		log.Fatalf("failed to listen: %s", err.Error())
 	}
 
 	go func() {
 		if err := s.Serve(listen); err != nil {
-			klog.Fatalf("failed to start grpc server: %s", err.Error())
+			log.Fatalf("failed to start grpc server: %s", err.Error())
 		}
 	}()
 
-	klog.Infof("start grpc server at %s", s.address)
+	log.Infof("start grpc server at %s", s.address)
 }
 
 func (s *grpcAPIServer) Close() {
 	s.GracefulStop()
-	klog.Infof("GRPC server on %s stopped", s.address)
+	log.Infof("GRPC server on %s stopped", s.address)
 }
 
 func buildGRPCConfig(cfg *config.Config) (*gRPCConfig, error) {
@@ -76,7 +77,7 @@ func (c *gRPCConfig) complete() *completedGRPCConfig {
 func (c *completedGRPCConfig) New() (*grpcAPIServer, error) {
 	creds, err := credentials.NewServerTLSFromFile(c.ServerCert.CertKey.CertFile, c.ServerCert.CertKey.KeyFile)
 	if err != nil {
-		klog.Fatalf("Failed to generate credentials %s", err.Error())
+		log.Fatalf("Failed to generate credentials %s", err.Error())
 	}
 	opts := []grpc.ServerOption{grpc.MaxRecvMsgSize(c.MaxMsgSize), grpc.Creds(creds)}
 

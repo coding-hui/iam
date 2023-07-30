@@ -8,7 +8,9 @@ import (
 	"context"
 	"fmt"
 
-	"k8s.io/klog/v2"
+	"github.com/coding-hui/iam/pkg/log"
+	"github.com/coding-hui/iam/pkg/shutdown"
+	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 
 	"github.com/coding-hui/iam/internal/authzserver/adapter"
 	"github.com/coding-hui/iam/internal/authzserver/authorization"
@@ -19,8 +21,6 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/middleware"
 	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
-	"github.com/coding-hui/iam/pkg/shutdown"
-	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 )
 
 // AuthzServer interface for call iam-authzserver.
@@ -116,7 +116,7 @@ func (s *authzServer) buildIoCContainer() (err error) {
 	if err = s.beanContainer.Populate(); err != nil {
 		return fmt.Errorf("fail to populate the bean container: %w", err)
 	}
-	klog.Infof("build IoC Container successful")
+	log.Infof("build IoC Container successful")
 
 	return nil
 }
@@ -131,14 +131,14 @@ func (s *authzServer) registerAPIRoute() {
 		api.RegisterApiGroup(s.webServer.Engine)
 	}
 
-	klog.Infof("register API route successful")
+	log.Infof("register API route successful")
 }
 
 // startAuthzServer start authz server.
 func (s *authzServer) startAuthzServer() error {
 	// start shutdown managers
 	if err := s.gs.Start(); err != nil {
-		klog.Fatalf("start shutdown manager failed: %s", err.Error())
+		log.Fatalf("start shutdown manager failed: %s", err.Error())
 	}
 
 	// web server
