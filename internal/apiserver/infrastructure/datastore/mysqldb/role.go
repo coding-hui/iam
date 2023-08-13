@@ -182,11 +182,11 @@ func (u *roleRepositoryImpl) AssignUserRoles(ctx context.Context, role *model.Ro
 func (u *roleRepositoryImpl) RevokeUserRoles(ctx context.Context, role *model.Role, userInstanceIds []string) (int64, error) {
 	err := u.db.WithContext(ctx).Model(&role).Where("instance_id in ?", userInstanceIds).Association("Users").Find(&role.Users)
 	if err != nil {
-		return 0, errors.WithCode(code.ErrAssignRoleFailed, err.Error())
+		return 0, errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
 	}
 	err = u.db.WithContext(ctx).Model(&role).Association("Users").Delete(&role.Users)
 	if err != nil {
-		return 0, errors.WithCode(code.ErrAssignRoleFailed, err.Error())
+		return 0, errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
 	}
 
 	return int64(len(userInstanceIds)), nil

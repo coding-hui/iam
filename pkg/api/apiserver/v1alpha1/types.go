@@ -193,6 +193,14 @@ type RevokeRoleRequest struct {
 	Targets []string `json:"targets"`
 }
 
+// BatchRevokeRoleRequest batch revoke role request.
+type BatchRevokeRoleRequest struct {
+	// InstanceIds role instanceIds.
+	InstanceIds []string `json:"instanceIds" validate:"required"`
+	// Targets target resource instanceIds.
+	Targets []string `json:"targets"`
+}
+
 // AuthorizeResources authorize role resource request.
 type AuthorizeResources struct {
 	// InstanceID role instanceID.

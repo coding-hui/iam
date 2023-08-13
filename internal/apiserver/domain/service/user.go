@@ -33,7 +33,7 @@ const (
 type UserService interface {
 	CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) (*v1alpha1.CreateUserResponse, error)
 	UpdateUser(ctx context.Context, instanceId string, req v1alpha1.UpdateUserRequest) error
-	DeleteUser(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error
+	DeleteUser(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error
 	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
 	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
 	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
@@ -44,7 +44,8 @@ type UserService interface {
 }
 
 type userServiceImpl struct {
-	Store repository.Factory `inject:"repository"`
+	Store       repository.Factory `inject:"repository"`
+	RoleService RoleService        `inject:""`
 }
 
 // NewUserService new User service.
@@ -119,8 +120,22 @@ func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req
 }
 
 // DeleteUser delete user.
-func (u *userServiceImpl) DeleteUser(ctx context.Context, username string, opts metav1alpha1.DeleteOptions) error {
-	if err := u.Store.UserRepository().DeleteByInstanceId(ctx, username, opts); err != nil {
+func (u *userServiceImpl) DeleteUser(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
+	roles, err := u.ListUserRoles(ctx, instanceId, metav1alpha1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	batchRevokeRoleReq := v1alpha1.BatchRevokeRoleRequest{
+		Targets: []string{instanceId},
+	}
+	for _, r := range roles.Items {
+		batchRevokeRoleReq.InstanceIds = append(batchRevokeRoleReq.InstanceIds, r.InstanceID)
+	}
+	if err := u.RoleService.BatchRevokeRole(ctx, batchRevokeRoleReq); err != nil {
+		log.Errorf("failed to delete user [%s] roles: %s", instanceId, err.Error())
+		return err
+	}
+	if err := u.Store.UserRepository().DeleteByInstanceId(ctx, instanceId, opts); err != nil {
 		return err
 	}
 

@@ -27,9 +27,10 @@ type RoleService interface {
 	GetRoleByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Role, error)
 	DetailRole(ctx context.Context, role *model.Role, opts metav1alpha1.GetOptions) (*v1alpha1.DetailRoleResponse, error)
 	ListRoles(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
-	AssignRole(ctx context.Context, role *model.Role, assignReq v1alpha1.AssignRoleRequest) error
-	BatchAssignRole(ctx context.Context, assignReq v1alpha1.BatchAssignRoleRequest) error
-	RevokeRole(ctx context.Context, role *model.Role, revokeReq v1alpha1.RevokeRoleRequest) error
+	AssignRole(ctx context.Context, assignReq v1alpha1.AssignRoleRequest) error
+	BatchAssignRole(ctx context.Context, batchAssignReq v1alpha1.BatchAssignRoleRequest) error
+	RevokeRole(ctx context.Context, revokeReq v1alpha1.RevokeRoleRequest) error
+	BatchRevokeRole(ctx context.Context, batchRevokeReq v1alpha1.BatchRevokeRoleRequest) error
 	AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1alpha1.AuthorizeResources) error
 	Init(ctx context.Context) error
 }
@@ -103,7 +104,7 @@ func (r *roleServiceImpl) Init(ctx context.Context) error {
 		InstanceID: platformRole.InstanceID,
 		Targets:    []string{admin.InstanceID},
 	}
-	err = r.AssignRole(ctx, platformRole, assignRoleReq)
+	err = r.AssignRole(ctx, assignRoleReq)
 	if err != nil {
 		return errors.WithMessagef(err, "Failed to assign the platform role to the default administrator.")
 	}
@@ -220,7 +221,11 @@ func (r *roleServiceImpl) ListRoles(ctx context.Context, listOptions metav1alpha
 }
 
 // AssignRole assign roles, which can be users or departments.
-func (r *roleServiceImpl) AssignRole(ctx context.Context, role *model.Role, assignReq v1alpha1.AssignRoleRequest) (lastErr error) {
+func (r *roleServiceImpl) AssignRole(ctx context.Context, assignReq v1alpha1.AssignRoleRequest) (lastErr error) {
+	role, err := r.GetRoleByInstanceId(ctx, assignReq.InstanceID, metav1alpha1.GetOptions{})
+	if err != nil {
+		return err
+	}
 	handlers, err := r.determineRoleHandlerByInstanceId(role, assignReq.Targets)
 	if err != nil {
 		return errors.WithCode(code.ErrAssignRoleFailed, err.Error())
@@ -241,12 +246,10 @@ func (r *roleServiceImpl) BatchAssignRole(ctx context.Context, batchAssignReq v1
 	instanceIds := batchAssignReq.InstanceIds
 	targets := batchAssignReq.Targets
 	for _, instanceId := range instanceIds {
-		role, err := r.GetRoleByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
-		if err != nil {
-			log.Errorf("Failed to get role details using the id", instanceId)
-			return err
-		}
-		err = r.AssignRole(ctx, role, v1alpha1.AssignRoleRequest{Targets: targets})
+		err := r.AssignRole(ctx, v1alpha1.AssignRoleRequest{
+			InstanceID: instanceId,
+			Targets:    targets,
+		})
 		if err != nil {
 			log.Errorf("Failed to batch assign roles. err: %w", err)
 			return err
@@ -257,7 +260,11 @@ func (r *roleServiceImpl) BatchAssignRole(ctx context.Context, batchAssignReq v1
 }
 
 // RevokeRole revoke roles, which can be users or departments.
-func (r *roleServiceImpl) RevokeRole(ctx context.Context, role *model.Role, revokeReq v1alpha1.RevokeRoleRequest) (lastErr error) {
+func (r *roleServiceImpl) RevokeRole(ctx context.Context, revokeReq v1alpha1.RevokeRoleRequest) (lastErr error) {
+	role, err := r.GetRoleByInstanceId(ctx, revokeReq.InstanceID, metav1alpha1.GetOptions{})
+	if err != nil {
+		return err
+	}
 	handlers, err := r.determineRoleHandlerByInstanceId(role, revokeReq.Targets)
 	if err != nil {
 		return errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
@@ -273,11 +280,29 @@ func (r *roleServiceImpl) RevokeRole(ctx context.Context, role *model.Role, revo
 	return lastErr
 }
 
+// BatchRevokeRole batch revoke roles, which can be users or departments.
+func (r *roleServiceImpl) BatchRevokeRole(ctx context.Context, batchRevokeReq v1alpha1.BatchRevokeRoleRequest) error {
+	instanceIds := batchRevokeReq.InstanceIds
+	targets := batchRevokeReq.Targets
+	for _, instanceId := range instanceIds {
+		err := r.RevokeRole(ctx, v1alpha1.RevokeRoleRequest{
+			InstanceID: instanceId,
+			Targets:    targets,
+		})
+		if err != nil {
+			log.Errorf("Failed to batch revoke roles. err: %w", err)
+			return err
+		}
+	}
+
+	return nil
+}
+
 // AuthorizeRoleResources grant role resource permission.
 func (r *roleServiceImpl) AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1alpha1.AuthorizeResources) error {
 	handlers, err := r.determineRoleHandlerByInstanceId(role, authorizeReq.Resources)
 	if err != nil {
-		return errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
+		return errors.WithCode(code.ErrAssignRoleFailed, err.Error())
 	}
 
 	for h := range handlers {

@@ -37,9 +37,9 @@ func (r *role) RegisterApiGroup(g *gin.Engine) {
 		v1.DELETE("/:instanceId", r.deleteRole)
 		v1.GET("/:instanceId", r.roleCheckFilter, r.detailRole)
 		v1.GET("", r.listRole)
-		v1.POST("/:instanceId/assign", r.roleCheckFilter, r.assignRole)
+		v1.POST("/:instanceId/assign", r.assignRole)
 		v1.POST("/batch-assign", r.batchAssignRole)
-		v1.POST("/:instanceId/revoke", r.roleCheckFilter, r.revokeRole)
+		v1.POST("/:instanceId/revoke", r.revokeRole)
 	}
 }
 
@@ -181,8 +181,8 @@ func (r *role) assignRole(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	role := c.Request.Context().Value(&v1alpha1.CtxKeyRole).(*model.Role)
-	err = r.RoleService.AssignRole(c.Request.Context(), role, assignReq)
+	assignReq.InstanceID = c.Param("instanceId")
+	err = r.RoleService.AssignRole(c.Request.Context(), assignReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -232,8 +232,8 @@ func (r *role) revokeRole(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	role := c.Request.Context().Value(&v1alpha1.CtxKeyRole).(*model.Role)
-	err = r.RoleService.RevokeRole(c.Request.Context(), role, revokeReq)
+	revokeReq.InstanceID = c.Param("instanceId")
+	err = r.RoleService.RevokeRole(c.Request.Context(), revokeReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
