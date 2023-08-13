@@ -109,6 +109,14 @@ func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, r
 			return err
 		}
 	}
+	// delete casbin rules before
+	e := p.Store.CasbinRepository().SyncedEnforcer()
+	_, err = e.RemovePolicies(oldPolicy.GetPolicyRules())
+	if err != nil {
+		return err
+	}
+
+	// update policy info
 	oldPolicy.Subjects = req.Subjects
 	oldPolicy.Description = req.Description
 	oldPolicy.Status = req.Status
@@ -118,12 +126,8 @@ func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, r
 	if err != nil {
 		return err
 	}
-	// delete rules before
-	e := p.Store.CasbinRepository().SyncedEnforcer()
-	_, err = e.RemovePolicies(oldPolicy.GetPolicyRules())
-	if err != nil {
-		return err
-	}
+
+	// add casbin rules
 	_, err = e.AddPolicies(oldPolicy.GetPolicyRules())
 	if err != nil {
 		return err
