@@ -37,6 +37,7 @@ type UserService interface {
 	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
 	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
 	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
+	DetailUser(ctx context.Context, user *model.User) (*v1alpha1.DetailUserResponse, error)
 	ListUsers(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error)
 	ListUserRoles(ctx context.Context, instanceId string, listOptions metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
@@ -169,6 +170,15 @@ func (u *userServiceImpl) GetUserByInstanceId(ctx context.Context, instanceId st
 	}
 
 	return user, nil
+}
+
+// DetailUser return user detail
+func (u *userServiceImpl) DetailUser(ctx context.Context, user *model.User) (*v1alpha1.DetailUserResponse, error) {
+	base := *assembler.ConvertUserModelToBase(user)
+
+	return &v1alpha1.DetailUserResponse{
+		UserBase: base,
+	}, nil
 }
 
 // ListUsers list users.

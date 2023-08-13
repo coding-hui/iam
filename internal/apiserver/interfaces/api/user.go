@@ -135,8 +135,13 @@ func (u *user) getUser(c *gin.Context) {
 		api.FailWithErrCode(err, c)
 		return
 	}
+	resp, err := u.UserService.DetailUser(c.Request.Context(), user)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
 
-	api.OkWithData(user, c)
+	api.OkWithData(resp, c)
 }
 
 //	@Tags			Users

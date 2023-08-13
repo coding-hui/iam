@@ -206,6 +206,11 @@ func (a *authentication) userInfo(c *gin.Context) {
 		api.FailWithErrCode(err, c)
 		return
 	}
+	resp, err := a.UserService.DetailUser(c.Request.Context(), user)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
 
-	api.OkWithData(user, c)
+	api.OkWithData(resp, c)
 }

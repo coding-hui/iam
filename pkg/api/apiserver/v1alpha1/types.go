@@ -122,6 +122,12 @@ type UserBase struct {
 	LastLoginTime           *time.Time `json:"lastLoginTime,omitempty"`
 }
 
+// DetailUserResponse is the response of user detail
+type DetailUserResponse struct {
+	UserBase
+	Roles []RoleBase `json:"roles"`
+}
+
 // UserList is the whole list of all users which have been stored in stroage.
 type UserList struct {
 	// May add TypeMeta in the future.
