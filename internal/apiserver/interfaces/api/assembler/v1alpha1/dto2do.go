@@ -5,6 +5,9 @@
 package v1alpha1
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 
@@ -22,15 +25,19 @@ func ConvertResourceModel(req v1alpha1.CreateResourceRequest) *model.Resource {
 		Api:         req.Api,
 		IsDefault:   req.IsDefault,
 		Description: req.Description,
-		Actions:     ConvertToActionModel(req.Actions),
+		Actions:     ConvertToActionModel(req.Name, req.Actions),
 	}
 }
 
 // ConvertToActionModel assemble the DTO to Action Model.
-func ConvertToActionModel(actions []v1alpha1.Action) []model.Action {
+func ConvertToActionModel(resource string, actions []v1alpha1.Action) []model.Action {
 	list := make([]model.Action, 0, len(actions))
 	for _, act := range actions {
-		list = append(list, model.Action{Name: act.Name, Description: act.Description})
+		actName := act.Name
+		if !strings.HasPrefix(actName, resource) {
+			actName = fmt.Sprintf("%s:%s", resource, actName)
+		}
+		list = append(list, model.Action{Name: actName, Description: act.Description})
 	}
 
 	return list

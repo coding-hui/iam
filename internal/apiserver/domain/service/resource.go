@@ -120,7 +120,7 @@ func (r *resourceServiceImpl) UpdateResource(ctx context.Context, instanceId str
 	if req.Description != "" {
 		resource.Description = req.Description
 	}
-	resource.Actions = assembler.ConvertToActionModel(req.Actions)
+	resource.Actions = assembler.ConvertToActionModel(resource.Name, req.Actions)
 	if err := r.Store.ResourceRepository().Update(ctx, resource, metav1alpha1.UpdateOptions{}); err != nil {
 		return err
 	}
