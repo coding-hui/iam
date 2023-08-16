@@ -35,6 +35,8 @@ func (u *user) RegisterApiGroup(g *gin.Engine) {
 		v1.GET("/:instanceId", u.getUser)
 		v1.GET("", u.listUser)
 		v1.GET("/:instanceId/roles", u.getUserRoles)
+		v1.GET("/:instanceId/disable", u.disableUser)
+		v1.GET("/:instanceId/enable", u.enableUser)
 	}
 }
 
@@ -183,7 +185,7 @@ func (u *user) listUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		GetUserRoles
 //	@Description	Get user roles
-//	@Param			name	path		string									true	"identifier of a user"
+//	@Param			instanceId	path		string									true	"identifier of a user"
 //	@Success		200		{object}	api.Response{data=v1alpha1.RoleList}	"user roles"
 //	@Router			/api/v1/users/{instanceId}/roles [get]
 //	@Security		BearerTokenAuth
@@ -197,4 +199,42 @@ func (u *user) getUserRoles(c *gin.Context) {
 	}
 
 	api.OkWithPage(roles.Items, roles.TotalCount, c)
+}
+
+//	@Tags			Users
+//	@Summary		EnableUser
+//	@Description	Enable a user
+//	@Param			instanceId	path		string									true	"identifier of a user"
+//	@Success		200		{object}	api.Response
+//	@Router			/api/v1/users/{instanceId}/enable [get]
+//	@Security		BearerTokenAuth
+//
+// getUserRoles get user roles.
+func (u *user) disableUser(c *gin.Context) {
+	err := u.UserService.DisableUser(c.Request.Context(), c.Param("instanceId"))
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.Ok(c)
+}
+
+//	@Tags			Users
+//	@Summary		EnableUser
+//	@Description	Enable a user
+//	@Param			instanceId	path		string									true	"identifier of a user"
+//	@Success		200		{object}	api.Response
+//	@Router			/api/v1/users/{instanceId}/enable [get]
+//	@Security		BearerTokenAuth
+//
+// getUserRoles get user roles.
+func (u *user) enableUser(c *gin.Context) {
+	err := u.UserService.EnableUser(c.Request.Context(), c.Param("instanceId"))
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.Ok(c)
 }

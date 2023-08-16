@@ -41,6 +41,8 @@ type UserService interface {
 	ListUsers(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error)
 	ListUserRoles(ctx context.Context, instanceId string, listOptions metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
+	DisableUser(ctx context.Context, instanceId string) error
+	EnableUser(ctx context.Context, instanceId string) error
 	Init(ctx context.Context) error
 }
 
@@ -209,6 +211,34 @@ func (u *userServiceImpl) ListUserRoles(
 func (u *userServiceImpl) FlushLastLoginTime(ctx context.Context, user *model.User) error {
 	now := time.Now()
 	user.LastLoginTime = &now
+
+	return u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{})
+}
+
+// DisableUser disable user
+func (u *userServiceImpl) DisableUser(ctx context.Context, instanceId string) error {
+	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	if user.Disabled {
+		return errors.WithCode(code.ErrUserAlreadyDisabled, "The user [%s] is already disabled.", user.Name)
+	}
+	user.Disabled = true
+
+	return u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{})
+}
+
+// EnableUser disable user
+func (u *userServiceImpl) EnableUser(ctx context.Context, instanceId string) error {
+	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	if !user.Disabled {
+		return errors.WithCode(code.ErrUserAlreadyEnabled, "The user [%s] is already enabled.", user.Name)
+	}
+	user.Disabled = false
 
 	return u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{})
 }

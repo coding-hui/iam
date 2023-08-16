@@ -19,6 +19,12 @@ const (
 
 	// ErrDeleteOneself - 400: Unable to delete yourself.
 	ErrDeleteOneself
+
+	// ErrUserAlreadyDisabled - 400: The user is already disabled.
+	ErrUserAlreadyDisabled
+
+	// ErrUserAlreadyEnabled - 400: The user is already enabled.
+	ErrUserAlreadyEnabled
 )
 
 // iam-apiserver: secret errors.

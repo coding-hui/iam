@@ -25,6 +25,8 @@ IAM 系统支持的错误码列表如下：
 | ErrUserAlreadyExist | 110002 | 400 | User already exist |
 | ErrUserNameIsEmpty | 110003 | 400 | Username is empty |
 | ErrDeleteOneself | 110004 | 400 | Unable to delete yourself |
+| ErrUserAlreadyDisabled | 110005 | 400 | The user is already disabled |
+| ErrUserAlreadyEnabled | 110006 | 400 | The user is already enabled |
 | ErrReachMaxCount | 110101 | 400 | Secret reach the max count |
 | ErrSecretNotFound | 110102 | 404 | Secret not found |
 | ErrPolicyNotFound | 110201 | 404 | Policy not found |
