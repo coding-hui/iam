@@ -38,8 +38,8 @@ type UserService interface {
 	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
 	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
 	DetailUser(ctx context.Context, user *model.User) (*v1alpha1.DetailUserResponse, error)
-	ListUsers(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error)
-	ListUserRoles(ctx context.Context, instanceId string, listOptions metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
+	ListUsers(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
+	ListUserRoles(ctx context.Context, instanceId string, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	DisableUser(ctx context.Context, instanceId string) error
 	EnableUser(ctx context.Context, instanceId string) error
@@ -191,7 +191,7 @@ func (u *userServiceImpl) DetailUser(ctx context.Context, user *model.User) (*v1
 }
 
 // ListUsers list users.
-func (u *userServiceImpl) ListUsers(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error) {
+func (u *userServiceImpl) ListUsers(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
 	users, err := u.Store.UserRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err

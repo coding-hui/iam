@@ -17,6 +17,7 @@ import (
 	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
 
 	"github.com/coding-hui/common/errors"
+	"github.com/coding-hui/common/fields"
 	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
 )
 
@@ -123,29 +124,18 @@ func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId str
 }
 
 // List list users.
-func (u *userRepositoryImpl) List(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error) {
+func (u *userRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
 	list := &v1alpha1.UserList{}
 
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
 
 	db := u.db.WithContext(ctx).Model(model.User{})
-	if opts.Name != "" {
-		db.Where("name like ?", "%"+opts.Name+"%")
-	}
-	if opts.Alias != "" {
-		db.Where("alias like ?", "%"+opts.Alias+"%")
-	}
-	if opts.Email != "" {
-		db.Where("email like ?", "%"+opts.Email+"%")
-	}
-	if opts.Status != "" {
-		db.Where("status = ?", opts.Status)
-	}
-	if opts.InstanceID != "" {
-		db.Where("instance_id = ?", opts.InstanceID)
-	}
+	var clauses []clause.Expression
+	selector, _ := fields.ParseSelector(opts.FieldSelector)
+	clauses = _applyFieldSelector(clauses, selector)
 	db.Offset(ol.Offset).
 		Limit(ol.Limit).
+		Clauses(clauses...).
 		Order("id desc").
 		Find(&list.Items).
 		Offset(-1).

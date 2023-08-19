@@ -176,10 +176,7 @@ func (r *resourceServiceImpl) DetailResource(
 
 // ListResources list resources.
 func (r *resourceServiceImpl) ListResources(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.ResourceList, error) {
-	resources, err := r.Store.ResourceRepository().List(ctx, metav1alpha1.ListOptions{
-		Offset: opts.Offset,
-		Limit:  opts.Limit,
-	})
+	resources, err := r.Store.ResourceRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err
 	}

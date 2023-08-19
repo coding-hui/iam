@@ -102,10 +102,10 @@ type CreateUserResponse struct {
 
 // UpdateUserRequest update user request.
 type UpdateUserRequest struct {
-	Alias    string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
-	Email    string `json:"email"           validate:"required,email,min=1,max=100"`
+	Alias    string `json:"alias,omitempty"    validate:"min=1,max=30"                 optional:"true"`
+	Email    string `json:"email"              validate:"required,email,min=1,max=100"`
 	Phone    string `json:"phone"`
-	Password string `json:"password,omitempty" validate:"required" optional:"true"`
+	Password string `json:"password,omitempty" validate:"required"                     optional:"true"`
 }
 
 // UserBase represents a user restful resource.
@@ -139,17 +139,6 @@ type UserList struct {
 	metav1alpha1.ListMeta `json:",inline"`
 
 	Items []*UserBase `json:"items"`
-}
-
-// ListUserOptions list user query options.
-type ListUserOptions struct {
-	Offset     *int64 `json:"offset"`
-	Limit      *int64 `json:"limit"`
-	InstanceID string `json:"instanceId"`
-	Name       string `json:"name"`
-	Email      string `json:"email"`
-	Alias      string `json:"alias"`
-	Status     string `json:"status"`
 }
 
 // TenantBase represents a tenant restful resource.

@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -123,14 +124,13 @@ func (u *roleRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOpt
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
 
 	db := u.db.WithContext(ctx)
+	var clauses []clause.Expression
 	selector, _ := fields.ParseSelector(opts.FieldSelector)
-	name, _ := selector.RequiresExactMatch("name")
-	if name != "" {
-		db.Where("name like ?", "%"+name+"%")
-	}
+	clauses = _applyFieldSelector(clauses, selector)
 	db.Model(&model.Role{}).
 		Offset(ol.Offset).
 		Limit(ol.Limit).
+		Clauses(clauses...).
 		Order("id desc").
 		Find(&list.Items).
 		Offset(-1).

@@ -21,5 +21,5 @@ type UserRepository interface {
 	DeleteCollection(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
 	GetByName(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
-	List(ctx context.Context, opts v1alpha1.ListUserOptions) (*v1alpha1.UserList, error)
+	List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
 }

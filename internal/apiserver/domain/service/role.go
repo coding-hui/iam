@@ -208,11 +208,8 @@ func (r *roleServiceImpl) DetailRole(
 }
 
 // ListRoles list roles.
-func (r *roleServiceImpl) ListRoles(ctx context.Context, listOptions metav1alpha1.ListOptions) (*v1alpha1.RoleList, error) {
-	roles, err := r.Store.RoleRepository().List(ctx, metav1alpha1.ListOptions{
-		Offset: listOptions.Offset,
-		Limit:  listOptions.Limit,
-	})
+func (r *roleServiceImpl) ListRoles(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error) {
+	roles, err := r.Store.RoleRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err
 	}

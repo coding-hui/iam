@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -138,13 +139,12 @@ func (p *policyRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListO
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
 
 	db := p.db.WithContext(ctx).Model(model.Policy{})
+	var clauses []clause.Expression
 	selector, _ := fields.ParseSelector(opts.FieldSelector)
-	username, _ := selector.RequiresExactMatch("name")
-	if username != "" {
-		db.Where("name like ?", "%"+username+"%")
-	}
+	clauses = _applyFieldSelector(clauses, selector)
 	db.Offset(ol.Offset).
 		Limit(ol.Limit).
+		Clauses(clauses...).
 		Order("id desc").
 		Find(&policies).
 		Offset(-1).

@@ -155,8 +155,9 @@ func (p *policy) listPolicies(c *gin.Context) {
 		return
 	}
 	resp, err := p.PolicyService.ListPolicies(c.Request.Context(), metav1alpha1.ListOptions{
-		Limit:  &pageSize,
-		Offset: &page,
+		Limit:         &pageSize,
+		Offset:        &page,
+		FieldSelector: c.Query("fieldSelector"),
 	})
 	if err != nil {
 		api.FailWithErrCode(err, c)

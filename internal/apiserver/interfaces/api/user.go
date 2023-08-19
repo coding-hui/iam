@@ -165,14 +165,10 @@ func (u *user) listUser(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := u.UserService.ListUsers(c.Request.Context(), v1alpha1.ListUserOptions{
-		Limit:      &pageSize,
-		Offset:     &page,
-		InstanceID: c.Query("instanceId"),
-		Name:       c.Query("name"),
-		Email:      c.Query("email"),
-		Alias:      c.Query("alias"),
-		Status:     c.Query("status"),
+	resp, err := u.UserService.ListUsers(c.Request.Context(), metav1alpha1.ListOptions{
+		Limit:         &pageSize,
+		Offset:        &page,
+		FieldSelector: c.Query("fieldSelector"),
 	})
 	if err != nil {
 		api.FailWithErrCode(err, c)
@@ -186,7 +182,7 @@ func (u *user) listUser(c *gin.Context) {
 //	@Summary		GetUserRoles
 //	@Description	Get user roles
 //	@Param			instanceId	path		string									true	"identifier of a user"
-//	@Success		200		{object}	api.Response{data=v1alpha1.RoleList}	"user roles"
+//	@Success		200			{object}	api.Response{data=v1alpha1.RoleList}	"user roles"
 //	@Router			/api/v1/users/{instanceId}/roles [get]
 //	@Security		BearerTokenAuth
 //
@@ -204,8 +200,8 @@ func (u *user) getUserRoles(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		EnableUser
 //	@Description	Enable a user
-//	@Param			instanceId	path		string									true	"identifier of a user"
-//	@Success		200		{object}	api.Response
+//	@Param			instanceId	path		string	true	"identifier of a user"
+//	@Success		200			{object}	api.Response
 //	@Router			/api/v1/users/{instanceId}/enable [get]
 //	@Security		BearerTokenAuth
 //
@@ -223,8 +219,8 @@ func (u *user) disableUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		EnableUser
 //	@Description	Enable a user
-//	@Param			instanceId	path		string									true	"identifier of a user"
-//	@Success		200		{object}	api.Response
+//	@Param			instanceId	path		string	true	"identifier of a user"
+//	@Success		200			{object}	api.Response
 //	@Router			/api/v1/users/{instanceId}/enable [get]
 //	@Security		BearerTokenAuth
 //

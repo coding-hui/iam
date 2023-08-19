@@ -154,8 +154,9 @@ func (r *role) listRole(c *gin.Context) {
 		return
 	}
 	resp, err := r.RoleService.ListRoles(c.Request.Context(), metav1alpha1.ListOptions{
-		Limit:  &pageSize,
-		Offset: &page,
+		Limit:         &pageSize,
+		Offset:        &page,
+		FieldSelector: c.Query("fieldSelector"),
 	})
 	if err != nil {
 		api.FailWithErrCode(err, c)
