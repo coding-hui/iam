@@ -102,9 +102,10 @@ type CreateUserResponse struct {
 
 // UpdateUserRequest update user request.
 type UpdateUserRequest struct {
-	Alias string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
-	Email string `json:"email"           validate:"required,email,min=1,max=100"`
-	Phone string `json:"phone"`
+	Alias    string `json:"alias,omitempty" validate:"min=1,max=30"                 optional:"true"`
+	Email    string `json:"email"           validate:"required,email,min=1,max=100"`
+	Phone    string `json:"phone"`
+	Password string `json:"password,omitempty" validate:"required" optional:"true"`
 }
 
 // UserBase represents a user restful resource.

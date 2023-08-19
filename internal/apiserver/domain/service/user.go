@@ -112,8 +112,15 @@ func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req
 	if req.Email != "" {
 		user.Email = req.Email
 	}
-	if req.Email != "" {
+	if req.Phone != "" {
 		user.Phone = req.Phone
+	}
+	if req.Password != "" {
+		hash, err := auth.Encrypt(req.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = hash
 	}
 	if err := u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{}); err != nil {
 		return err
