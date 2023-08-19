@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"sync"
 
 	"github.com/lib/pq"
 
@@ -176,21 +177,53 @@ func (p *policyServiceImpl) DetailPolicy(
 	policy *model.Policy,
 	_ metav1alpha1.GetOptions,
 ) (*v1alpha1.DetailPolicyResponse, error) {
-	var resources []v1alpha1.ResourceBase
+	wg := sync.WaitGroup{}
+	errChan := make(chan error, 1)
+	finished := make(chan bool, 1)
+
+	var m sync.Map
+
 	for _, statement := range policy.Statements {
 		if statement.Resource == "*" {
 			continue
 		}
-		r, _ := p.Store.ResourceRepository().GetByInstanceId(ctx, statement.Resource, metav1alpha1.GetOptions{})
-		resources = append(resources, *assembler.ConvertResourceModelToBase(r))
-	}
-	base := assembler.ConvertPolicyModelToBase(policy)
-	detail := &v1alpha1.DetailPolicyResponse{
-		PolicyBase: *base,
-		Resources:  resources,
+		wg.Add(1)
+		go func(s model.Statement) {
+			defer wg.Done()
+
+			r, err := p.Store.ResourceRepository().GetByInstanceId(ctx, s.Resource, metav1alpha1.GetOptions{})
+			if err != nil {
+				errChan <- errors.WithMessagef(err, "load resource [%s] failed.", s.ResourceIdentifier)
+				return
+			}
+			m.Store(s.ID, r)
+		}(statement)
 	}
 
-	return detail, nil
+	go func() {
+		wg.Wait()
+		close(finished)
+	}()
+
+	select {
+	case <-finished:
+	case err := <-errChan:
+		log.Errorf("failed to load resources: %v", err)
+	}
+
+	resources := make([]v1alpha1.ResourceBase, 0, len(policy.Statements))
+	for _, statement := range policy.Statements {
+		r, ok := m.Load(statement.ID)
+		if ok {
+			resources = append(resources, *assembler.ConvertResourceModelToBase(r.(*model.Resource)))
+		}
+	}
+	base := assembler.ConvertPolicyModelToBase(policy)
+
+	return &v1alpha1.DetailPolicyResponse{
+		PolicyBase: *base,
+		Resources:  resources,
+	}, nil
 }
 
 // ListPolicies list policies.
