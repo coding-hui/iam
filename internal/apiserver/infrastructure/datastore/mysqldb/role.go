@@ -10,15 +10,15 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
+	"github.com/coding-hui/common/errors"
+	"github.com/coding-hui/common/fields"
+	metav1 "github.com/coding-hui/common/meta/v1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
-	"github.com/coding-hui/common/errors"
-	"github.com/coding-hui/common/fields"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 type roleRepositoryImpl struct {
@@ -31,8 +31,8 @@ func newRoleRepository(db *gorm.DB) repository.RoleRepository {
 }
 
 // Create creates a new role.
-func (u *roleRepositoryImpl) Create(ctx context.Context, role *model.Role, _ metav1alpha1.CreateOptions) error {
-	if oldRole, _ := u.GetByName(ctx, role.Name, metav1alpha1.GetOptions{}); oldRole != nil {
+func (u *roleRepositoryImpl) Create(ctx context.Context, role *model.Role, _ metav1.CreateOptions) error {
+	if oldRole, _ := u.GetByName(ctx, role.Name, metav1.GetOptions{}); oldRole != nil {
 		return errors.WithCode(code.ErrRoleAlreadyExist, "Role %s already exist", role.Name)
 	}
 	if err := u.db.WithContext(ctx).Create(&role).Error; err != nil {
@@ -46,7 +46,7 @@ func (u *roleRepositoryImpl) Create(ctx context.Context, role *model.Role, _ met
 }
 
 // Update updates a role information.
-func (u *roleRepositoryImpl) Update(ctx context.Context, role *model.Role, _ metav1alpha1.UpdateOptions) error {
+func (u *roleRepositoryImpl) Update(ctx context.Context, role *model.Role, _ metav1.UpdateOptions) error {
 	if err := u.db.WithContext(ctx).Save(role).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrRoleNotFound, err.Error())
@@ -59,7 +59,7 @@ func (u *roleRepositoryImpl) Update(ctx context.Context, role *model.Role, _ met
 }
 
 // DeleteByInstanceId deletes the role by the role identifier.
-func (u *roleRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
+func (u *roleRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
 	if opts.Unscoped {
 		u.db = u.db.Unscoped()
 	}
@@ -76,7 +76,7 @@ func (u *roleRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 }
 
 // DeleteCollection batch deletes the roles.
-func (u *roleRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error {
+func (u *roleRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1.DeleteOptions) error {
 	if opts.Unscoped {
 		u.db = u.db.Unscoped()
 	}
@@ -85,7 +85,7 @@ func (u *roleRepositoryImpl) DeleteCollection(ctx context.Context, names []strin
 }
 
 // GetByName get role.
-func (u *roleRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1alpha1.GetOptions) (*model.Role, error) {
+func (u *roleRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1.GetOptions) (*model.Role, error) {
 	role := &model.Role{}
 	if name == "" {
 		return nil, errors.WithCode(code.ErrRoleNameIsEmpty, "Role name is empty")
@@ -103,7 +103,7 @@ func (u *roleRepositoryImpl) GetByName(ctx context.Context, name string, _ metav
 }
 
 // GetByInstanceID get role by instanceID.
-func (u *roleRepositoryImpl) GetByInstanceID(ctx context.Context, instanceID string, _ metav1alpha1.GetOptions) (*model.Role, error) {
+func (u *roleRepositoryImpl) GetByInstanceID(ctx context.Context, instanceID string, _ metav1.GetOptions) (*model.Role, error) {
 	role := &model.Role{}
 	err := u.db.WithContext(ctx).Preload("Users").Where("instance_id = ?", instanceID).First(&role).Error
 	if err != nil {
@@ -118,8 +118,8 @@ func (u *roleRepositoryImpl) GetByInstanceID(ctx context.Context, instanceID str
 }
 
 // List list roles.
-func (u *roleRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error) {
-	list := &v1alpha1.RoleList{}
+func (u *roleRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.RoleList, error) {
+	list := &v1.RoleList{}
 
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
 
@@ -144,9 +144,9 @@ func (u *roleRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOpt
 func (u *roleRepositoryImpl) ListByUserInstanceId(
 	ctx context.Context,
 	userInstanceId string,
-	opts metav1alpha1.ListOptions,
-) (*v1alpha1.RoleList, error) {
-	list := &v1alpha1.RoleList{}
+	opts metav1.ListOptions,
+) (*v1.RoleList, error) {
+	list := &v1.RoleList{}
 	var roleIds []uint64
 
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)

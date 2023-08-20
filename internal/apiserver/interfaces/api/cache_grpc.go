@@ -11,11 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
-	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
 	"github.com/coding-hui/iam/pkg/log"
 
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 var (
@@ -42,7 +42,7 @@ func NewCacheServer() *Cache {
 // DetailPolicy returns policy details.
 func (c *Cache) DetailPolicy(ctx context.Context, r *pb.GetPolicyRequest) (*pb.PolicyInfo, error) {
 	log.Info("get policy detail function called.")
-	policy, err := c.PolicyService.GetPolicy(ctx, r.GetName(), metav1alpha1.GetOptions{})
+	policy, err := c.PolicyService.GetPolicy(ctx, r.GetName(), metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (c *Cache) DetailPolicy(ctx context.Context, r *pb.GetPolicyRequest) (*pb.P
 // ListPolicies returns all policies.
 func (c *Cache) ListPolicies(ctx context.Context, r *pb.ListPoliciesRequest) (*pb.ListPoliciesResponse, error) {
 	log.Info("list policies function called.")
-	opts := metav1alpha1.ListOptions{
+	opts := metav1.ListOptions{
 		Offset: r.Offset,
 		Limit:  r.Limit,
 	}
@@ -86,7 +86,7 @@ func (c *Cache) ListPolicies(ctx context.Context, r *pb.ListPoliciesRequest) (*p
 // ListPolicyRules returns all policy rules.
 func (c *Cache) ListPolicyRules(ctx context.Context, r *pb.ListPolicyRulesRequest) (*pb.ListPolicyRulesResponse, error) {
 	log.Info("list policy rules function called.")
-	opts := metav1alpha1.ListOptions{
+	opts := metav1.ListOptions{
 		Offset: r.Offset,
 		Limit:  r.Limit,
 	}

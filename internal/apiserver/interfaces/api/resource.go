@@ -9,15 +9,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
-	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 type resource struct {
@@ -52,7 +52,7 @@ func (r *resource) RegisterApiGroup(g *gin.Engine) {
 //
 // createResource create new resource.
 func (r *resource) createResource(c *gin.Context) {
-	createReq := v1alpha1.CreateResourceRequest{}
+	createReq := v1.CreateResourceRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -79,7 +79,7 @@ func (r *resource) createResource(c *gin.Context) {
 //
 // updateResource update resource info.
 func (r *resource) updateResource(c *gin.Context) {
-	updateReq := v1alpha1.UpdateResourceRequest{}
+	updateReq := v1.UpdateResourceRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -107,7 +107,7 @@ func (r *resource) deleteResource(c *gin.Context) {
 	err := r.ResourceService.DeleteResource(
 		c.Request.Context(),
 		c.Param("instanceId"),
-		metav1alpha1.DeleteOptions{},
+		metav1.DeleteOptions{},
 	)
 	if err != nil {
 		api.FailWithErrCode(err, c)
@@ -127,8 +127,8 @@ func (r *resource) deleteResource(c *gin.Context) {
 //
 // detailResource get resource info.
 func (r *resource) detailResource(c *gin.Context) {
-	resource := c.Request.Context().Value(&v1alpha1.CtxKeyResource).(*model.Resource)
-	detail, err := r.ResourceService.DetailResource(c.Request.Context(), resource, metav1alpha1.GetOptions{})
+	resource := c.Request.Context().Value(&v1.CtxKeyResource).(*model.Resource)
+	detail, err := r.ResourceService.DetailResource(c.Request.Context(), resource, metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -154,7 +154,7 @@ func (r *resource) listResource(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := r.ResourceService.ListResources(c.Request.Context(), metav1alpha1.ListOptions{
+	resp, err := r.ResourceService.ListResources(c.Request.Context(), metav1.ListOptions{
 		Limit:         &pageSize,
 		Offset:        &page,
 		FieldSelector: c.Query("fieldSelector"),
@@ -171,13 +171,13 @@ func (r *resource) resourceCheckFilter(c *gin.Context) {
 	resource, err := r.ResourceService.GetResource(
 		c.Request.Context(),
 		c.Param("instanceId"),
-		metav1alpha1.GetOptions{},
+		metav1.GetOptions{},
 	)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		c.Abort()
 		return
 	}
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyResource, resource))
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyResource, resource))
 	c.Next()
 }

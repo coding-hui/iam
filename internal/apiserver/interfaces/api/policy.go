@@ -9,15 +9,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
-	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 type policy struct {
@@ -52,7 +52,7 @@ func (p *policy) RegisterApiGroup(g *gin.Engine) {
 //
 // createPolicy create a new policy.
 func (p *policy) createPolicy(c *gin.Context) {
-	createReq := v1alpha1.CreatePolicyRequest{}
+	createReq := v1.CreatePolicyRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -79,7 +79,7 @@ func (p *policy) createPolicy(c *gin.Context) {
 //
 // updatePolicy update policy info.
 func (p *policy) updatePolicy(c *gin.Context) {
-	updateReq := v1alpha1.UpdatePolicyRequest{}
+	updateReq := v1.UpdatePolicyRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -107,7 +107,7 @@ func (p *policy) deletePolicy(c *gin.Context) {
 	err := p.PolicyService.DeletePolicy(
 		c.Request.Context(),
 		c.Param("instanceId"),
-		metav1alpha1.DeleteOptions{},
+		metav1.DeleteOptions{},
 	)
 	if err != nil {
 		api.FailWithErrCode(err, c)
@@ -127,8 +127,8 @@ func (p *policy) deletePolicy(c *gin.Context) {
 //
 // detailPolicy get policy detail info.
 func (p *policy) detailPolicy(c *gin.Context) {
-	policy := c.Request.Context().Value(&v1alpha1.CtxKeyPolicy).(*model.Policy)
-	detail, err := p.PolicyService.DetailPolicy(c.Request.Context(), policy, metav1alpha1.GetOptions{})
+	policy := c.Request.Context().Value(&v1.CtxKeyPolicy).(*model.Policy)
+	detail, err := p.PolicyService.DetailPolicy(c.Request.Context(), policy, metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -154,7 +154,7 @@ func (p *policy) listPolicies(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := p.PolicyService.ListPolicies(c.Request.Context(), metav1alpha1.ListOptions{
+	resp, err := p.PolicyService.ListPolicies(c.Request.Context(), metav1.ListOptions{
 		Limit:         &pageSize,
 		Offset:        &page,
 		FieldSelector: c.Query("fieldSelector"),
@@ -168,12 +168,12 @@ func (p *policy) listPolicies(c *gin.Context) {
 }
 
 func (p *policy) policyCheckFilter(c *gin.Context) {
-	policy, err := p.PolicyService.GetPolicy(c.Request.Context(), c.Param("instanceId"), metav1alpha1.GetOptions{})
+	policy, err := p.PolicyService.GetPolicy(c.Request.Context(), c.Param("instanceId"), metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		c.Abort()
 		return
 	}
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyPolicy, policy))
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyPolicy, policy))
 	c.Next()
 }

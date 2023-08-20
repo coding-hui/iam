@@ -10,10 +10,10 @@ import (
 	"github.com/lib/pq"
 	"gorm.io/gorm"
 
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 	"github.com/coding-hui/common/util/idutil"
+
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 func init() {
@@ -35,10 +35,10 @@ type PolicyRule struct {
 // Policy represent a policy model.
 type Policy struct {
 	// May add TypeMeta in the future.
-	// metav1alpha1.TypeMeta `json:",inline"`
+	// metav1.TypeMeta `json:",inline"`
 
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	Subjects    pq.StringArray `json:"subjects"    gorm:"column:subjects;type:mediumtext"`
 	Type        string         `json:"type"        gorm:"column:type;type:varchar(20)"`
@@ -94,5 +94,5 @@ func (s *Statement) TableName() string {
 
 // AllowAccess returns true if the policy effect is allow, otherwise false.
 func (s *Statement) AllowAccess() bool {
-	return s.Effect == v1alpha1.AllowAccess
+	return s.Effect == v1.AllowAccess
 }

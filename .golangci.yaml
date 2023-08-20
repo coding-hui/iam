@@ -462,8 +462,8 @@ linters-settings:
       # using `cliflag` alias for `k8s.io/component-base/cli/flag` package
       - pkg: k8s.io/component-base/cli/flag
         alias: cliflag
-    # using `metav1alpha1` alias for `github.com/coding-hui/common/meta/v1alpha1` package
-    metav1alpha1: github.com/coding-hui/common/meta/v1alpha1
+    # using `metav1` alias for `github.com/coding-hui/common/meta/v1` package
+    metav1: github.com/coding-hui/common/meta/v1
 
   ireturn:
     # ireturn allows using `allow` and `reject` settings at the same time.

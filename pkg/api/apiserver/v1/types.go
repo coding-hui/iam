@@ -2,13 +2,13 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package v1alpha1
+package v1
 
 import (
 	"encoding/json"
 	"time"
 
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 var (
@@ -111,16 +111,16 @@ type UpdateUserRequest struct {
 // UserBase represents a user restful resource.
 type UserBase struct {
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
-	TenantId                uint64     `json:"tenantId,omitempty"`
-	Status                  int        `json:"status"`
-	Alias                   string     `json:"alias"`
-	Password                string     `json:"password,omitempty"`
-	Email                   string     `json:"email"`
-	Phone                   string     `json:"phone"`
-	UserType                string     `json:"userType"`
-	Disabled                bool       `json:"disabled"`
-	LastLoginTime           *time.Time `json:"lastLoginTime,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+	TenantId          uint64     `json:"tenantId,omitempty"`
+	Status            int        `json:"status"`
+	Alias             string     `json:"alias"`
+	Password          string     `json:"password,omitempty"`
+	Email             string     `json:"email"`
+	Phone             string     `json:"phone"`
+	UserType          string     `json:"userType"`
+	Disabled          bool       `json:"disabled"`
+	LastLoginTime     *time.Time `json:"lastLoginTime,omitempty"`
 }
 
 // DetailUserResponse is the response of user detail
@@ -136,7 +136,7 @@ type UserList struct {
 
 	// Standard list metadata.
 	// +optional
-	metav1alpha1.ListMeta `json:",inline"`
+	metav1.ListMeta `json:",inline"`
 
 	Items []*UserBase `json:"items"`
 }
@@ -144,7 +144,7 @@ type UserList struct {
 // TenantBase represents a tenant restful resource.
 type TenantBase struct {
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `       json:"metadata,omitempty"`
+	metav1.ObjectMeta `       json:"metadata,omitempty"`
 	// Owner tenant owner name.
 	Owner string `json:"owner,omitempty"    gorm:"column:owner"       validate:"required"`
 	// Disabled tenant state.
@@ -160,7 +160,7 @@ type TenantList struct {
 
 	// Standard list metadata.
 	// +optional
-	metav1alpha1.ListMeta `json:",inline"`
+	metav1.ListMeta `json:",inline"`
 
 	Items []*TenantBase `json:"items"`
 }
@@ -223,7 +223,7 @@ type UpdateRoleRequest struct {
 // RoleBase represents a role restful resource.
 type RoleBase struct {
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `       json:"metadata,omitempty"`
+	metav1.ObjectMeta `       json:"metadata,omitempty"`
 	// Owner tenant owner name.
 	Owner string `json:"owner,omitempty"    gorm:"column:owner"       validate:"required"`
 	// Disabled tenant state.
@@ -239,7 +239,7 @@ type RoleList struct {
 
 	// Standard list metadata.
 	// +optional
-	metav1alpha1.ListMeta `json:",inline"`
+	metav1.ListMeta `json:",inline"`
 
 	Items []*RoleBase `json:"items"`
 }
@@ -309,7 +309,7 @@ type UpdateResourceRequest struct {
 // ResourceBase represents a resource restful resource.
 type ResourceBase struct {
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `         json:"metadata,omitempty"`
+	metav1.ObjectMeta `         json:"metadata,omitempty"`
 	// Method resource method.
 	Method string `json:"method"             validate:"required"`
 	// Type unique identification of resource API.
@@ -345,7 +345,7 @@ type ResourceList struct {
 
 	// Standard list metadata.
 	// +optional
-	metav1alpha1.ListMeta `json:",inline"`
+	metav1.ListMeta `json:",inline"`
 
 	Items []*ResourceBase `json:"items"`
 }

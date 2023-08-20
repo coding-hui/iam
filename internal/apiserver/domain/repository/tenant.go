@@ -9,11 +9,11 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 // TenantRepository defines the tenant repository interface.
 type TenantRepository interface {
-	Create(ctx context.Context, tenant *model.Tenant, opts metav1alpha1.CreateOptions) error
-	Update(ctx context.Context, tenant *model.Tenant, opts metav1alpha1.UpdateOptions) error
+	Create(ctx context.Context, tenant *model.Tenant, opts metav1.CreateOptions) error
+	Update(ctx context.Context, tenant *model.Tenant, opts metav1.UpdateOptions) error
 }

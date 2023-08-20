@@ -11,15 +11,15 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
+
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
-	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 const (
@@ -36,8 +36,8 @@ var signedKey string
 
 // AuthenticationService authentication service.
 type AuthenticationService interface {
-	Authenticate(ctx context.Context, loginReq v1alpha1.AuthenticateRequest) (*v1alpha1.AuthenticateResponse, error)
-	RefreshToken(ctx context.Context, refreshToken string) (*v1alpha1.RefreshTokenResponse, error)
+	Authenticate(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
+	RefreshToken(ctx context.Context, refreshToken string) (*v1.RefreshTokenResponse, error)
 }
 
 type authenticationServiceImpl struct {
@@ -53,7 +53,7 @@ func NewAuthenticationService(c config.Config) AuthenticationService {
 }
 
 type authHandler interface {
-	authenticate(ctx context.Context) (*v1alpha1.UserBase, error)
+	authenticate(ctx context.Context) (*v1.UserBase, error)
 }
 
 type localHandlerImpl struct {
@@ -63,7 +63,7 @@ type localHandlerImpl struct {
 	password    string
 }
 
-func (a *authenticationServiceImpl) newLocalHandler(loginReq v1alpha1.AuthenticateRequest) (*localHandlerImpl, error) {
+func (a *authenticationServiceImpl) newLocalHandler(loginReq v1.AuthenticateRequest) (*localHandlerImpl, error) {
 	if loginReq.Username == "" || loginReq.Password == "" {
 		return nil, errors.WithCode(code.ErrMissingLoginValues, "Missing Username or Password")
 	}
@@ -76,10 +76,7 @@ func (a *authenticationServiceImpl) newLocalHandler(loginReq v1alpha1.Authentica
 	}, nil
 }
 
-func (a *authenticationServiceImpl) Authenticate(
-	ctx context.Context,
-	loginReq v1alpha1.AuthenticateRequest,
-) (*v1alpha1.AuthenticateResponse, error) {
+func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error) {
 	var handler authHandler
 	var err error
 	handler, err = a.newLocalHandler(loginReq)
@@ -99,7 +96,7 @@ func (a *authenticationServiceImpl) Authenticate(
 		return nil, err
 	}
 
-	return &v1alpha1.AuthenticateResponse{
+	return &v1.AuthenticateResponse{
 		User:        userBase,
 		AccessToken: accessToken,
 		// The OAuth 2.0 token_type response parameter value MUST be Bearer,
@@ -110,7 +107,7 @@ func (a *authenticationServiceImpl) Authenticate(
 	}, nil
 }
 
-func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken string) (*v1alpha1.RefreshTokenResponse, error) {
+func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken string) (*v1.RefreshTokenResponse, error) {
 	claim, err := ParseToken(refreshToken)
 	if err != nil {
 		if errors.IsCode(err, code.ErrExpired) {
@@ -123,7 +120,7 @@ func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken
 		if err != nil {
 			return nil, err
 		}
-		return &v1alpha1.RefreshTokenResponse{
+		return &v1.RefreshTokenResponse{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		}, nil
@@ -185,8 +182,8 @@ func (a *authenticationServiceImpl) generateJWTToken(userInstanceId, userType, g
 	return token.SignedString([]byte(signedKey))
 }
 
-func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1alpha1.UserBase, error) {
-	user, err := l.userService.GetUser(ctx, l.username, metav1alpha1.GetOptions{})
+func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1.UserBase, error) {
+	user, err := l.userService.GetUser(ctx, l.username, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsCode(err, code.ErrUserNotFound) {
 			return nil, errors.WithCode(code.ErrPasswordIncorrect, err.Error())

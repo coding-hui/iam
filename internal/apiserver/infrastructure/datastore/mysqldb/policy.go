@@ -10,16 +10,16 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/coding-hui/iam/internal/apiserver/domain/model"
-	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
-	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
 	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/common/fields"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
+
+	"github.com/coding-hui/iam/internal/apiserver/domain/model"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
+	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 type policyRepositoryImpl struct {
@@ -32,8 +32,8 @@ func newPolicyRepository(db *gorm.DB) repository.PolicyRepository {
 }
 
 // Create creates a new policy.
-func (p *policyRepositoryImpl) Create(ctx context.Context, policy *model.Policy, _ metav1alpha1.CreateOptions) error {
-	if oldPolicy, _ := p.GetByName(ctx, policy.Name, metav1alpha1.GetOptions{}); oldPolicy != nil {
+func (p *policyRepositoryImpl) Create(ctx context.Context, policy *model.Policy, _ metav1.CreateOptions) error {
+	if oldPolicy, _ := p.GetByName(ctx, policy.Name, metav1.GetOptions{}); oldPolicy != nil {
 		return errors.WithCode(code.ErrPolicyAlreadyExist, "Policy %s already exist", policy.Name)
 	}
 	if err := p.db.WithContext(ctx).Create(&policy).Error; err != nil {
@@ -47,7 +47,7 @@ func (p *policyRepositoryImpl) Create(ctx context.Context, policy *model.Policy,
 }
 
 // CreateBatch creates a new policy.
-func (p *policyRepositoryImpl) CreateBatch(ctx context.Context, policy []*model.Policy, _ metav1alpha1.CreateOptions) error {
+func (p *policyRepositoryImpl) CreateBatch(ctx context.Context, policy []*model.Policy, _ metav1.CreateOptions) error {
 	if err := p.db.WithContext(ctx).CreateInBatches(&policy, 500).Error; err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (p *policyRepositoryImpl) CreateBatch(ctx context.Context, policy []*model.
 }
 
 // Update updates an policy information.
-func (p *policyRepositoryImpl) Update(ctx context.Context, policy *model.Policy, _ metav1alpha1.UpdateOptions) error {
+func (p *policyRepositoryImpl) Update(ctx context.Context, policy *model.Policy, _ metav1.UpdateOptions) error {
 	err := p.db.WithContext(ctx).Model(policy).Association("Statements").Replace(policy.Statements)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func (p *policyRepositoryImpl) Update(ctx context.Context, policy *model.Policy,
 }
 
 // Delete deletes the policy by the user identifier.
-func (p *policyRepositoryImpl) Delete(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error {
+func (p *policyRepositoryImpl) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
 	if opts.Unscoped {
 		p.db = p.db.Unscoped()
 	}
@@ -91,7 +91,7 @@ func (p *policyRepositoryImpl) Delete(ctx context.Context, name string, opts met
 }
 
 // DeleteCollection batch deletes the policies.
-func (p *policyRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1alpha1.DeleteOptions) error {
+func (p *policyRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1.DeleteOptions) error {
 	if opts.Unscoped {
 		p.db = p.db.Unscoped()
 	}
@@ -100,7 +100,7 @@ func (p *policyRepositoryImpl) DeleteCollection(ctx context.Context, names []str
 }
 
 // GetByName get policy.
-func (p *policyRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1alpha1.GetOptions) (policy *model.Policy, err error) {
+func (p *policyRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1.GetOptions) (policy *model.Policy, err error) {
 	err = p.db.WithContext(ctx).Preload("Statements").Where("name = ?", name).First(&policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -117,7 +117,7 @@ func (p *policyRepositoryImpl) GetByName(ctx context.Context, name string, _ met
 func (p *policyRepositoryImpl) GetByInstanceId(
 	ctx context.Context,
 	instanceId string,
-	_ metav1alpha1.GetOptions,
+	_ metav1.GetOptions,
 ) (policy *model.Policy, err error) {
 	err = p.db.WithContext(ctx).Debug().Preload("Statements").Where("instance_id = ?", instanceId).First(&policy).Error
 	if err != nil {
@@ -132,7 +132,7 @@ func (p *policyRepositoryImpl) GetByInstanceId(
 }
 
 // List list policies.
-func (p *policyRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.PolicyList, error) {
+func (p *policyRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.PolicyList, error) {
 	var policies []*model.Policy
 	var totalCount int64
 
@@ -150,13 +150,13 @@ func (p *policyRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListO
 		Offset(-1).
 		Limit(-1).
 		Count(&totalCount)
-	items := make([]*v1alpha1.PolicyBase, 0, len(policies))
+	items := make([]*v1.PolicyBase, 0, len(policies))
 	for _, policy := range policies {
 		items = append(items, assembler.ConvertPolicyModelToBase(policy))
 	}
 
-	return &v1alpha1.PolicyList{
-		ListMeta: metav1alpha1.ListMeta{TotalCount: totalCount},
+	return &v1.PolicyList{
+		ListMeta: metav1.ListMeta{TotalCount: totalCount},
 		Items:    items,
 	}, db.Error
 }

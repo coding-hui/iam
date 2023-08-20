@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package v1alpha1
+package v1
 
 import (
 	"github.com/coding-hui/common/validation"

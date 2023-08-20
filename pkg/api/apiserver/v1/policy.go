@@ -2,10 +2,10 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package v1alpha1
+package v1
 
 import (
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 const (
@@ -58,10 +58,10 @@ type UpdatePolicyRequest struct {
 // PolicyBase represents a policy restful resource.
 type PolicyBase struct {
 	// May add TypeMeta in the future.
-	// metav1alpha1.TypeMeta `json:",inline"`
+	// metav1.TypeMeta `json:",inline"`
 
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	Subjects   []string    `json:"subjects"`
 	Statements []Statement `json:"statements"`
@@ -90,7 +90,7 @@ type PolicyList struct {
 
 	// Standard list metadata.
 	// +optional
-	metav1alpha1.ListMeta `json:",inline"`
+	metav1.ListMeta `json:",inline"`
 
 	Items []*PolicyBase `json:"items"`
 }

@@ -7,14 +7,14 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
-	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 type user struct {
@@ -52,7 +52,7 @@ func (u *user) RegisterApiGroup(g *gin.Engine) {
 //
 // createUser create a new user.
 func (u *user) createUser(c *gin.Context) {
-	createReq := v1alpha1.CreateUserRequest{}
+	createReq := v1.CreateUserRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -84,7 +84,7 @@ func (u *user) createUser(c *gin.Context) {
 //
 // updateUser update user info.
 func (u *user) updateUser(c *gin.Context) {
-	updateReq := v1alpha1.UpdateUserRequest{}
+	updateReq := v1.UpdateUserRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -113,7 +113,7 @@ func (u *user) updateUser(c *gin.Context) {
 //
 // deleteUser delete user by identifier.
 func (u *user) deleteUser(c *gin.Context) {
-	err := u.UserService.DeleteUser(c.Request.Context(), c.Param("instanceId"), metav1alpha1.DeleteOptions{})
+	err := u.UserService.DeleteUser(c.Request.Context(), c.Param("instanceId"), metav1.DeleteOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -132,7 +132,7 @@ func (u *user) deleteUser(c *gin.Context) {
 //
 // getUser get user detail.
 func (u *user) getUser(c *gin.Context) {
-	user, err := u.UserService.GetUserByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1alpha1.GetOptions{})
+	user, err := u.UserService.GetUserByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -165,7 +165,7 @@ func (u *user) listUser(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := u.UserService.ListUsers(c.Request.Context(), metav1alpha1.ListOptions{
+	resp, err := u.UserService.ListUsers(c.Request.Context(), metav1.ListOptions{
 		Limit:         &pageSize,
 		Offset:        &page,
 		FieldSelector: c.Query("fieldSelector"),
@@ -188,7 +188,7 @@ func (u *user) listUser(c *gin.Context) {
 //
 // getUserRoles get user roles.
 func (u *user) getUserRoles(c *gin.Context) {
-	roles, err := u.UserService.ListUserRoles(c.Request.Context(), c.Param("instanceId"), metav1alpha1.ListOptions{})
+	roles, err := u.UserService.ListUserRoles(c.Request.Context(), c.Param("instanceId"), metav1.ListOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

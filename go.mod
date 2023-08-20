@@ -12,7 +12,7 @@ require (
 	github.com/casbin/casbin/v2 v2.68.0
 	github.com/casbin/gorm-adapter/v3 v3.16.1
 	github.com/casbin/redis-watcher/v2 v2.5.0
-	github.com/coding-hui/common v0.0.0-20230503101027-9c7e02e5b410
+	github.com/coding-hui/common v0.0.0-20230820141619-a07767e1d8a1
 	github.com/fatih/color v1.15.0
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.9.0
@@ -46,7 +46,6 @@ require (
 	gotest.tools v2.2.0+incompatible
 	helm.sh/helm/v3 v3.11.2
 	k8s.io/klog v1.0.0
-	k8s.io/klog/v2 v2.100.1
 )
 
 require (
@@ -58,6 +57,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/facebookgo/structtag v0.0.0-20150214074306-217e25fb9691 // indirect
@@ -137,6 +137,7 @@ require (
 	gorm.io/driver/postgres v1.4.4 // indirect
 	gorm.io/driver/sqlserver v1.4.1 // indirect
 	gorm.io/plugin/dbresolver v1.3.0 // indirect
+	k8s.io/klog/v2 v2.100.1 // indirect
 	modernc.org/libc v1.22.2 // indirect
 	modernc.org/mathutil v1.5.0 // indirect
 	modernc.org/memory v1.5.0 // indirect

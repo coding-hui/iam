@@ -9,15 +9,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
-	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 type role struct {
@@ -55,7 +55,7 @@ func (r *role) RegisterApiGroup(g *gin.Engine) {
 //
 // createRole create new role.
 func (r *role) createRole(c *gin.Context) {
-	createReq := v1alpha1.CreateRoleRequest{}
+	createReq := v1.CreateRoleRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -82,7 +82,7 @@ func (r *role) createRole(c *gin.Context) {
 //
 // updateRole update role info.
 func (r *role) updateRole(c *gin.Context) {
-	updateReq := v1alpha1.UpdateRoleRequest{}
+	updateReq := v1.UpdateRoleRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -107,7 +107,7 @@ func (r *role) updateRole(c *gin.Context) {
 //
 // deleteRole delete role by instanceId.
 func (r *role) deleteRole(c *gin.Context) {
-	err := r.RoleService.DeleteRoleByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1alpha1.DeleteOptions{})
+	err := r.RoleService.DeleteRoleByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1.DeleteOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -126,8 +126,8 @@ func (r *role) deleteRole(c *gin.Context) {
 //
 // detailRole get role detail info.
 func (r *role) detailRole(c *gin.Context) {
-	role := c.Request.Context().Value(&v1alpha1.CtxKeyRole).(*model.Role)
-	detail, err := r.RoleService.DetailRole(c.Request.Context(), role, metav1alpha1.GetOptions{})
+	role := c.Request.Context().Value(&v1.CtxKeyRole).(*model.Role)
+	detail, err := r.RoleService.DetailRole(c.Request.Context(), role, metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -153,7 +153,7 @@ func (r *role) listRole(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := r.RoleService.ListRoles(c.Request.Context(), metav1alpha1.ListOptions{
+	resp, err := r.RoleService.ListRoles(c.Request.Context(), metav1.ListOptions{
 		Limit:         &pageSize,
 		Offset:        &page,
 		FieldSelector: c.Query("fieldSelector"),
@@ -176,7 +176,7 @@ func (r *role) listRole(c *gin.Context) {
 //
 // assignRole assign role.
 func (r *role) assignRole(c *gin.Context) {
-	assignReq := v1alpha1.AssignRoleRequest{}
+	assignReq := v1.AssignRoleRequest{}
 	err := c.ShouldBindJSON(&assignReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -202,7 +202,7 @@ func (r *role) assignRole(c *gin.Context) {
 //
 // batchAssignRole assign role.
 func (r *role) batchAssignRole(c *gin.Context) {
-	batchAssignReq := v1alpha1.BatchAssignRoleRequest{}
+	batchAssignReq := v1.BatchAssignRoleRequest{}
 	err := c.ShouldBindJSON(&batchAssignReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -227,7 +227,7 @@ func (r *role) batchAssignRole(c *gin.Context) {
 //
 // revokeRole revoke role.
 func (r *role) revokeRole(c *gin.Context) {
-	revokeReq := v1alpha1.RevokeRoleRequest{}
+	revokeReq := v1.RevokeRoleRequest{}
 	err := c.ShouldBindJSON(&revokeReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -244,12 +244,12 @@ func (r *role) revokeRole(c *gin.Context) {
 }
 
 func (r *role) roleCheckFilter(c *gin.Context) {
-	role, err := r.RoleService.GetRoleByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1alpha1.GetOptions{})
+	role, err := r.RoleService.GetRoleByInstanceId(c.Request.Context(), c.Param("instanceId"), metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		c.Abort()
 		return
 	}
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyRole, role))
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyRole, role))
 	c.Next()
 }

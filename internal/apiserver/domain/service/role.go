@@ -9,29 +9,29 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 // RoleService Role manage api.
 type RoleService interface {
-	CreateRole(ctx context.Context, req v1alpha1.CreateRoleRequest) error
-	UpdateRole(ctx context.Context, roleName string, req v1alpha1.UpdateRoleRequest) error
-	DeleteRoleByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error
-	BatchDeleteRoles(ctx context.Context, roleNames []string, opts metav1alpha1.DeleteOptions) error
-	GetRoleByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Role, error)
-	DetailRole(ctx context.Context, role *model.Role, opts metav1alpha1.GetOptions) (*v1alpha1.DetailRoleResponse, error)
-	ListRoles(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
-	AssignRole(ctx context.Context, assignReq v1alpha1.AssignRoleRequest) error
-	BatchAssignRole(ctx context.Context, batchAssignReq v1alpha1.BatchAssignRoleRequest) error
-	RevokeRole(ctx context.Context, revokeReq v1alpha1.RevokeRoleRequest) error
-	BatchRevokeRole(ctx context.Context, batchRevokeReq v1alpha1.BatchRevokeRoleRequest) error
-	AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1alpha1.AuthorizeResources) error
+	CreateRole(ctx context.Context, req v1.CreateRoleRequest) error
+	UpdateRole(ctx context.Context, roleName string, req v1.UpdateRoleRequest) error
+	DeleteRoleByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error
+	BatchDeleteRoles(ctx context.Context, roleNames []string, opts metav1.DeleteOptions) error
+	GetRoleByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.Role, error)
+	DetailRole(ctx context.Context, role *model.Role, opts metav1.GetOptions) (*v1.DetailRoleResponse, error)
+	ListRoles(ctx context.Context, opts metav1.ListOptions) (*v1.RoleList, error)
+	AssignRole(ctx context.Context, assignReq v1.AssignRoleRequest) error
+	BatchAssignRole(ctx context.Context, batchAssignReq v1.BatchAssignRoleRequest) error
+	RevokeRole(ctx context.Context, revokeReq v1.RevokeRoleRequest) error
+	BatchRevokeRole(ctx context.Context, batchRevokeReq v1.BatchRevokeRoleRequest) error
+	AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1.AuthorizeResources) error
 	Init(ctx context.Context) error
 }
 
@@ -69,11 +69,11 @@ func (r *roleServiceImpl) newUserRoleHandlerImpl(role *model.Role, targetInstanc
 // Init initialize role data.
 func (r *roleServiceImpl) Init(ctx context.Context) error {
 	// initialize default roles before
-	initRoles := []v1alpha1.UserType{v1alpha1.PlatformAdmin, v1alpha1.TenantAdmin, v1alpha1.Default}
+	initRoles := []v1.UserType{v1.PlatformAdmin, v1.TenantAdmin, v1.Default}
 	for _, role := range initRoles {
-		_, err := r.Store.RoleRepository().GetByName(ctx, role.String(), metav1alpha1.GetOptions{})
+		_, err := r.Store.RoleRepository().GetByName(ctx, role.String(), metav1.GetOptions{})
 		if err != nil && errors.IsCode(err, code.ErrRoleNotFound) {
-			createReq := v1alpha1.CreateRoleRequest{
+			createReq := v1.CreateRoleRequest{
 				Owner:       DefaultAdmin,
 				Name:        role.String(),
 				DisplayName: "",
@@ -88,19 +88,19 @@ func (r *roleServiceImpl) Init(ctx context.Context) error {
 	}
 
 	// find platform role
-	platformRole, err := r.Store.RoleRepository().GetByName(ctx, v1alpha1.PlatformAdmin.String(), metav1alpha1.GetOptions{})
+	platformRole, err := r.Store.RoleRepository().GetByName(ctx, v1.PlatformAdmin.String(), metav1.GetOptions{})
 	if err != nil {
-		return errors.WithMessagef(err, "Failed to get %s role info.", v1alpha1.PlatformAdmin.String())
+		return errors.WithMessagef(err, "Failed to get %s role info.", v1.PlatformAdmin.String())
 	}
 
 	// find default platform admin
-	admin, err := r.Store.UserRepository().GetByName(ctx, DefaultAdmin, metav1alpha1.GetOptions{})
+	admin, err := r.Store.UserRepository().GetByName(ctx, DefaultAdmin, metav1.GetOptions{})
 	if err != nil || admin == nil {
 		return errors.WithMessagef(err, "Failed to get default admin info. Please check UserService is initialized.")
 	}
 
 	// assign the platform role to the default administrator
-	assignRoleReq := v1alpha1.AssignRoleRequest{
+	assignRoleReq := v1.AssignRoleRequest{
 		InstanceID: platformRole.InstanceID,
 		Targets:    []string{admin.InstanceID},
 	}
@@ -114,9 +114,9 @@ func (r *roleServiceImpl) Init(ctx context.Context) error {
 }
 
 // CreateRole create role.
-func (r *roleServiceImpl) CreateRole(ctx context.Context, req v1alpha1.CreateRoleRequest) error {
+func (r *roleServiceImpl) CreateRole(ctx context.Context, req v1.CreateRoleRequest) error {
 	role := &model.Role{
-		ObjectMeta: metav1alpha1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: req.Name,
 		},
 		Owner:       req.Owner,
@@ -124,7 +124,7 @@ func (r *roleServiceImpl) CreateRole(ctx context.Context, req v1alpha1.CreateRol
 		Description: req.Description,
 		Disabled:    false,
 	}
-	if err := r.Store.RoleRepository().Create(ctx, role, metav1alpha1.CreateOptions{}); err != nil {
+	if err := r.Store.RoleRepository().Create(ctx, role, metav1.CreateOptions{}); err != nil {
 		return err
 	}
 
@@ -132,8 +132,8 @@ func (r *roleServiceImpl) CreateRole(ctx context.Context, req v1alpha1.CreateRol
 }
 
 // UpdateRole update role.
-func (r *roleServiceImpl) UpdateRole(ctx context.Context, roleName string, req v1alpha1.UpdateRoleRequest) error {
-	role, err := r.GetRoleByInstanceId(ctx, roleName, metav1alpha1.GetOptions{})
+func (r *roleServiceImpl) UpdateRole(ctx context.Context, roleName string, req v1.UpdateRoleRequest) error {
+	role, err := r.GetRoleByInstanceId(ctx, roleName, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -146,7 +146,7 @@ func (r *roleServiceImpl) UpdateRole(ctx context.Context, roleName string, req v
 	if req.Owner != "" {
 		role.Owner = req.Owner
 	}
-	if err := r.Store.RoleRepository().Update(ctx, role, metav1alpha1.UpdateOptions{}); err != nil {
+	if err := r.Store.RoleRepository().Update(ctx, role, metav1.UpdateOptions{}); err != nil {
 		return err
 	}
 
@@ -154,8 +154,8 @@ func (r *roleServiceImpl) UpdateRole(ctx context.Context, roleName string, req v
 }
 
 // DeleteRoleByInstanceId delete role by instanceId.
-func (r *roleServiceImpl) DeleteRoleByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
-	role, err := r.GetRoleByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
+func (r *roleServiceImpl) DeleteRoleByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
+	role, err := r.GetRoleByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -170,7 +170,7 @@ func (r *roleServiceImpl) DeleteRoleByInstanceId(ctx context.Context, instanceId
 }
 
 // BatchDeleteRoles batch delete role.
-func (r *roleServiceImpl) BatchDeleteRoles(ctx context.Context, roleNames []string, opts metav1alpha1.DeleteOptions) error {
+func (r *roleServiceImpl) BatchDeleteRoles(ctx context.Context, roleNames []string, opts metav1.DeleteOptions) error {
 	if err := r.Store.RoleRepository().DeleteCollection(ctx, roleNames, opts); err != nil {
 		return err
 	}
@@ -179,7 +179,7 @@ func (r *roleServiceImpl) BatchDeleteRoles(ctx context.Context, roleNames []stri
 }
 
 // GetRoleByInstanceId get role by instanceId.
-func (r *roleServiceImpl) GetRoleByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Role, error) {
+func (r *roleServiceImpl) GetRoleByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.Role, error) {
 	role, err := r.Store.RoleRepository().GetByInstanceID(ctx, instanceId, opts)
 	if err != nil {
 		return nil, err
@@ -192,14 +192,14 @@ func (r *roleServiceImpl) GetRoleByInstanceId(ctx context.Context, instanceId st
 func (r *roleServiceImpl) DetailRole(
 	ctx context.Context,
 	role *model.Role,
-	_ metav1alpha1.GetOptions,
-) (*v1alpha1.DetailRoleResponse, error) {
+	_ metav1.GetOptions,
+) (*v1.DetailRoleResponse, error) {
 	base := assembler.ConvertRoleModelToBase(role)
-	users := make([]v1alpha1.UserBase, 0, len(role.Users))
+	users := make([]v1.UserBase, 0, len(role.Users))
 	for _, u := range role.Users {
 		users = append(users, *assembler.ConvertUserModelToBase(&u))
 	}
-	detail := &v1alpha1.DetailRoleResponse{
+	detail := &v1.DetailRoleResponse{
 		RoleBase: *base,
 		Users:    users,
 	}
@@ -208,7 +208,7 @@ func (r *roleServiceImpl) DetailRole(
 }
 
 // ListRoles list roles.
-func (r *roleServiceImpl) ListRoles(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error) {
+func (r *roleServiceImpl) ListRoles(ctx context.Context, opts metav1.ListOptions) (*v1.RoleList, error) {
 	roles, err := r.Store.RoleRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err
@@ -218,8 +218,8 @@ func (r *roleServiceImpl) ListRoles(ctx context.Context, opts metav1alpha1.ListO
 }
 
 // AssignRole assign roles, which can be users or departments.
-func (r *roleServiceImpl) AssignRole(ctx context.Context, assignReq v1alpha1.AssignRoleRequest) (lastErr error) {
-	role, err := r.GetRoleByInstanceId(ctx, assignReq.InstanceID, metav1alpha1.GetOptions{})
+func (r *roleServiceImpl) AssignRole(ctx context.Context, assignReq v1.AssignRoleRequest) (lastErr error) {
+	role, err := r.GetRoleByInstanceId(ctx, assignReq.InstanceID, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -239,11 +239,11 @@ func (r *roleServiceImpl) AssignRole(ctx context.Context, assignReq v1alpha1.Ass
 }
 
 // BatchAssignRole batch assign roles, which can be users or departments.
-func (r *roleServiceImpl) BatchAssignRole(ctx context.Context, batchAssignReq v1alpha1.BatchAssignRoleRequest) error {
+func (r *roleServiceImpl) BatchAssignRole(ctx context.Context, batchAssignReq v1.BatchAssignRoleRequest) error {
 	instanceIds := batchAssignReq.InstanceIds
 	targets := batchAssignReq.Targets
 	for _, instanceId := range instanceIds {
-		err := r.AssignRole(ctx, v1alpha1.AssignRoleRequest{
+		err := r.AssignRole(ctx, v1.AssignRoleRequest{
 			InstanceID: instanceId,
 			Targets:    targets,
 		})
@@ -257,8 +257,8 @@ func (r *roleServiceImpl) BatchAssignRole(ctx context.Context, batchAssignReq v1
 }
 
 // RevokeRole revoke roles, which can be users or departments.
-func (r *roleServiceImpl) RevokeRole(ctx context.Context, revokeReq v1alpha1.RevokeRoleRequest) (lastErr error) {
-	role, err := r.GetRoleByInstanceId(ctx, revokeReq.InstanceID, metav1alpha1.GetOptions{})
+func (r *roleServiceImpl) RevokeRole(ctx context.Context, revokeReq v1.RevokeRoleRequest) (lastErr error) {
+	role, err := r.GetRoleByInstanceId(ctx, revokeReq.InstanceID, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -278,11 +278,11 @@ func (r *roleServiceImpl) RevokeRole(ctx context.Context, revokeReq v1alpha1.Rev
 }
 
 // BatchRevokeRole batch revoke roles, which can be users or departments.
-func (r *roleServiceImpl) BatchRevokeRole(ctx context.Context, batchRevokeReq v1alpha1.BatchRevokeRoleRequest) error {
+func (r *roleServiceImpl) BatchRevokeRole(ctx context.Context, batchRevokeReq v1.BatchRevokeRoleRequest) error {
 	instanceIds := batchRevokeReq.InstanceIds
 	targets := batchRevokeReq.Targets
 	for _, instanceId := range instanceIds {
-		err := r.RevokeRole(ctx, v1alpha1.RevokeRoleRequest{
+		err := r.RevokeRole(ctx, v1.RevokeRoleRequest{
 			InstanceID: instanceId,
 			Targets:    targets,
 		})
@@ -296,7 +296,7 @@ func (r *roleServiceImpl) BatchRevokeRole(ctx context.Context, batchRevokeReq v1
 }
 
 // AuthorizeRoleResources grant role resource permission.
-func (r *roleServiceImpl) AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1alpha1.AuthorizeResources) error {
+func (r *roleServiceImpl) AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1.AuthorizeResources) error {
 	handlers, err := r.determineRoleHandlerByInstanceId(role, authorizeReq.Resources)
 	if err != nil {
 		return errors.WithCode(code.ErrAssignRoleFailed, err.Error())
@@ -357,7 +357,7 @@ func (r *roleServiceImpl) determineRoleHandlerByInstanceId(role *model.Role, ins
 
 	for ri, ts := range targets {
 		switch ri {
-		case v1alpha1.UserTarget:
+		case v1.UserTarget:
 			handler, err := r.newUserRoleHandlerImpl(role, ts)
 			if err != nil {
 				log.Warnf("failed to new user role handler. err: %w", err)

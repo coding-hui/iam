@@ -10,13 +10,13 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 	"github.com/coding-hui/common/util/auth"
 )
 
@@ -31,15 +31,15 @@ const (
 
 // UserService User manage api.
 type UserService interface {
-	CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) (*v1alpha1.CreateUserResponse, error)
-	UpdateUser(ctx context.Context, instanceId string, req v1alpha1.UpdateUserRequest) error
-	DeleteUser(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error
-	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error
-	GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error)
-	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error)
-	DetailUser(ctx context.Context, user *model.User) (*v1alpha1.DetailUserResponse, error)
-	ListUsers(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error)
-	ListUserRoles(ctx context.Context, instanceId string, opts metav1alpha1.ListOptions) (*v1alpha1.RoleList, error)
+	CreateUser(ctx context.Context, req v1.CreateUserRequest) (*v1.CreateUserResponse, error)
+	UpdateUser(ctx context.Context, instanceId string, req v1.UpdateUserRequest) error
+	DeleteUser(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error
+	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error
+	GetUser(ctx context.Context, username string, opts metav1.GetOptions) (*model.User, error)
+	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.User, error)
+	DetailUser(ctx context.Context, user *model.User) (*v1.DetailUserResponse, error)
+	ListUsers(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error)
+	ListUserRoles(ctx context.Context, instanceId string, opts metav1.ListOptions) (*v1.RoleList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	DisableUser(ctx context.Context, instanceId string) error
 	EnableUser(ctx context.Context, instanceId string) error
@@ -58,13 +58,13 @@ func NewUserService() UserService {
 
 // Init initialize user data.
 func (u *userServiceImpl) Init(ctx context.Context) error {
-	_, err := u.GetUser(ctx, DefaultAdmin, metav1alpha1.GetOptions{})
+	_, err := u.GetUser(ctx, DefaultAdmin, metav1.GetOptions{})
 	if err != nil && errors.IsCode(err, code.ErrUserNotFound) {
-		user := v1alpha1.CreateUserRequest{
+		user := v1.CreateUserRequest{
 			Name:     DefaultAdmin,
 			Password: DefaultAdminPwd,
 			Alias:    DefaultAdminUserAlias,
-			UserType: v1alpha1.PlatformAdmin.String(),
+			UserType: v1.PlatformAdmin.String(),
 		}
 		_, err = u.CreateUser(ctx, user)
 		if err != nil {
@@ -77,10 +77,10 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 }
 
 // CreateUser create user.
-func (u *userServiceImpl) CreateUser(ctx context.Context, req v1alpha1.CreateUserRequest) (*v1alpha1.CreateUserResponse, error) {
+func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserRequest) (*v1.CreateUserResponse, error) {
 	encryptPassword, _ := auth.Encrypt(req.Password)
 	user := &model.User{
-		ObjectMeta: metav1alpha1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: req.Name,
 		},
 		Password: encryptPassword,
@@ -89,20 +89,20 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1alpha1.CreateUse
 		UserType: req.UserType,
 		Disabled: false,
 	}
-	createUser, err := u.Store.UserRepository().Create(ctx, user, metav1alpha1.CreateOptions{})
+	createUser, err := u.Store.UserRepository().Create(ctx, user, metav1.CreateOptions{})
 	if err != nil {
 		return nil, err
 	}
 	base := assembler.ConvertUserModelToBase(createUser)
 
-	return &v1alpha1.CreateUserResponse{
+	return &v1.CreateUserResponse{
 		UserBase: *base,
 	}, nil
 }
 
 // UpdateUser update user.
-func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req v1alpha1.UpdateUserRequest) error {
-	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
+func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req v1.UpdateUserRequest) error {
+	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req
 		}
 		user.Password = hash
 	}
-	if err := u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{}); err != nil {
+	if err := u.Store.UserRepository().Update(ctx, user, metav1.UpdateOptions{}); err != nil {
 		return err
 	}
 
@@ -130,12 +130,12 @@ func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req
 }
 
 // DeleteUser delete user.
-func (u *userServiceImpl) DeleteUser(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
-	roles, err := u.ListUserRoles(ctx, instanceId, metav1alpha1.ListOptions{})
+func (u *userServiceImpl) DeleteUser(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
+	roles, err := u.ListUserRoles(ctx, instanceId, metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
-	batchRevokeRoleReq := v1alpha1.BatchRevokeRoleRequest{
+	batchRevokeRoleReq := v1.BatchRevokeRoleRequest{
 		Targets: []string{instanceId},
 	}
 	for _, r := range roles.Items {
@@ -153,7 +153,7 @@ func (u *userServiceImpl) DeleteUser(ctx context.Context, instanceId string, opt
 }
 
 // BatchDeleteUsers batch delete user.
-func (u *userServiceImpl) BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error {
+func (u *userServiceImpl) BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error {
 	if err := u.Store.UserRepository().DeleteCollection(ctx, usernames, opts); err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (u *userServiceImpl) BatchDeleteUsers(ctx context.Context, usernames []stri
 }
 
 // GetUser get user.
-func (u *userServiceImpl) GetUser(ctx context.Context, username string, opts metav1alpha1.GetOptions) (*model.User, error) {
+func (u *userServiceImpl) GetUser(ctx context.Context, username string, opts metav1.GetOptions) (*model.User, error) {
 	user, err := u.Store.UserRepository().GetByName(ctx, username, opts)
 	if err != nil {
 		return nil, err
@@ -172,7 +172,7 @@ func (u *userServiceImpl) GetUser(ctx context.Context, username string, opts met
 }
 
 // GetUserByInstanceId get user by instanceId.
-func (u *userServiceImpl) GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.User, error) {
+func (u *userServiceImpl) GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.User, error) {
 	user, err := u.Store.UserRepository().GetByInstanceId(ctx, instanceId, opts)
 	if err != nil {
 		return nil, err
@@ -182,16 +182,16 @@ func (u *userServiceImpl) GetUserByInstanceId(ctx context.Context, instanceId st
 }
 
 // DetailUser return user detail
-func (u *userServiceImpl) DetailUser(ctx context.Context, user *model.User) (*v1alpha1.DetailUserResponse, error) {
+func (u *userServiceImpl) DetailUser(ctx context.Context, user *model.User) (*v1.DetailUserResponse, error) {
 	base := *assembler.ConvertUserModelToBase(user)
 
-	return &v1alpha1.DetailUserResponse{
+	return &v1.DetailUserResponse{
 		UserBase: base,
 	}, nil
 }
 
 // ListUsers list users.
-func (u *userServiceImpl) ListUsers(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
+func (u *userServiceImpl) ListUsers(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error) {
 	users, err := u.Store.UserRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err
@@ -204,8 +204,8 @@ func (u *userServiceImpl) ListUsers(ctx context.Context, opts metav1alpha1.ListO
 func (u *userServiceImpl) ListUserRoles(
 	ctx context.Context,
 	instanceId string,
-	listOptions metav1alpha1.ListOptions,
-) (*v1alpha1.RoleList, error) {
+	listOptions metav1.ListOptions,
+) (*v1.RoleList, error) {
 	roles, err := u.Store.RoleRepository().ListByUserInstanceId(ctx, instanceId, listOptions)
 	if err != nil {
 		return nil, err
@@ -219,12 +219,12 @@ func (u *userServiceImpl) FlushLastLoginTime(ctx context.Context, user *model.Us
 	now := time.Now()
 	user.LastLoginTime = &now
 
-	return u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{})
+	return u.Store.UserRepository().Update(ctx, user, metav1.UpdateOptions{})
 }
 
 // DisableUser disable user
 func (u *userServiceImpl) DisableUser(ctx context.Context, instanceId string) error {
-	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
+	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -233,12 +233,12 @@ func (u *userServiceImpl) DisableUser(ctx context.Context, instanceId string) er
 	}
 	user.Disabled = true
 
-	return u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{})
+	return u.Store.UserRepository().Update(ctx, user, metav1.UpdateOptions{})
 }
 
 // EnableUser disable user
 func (u *userServiceImpl) EnableUser(ctx context.Context, instanceId string) error {
-	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
+	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -247,5 +247,5 @@ func (u *userServiceImpl) EnableUser(ctx context.Context, instanceId string) err
 	}
 	user.Disabled = false
 
-	return u.Store.UserRepository().Update(ctx, user, metav1alpha1.UpdateOptions{})
+	return u.Store.UserRepository().Update(ctx, user, metav1.UpdateOptions{})
 }

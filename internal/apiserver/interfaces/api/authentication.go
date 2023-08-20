@@ -16,11 +16,11 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 type authentication struct {
@@ -73,20 +73,20 @@ func authCheckFilter(c *gin.Context) {
 		return
 	}
 
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserInstanceId, token.UserInstanceId))
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1alpha1.CtxKeyUserType, token.UserType))
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserInstanceId, token.UserInstanceId))
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserType, token.UserType))
 
 	c.Next()
 }
 
 func permissionCheckFilter(c *gin.Context) {
-	userType, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserType).(string)
-	if ok && userType == v1alpha1.PlatformAdmin.String() {
+	userType, ok := c.Request.Context().Value(&v1.CtxKeyUserType).(string)
+	if ok && userType == v1.PlatformAdmin.String() {
 		c.Next()
 		return
 	}
 
-	sub, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserInstanceId).(string)
+	sub, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceId).(string)
 	if !ok {
 		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user role"), c)
 		c.Abort()
@@ -123,7 +123,7 @@ func permissionCheckFilter(c *gin.Context) {
 //
 // authenticate login by user.
 func (a *authentication) authenticate(c *gin.Context) {
-	var login v1alpha1.AuthenticateRequest
+	var login v1.AuthenticateRequest
 	var err error
 
 	// support header and body both
@@ -148,22 +148,22 @@ func (a *authentication) authenticate(c *gin.Context) {
 	api.OkWithData(response, c)
 }
 
-func parseWithHeader(c *gin.Context) (v1alpha1.AuthenticateRequest, error) {
+func parseWithHeader(c *gin.Context) (v1.AuthenticateRequest, error) {
 	username, password, ok := c.Request.BasicAuth()
 	if !ok {
-		return v1alpha1.AuthenticateRequest{}, jwt.ErrFailedAuthentication
+		return v1.AuthenticateRequest{}, jwt.ErrFailedAuthentication
 	}
 
-	return v1alpha1.AuthenticateRequest{
+	return v1.AuthenticateRequest{
 		Username: username,
 		Password: password,
 	}, nil
 }
 
-func parseWithBody(c *gin.Context) (v1alpha1.AuthenticateRequest, error) {
-	var login v1alpha1.AuthenticateRequest
+func parseWithBody(c *gin.Context) (v1.AuthenticateRequest, error) {
+	var login v1.AuthenticateRequest
 	if err := c.ShouldBindJSON(&login); err != nil {
-		return v1alpha1.AuthenticateRequest{}, jwt.ErrFailedAuthentication
+		return v1.AuthenticateRequest{}, jwt.ErrFailedAuthentication
 	}
 
 	return login, nil
@@ -193,7 +193,7 @@ func (a *authentication) refreshToken(c *gin.Context) {
 }
 
 func (a *authentication) userInfo(c *gin.Context) {
-	instanceId, ok := c.Request.Context().Value(&v1alpha1.CtxKeyUserInstanceId).(string)
+	instanceId, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceId).(string)
 	if !ok {
 		api.FailWithErrCode(
 			errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
@@ -201,7 +201,7 @@ func (a *authentication) userInfo(c *gin.Context) {
 		)
 		return
 	}
-	user, err := a.UserService.GetUserByInstanceId(c.Request.Context(), instanceId, metav1alpha1.GetOptions{})
+	user, err := a.UserService.GetUserByInstanceId(c.Request.Context(), instanceId, metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

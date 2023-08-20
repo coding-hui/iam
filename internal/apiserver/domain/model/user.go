@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"gorm.io/gorm"
 
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 	"github.com/coding-hui/common/util/idutil"
 )
 
@@ -24,7 +24,7 @@ type User struct {
 	// metav1.TypeMeta `json:",inline"`
 
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	TenantId      uint64     `json:"tenantId,omitempty"      gorm:"column:tenant_id;type:varchar(64)"`
 	Status        int        `json:"status"                  gorm:"column:status;"`

@@ -2,22 +2,22 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package v1alpha1
+package v1
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/coding-hui/iam/internal/apiserver/domain/model"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	"github.com/coding-hui/iam/internal/apiserver/domain/model"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 // ConvertResourceModel assemble the DTO to Resource Model.
-func ConvertResourceModel(req v1alpha1.CreateResourceRequest) *model.Resource {
+func ConvertResourceModel(req v1.CreateResourceRequest) *model.Resource {
 	return &model.Resource{
-		ObjectMeta: metav1alpha1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: req.Name,
 		},
 		Method:      req.Method,
@@ -30,7 +30,7 @@ func ConvertResourceModel(req v1alpha1.CreateResourceRequest) *model.Resource {
 }
 
 // ConvertToActionModel assemble the DTO to Action Model.
-func ConvertToActionModel(resource string, actions []v1alpha1.Action) []model.Action {
+func ConvertToActionModel(resource string, actions []v1.Action) []model.Action {
 	list := make([]model.Action, 0, len(actions))
 	for _, act := range actions {
 		actName := act.Name
@@ -44,9 +44,9 @@ func ConvertToActionModel(resource string, actions []v1alpha1.Action) []model.Ac
 }
 
 // ConvertPolicyModel assemble the DTO to Policy Model.
-func ConvertPolicyModel(req v1alpha1.CreatePolicyRequest) *model.Policy {
+func ConvertPolicyModel(req v1.CreatePolicyRequest) *model.Policy {
 	return &model.Policy{
-		ObjectMeta: metav1alpha1.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name: req.Name,
 		},
 		Subjects:    req.Subjects,
@@ -59,7 +59,7 @@ func ConvertPolicyModel(req v1alpha1.CreatePolicyRequest) *model.Policy {
 }
 
 // ConvertToStatementModel assemble the DTO to Statements Model.
-func ConvertToStatementModel(statements []v1alpha1.Statement) []model.Statement {
+func ConvertToStatementModel(statements []v1.Statement) []model.Statement {
 	list := make([]model.Statement, 0, len(statements))
 	for _, sta := range statements {
 		list = append(list, model.Statement{

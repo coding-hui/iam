@@ -7,7 +7,7 @@ package model
 import (
 	"gorm.io/gorm"
 
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 	"github.com/coding-hui/common/util/idutil"
 )
 
@@ -18,7 +18,7 @@ func init() {
 // Resource represents api resource restful resource. It is also used as gorm model.
 type Resource struct {
 	// Standard object's metadata.
-	metav1alpha1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Type resource type.
 	Type string `json:"type" gorm:"column:type;type:varchar(20)"`

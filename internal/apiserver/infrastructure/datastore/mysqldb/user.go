@@ -10,15 +10,15 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
+	"github.com/coding-hui/common/errors"
+	"github.com/coding-hui/common/fields"
+	metav1 "github.com/coding-hui/common/meta/v1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
-
-	"github.com/coding-hui/common/errors"
-	"github.com/coding-hui/common/fields"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 type userRepositoryImpl struct {
@@ -31,8 +31,8 @@ func newUserRepository(db *gorm.DB) repository.UserRepository {
 }
 
 // Create creates a new user account.
-func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts metav1alpha1.CreateOptions) (*model.User, error) {
-	if oldUser, _ := u.GetByName(ctx, user.Name, metav1alpha1.GetOptions{}); oldUser != nil {
+func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts metav1.CreateOptions) (*model.User, error) {
+	if oldUser, _ := u.GetByName(ctx, user.Name, metav1.GetOptions{}); oldUser != nil {
 		return nil, errors.WithCode(code.ErrUserAlreadyExist, "User %s already exist", user.Name)
 	}
 	if err := u.db.WithContext(ctx).Create(&user).Error; err != nil {
@@ -46,7 +46,7 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts 
 }
 
 // Update updates an user account information.
-func (u *userRepositoryImpl) Update(ctx context.Context, user *model.User, opts metav1alpha1.UpdateOptions) error {
+func (u *userRepositoryImpl) Update(ctx context.Context, user *model.User, opts metav1.UpdateOptions) error {
 	if err := u.db.WithContext(ctx).Save(user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrUserNotFound, err.Error())
@@ -59,18 +59,18 @@ func (u *userRepositoryImpl) Update(ctx context.Context, user *model.User, opts 
 }
 
 // DeleteByInstanceId deletes the user by the user identifier.
-func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1alpha1.DeleteOptions) error {
+func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
 	if opts.Unscoped {
 		u.db = u.db.Unscoped()
 	}
-	user, err := u.GetByInstanceId(ctx, instanceId, metav1alpha1.GetOptions{})
+	user, err := u.GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrUserNotFound, err.Error())
 		}
 		return err
 	}
-	if currentUser := ctx.Value(&v1alpha1.CtxKeyUserInstanceId); currentUser != "" && currentUser == user.InstanceID {
+	if currentUser := ctx.Value(&v1.CtxKeyUserInstanceId); currentUser != "" && currentUser == user.InstanceID {
 		return errors.WithCode(code.ErrDeleteOneself, "User %s failed to be deleted and cannot delete itself", currentUser)
 	}
 	err = u.db.WithContext(ctx).Where("instance_id = ?", instanceId).Select(clause.Associations).Delete(&model.User{}).Error
@@ -82,7 +82,7 @@ func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 }
 
 // DeleteCollection batch deletes the users.
-func (u *userRepositoryImpl) DeleteCollection(ctx context.Context, usernames []string, opts metav1alpha1.DeleteOptions) error {
+func (u *userRepositoryImpl) DeleteCollection(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error {
 	if opts.Unscoped {
 		u.db = u.db.Unscoped()
 	}
@@ -91,7 +91,7 @@ func (u *userRepositoryImpl) DeleteCollection(ctx context.Context, usernames []s
 }
 
 // GetByName get user by username.
-func (u *userRepositoryImpl) GetByName(ctx context.Context, username string, _ metav1alpha1.GetOptions) (*model.User, error) {
+func (u *userRepositoryImpl) GetByName(ctx context.Context, username string, _ metav1.GetOptions) (*model.User, error) {
 	user := &model.User{}
 	if username == "" {
 		return nil, errors.WithCode(code.ErrUserNameIsEmpty, "Username is empty")
@@ -109,7 +109,7 @@ func (u *userRepositoryImpl) GetByName(ctx context.Context, username string, _ m
 }
 
 // GetByInstanceId get user by instanceId.
-func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId string, _ metav1alpha1.GetOptions) (*model.User, error) {
+func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId string, _ metav1.GetOptions) (*model.User, error) {
 	user := &model.User{}
 	err := u.db.WithContext(ctx).Where("instance_id = ?", instanceId).First(&user).Error
 	if err != nil {
@@ -124,8 +124,8 @@ func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId str
 }
 
 // List list users.
-func (u *userRepositoryImpl) List(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.UserList, error) {
-	list := &v1alpha1.UserList{}
+func (u *userRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error) {
+	list := &v1.UserList{}
 
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
 

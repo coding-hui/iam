@@ -11,7 +11,7 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
@@ -194,8 +194,8 @@ func (s *apiServer) configSwagger() {
 }
 
 func (s *apiServer) withRoutesContext(ctx context.Context) context.Context {
-	ctx = context.WithValue(ctx, &v1alpha1.CtxKeyRoutes, s.webServer.Routes())
-	ctx = context.WithValue(ctx, &v1alpha1.CtxKeyApiPrefix, apisv1.GetAPIPrefix())
+	ctx = context.WithValue(ctx, &v1.CtxKeyRoutes, s.webServer.Routes())
+	ctx = context.WithValue(ctx, &v1.CtxKeyApiPrefix, apisv1.GetAPIPrefix())
 	return ctx
 }
 

@@ -12,24 +12,24 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1alpha1"
+	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/pkg/api/apiserver/v1alpha1"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
-	metav1alpha1 "github.com/coding-hui/common/meta/v1alpha1"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 // PolicyService Policy rule manage api.
 type PolicyService interface {
-	CreatePolicy(ctx context.Context, req v1alpha1.CreatePolicyRequest) error
-	UpdatePolicy(ctx context.Context, idOrName string, req v1alpha1.UpdatePolicyRequest) error
-	DeletePolicy(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error
-	GetPolicy(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Policy, error)
-	DetailPolicy(ctx context.Context, policy *model.Policy, opts metav1alpha1.GetOptions) (*v1alpha1.DetailPolicyResponse, error)
-	ListPolicies(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.PolicyList, error)
-	ListPolicyRules(ctx context.Context, opts metav1alpha1.ListOptions) ([]model.PolicyRule, error)
+	CreatePolicy(ctx context.Context, req v1.CreatePolicyRequest) error
+	UpdatePolicy(ctx context.Context, idOrName string, req v1.UpdatePolicyRequest) error
+	DeletePolicy(ctx context.Context, name string, opts metav1.DeleteOptions) error
+	GetPolicy(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.Policy, error)
+	DetailPolicy(ctx context.Context, policy *model.Policy, opts metav1.GetOptions) (*v1.DetailPolicyResponse, error)
+	ListPolicies(ctx context.Context, opts metav1.ListOptions) (*v1.PolicyList, error)
+	ListPolicyRules(ctx context.Context, opts metav1.ListOptions) ([]model.PolicyRule, error)
 	Init(ctx context.Context) error
 }
 
@@ -45,26 +45,26 @@ func NewPolicyService() PolicyService {
 // Init initialize resource data.
 func (p *policyServiceImpl) Init(ctx context.Context) error {
 	// find platform role
-	platformRole, err := p.Store.RoleRepository().GetByName(ctx, v1alpha1.PlatformAdmin.String(), metav1alpha1.GetOptions{})
+	platformRole, err := p.Store.RoleRepository().GetByName(ctx, v1.PlatformAdmin.String(), metav1.GetOptions{})
 	if err != nil {
-		return errors.WithMessagef(err, "Failed to get %s role info.", v1alpha1.PlatformAdmin.String())
+		return errors.WithMessagef(err, "Failed to get %s role info.", v1.PlatformAdmin.String())
 	}
-	createReq := v1alpha1.CreatePolicyRequest{
+	createReq := v1.CreatePolicyRequest{
 		Name:        DefaultAdmin,
 		Subjects:    []string{platformRole.InstanceID},
-		Type:        string(v1alpha1.SystemBuildInPolicy),
+		Type:        string(v1.SystemBuildInPolicy),
 		Owner:       DefaultAdmin,
 		Description: "System default admin policies",
-		Statements: []v1alpha1.Statement{
+		Statements: []v1.Statement{
 			{
-				Effect:             v1alpha1.AllowAccess,
+				Effect:             v1.AllowAccess,
 				Resource:           "*",
 				ResourceIdentifier: "*:*",
 				Actions:            pq.StringArray{"*"},
 			},
 		},
 	}
-	_, err = p.Store.PolicyRepository().GetByName(ctx, createReq.Name, metav1alpha1.GetOptions{})
+	_, err = p.Store.PolicyRepository().GetByName(ctx, createReq.Name, metav1.GetOptions{})
 	if err != nil && errors.IsCode(err, code.ErrPolicyNotFound) {
 		if err := p.CreatePolicy(ctx, createReq); err != nil {
 			log.Warnf("Failed to create admin policy.")
@@ -77,15 +77,15 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 }
 
 // CreatePolicy create a new policy.
-func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1alpha1.CreatePolicyRequest) error {
+func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1.CreatePolicyRequest) error {
 	if len(req.Statements) < 0 {
 		return nil
 	}
 	policy := assembler.ConvertPolicyModel(req)
 	if len(policy.Type) == 0 {
-		policy.Type = string(v1alpha1.CustomPolicy)
+		policy.Type = string(v1.CustomPolicy)
 	}
-	err := p.Store.PolicyRepository().Create(ctx, policy, metav1alpha1.CreateOptions{})
+	err := p.Store.PolicyRepository().Create(ctx, policy, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}
@@ -102,10 +102,10 @@ func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1alpha1.Creat
 }
 
 // UpdatePolicy update policy.
-func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, req v1alpha1.UpdatePolicyRequest) error {
-	oldPolicy, err := p.Store.PolicyRepository().GetByInstanceId(ctx, idOrName, metav1alpha1.GetOptions{})
+func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, req v1.UpdatePolicyRequest) error {
+	oldPolicy, err := p.Store.PolicyRepository().GetByInstanceId(ctx, idOrName, metav1.GetOptions{})
 	if err != nil {
-		oldPolicy, err = p.Store.PolicyRepository().GetByName(ctx, idOrName, metav1alpha1.GetOptions{})
+		oldPolicy, err = p.Store.PolicyRepository().GetByName(ctx, idOrName, metav1.GetOptions{})
 		if err != nil {
 			return err
 		}
@@ -123,7 +123,7 @@ func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, r
 	oldPolicy.Status = req.Status
 	oldPolicy.Owner = req.Owner
 	oldPolicy.Statements = assembler.ConvertToStatementModel(req.Statements)
-	err = p.Store.PolicyRepository().Update(ctx, oldPolicy, metav1alpha1.UpdateOptions{})
+	err = p.Store.PolicyRepository().Update(ctx, oldPolicy, metav1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
@@ -138,8 +138,8 @@ func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, r
 }
 
 // DeletePolicy delete policy by id.
-func (p *policyServiceImpl) DeletePolicy(ctx context.Context, name string, opts metav1alpha1.DeleteOptions) error {
-	policy, err := p.Store.PolicyRepository().GetByName(ctx, name, metav1alpha1.GetOptions{})
+func (p *policyServiceImpl) DeletePolicy(ctx context.Context, name string, opts metav1.DeleteOptions) error {
+	policy, err := p.Store.PolicyRepository().GetByName(ctx, name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (p *policyServiceImpl) DeletePolicy(ctx context.Context, name string, opts 
 }
 
 // GetPolicy get policy by id.
-func (p *policyServiceImpl) GetPolicy(ctx context.Context, instanceId string, opts metav1alpha1.GetOptions) (*model.Policy, error) {
+func (p *policyServiceImpl) GetPolicy(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.Policy, error) {
 	policy, err := p.Store.PolicyRepository().GetByInstanceId(ctx, instanceId, opts)
 	if err != nil {
 		return nil, err
@@ -175,8 +175,8 @@ func (p *policyServiceImpl) GetPolicy(ctx context.Context, instanceId string, op
 func (p *policyServiceImpl) DetailPolicy(
 	ctx context.Context,
 	policy *model.Policy,
-	_ metav1alpha1.GetOptions,
-) (*v1alpha1.DetailPolicyResponse, error) {
+	_ metav1.GetOptions,
+) (*v1.DetailPolicyResponse, error) {
 	wg := sync.WaitGroup{}
 	errChan := make(chan error, 1)
 	finished := make(chan bool, 1)
@@ -191,7 +191,7 @@ func (p *policyServiceImpl) DetailPolicy(
 		go func(s model.Statement) {
 			defer wg.Done()
 
-			r, err := p.Store.ResourceRepository().GetByInstanceId(ctx, s.Resource, metav1alpha1.GetOptions{})
+			r, err := p.Store.ResourceRepository().GetByInstanceId(ctx, s.Resource, metav1.GetOptions{})
 			if err != nil {
 				errChan <- errors.WithMessagef(err, "load resource [%s] failed.", s.ResourceIdentifier)
 				return
@@ -211,7 +211,7 @@ func (p *policyServiceImpl) DetailPolicy(
 		log.Errorf("failed to load resources: %v", err)
 	}
 
-	resources := make([]v1alpha1.ResourceBase, 0, len(policy.Statements))
+	resources := make([]v1.ResourceBase, 0, len(policy.Statements))
 	for _, statement := range policy.Statements {
 		r, ok := m.Load(statement.ID)
 		if ok {
@@ -220,14 +220,14 @@ func (p *policyServiceImpl) DetailPolicy(
 	}
 	base := assembler.ConvertPolicyModelToBase(policy)
 
-	return &v1alpha1.DetailPolicyResponse{
+	return &v1.DetailPolicyResponse{
 		PolicyBase: *base,
 		Resources:  resources,
 	}, nil
 }
 
 // ListPolicies list policies.
-func (p *policyServiceImpl) ListPolicies(ctx context.Context, opts metav1alpha1.ListOptions) (*v1alpha1.PolicyList, error) {
+func (p *policyServiceImpl) ListPolicies(ctx context.Context, opts metav1.ListOptions) (*v1.PolicyList, error) {
 	policies, err := p.Store.PolicyRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err
@@ -237,7 +237,7 @@ func (p *policyServiceImpl) ListPolicies(ctx context.Context, opts metav1alpha1.
 }
 
 // ListPolicyRules list policy rules.
-func (p *policyServiceImpl) ListPolicyRules(ctx context.Context, opts metav1alpha1.ListOptions) ([]model.PolicyRule, error) {
+func (p *policyServiceImpl) ListPolicyRules(ctx context.Context, opts metav1.ListOptions) ([]model.PolicyRule, error) {
 	e := p.Store.CasbinRepository().SyncedEnforcer()
 
 	var rules []model.PolicyRule
