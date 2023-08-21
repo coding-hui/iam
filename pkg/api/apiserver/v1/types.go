@@ -108,6 +108,11 @@ type UpdateUserRequest struct {
 	Password string `json:"password,omitempty" validate:"required"                     optional:"true"`
 }
 
+// UpdateUserResponse update user response.
+type UpdateUserResponse struct {
+	UserBase
+}
+
 // UserBase represents a user restful resource.
 type UserBase struct {
 	// Standard object's metadata.
