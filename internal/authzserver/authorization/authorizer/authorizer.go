@@ -17,7 +17,7 @@ import (
 	"github.com/coding-hui/iam/internal/authzserver/config"
 	"github.com/coding-hui/iam/internal/pkg/channel"
 	"github.com/coding-hui/iam/internal/pkg/mycasbin"
-	authzv1alpha1 "github.com/coding-hui/iam/pkg/api/authzserver/v1alpha1"
+	authzv1 "github.com/coding-hui/iam/pkg/api/authzserver/v1"
 )
 
 // Authorizer implement the authorize interface that use local repository to
@@ -79,22 +79,22 @@ func NewAuthorizer(c config.Config, a *adapter.Adapter) (*Authorizer, error) {
 	}, err
 }
 
-func (a *Authorizer) Authorize(r *authzv1alpha1.Request) *authzv1alpha1.Response {
+func (a *Authorizer) Authorize(r *authzv1.Request) *authzv1.Response {
 	allowed, err := a.enforcer.Enforce(r.Subject, r.Resource, r.Action)
 	if err != nil {
-		return &authzv1alpha1.Response{
+		return &authzv1.Response{
 			Denied: true,
 			Reason: err.Error(),
 		}
 	}
 
 	if !allowed {
-		return &authzv1alpha1.Response{
+		return &authzv1.Response{
 			Denied: true,
 		}
 	}
 
-	return &authzv1alpha1.Response{
+	return &authzv1.Response{
 		Allowed: true,
 	}
 }

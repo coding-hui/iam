@@ -11,7 +11,7 @@ import (
 	"github.com/coding-hui/iam/internal/authzserver/config"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	authzv1alpha1 "github.com/coding-hui/iam/pkg/api/authzserver/v1alpha1"
+	authzv1 "github.com/coding-hui/iam/pkg/api/authzserver/v1"
 
 	"github.com/coding-hui/common/errors"
 )
@@ -34,7 +34,7 @@ func (a *auth) RegisterApiGroup(g *gin.Engine) {
 }
 
 func (a *auth) authorize(c *gin.Context) {
-	req := &authzv1alpha1.Request{}
+	req := &authzv1.Request{}
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
