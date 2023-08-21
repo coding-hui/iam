@@ -4,6 +4,8 @@
 
 package authorization
 
+import authzv1 "github.com/coding-hui/iam/pkg/api/authzserver/v1"
+
 // Authorization define the authorize interface that use local repository to
 // authorize the subject access review.
 type Authorization interface {
@@ -11,5 +13,5 @@ type Authorization interface {
 	//  if err := guard.Authorize(&Request{Resource: "article/1234", Action: "update", Subject: "peter"}); err != nil {
 	//    return errors.New("Not allowed")
 	//  }
-	Authorize(r *v1.Request) *v1.Response
+	Authorize(r *authzv1.Request) *authzv1.Response
 }
