@@ -25,6 +25,9 @@ const (
 
 	// ErrUserAlreadyEnabled - 400: The user is already enabled.
 	ErrUserAlreadyEnabled
+
+	// ErrUserHasDisabled - 401: The account has been disabled.
+	ErrUserHasDisabled
 )
 
 // iam-apiserver: secret errors.

@@ -14,6 +14,7 @@ func init() {
 	register(ErrDeleteOneself, 400, "Unable to delete yourself")
 	register(ErrUserAlreadyDisabled, 400, "The user is already disabled")
 	register(ErrUserAlreadyEnabled, 400, "The user is already enabled")
+	register(ErrUserHasDisabled, 401, "The account has been disabled")
 	register(ErrReachMaxCount, 400, "Secret reach the max count")
 	register(ErrSecretNotFound, 404, "Secret not found")
 	register(ErrPolicyNotFound, 404, "Policy not found")

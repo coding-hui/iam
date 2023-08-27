@@ -27,6 +27,7 @@ IAM 系统支持的错误码列表如下：
 | ErrDeleteOneself | 110004 | 400 | Unable to delete yourself |
 | ErrUserAlreadyDisabled | 110005 | 400 | The user is already disabled |
 | ErrUserAlreadyEnabled | 110006 | 400 | The user is already enabled |
+| ErrUserHasDisabled | 110007 | 401 | The account has been disabled |
 | ErrReachMaxCount | 110101 | 400 | Secret reach the max count |
 | ErrSecretNotFound | 110102 | 404 | Secret not found |
 | ErrPolicyNotFound | 110201 | 404 | Policy not found |
