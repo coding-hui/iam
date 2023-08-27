@@ -30,13 +30,13 @@ func NewResource() Interface {
 }
 
 func (r *resource) RegisterApiGroup(g *gin.Engine) {
-	v1 := g.Group(versionPrefix+"/resources").Use(authCheckFilter, permissionCheckFilter)
+	apiv1 := g.Group(versionPrefix+"/resources").Use(autoAuthCheck.AuthFunc(), permissionCheckFunc("resources"))
 	{
-		v1.POST("", r.createResource)
-		v1.PUT("/:instanceId", r.updateResource)
-		v1.DELETE("/:instanceId", r.deleteResource)
-		v1.GET("/:instanceId", r.resourceCheckFilter, r.detailResource)
-		v1.GET("", r.listResource)
+		apiv1.POST("", r.createResource)
+		apiv1.PUT("/:instanceId", r.updateResource)
+		apiv1.DELETE("/:instanceId", r.deleteResource)
+		apiv1.GET("/:instanceId", r.resourceCheckFilter, r.detailResource)
+		apiv1.GET("", r.listResource)
 	}
 }
 

@@ -9,16 +9,15 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
-	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
@@ -108,7 +107,7 @@ func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v
 }
 
 func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken string) (*v1.RefreshTokenResponse, error) {
-	claim, err := ParseToken(refreshToken)
+	claim, err := token.ParseToken(refreshToken, signedKey)
 	if err != nil {
 		if errors.IsCode(err, code.ErrExpired) {
 			return nil, errors.WithCode(code.ErrExpired, jwt.ErrTokenExpired.Error())
@@ -130,41 +129,9 @@ func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken
 			"Incorrect refresh token format %s, expected in refresh format", claim.GrantType)
 }
 
-// ParseToken parses and verifies a token.
-func ParseToken(tokenString string) (*model.CustomClaims, error) {
-	token, err := jwt.ParseWithClaims(
-		tokenString,
-		&model.CustomClaims{},
-		func(token *jwt.Token) (interface{}, error) {
-			return []byte(signedKey), nil
-		},
-	)
-	if err != nil {
-		var ve *jwt.ValidationError
-		if jwtErr := errors.As(err, &ve); jwtErr {
-			switch ve.Errors {
-			case jwt.ValidationErrorExpired:
-				return nil, errors.WithCode(code.ErrExpired, err.Error())
-			case jwt.ValidationErrorNotValidYet:
-				return nil, errors.WithCode(code.ErrTokenNotValidYet, err.Error())
-			case jwt.ValidationErrorMalformed:
-				return nil, errors.WithCode(code.ErrTokenMalformed, err.Error())
-			default:
-				return nil, errors.WithCode(code.ErrTokenInvalid, err.Error())
-			}
-		}
-		return nil, err
-	}
-	if claims, ok := token.Claims.(*model.CustomClaims); ok && token.Valid {
-		return claims, nil
-	}
-
-	return nil, errors.WithCode(code.ErrTokenInvalid, err.Error())
-}
-
 func (a *authenticationServiceImpl) generateJWTToken(userInstanceId, userType, grantType string, expiresIn time.Duration) (string, error) {
 	issueAt := time.Now()
-	claims := model.CustomClaims{
+	claims := token.Token{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    jwtIssuer,
 			IssuedAt:  jwt.NewNumericDate(issueAt),
@@ -177,9 +144,9 @@ func (a *authenticationServiceImpl) generateJWTToken(userInstanceId, userType, g
 		GrantType:      grantType,
 		UserType:       userType,
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	return token.SignedString([]byte(signedKey))
+	return t.SignedString([]byte(signedKey))
 }
 
 func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1.UserBase, error) {
@@ -190,7 +157,7 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1.UserBase, erro
 		}
 		return nil, err
 	}
-	if err := passwordVerify(user.Password, l.password); err != nil {
+	if err := user.Compare(l.password); err != nil {
 		return nil, err
 	}
 	if err := l.userService.FlushLastLoginTime(ctx, user); err != nil {
@@ -198,13 +165,4 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1.UserBase, erro
 	}
 
 	return assembler.ConvertUserModelToBase(user), nil
-}
-
-func passwordVerify(hash, password string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-		return errors.WithCode(code.ErrPasswordIncorrect, err.Error())
-	}
-
-	return err
 }

@@ -5,12 +5,13 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"gorm.io/gorm"
 
 	metav1 "github.com/coding-hui/common/meta/v1"
+	"github.com/coding-hui/common/util/auth"
 	"github.com/coding-hui/common/util/idutil"
 )
 
@@ -49,13 +50,11 @@ func (u *User) AfterCreate(tx *gorm.DB) error {
 	return tx.Save(u).Error
 }
 
-// CustomClaims is the custom claims.
-type CustomClaims struct {
-	jwt.RegisteredClaims
-	// Private Claim Names
-	// TokenType defined the type of the token
-	TokenType      string `json:"token_type,omitempty"`
-	UserInstanceId string `json:"user_instance_id"`
-	UserType       string `json:"user_type"`
-	GrantType      string `json:"grant_type"`
+// Compare with the plain text password. Returns true if it's the same as the encrypted one (in the `User` struct).
+func (u *User) Compare(pwd string) error {
+	if err := auth.Compare(u.Password, pwd); err != nil {
+		return fmt.Errorf("failed to compile password: %w", err)
+	}
+
+	return nil
 }

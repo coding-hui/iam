@@ -5,14 +5,10 @@
 package service
 
 import (
-	"bytes"
 	"context"
-	"os"
-	"regexp"
-	"strings"
 
-	"github.com/bitly/go-simplejson"
-	"github.com/gin-gonic/gin"
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -20,13 +16,6 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/code"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
-
-	"github.com/coding-hui/common/errors"
-	metav1 "github.com/coding-hui/common/meta/v1"
-)
-
-const (
-	ApiResourceDir = "api/swagger/swagger.json"
 )
 
 // ResourceService Resource manage api.
@@ -52,46 +41,6 @@ func NewResourceService() ResourceService {
 
 // Init initialize resource data.
 func (r *resourceServiceImpl) Init(ctx context.Context) error {
-	routes := ctx.Value(&v1.CtxKeyRoutes).(gin.RoutesInfo)
-	apiPrefix := ctx.Value(&v1.CtxKeyApiPrefix).([]string)
-	if len(routes) == 0 {
-		log.Warnf("Failed to get the registered route from the init context.")
-		return nil
-	}
-	jsonFile, _ := os.ReadFile(ApiResourceDir)
-	apiDocs, _ := simplejson.NewFromReader(bytes.NewReader(jsonFile))
-	for _, route := range routes {
-		urlPath := route.Path
-		idPatten := "(.*)/:(\\w+)"
-		reg, _ := regexp.Compile(idPatten)
-		if reg.MatchString(urlPath) {
-			urlPath = reg.ReplaceAllString(route.Path, "${1}/{${2}}")
-		}
-		apiName, _ := apiDocs.Get("paths").Get(urlPath).Get(strings.ToLower(route.Method)).Get("summary").String()
-		apiDesc, _ := apiDocs.Get("paths").Get(urlPath).Get(strings.ToLower(route.Method)).Get("description").String()
-		createReq := v1.CreateResourceRequest{
-			Name:        apiName,
-			Method:      route.Method,
-			Type:        string(v1.API),
-			Api:         route.Path,
-			Description: apiDesc,
-			IsDefault:   true,
-			Actions:     nil,
-		}
-		found := false
-		for _, prefix := range apiPrefix {
-			found = strings.Contains(route.Path, prefix)
-		}
-		if !found {
-			continue
-		}
-		_, err := r.Store.ResourceRepository().GetByName(ctx, createReq.Name, metav1.GetOptions{})
-		if err != nil && errors.IsCode(err, code.ErrResourceNotFound) {
-			if err := r.CreateResource(ctx, createReq); err != nil {
-				log.Warnf("Failed to create api resource. [Api: %s Method: %s Handler: %s]", route.Path, route.Method, route.Handler)
-			}
-		}
-	}
 	log.Info("initialize system default api resource done")
 
 	return nil

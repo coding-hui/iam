@@ -27,16 +27,16 @@ func NewUser() Interface {
 }
 
 func (u *user) RegisterApiGroup(g *gin.Engine) {
-	v1 := g.Group(versionPrefix+"/users").Use(authCheckFilter, permissionCheckFilter)
+	apiv1 := g.Group(versionPrefix+"/users").Use(autoAuthCheck.AuthFunc(), permissionCheckFunc("users"))
 	{
-		v1.POST("", u.createUser)
-		v1.PUT("/:instanceId", u.updateUser)
-		v1.DELETE("/:instanceId", u.deleteUser)
-		v1.GET("/:instanceId", u.getUser)
-		v1.GET("", u.listUser)
-		v1.GET("/:instanceId/roles", u.getUserRoles)
-		v1.GET("/:instanceId/disable", u.disableUser)
-		v1.GET("/:instanceId/enable", u.enableUser)
+		apiv1.POST("", u.createUser)
+		apiv1.PUT("/:instanceId", u.updateUser)
+		apiv1.DELETE("/:instanceId", u.deleteUser)
+		apiv1.GET("/:instanceId", u.getUser)
+		apiv1.GET("", u.listUser)
+		apiv1.GET("/:instanceId/roles", u.getUserRoles)
+		apiv1.GET("/:instanceId/disable", u.disableUser)
+		apiv1.GET("/:instanceId/enable", u.enableUser)
 	}
 }
 

@@ -30,16 +30,16 @@ func NewRole() Interface {
 }
 
 func (r *role) RegisterApiGroup(g *gin.Engine) {
-	v1 := g.Group(versionPrefix+"/roles").Use(authCheckFilter, permissionCheckFilter)
+	apiv1 := g.Group(versionPrefix+"/roles").Use(autoAuthCheck.AuthFunc(), permissionCheckFunc("roles"))
 	{
-		v1.POST("", r.createRole)
-		v1.PUT("/:instanceId", r.updateRole)
-		v1.DELETE("/:instanceId", r.deleteRole)
-		v1.GET("/:instanceId", r.roleCheckFilter, r.detailRole)
-		v1.GET("", r.listRole)
-		v1.POST("/:instanceId/assign", r.assignRole)
-		v1.POST("/batch-assign", r.batchAssignRole)
-		v1.POST("/:instanceId/revoke", r.revokeRole)
+		apiv1.POST("", r.createRole)
+		apiv1.PUT("/:instanceId", r.updateRole)
+		apiv1.DELETE("/:instanceId", r.deleteRole)
+		apiv1.GET("/:instanceId", r.roleCheckFilter, r.detailRole)
+		apiv1.GET("", r.listRole)
+		apiv1.POST("/:instanceId/assign", r.assignRole)
+		apiv1.POST("/batch-assign", r.batchAssignRole)
+		apiv1.POST("/:instanceId/revoke", r.revokeRole)
 	}
 }
 

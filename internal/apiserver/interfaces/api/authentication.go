@@ -6,9 +6,9 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
@@ -16,12 +16,17 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/internal/pkg/middleware"
+	"github.com/coding-hui/iam/internal/pkg/middleware/auth"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
+
+// autoAuthCheck authentication strategy which can automatically choose between Basic and Bearer
+var autoAuthCheck middleware.AuthStrategy
 
 type authentication struct {
 	UserService           service.UserService           `inject:""`
@@ -36,80 +41,74 @@ func NewAuthentication(c config.Config) Interface {
 }
 
 func (a *authentication) RegisterApiGroup(g *gin.Engine) {
-	v1 := g.Group(versionPrefix)
+	autoAuthCheck = auth.NewAutoStrategy(
+		newBasicAuth(a.AuthenticationService).(auth.BasicStrategy),
+		newJWTAuth(a.cfg.JwtOptions.Key).(auth.JWTStrategy),
+	)
+	apiv1 := g.Group(versionPrefix)
 	{
-		v1.POST("/login", a.authenticate)
-		v1.GET("/auth/refresh-token", a.refreshToken)
-		v1.GET("/auth/user-info", authCheckFilter, a.userInfo)
+		apiv1.POST("/login", a.authenticate)
+		apiv1.GET("/auth/refresh-token", a.refreshToken)
+		apiv1.GET("/auth/user-info", autoAuthCheck.AuthFunc(), a.userInfo)
 	}
 }
 
-func authCheckFilter(c *gin.Context) {
-	var tokenValue string
-	tokenHeader := c.Request.Header.Get("Authorization")
-	if tokenHeader != "" {
-		splitted := strings.Split(tokenHeader, " ")
-		if len(splitted) != 2 {
-			api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"), c)
+func newBasicAuth(authentication service.AuthenticationService) middleware.AuthStrategy {
+	return auth.NewBasicStrategy(func(username string, password string) (*v1.AuthenticateResponse, error) {
+		login := v1.AuthenticateRequest{
+			Username: username,
+			Password: password,
+		}
+		response, err := authentication.Authenticate(context.TODO(), login)
+		if err != nil {
+			return nil, err
+		}
+
+		return response, nil
+	})
+}
+
+func newJWTAuth(signedKey string) middleware.AuthStrategy {
+	return auth.NewJWTStrategy(signedKey)
+}
+
+func permissionCheckFunc(r string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userType, ok := c.Request.Context().Value(&v1.CtxKeyUserType).(string)
+		if ok && userType == v1.PlatformAdmin.String() {
+			c.Next()
+			return
+		}
+
+		sub, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceId).(string)
+		if !ok {
+			api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user role"), c)
 			c.Abort()
 			return
 		}
-		tokenValue = splitted[1]
-	}
-	if tokenValue == "" {
-		api.FailWithErrCode(errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"), c)
-		c.Abort()
-		return
-	}
-	token, err := service.ParseToken(tokenValue)
-	if err != nil {
-		api.FailWithErrCode(err, c)
-		c.Abort()
-		return
-	}
-	if token.GrantType != service.GrantTypeAccess {
-		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Invalid authorization header"), c)
-		c.Abort()
-		return
-	}
+		url := c.Request.URL.Path
+		obj := fmt.Sprintf("%s:%s", r, url)
+		act := strings.ToLower(c.Request.Method)
 
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserInstanceId, token.UserInstanceId))
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserType, token.UserType))
+		e := repository.Client().CasbinRepository().SyncedEnforcer()
+		pass, err := e.Enforce(sub, obj, act)
+		if err != nil {
+			api.FailWithErrCode(err, c)
+			c.Abort()
+			return
+		}
+		if !pass {
+			api.FailWithErrCode(errors.WithCode(
+				code.ErrPermissionDenied,
+				"Permission denied. obj: [%s] sub: [%s] act: [%s]", obj, sub, act),
+				c)
+			c.Abort()
+			return
+		}
+		log.Infof("Permission verification. path: %s", c.Request.URL.Path)
 
-	c.Next()
-}
-
-func permissionCheckFilter(c *gin.Context) {
-	userType, ok := c.Request.Context().Value(&v1.CtxKeyUserType).(string)
-	if ok && userType == v1.PlatformAdmin.String() {
 		c.Next()
-		return
 	}
-
-	sub, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceId).(string)
-	if !ok {
-		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user role"), c)
-		c.Abort()
-		return
-	}
-	obj := c.Request.URL.Path
-	act := c.Request.Method
-
-	e := repository.Client().CasbinRepository().SyncedEnforcer()
-	pass, err := e.Enforce(sub, obj, act)
-	if err != nil {
-		api.FailWithErrCode(err, c)
-		c.Abort()
-		return
-	}
-	if !pass {
-		api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Permission denied. role: %s", sub), c)
-		c.Abort()
-		return
-	}
-	log.Infof("Permission verification. path: %s", c.Request.URL.Path)
-
-	c.Next()
 }
 
 //	@Tags			Authentication
@@ -151,7 +150,7 @@ func (a *authentication) authenticate(c *gin.Context) {
 func parseWithHeader(c *gin.Context) (v1.AuthenticateRequest, error) {
 	username, password, ok := c.Request.BasicAuth()
 	if !ok {
-		return v1.AuthenticateRequest{}, jwt.ErrFailedAuthentication
+		return v1.AuthenticateRequest{}, errors.WithCode(code.ErrPasswordIncorrect, "")
 	}
 
 	return v1.AuthenticateRequest{
@@ -163,7 +162,7 @@ func parseWithHeader(c *gin.Context) (v1.AuthenticateRequest, error) {
 func parseWithBody(c *gin.Context) (v1.AuthenticateRequest, error) {
 	var login v1.AuthenticateRequest
 	if err := c.ShouldBindJSON(&login); err != nil {
-		return v1.AuthenticateRequest{}, jwt.ErrFailedAuthentication
+		return v1.AuthenticateRequest{}, errors.WithCode(code.ErrPasswordIncorrect, "")
 	}
 
 	return login, nil

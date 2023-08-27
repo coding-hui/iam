@@ -69,6 +69,7 @@ func (p *Policy) GetPolicyRules() [][]string {
 	for _, sub := range p.Subjects {
 		for _, statement := range p.Statements {
 			for _, act := range statement.Actions {
+				act = act[strings.Index(act, ":")+1:]
 				rules = append(rules, []string{sub, statement.ResourceIdentifier, strings.ToLower(act)})
 			}
 		}

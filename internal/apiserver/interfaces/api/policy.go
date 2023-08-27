@@ -30,13 +30,13 @@ func NewPolicy() Interface {
 }
 
 func (p *policy) RegisterApiGroup(g *gin.Engine) {
-	v1 := g.Group(versionPrefix + "/policies")
+	apiv1 := g.Group(versionPrefix+"/policies").Use(autoAuthCheck.AuthFunc(), permissionCheckFunc("policies"))
 	{
-		v1.POST("", p.createPolicy)
-		v1.PUT("/:instanceId", p.updatePolicy)
-		v1.DELETE("/:instanceId", p.deletePolicy)
-		v1.GET("/:instanceId", p.policyCheckFilter, p.detailPolicy)
-		v1.GET("", p.listPolicies)
+		apiv1.POST("", p.createPolicy)
+		apiv1.PUT("/:instanceId", p.updatePolicy)
+		apiv1.DELETE("/:instanceId", p.deletePolicy)
+		apiv1.GET("/:instanceId", p.policyCheckFilter, p.detailPolicy)
+		apiv1.GET("", p.listPolicies)
 	}
 }
 
