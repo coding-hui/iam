@@ -36,8 +36,8 @@ type Response struct {
 
 // PageInfo Http API common page info.
 type PageInfo struct {
-	// List all records
-	List interface{} `json:"list"`
+	// Items all records
+	Items interface{} `json:"items"`
 	// Total all count
 	Total int64 `json:"total"`
 }
@@ -55,7 +55,7 @@ func Result(code int, data interface{}, msg string, c *gin.Context) {
 // PageResult build page result info.
 func PageResult(code int, result interface{}, total int64, msg string, c *gin.Context) {
 	Result(code, PageInfo{
-		List:  result,
+		Items: result,
 		Total: total,
 	}, msg, c)
 }
