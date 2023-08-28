@@ -15,10 +15,25 @@ const (
 	defaultPageSize = "10"
 	pageParam       = "current"
 	pageSizeParam   = "pageSize"
+	offsetParam     = "offset"
+	limitParam      = "limit"
 )
 
 // ExtractPagingParams extract `page` and `pageSize` params from request
 func ExtractPagingParams(c *gin.Context, minPageSize, maxPageSize int64) (int64, int64, error) {
+	offsetStr := c.Query(offsetParam)
+	limitStr := c.Query(limitParam)
+	if offsetStr != "" && limitStr != "" {
+		offset, err := strconv.ParseInt(offsetStr, 10, 32)
+		if err != nil {
+			return 0, 0, errors.Errorf("invalid offset %s: %v", offsetStr, err)
+		}
+		limit, err := strconv.ParseInt(limitStr, 10, 32)
+		if err != nil {
+			return 0, 0, errors.Errorf("invalid limit %s: %v", limitStr, err)
+		}
+		return offset, limit, nil
+	}
 	pageStr := c.Query(pageParam)
 	pageSizeStr := c.Query(pageSizeParam)
 	if pageStr == "" {
