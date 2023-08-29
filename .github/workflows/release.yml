@@ -2,8 +2,14 @@ name: Release
 
 on:
   push:
+    branches:
+      - "main"
     tags:
       - "v*"
+    paths-ignore:
+      - 'examples/**'
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch: {}
 
 env:
@@ -50,4 +56,5 @@ jobs:
         password: ${{ secrets.DOCKER_PWD }}
 
     - name: Daily Release
-      run: make image.push REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
+      run: make image REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }} BUILDX_OUTPUT_TYPE=registry PLATFORMS="linux/amd64,linux/arm64"
+

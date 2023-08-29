@@ -17,9 +17,6 @@ _DOCKER_BUILD_EXTRA_ARGS :=
 
 BUILDX_OUTPUT_TYPE ?= "registry"
 
-# Run `make image.push DOCKER_PLATFORMS="linux/amd64,linux/arm64" BUILDX_OUTPUT_TYPE=registry REGISTRY_PREFIX=[yourregistry]` to push multi-platform
-DOCKER_PLATFORMS ?= "linux/${GOARCH}"
-
 ifdef HTTP_PROXY
 _DOCKER_BUILD_EXTRA_ARGS += --build-arg HTTP_PROXY=${HTTP_PROXY}
 endif
@@ -55,6 +52,7 @@ image.daemon.verify:
 		exit 1; \
 	fi
 
+# Run `make image.push PLATFORMS="linux/amd64,linux/arm64" BUILDX_OUTPUT_TYPE=registry REGISTRY_PREFIX=[yourregistry]` to push multi-platform
 .PHONY: image.build
 image.build: image.verify go.build.verify $(addprefix image.build., $(addprefix $(IMAGE_PLAT)., $(IMAGES)))
 
@@ -62,22 +60,13 @@ image.build: image.verify go.build.verify $(addprefix image.build., $(addprefix 
 image.build.multiarch: image.verify go.build.verify $(foreach p,$(PLATFORMS),$(addprefix image.build., $(addprefix $(p)., $(IMAGES))))
 
 .PHONY: image.build.%
-image.build.%: go.build.%
-	$(eval IMAGE := $(COMMAND))
-	$(eval IMAGE_PLAT := $(subst _,/,$(PLATFORM)))
-	@echo "===========> Building docker image $(IMAGE) $(VERSION) for $(IMAGE_PLAT)"
-	@mkdir -p $(TMP_DIR)/$(IMAGE)
-	@cat $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile > $(TMP_DIR)/$(IMAGE)/Dockerfile
-	@cp -rf $(OUTPUT_DIR)/platforms/$(IMAGE_PLAT)/$(IMAGE) $(TMP_DIR)/$(IMAGE)/
-	@cp -rf $(ROOT_DIR)/configs/$(IMAGE).yaml $(TMP_DIR)/$(IMAGE)/config.yaml
-	@DST_DIR=$(TMP_DIR)/$(IMAGE) $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/build.sh 2>/dev/null || true
-	$(eval BUILD_SUFFIX := $(_DOCKER_BUILD_EXTRA_ARGS) --pull $(TMP_DIR)/$(IMAGE))
-	@if [ $(shell $(GO) env GOARCH) != $(ARCH) ] ; then \
-		$(MAKE) image.daemon.verify ;\
-		$(DOCKER) build --platform $(IMAGE_PLAT) -t $(REGISTRY_PREFIX)/$(IMAGE)-$(ARCH):$(VERSION) $(BUILD_SUFFIX) ; \
-	else \
-		$(DOCKER) build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) $(BUILD_SUFFIX) ; \
-	fi
+image.build.%:
+	$(eval IMAGE := $(word 2,$(subst ., ,$*)))
+	@echo "===========> Building docker image $(IMAGE) $(VERSION) for $(PLATFORMS)"
+	$(eval BUILD_SUFFIX := -f $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile --output=type=${BUILDX_OUTPUT_TYPE} $(_DOCKER_BUILD_EXTRA_ARGS))
+	$(MAKE) image.daemon.verify ;\
+	$(DOCKER) buildx create --use ;\
+	$(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) $(ROOT_DIR)/ --platform ${PLATFORMS} $(BUILD_SUFFIX)
 
 .PHONY: image.push
 image.push: image.verify go.build.verify $(addprefix image.push., $(addprefix $(IMAGE_PLAT)., $(IMAGES)))

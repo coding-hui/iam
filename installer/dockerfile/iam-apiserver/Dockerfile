@@ -2,12 +2,17 @@
 # Use of this source code is governed by a MIT style
 # license that can be found in the LICENSE file.
 
+FROM golang:1.19.4 AS builder
+WORKDIR /go/src/wecoding/
+ADD . iam
+RUN cd iam && make build BINS="iam-apiserver"
+
 ARG BASE_IMAGE
 
 # You can replace distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 # Overwrite `BASE_IMAGE` by passing `--build-arg=BASE_IMAGE=gcr.io/distroless/static:nonroot`
-FROM --platform=${BUILDPLATFORM:-linux/amd64} ${BASE_IMAGE:-alpine:latest}
+FROM ${BASE_IMAGE:-alpine:latest}
 LABEL maintainer="wecoding@yeah.net"
 
 WORKDIR /opt/iam/
@@ -19,8 +24,8 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
       && echo "Asia/Shanghai" > /etc/timezone \
       && mkdir "/var/log/iam"
 
-COPY config.* /etc/iam/iam-apiserver.yaml
-COPY iam-apiserver.* /usr/local/bin/iam-apiserver
+COPY --from=builder /go/src/wecoding/iam/_output/bin/iam-apiserver /usr/local/bin/iam-apiserver
+COPY --from=builder /go/src/wecoding/iam/configs/iam-apiserver.yaml /etc/iam/iam-apiserver.yaml
 
 EXPOSE 8000
 
