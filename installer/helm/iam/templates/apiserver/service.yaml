@@ -1,0 +1,46 @@
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+{{- if .Values.apiServer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "iam.apiServerFullname" . }}
+  labels:
+    {{- include "iam.apiServerLabels" . | nindent 4 }}
+    {{- with .Values.apiServer.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.apiServer.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.apiServer.service.type }}
+  {{- with .Values.apiServer.service.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- if eq "LoadBalancer" .Values.apiServer.service.type }}
+  {{- with .Values.apiServer.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.apiServer.service.loadBalancerSourceRanges  }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.apiServer.service.port }}
+      targetPort: http
+      {{- if and (eq "NodePort" .Values.apiServer.service.type) .Values.apiServer.service.nodePort }}
+      nodePort: {{ .Values.apiServer.service.nodePort }}
+      {{- end }}
+      protocol: TCP
+      {{- with .Values.apiServer.service.appProtocol }}
+      appProtocol: {{ . }}
+      {{- end }}
+  selector:
+    {{- include "iam.apiServerSelectorLabels" . | nindent 4 }}
+{{- end }}
