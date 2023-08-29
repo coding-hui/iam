@@ -30,8 +30,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Print commit ID
-      run: echo "The commit ID is ${{ github.sha }}"
 
     - name: Set ROOT_DIR environment variable
       run: echo "ROOT_DIR=$(pwd)" >> $GITHUB_ENV
@@ -40,6 +38,15 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.19'
+
+    - name: Get the version
+      id: get_version
+      run: |
+        VERSION=$(git describe --tags --abbrev=0 --match='v*')
+        if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
+          VERSION=latest
+        fi
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
     - name: Docker Login
       # You may pin to the exact commit or the version.
@@ -53,9 +60,15 @@ jobs:
         # Password or personal access token used to log against the Docker registry
         password: ${{ secrets.DOCKER_PWD }}
 
-    - name: Daily Release
+    - name: Latest Release
       if: github.ref == 'refs/heads/main'
       run: >
         make image.push
         REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
+        VERSION=latest
+
+    - name: Tag Version Release
+      run: >
+        make image.push
+        REGISTRY_PREFIX=${{ steps.get_version.outputs.VERSION }}
         VERSION=latest
