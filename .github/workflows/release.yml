@@ -43,9 +43,6 @@ jobs:
       id: get_version
       run: |
         VERSION=$(git describe --tags --abbrev=0 --match='v*')
-        if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
-          VERSION=latest
-        fi
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
     - name: Docker Login
