@@ -50,7 +50,4 @@ jobs:
         password: ${{ secrets.DOCKER_PWD }}
 
     - name: Daily Release
-      run: >
-        make image.push
-        REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
-        VERSION=${{ steps.get_version.outputs.VERSION }}
+      run: make image.push REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }} VERSION=${{ steps.get_version.outputs.VERSION }}
