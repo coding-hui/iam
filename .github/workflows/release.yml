@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Release
 
 on:
   push:
@@ -33,6 +33,21 @@ jobs:
     - name: Print commit ID
       run: echo "The commit ID is ${{ github.sha }}"
 
+    - name: Get the version
+      id: get_version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
+          VERSION=latest
+        fi
+        echo ::set-output name=VERSION::${VERSION}
+
+    - name: Get git revision
+      id: vars
+      shell: bash
+      run: |
+        echo "git_revision=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
     - name: Set ROOT_DIR environment variable
       run: echo "ROOT_DIR=$(pwd)" >> $GITHUB_ENV
 
@@ -54,4 +69,7 @@ jobs:
         password: ${{ secrets.DOCKER_PWD }}
 
     - name: Build and push Docker images
-      run: make image.push REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
+      run: |
+        make image.push \
+          REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }} \
+          VERSION=${{ steps.get_version.outputs.VERSION }}
