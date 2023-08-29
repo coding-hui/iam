@@ -33,6 +33,9 @@ jobs:
     - name: Print commit ID
       run: echo "The commit ID is ${{ github.sha }}"
 
+    - name: Set ROOT_DIR environment variable
+      run: echo "ROOT_DIR=$(pwd)" >> $GITHUB_ENV
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
