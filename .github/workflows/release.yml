@@ -54,6 +54,7 @@ jobs:
         password: ${{ secrets.DOCKER_PWD }}
 
     - name: Daily Release
+      if: github.ref == 'refs/heads/main'
       run: >
         make image.push
         REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
