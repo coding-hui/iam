@@ -20,6 +20,9 @@ import (
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
+// AuthzAudience defines the value of jwt audience field.
+const AuthzAudience = "iam.api.wecoding.top"
+
 // JWTStrategy defines jwt bearer authentication strategy.
 type JWTStrategy struct {
 	signedKey string

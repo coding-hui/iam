@@ -15,8 +15,9 @@ WORKDIR /opt/iam/
 # This is required by daemon connecting with cri
 # RUN apk add --no-cache ca-certificates bash expat
 
-RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-      echo "Asia/Shanghai" > /etc/timezone
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+      && echo "Asia/Shanghai" > /etc/timezone \
+      && mkdir "/var/log/iam"
 
 COPY config.* /etc/iam/iam-apiserver.yaml
 COPY iam-apiserver.* /usr/local/bin/iam-apiserver

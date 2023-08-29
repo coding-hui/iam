@@ -7,36 +7,49 @@ version: "3.9"
 services:
 
   api-server:
-    image: devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo/iam-apiserver-amd64:v0.7-45-g511eae4
-    pull_policy: always
+    image: wecoding/iam-apiserver:v0.8
     hostname: iam-aiserver
     container_name: iam-apiserver
     restart: always
-    environment:
-      IAM_APISERVER_GRPC_BIND_ADDRESS: 0.0.0.0
-      IAM_APISERVER_GRPC_BIND_PORT: 8020
-      IAM_APISERVER_INSECURE_BIND_ADDRESS: 0.0.0.0
-      IAM_APISERVER_INSECURE_BIND_PORT: 8000
-      IAM_APISERVER_SECURE_BIND_ADDRESS: 0.0.0.0
-      IAM_APISERVER_SECURE_BIND_PORT: 8443
-      IAM_APISERVER_SECURE_TLS_CERT_KEY_CERT_FILE: /var/run/iam
-      IAM_APISERVER_SECURE_TLS_CERT_KEY_PRIVATE_KEY_FILE:  /var/run/iam
-      MARIADB_HOST: db:3306
-      MARIADB_USERNAME: root
-      MARIADB_DATABASE: 123456
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ""
-      IAM_LOG_DIR: /var/log/iam
+    #    environment:
+    #      GIN_MODE: release
+    #      IAM_APISERVER_GRPC_BIND_ADDRESS: 0.0.0.0
+    #      IAM_APISERVER_GRPC_BIND_PORT: 8020
+    #      IAM_APISERVER_INSECURE_BIND_ADDRESS: 0.0.0.0
+    #      IAM_APISERVER_INSECURE_BIND_PORT: 8000
+    #      IAM_APISERVER_SECURE_BIND_ADDRESS: 0.0.0.0
+    #      IAM_APISERVER_SECURE_BIND_PORT: 8443
+    #      IAM_APISERVER_SECURE_TLS_CERT_KEY_CERT_FILE: /var/run/iam
+    #      IAM_APISERVER_SECURE_TLS_CERT_KEY_PRIVATE_KEY_FILE:  /var/run/iam
+    #      MARIADB_HOST: db:3306
+    #      MARIADB_USERNAME: root
+    #      MARIADB_DATABASE: 123456
+    #      REDIS_HOST: redis
+    #      REDIS_PORT: 6379
+    #      REDIS_PASSWORD: ""
+    #      IAM_LOG_DIR: /var/log/iam
     ports:
       - '8000:8000'
+    volumes:
+      - D:\WorkSpace\WeCoding\Go\iam\_output\cert:/var/run/iam
+      - D:\WorkSpace\WeCoding\Go\iam\configs\iam-apiserver.yaml:/etc/iam/iam-apiserver.yaml
     depends_on:
-      - db
-    links:
-      - db
-    networks:
-      network:
-        ipv4_address: 177.7.0.12
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    image: wecoding/iam-frontend:v0.8
+    hostname: iam-frontend
+    container_name: iam-frontend
+    ports:
+      - '80:80'
+    volumes:
+      - D:\WorkSpace\WeCoding\iam-frontend\nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api-server
+
 
   db:
     image: mysql
@@ -48,9 +61,33 @@ services:
       - "13306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: 123456
-    networks:
-      network:
-        ipv4_address: 177.7.0.13
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  redis:
+    image: redis
+    container_name: iam-redis
+    hostname: redis
+    command: redis-server --appendonly yes
+    restart: always
+    ports:
+      - "16379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  redis_data:
+  mysql_data:
 
 networks:
   network:
