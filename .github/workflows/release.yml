@@ -21,7 +21,6 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ''
   REGISTRY_PREFIX: wecoding
-  ROOT_DIR: ${{ github.repository }}
 
 jobs:
 
@@ -52,6 +51,8 @@ jobs:
         password: ${{ secrets.DOCKER_PWD }}
 
     - name: Daily Release
+      env:
+        ROOT_DIR: ${{ runner.workspace }}
       run: >
         make image.push
         REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
