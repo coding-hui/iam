@@ -70,5 +70,5 @@ jobs:
     - name: Tag Version Release
       run: >
         make image.push
-        REGISTRY_PREFIX=${{ steps.get_version.outputs.VERSION }}
-        VERSION=latest
+        REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
+        VERSION=${{ steps.get_version.outputs.VERSION }}
