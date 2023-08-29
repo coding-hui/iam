@@ -2,8 +2,14 @@ name: Release
 
 on:
   push:
+    branches:
+      - "main"
     tags:
       - "v*"
+    paths-ignore:
+      - 'examples/**'
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch: {}
 
 env:

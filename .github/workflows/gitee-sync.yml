@@ -11,13 +11,13 @@ on:
   # Triggers the workflow on push or pull request events but only for the "go-0.x" branch
   push:
     branches:
-      - "go-0.x"
+      - "main"
       - "develop"
     tags:
       - "*"
   pull_request:
     branches:
-      - "go-0.x"
+      - "main"
       - "develop"
 
   # Allows you to run this workflow manually from the Actions tab
