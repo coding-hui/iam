@@ -21,6 +21,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ''
   REGISTRY_PREFIX: wecoding
+  ROOT_DIR: ${{ github.repository }}
 
 jobs:
 
@@ -32,24 +33,6 @@ jobs:
     - uses: actions/checkout@v3
     - name: Print commit ID
       run: echo "The commit ID is ${{ github.sha }}"
-
-    - name: Get the version
-      id: get_version
-      run: |
-        VERSION=${GITHUB_REF#refs/tags/}
-        if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
-          VERSION=latest
-        fi
-        echo ::set-output name=VERSION::${VERSION}
-
-    - name: Get git revision
-      id: vars
-      shell: bash
-      run: |
-        echo "git_revision=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-    - name: Set ROOT_DIR environment variable
-      run: echo "ROOT_DIR=$(pwd)" >> $GITHUB_ENV
 
     - name: Set up Go
       uses: actions/setup-go@v4
@@ -68,8 +51,8 @@ jobs:
         # Password or personal access token used to log against the Docker registry
         password: ${{ secrets.DOCKER_PWD }}
 
-    - name: Build and push Docker images
+    - name: Daily Release
       run: >
         make image.push
         REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
-        VERSION=${{ steps.get_version.outputs.VERSION }}
+        VERSION=latest
