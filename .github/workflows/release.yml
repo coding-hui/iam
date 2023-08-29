@@ -42,8 +42,8 @@ jobs:
     - name: Get the version
       id: get_version
       run: |
-        VERSION=$(git describe --tags --abbrev=0 --match='v*')
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+        echo "VERSION=${LATEST_TAG}" >> $GITHUB_ENV
 
     - name: Docker Login
       # You may pin to the exact commit or the version.
