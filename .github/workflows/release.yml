@@ -29,15 +29,6 @@ jobs:
     - name: Set ROOT_DIR environment variable
       run: echo "ROOT_DIR=$(pwd)" >> $GITHUB_ENV
 
-    - name: Get current working directory
-      run: |
-        echo "Current working directory: $PWD"
-        echo "Current root directory: $ROOT_DIR"
-
-    - name: List files in current directory
-      run: |
-        ls
-
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
@@ -66,3 +57,8 @@ jobs:
 
     - name: Daily Release
       run: make image.push REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
+
+    - name: List files in current directory
+      run: |
+        ls
+
