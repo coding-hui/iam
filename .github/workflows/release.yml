@@ -60,5 +60,5 @@ jobs:
 
     - name: List files in current directory
       run: |
-        ls
+        ls _output/tmp/iam-apiserver
 
