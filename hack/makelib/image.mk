@@ -15,7 +15,7 @@ BASE_IMAGE = centos:centos8
 EXTRA_ARGS ?= --no-cache
 _DOCKER_BUILD_EXTRA_ARGS :=
 
-BUILDX_OUTPUT_TYPE ?= "registry"
+BUILDX_OUTPUT_TYPE ?= "docker"
 
 ifdef HTTP_PROXY
 _DOCKER_BUILD_EXTRA_ARGS += --build-arg HTTP_PROXY=${HTTP_PROXY}
@@ -63,10 +63,15 @@ image.build.multiarch: image.verify go.build.verify $(foreach p,$(PLATFORMS),$(a
 image.build.%:
 	$(eval IMAGE := $(word 2,$(subst ., ,$*)))
 	@echo "===========> Building docker image $(IMAGE) $(VERSION) for $(PLATFORMS)"
+	@mkdir -p $(TMP_DIR)/images/cache
 	$(eval BUILD_SUFFIX := -f $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile --output=type=${BUILDX_OUTPUT_TYPE} $(_DOCKER_BUILD_EXTRA_ARGS))
 	$(MAKE) image.daemon.verify ;\
 	$(DOCKER) buildx create --use ;\
-	$(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) $(ROOT_DIR)/ --platform ${PLATFORMS} $(BUILD_SUFFIX)
+	$(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) $(ROOT_DIR)/ \
+		--cache-from=type=local,src=$(TMP_DIR)/images/cache \
+		--cache-to=type=local,dest=$(TMP_DIR)/images/cache \
+		--platform ${PLATFORMS} \
+		$(BUILD_SUFFIX)
 
 .PHONY: image.push
 image.push: image.verify go.build.verify $(addprefix image.push., $(addprefix $(IMAGE_PLAT)., $(IMAGES)))
