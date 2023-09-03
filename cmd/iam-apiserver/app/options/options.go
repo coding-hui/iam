@@ -17,15 +17,16 @@ import (
 
 // Options runs an iam api server.
 type Options struct {
-	GenericServerRunOptions *genericoptions.ServerRunOptions       `json:"server"   mapstructure:"server"`
-	GRPCOptions             *genericoptions.GRPCOptions            `json:"grpc"     mapstructure:"grpc"`
-	InsecureServing         *genericoptions.InsecureServingOptions `json:"insecure" mapstructure:"insecure"`
-	SecureServing           *genericoptions.SecureServingOptions   `json:"secure"   mapstructure:"secure"`
-	MySQLOptions            *genericoptions.MySQLOptions           `json:"mysql"    mapstructure:"mysql"`
-	RedisOptions            *genericoptions.RedisOptions           `json:"redis"    mapstructure:"redis"`
-	JwtOptions              *genericoptions.JwtOptions             `json:"jwt"      mapstructure:"jwt"`
-	LogOptions              *log.Options                           `json:"log"      mapstructure:"log"`
-	FeatureOptions          *genericoptions.FeatureOptions         `json:"feature"  mapstructure:"feature"`
+	GenericServerRunOptions *genericoptions.ServerRunOptions       `json:"server"       mapstructure:"server"`
+	GRPCOptions             *genericoptions.GRPCOptions            `json:"grpc"         mapstructure:"grpc"`
+	InsecureServing         *genericoptions.InsecureServingOptions `json:"insecure"     mapstructure:"insecure"`
+	SecureServing           *genericoptions.SecureServingOptions   `json:"secure"       mapstructure:"secure"`
+	MySQLOptions            *genericoptions.MySQLOptions           `json:"mysql"        mapstructure:"mysql"`
+	RedisOptions            *genericoptions.RedisOptions           `json:"redis"        mapstructure:"redis"`
+	JwtOptions              *genericoptions.JwtOptions             `json:"jwt"          mapstructure:"jwt"`
+	LogOptions              *log.Options                           `json:"log"          mapstructure:"log"`
+	FeatureOptions          *genericoptions.FeatureOptions         `json:"feature"      mapstructure:"feature"`
+	OAuthOptions            *genericoptions.OAuthOptions           `json:"oauthOptions" mapstructure:"oauthOptions"`
 }
 
 // ApplyTo applies the run options to the method receiver and returns self.
@@ -44,6 +45,7 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 	o.InsecureServing.AddFlags(fss.FlagSet("insecure serving"))
 	o.SecureServing.AddFlags(fss.FlagSet("secure serving"))
 	o.LogOptions.AddFlags(fss.FlagSet("log"))
+	o.OAuthOptions.AddFlags(fss.FlagSet("Oauth"))
 
 	return fss
 }
@@ -79,6 +81,7 @@ func NewOptions() *Options {
 		JwtOptions:              genericoptions.NewJwtOptions(),
 		LogOptions:              log.NewOptions(),
 		FeatureOptions:          genericoptions.NewFeatureOptions(),
+		OAuthOptions:            genericoptions.NewOauthOptions(),
 	}
 
 	return &o

@@ -19,6 +19,7 @@ func ConvertUserModelToBase(user *model.User) *v1.UserBase {
 		Alias:         user.Alias,
 		Email:         user.Email,
 		Phone:         user.Phone,
+		Avatar:        user.Avatar,
 		UserType:      user.UserType,
 		LastLoginTime: user.LastLoginTime,
 		Disabled:      user.Disabled,

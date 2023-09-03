@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -14,9 +15,11 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/domain/identityprovider"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
@@ -36,6 +39,7 @@ var signedKey string
 // AuthenticationService authentication service.
 type AuthenticationService interface {
 	Authenticate(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
+	AuthenticateByProvider(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*v1.RefreshTokenResponse, error)
 }
 
@@ -89,6 +93,62 @@ func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v
 	if userBase.Disabled {
 		return nil, errors.WithCode(code.ErrUserHasDisabled, "The account [%d] has been disabled.", userBase.Name)
 	}
+	accessToken, err := a.generateJWTToken(userBase.InstanceID, userBase.UserType, GrantTypeAccess, a.cfg.JwtOptions.Timeout)
+	if err != nil {
+		return nil, err
+	}
+	refreshToken, err := a.generateJWTToken(userBase.InstanceID, userBase.UserType, GrantTypeRefresh, a.cfg.JwtOptions.MaxRefresh)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.AuthenticateResponse{
+		User:        userBase,
+		AccessToken: accessToken,
+		// The OAuth 2.0 token_type response parameter value MUST be Bearer,
+		// as specified in OAuth 2.0 Bearer Token Usage [RFC6750]
+		TokenType:    "Bearer",
+		RefreshToken: refreshToken,
+		ExpiresIn:    int(a.cfg.JwtOptions.Timeout.Seconds()),
+	}, nil
+}
+
+func (a *authenticationServiceImpl) AuthenticateByProvider(
+	ctx context.Context,
+	loginReq v1.AuthenticateRequest,
+) (*v1.AuthenticateResponse, error) {
+	providerOptions, err := a.cfg.OAuthOptions.IdentityProviderOptions(loginReq.Provider)
+	if err != nil {
+		return nil, err
+	}
+	genericProvider, err := identityprovider.GetGenericProvider(providerOptions.Name)
+	if err != nil {
+		return nil, err
+	}
+	authenticated, err := genericProvider.Authenticate(loginReq)
+	if err != nil {
+		return nil, err
+	}
+	linkedAccount, err := a.Store.UserRepository().
+		GetByExternalId(ctx, authenticated.GetUserID(), providerOptions.Name, metav1.GetOptions{})
+	if err != nil && !errors.IsCode(err, code.ErrUserNotFound) {
+		return nil, err
+	}
+
+	var userBase *v1.UserBase
+
+	if linkedAccount != nil {
+		userBase = assembler.ConvertUserModelToBase(linkedAccount)
+	}
+	// the user will automatically create and mapping when login successful.
+	if userBase == nil && providerOptions.MappingMethod == options.MappingMethodAuto {
+		createResp, err := a.UserService.CreateUser(ctx, mappedUser(providerOptions.Name, authenticated))
+		if err != nil {
+			return nil, err
+		}
+		userBase = &createResp.User
+	}
+
 	accessToken, err := a.generateJWTToken(userBase.InstanceID, userBase.UserType, GrantTypeAccess, a.cfg.JwtOptions.Timeout)
 	if err != nil {
 		return nil, err
@@ -168,4 +228,22 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1.UserBase, erro
 	}
 
 	return assembler.ConvertUserModelToBase(user), nil
+}
+
+func mappedUser(idp string, identity identityprovider.Identity) v1.CreateUserRequest {
+	// username convert
+	username := strings.ToLower(identity.GetUsername())
+	alias := username
+	if len(username) > 12 {
+		alias = username[:12]
+	}
+	return v1.CreateUserRequest{
+		Name:             username,
+		Alias:            alias,
+		Email:            identity.GetEmail(),
+		Avatar:           identity.GetAvatar(),
+		UserType:         v1.Default.String(),
+		ExternalUID:      identity.GetUserID(),
+		IdentifyProvider: idp,
+	}
 }

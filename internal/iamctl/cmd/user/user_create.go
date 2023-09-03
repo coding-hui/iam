@@ -132,7 +132,7 @@ func (o *CreateOptions) Run(args []string) error {
 		return err
 	}
 
-	fmt.Fprintf(o.Out, "user/%s created\n", ret.Name)
+	fmt.Fprintf(o.Out, "user/%s created\n", ret.User.Name)
 
 	return nil
 }

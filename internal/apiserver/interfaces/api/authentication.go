@@ -138,13 +138,26 @@ func (a *authentication) authenticate(c *gin.Context) {
 		return
 	}
 
-	response, err := a.AuthenticationService.Authenticate(c.Request.Context(), login)
+	var resp *v1.AuthenticateResponse
+
+	if login.Username != "" && login.Password != "" {
+		resp, err = a.AuthenticationService.Authenticate(c.Request.Context(), login)
+		if err != nil {
+			api.FailWithErrCode(err, c)
+			return
+		}
+
+		api.OkWithData(resp, c)
+		return
+	}
+
+	resp, err = a.AuthenticationService.AuthenticateByProvider(c.Request.Context(), login)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
 
-	api.OkWithData(response, c)
+	api.OkWithData(resp, c)
 }
 
 func parseWithHeader(c *gin.Context) (v1.AuthenticateRequest, error) {

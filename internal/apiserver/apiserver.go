@@ -11,14 +11,13 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
-	"github.com/coding-hui/iam/pkg/log"
-	"github.com/coding-hui/iam/pkg/shutdown"
-	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
-
 	_ "github.com/coding-hui/iam/api/swagger"
+	_ "github.com/coding-hui/iam/internal/apiserver/domain/identityprovider/github"
+	_ "github.com/coding-hui/iam/internal/apiserver/domain/identityprovider/ldap"
+	_ "github.com/coding-hui/iam/internal/apiserver/domain/identityprovider/wechatmini"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/domain/identityprovider"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/event"
@@ -27,6 +26,10 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/middleware"
 	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+	"github.com/coding-hui/iam/pkg/log"
+	"github.com/coding-hui/iam/pkg/shutdown"
+	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 )
 
 //	@title			IAM API
@@ -121,6 +124,11 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) error {
 	// init database
 	if err := service.InitData(s.withRoutesContext(ctx)); err != nil {
 		return fmt.Errorf("failed to init database %w", err)
+	}
+
+	// init identity providers
+	if err := identityprovider.SetupWithOptions(s.cfg.OAuthOptions.IdentityProviders); err != nil {
+		return fmt.Errorf("fail to init identity providers: %w", err)
 	}
 
 	go event.StartEventWorker(ctx, errChan)

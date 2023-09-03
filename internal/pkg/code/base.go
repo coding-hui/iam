@@ -27,6 +27,9 @@ const (
 
 	// ErrPageNotFound - 404: Page not found.
 	ErrPageNotFound
+
+	// ErrInvalidRequest - 404: Invalid request.
+	ErrInvalidRequest
 )
 
 // common: database errors.
@@ -85,8 +88,14 @@ const (
 	// ErrInvalidRefreshToken - 401: Refresh token format is incorrect, please check.
 	ErrInvalidRefreshToken
 
+	// ErrUnauthorized - 403: Unauthorized.
+	ErrUnauthorized
+
 	// ErrPermissionDenied - 403: Permission denied.
 	ErrPermissionDenied
+
+	// ErrIdentityProviderNotFound - 401: Identity provider not found
+	ErrIdentityProviderNotFound
 )
 
 // common: encode/decode errors.

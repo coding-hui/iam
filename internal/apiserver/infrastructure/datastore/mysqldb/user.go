@@ -41,6 +41,22 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts 
 		}
 		return nil, err
 	}
+	if user.External != nil && user.External.ExternalUID != "" && user.External.IdentifyProvider != "" {
+		user.External.UserId = user.InstanceID
+		externalUser := &model.UserExternal{
+			UserId:           user.InstanceID,
+			ExternalUID:      user.External.ExternalUID,
+			IdentifyProvider: user.External.IdentifyProvider,
+		}
+		err := u.deleteExternalUser(ctx, user.InstanceID, externalUser.ExternalUID, externalUser.IdentifyProvider)
+		if err != nil {
+			return nil, err
+		}
+		err = u.db.WithContext(ctx).Create(&externalUser).Error
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return user, nil
 }
@@ -123,6 +139,36 @@ func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId str
 	return user, nil
 }
 
+// GetByExternalId get user by external identifier.
+func (u *userRepositoryImpl) GetByExternalId(
+	ctx context.Context,
+	externalUid, externalIdp string,
+	opts metav1.GetOptions,
+) (*model.User, error) {
+	externalUser := &model.UserExternal{}
+	err := u.db.WithContext(ctx).
+		Where("external_uid = ?", externalUid).
+		Where("idp = ?", externalIdp).
+		First(&externalUser).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+		}
+
+		return nil, err
+	}
+	user, err := u.GetByInstanceId(ctx, externalUser.UserId, opts)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+		}
+
+		return nil, err
+	}
+
+	return user, nil
+}
+
 // List list users.
 func (u *userRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error) {
 	list := &v1.UserList{}
@@ -143,4 +189,16 @@ func (u *userRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) 
 		Count(&list.TotalCount)
 
 	return list, db.Error
+}
+
+func (u *userRepositoryImpl) deleteExternalUser(ctx context.Context, userId, externalUid, idp string) error {
+	externalUser := &model.UserExternal{
+		UserId:           userId,
+		ExternalUID:      externalUid,
+		IdentifyProvider: idp,
+	}
+	return u.db.WithContext(ctx).
+		Where("external_uid = ?", externalUid).
+		Where("idp = ?", idp).
+		Delete(&externalUser).Error
 }

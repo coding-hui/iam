@@ -87,17 +87,20 @@ const (
 
 // CreateUserRequest create user request.
 type CreateUserRequest struct {
-	Name     string `json:"name"            validate:"required,name"`
-	Password string `json:"password"        validate:"required"`
-	Alias    string `json:"alias,omitempty"                          optional:"true"`
-	Email    string `json:"email"                                    optional:"true"`
-	Phone    string `json:"phone"`
-	UserType string `json:"userType"`
+	Name             string `json:"name"             validate:"required,name"`
+	Password         string `json:"password"         validate:"required"`
+	Alias            string `json:"alias,omitempty"                           optional:"true"`
+	Email            string `json:"email"                                     optional:"true"`
+	Phone            string `json:"phone"                                     optional:"true"`
+	UserType         string `json:"userType"                                  optional:"true"`
+	Avatar           string `json:"avatar"                                    optional:"true"`
+	IdentifyProvider string `json:"identifyProvider"                          optional:"true"`
+	ExternalUID      string `json:"externalUID"                               optional:"true"`
 }
 
 // CreateUserResponse create user response.
 type CreateUserResponse struct {
-	UserBase
+	User UserBase `json:",inline"`
 }
 
 // UpdateUserRequest update user request.
@@ -125,6 +128,7 @@ type UserBase struct {
 	Phone             string     `json:"phone"`
 	UserType          string     `json:"userType"`
 	Disabled          bool       `json:"disabled"`
+	Avatar            string     `json:"avatar"`
 	LastLoginTime     *time.Time `json:"lastLoginTime,omitempty"`
 }
 
@@ -255,10 +259,21 @@ type DetailRoleResponse struct {
 	Users []UserBase `json:"users"`
 }
 
+type WechatMiniAppCodePayload struct {
+	// Iv 对称解密算法初始向量，由微信返回
+	Iv string `json:"iv"`
+	// EncryptedData 获取微信开放数据返回的加密数据（encryptedData）
+	EncryptedData string `json:"encryptedData"`
+	// Code wx.login 接口返回的用户 code
+	Code string `json:"code"`
+}
+
 // AuthenticateRequest is the request body for login.
 type AuthenticateRequest struct {
-	Username string `json:"username,omitempty" optional:"true"`
-	Password string `json:"password,omitempty" optional:"true"`
+	Username                 string                   `json:"username,omitempty"       optional:"true"`
+	Password                 string                   `json:"password,omitempty"       optional:"true"`
+	Provider                 string                   `json:"provider"                 optional:"true"`
+	WechatMiniAppCodePayload WechatMiniAppCodePayload `json:"wechatMiniAppCodePayload" optional:"true"`
 }
 
 // AuthenticateResponse is the response of login request.

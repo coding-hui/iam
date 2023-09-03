@@ -79,6 +79,13 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 // CreateUser create user.
 func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserRequest) (*v1.CreateUserResponse, error) {
 	encryptPassword, _ := auth.Encrypt(req.Password)
+	var external *model.UserExternal
+	if req.ExternalUID != "" && req.IdentifyProvider != "" {
+		external = &model.UserExternal{
+			ExternalUID:      req.ExternalUID,
+			IdentifyProvider: req.IdentifyProvider,
+		}
+	}
 	user := &model.User{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: req.Name,
@@ -86,8 +93,10 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 		Password: encryptPassword,
 		Alias:    req.Alias,
 		Email:    req.Email,
+		Avatar:   req.Avatar,
 		UserType: req.UserType,
 		Disabled: false,
+		External: external,
 	}
 	createUser, err := u.Store.UserRepository().Create(ctx, user, metav1.CreateOptions{})
 	if err != nil {
@@ -96,7 +105,7 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	base := assembler.ConvertUserModelToBase(createUser)
 
 	return &v1.CreateUserResponse{
-		UserBase: *base,
+		User: *base,
 	}, nil
 }
 

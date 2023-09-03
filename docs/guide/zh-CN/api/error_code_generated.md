@@ -52,6 +52,7 @@ IAM 系统支持的错误码列表如下：
 | ErrValidation | 100004 | 400 | Validation failed |
 | ErrTokenInvalid | 100005 | 401 | Token invalid |
 | ErrPageNotFound | 100006 | 404 | Page not found |
+| ErrInvalidRequest | 100007 | 404 | Invalid request |
 | ErrDatabase | 100101 | 500 | Database error |
 | ErrPrimaryEmpty | 100102 | 500 | Primary key is empty |
 | ErrNilEntity | 100103 | 500 | Entity is nil |
@@ -69,7 +70,9 @@ IAM 系统支持的错误码列表如下：
 | ErrMissingHeader | 100208 | 401 | The `Authorization` header was empty |
 | ErrPasswordIncorrect | 100209 | 401 | Invalid Username or Password |
 | ErrInvalidRefreshToken | 100210 | 401 | Refresh token format is incorrect, please check |
-| ErrPermissionDenied | 100211 | 403 | Permission denied |
+| ErrUnauthorized | 100211 | 403 | Unauthorized |
+| ErrPermissionDenied | 100212 | 403 | Permission denied |
+| ErrIdentityProviderNotFound | 100213 | 500 | Internal server error |
 | ErrEncodingFailed | 100301 | 500 | Encoding failed due to an error with the data |
 | ErrDecodingFailed | 100302 | 500 | Decoding failed due to an error with the data |
 | ErrInvalidJSON | 100303 | 500 | Data is not valid JSON |

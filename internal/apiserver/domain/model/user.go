@@ -17,6 +17,7 @@ import (
 
 func init() {
 	RegisterModel(&User{})
+	RegisterModel(&UserExternal{})
 }
 
 // User represents a user restful resource. It is also used as gorm model.
@@ -27,15 +28,17 @@ type User struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	TenantId      uint64     `json:"tenantId,omitempty"      gorm:"column:tenant_id;type:varchar(64)"`
-	Status        int        `json:"status"                  gorm:"column:status;"`
-	Alias         string     `json:"alias"                   gorm:"column:alias;type:varchar(64)"`
-	Password      string     `json:"password,omitempty"      gorm:"column:password;type:varchar(256)"`
-	Email         string     `json:"email"                   gorm:"column:email;type:varchar(64)"`
-	Phone         string     `json:"phone"                   gorm:"column:phone;type:varchar(20)"`
-	UserType      string     `json:"userType"                gorm:"column:user_type;type:varchar(20)"`
-	Disabled      bool       `json:"disabled"                gorm:"column:disabled;type:bool"`
-	LastLoginTime *time.Time `json:"lastLoginTime,omitempty" gorm:"column:last_login_time"`
+	TenantId      uint64        `json:"tenantId,omitempty"      gorm:"column:tenant_id;type:varchar(64)"`
+	Status        int           `json:"status"                  gorm:"column:status;"`
+	Alias         string        `json:"alias"                   gorm:"column:alias;type:varchar(64)"`
+	Password      string        `json:"password,omitempty"      gorm:"column:password;type:varchar(256)"`
+	Email         string        `json:"email"                   gorm:"column:email;type:varchar(64)"`
+	Phone         string        `json:"phone"                   gorm:"column:phone;type:varchar(20)"`
+	UserType      string        `json:"userType"                gorm:"column:user_type;type:varchar(20)"`
+	Avatar        string        `json:"avatar"                  gorm:"column:avatar;type:varchar(500)"`
+	Disabled      bool          `json:"disabled"                gorm:"column:disabled;type:bool"`
+	LastLoginTime *time.Time    `json:"lastLoginTime,omitempty" gorm:"column:last_login_time"`
+	External      *UserExternal `json:"external"                gorm:"-"`
 }
 
 // TableName maps to mysql table name.
@@ -57,4 +60,16 @@ func (u *User) Compare(pwd string) error {
 	}
 
 	return nil
+}
+
+type UserExternal struct {
+	ID               uint64 `json:"-"                gorm:"primary_key;AUTO_INCREMENT;column:id"`
+	UserId           string `json:"userId"           gorm:"column:user_id;type:varchar(64)"`
+	ExternalUID      string `json:"externalUID"      gorm:"column:external_uid;type:varchar(64)"`
+	IdentifyProvider string `json:"identifyProvider" gorm:"column:idp;type:varchar(64)"`
+}
+
+// TableName maps to mysql table name.
+func (u *UserExternal) TableName() string {
+	return TableNamePrefix + "user_external"
 }
