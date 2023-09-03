@@ -47,12 +47,12 @@ require (
 	github.com/swaggo/swag v1.16.1
 	github.com/zsais/go-gin-prometheus v0.1.0
 	go.uber.org/zap v1.21.0
-	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
+	golang.org/x/oauth2 v0.11.0
 	golang.org/x/sync v0.1.0
 	golang.org/x/text v0.12.0
 	golang.org/x/tools v0.8.0
 	google.golang.org/grpc v1.52.0
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.31.0
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.25.4
 	gotest.tools v2.2.0+incompatible
