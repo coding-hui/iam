@@ -12,16 +12,15 @@ import (
 	"os"
 	"time"
 
-	"github.com/coding-hui/iam/internal/apiserver/domain/identityprovider"
-	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
-
 	"github.com/go-ldap/ldap"
 	"github.com/mitchellh/mapstructure"
 
 	"github.com/coding-hui/common/errors"
 
+	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/options"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 )
 

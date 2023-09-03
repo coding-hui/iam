@@ -12,7 +12,7 @@ import (
 	miniConfig "github.com/silenceper/wechat/v2/miniprogram/config"
 	"github.com/silenceper/wechat/v2/miniprogram/encryptor"
 
-	"github.com/coding-hui/iam/internal/apiserver/domain/identityprovider"
+	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/options"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"

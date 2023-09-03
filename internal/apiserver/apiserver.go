@@ -12,14 +12,14 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "github.com/coding-hui/iam/api/swagger"
-	_ "github.com/coding-hui/iam/internal/apiserver/domain/identityprovider/github"
-	_ "github.com/coding-hui/iam/internal/apiserver/domain/identityprovider/ldap"
-	_ "github.com/coding-hui/iam/internal/apiserver/domain/identityprovider/wechatmini"
+	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/github"
+	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/ldap"
+	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/wechatmini"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
-	"github.com/coding-hui/iam/internal/apiserver/domain/identityprovider"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
+	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	"github.com/coding-hui/iam/internal/apiserver/event"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"

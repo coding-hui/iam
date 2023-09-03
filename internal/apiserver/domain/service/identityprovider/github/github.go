@@ -15,7 +15,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/oauth2"
 
-	"github.com/coding-hui/iam/internal/apiserver/domain/identityprovider"
+	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	"github.com/coding-hui/iam/internal/pkg/options"
 )
 
