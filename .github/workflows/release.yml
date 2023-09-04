@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set ROOT_DIR environment variable
       run: echo "ROOT_DIR=$(pwd)" >> $GITHUB_ENV
