@@ -95,3 +95,21 @@ const (
 	// ErrUnsupportedRevokeTarget - 400: The revoke target is not supported. Only user or department are supported.
 	ErrUnsupportedRevokeTarget
 )
+
+// iam-apiserver: organization errors.
+const (
+	// ErrOrgNotFound - 404: Organization not found.
+	ErrOrgNotFound int = iota + 110501
+
+	// ErrOrgAlreadyExist - 400: Organization already exist.
+	ErrOrgAlreadyExist
+
+	// ErrOrgAlreadyDisabled - 400: The organization is already disabled.
+	ErrOrgAlreadyDisabled
+
+	// ErrOrgAlreadyEnabled - 400: The organization is already enabled.
+	ErrOrgAlreadyEnabled
+
+	// ErrOrgHasDisabled - 401: The organization has been disabled.
+	ErrOrgHasDisabled
+)

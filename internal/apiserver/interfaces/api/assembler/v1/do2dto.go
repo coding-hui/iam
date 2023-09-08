@@ -93,3 +93,15 @@ func ConvertPolicyModelToProtoInfo(policy *model.Policy) *pb.PolicyInfo {
 		Adapter:     policy.Adapter,
 	}
 }
+
+// ConvertOrganizationModelToBase assemble the Organization model to DTO.
+func ConvertOrganizationModelToBase(org *model.Organization) *v1.OrganizationBase {
+	return &v1.OrganizationBase{
+		ObjectMeta:  org.ObjectMeta,
+		DisplayName: org.DisplayName,
+		WebsiteUrl:  org.WebsiteUrl,
+		Favicon:     org.Favicon,
+		Disabled:    org.Disabled,
+		Description: org.Description,
+	}
+}

@@ -46,6 +46,11 @@ IAM 系统支持的错误码列表如下：
 | ErrUnsupportedAssignTarget | 110406 | 400 | The assignment target is not supported. Only user or department are supported |
 | ErrRevokeRoleFailed | 110407 | 400 | User role revoke fails. Please check the role status or contact the administrator |
 | ErrUnsupportedRevokeTarget | 110408 | 400 | The revoke target is not supported. Only user or department are supported |
+| ErrOrgNotFound | 110501 | 404 | Organization not found |
+| ErrOrgAlreadyExist | 110502 | 400 | Organization already exist |
+| ErrOrgAlreadyDisabled | 110503 | 400 | The organization is already disabled |
+| ErrOrgAlreadyEnabled | 110504 | 400 | The organization is already enabled |
+| ErrOrgHasDisabled | 110505 | 401 | The organization has been disabled |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |
@@ -72,7 +77,7 @@ IAM 系统支持的错误码列表如下：
 | ErrInvalidRefreshToken | 100210 | 401 | Refresh token format is incorrect, please check |
 | ErrUnauthorized | 100211 | 403 | Unauthorized |
 | ErrPermissionDenied | 100212 | 403 | Permission denied |
-| ErrIdentityProviderNotFound | 100213 | 500 | Internal server error |
+| ErrIdentityProviderNotFound | 100213 | 401 | Identity provider not found |
 | ErrEncodingFailed | 100301 | 500 | Encoding failed due to an error with the data |
 | ErrDecodingFailed | 100302 | 500 | Decoding failed due to an error with the data |
 | ErrInvalidJSON | 100303 | 500 | Data is not valid JSON |

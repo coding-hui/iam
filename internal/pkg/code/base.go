@@ -94,7 +94,7 @@ const (
 	// ErrPermissionDenied - 403: Permission denied.
 	ErrPermissionDenied
 
-	// ErrIdentityProviderNotFound - 401: Identity provider not found
+	// ErrIdentityProviderNotFound - 401: Identity provider not found.
 	ErrIdentityProviderNotFound
 )
 

@@ -369,3 +369,53 @@ type ResourceList struct {
 
 	Items []*ResourceBase `json:"items"`
 }
+
+// CreateOrganizationRequest create organization request.
+type CreateOrganizationRequest struct {
+	Name        string `json:"name"        validate:"required,name"`
+	DisplayName string `json:"displayName"                          optional:"true"`
+	WebsiteUrl  string `json:"websiteUrl"                           optional:"true"`
+	Favicon     string `json:"favicon"                              optional:"true"`
+	Disabled    bool   `json:"disabled"                             optional:"true"`
+	Description string `json:"description"                          optional:"true"`
+}
+
+// UpdateOrganizationRequest update organization request.
+type UpdateOrganizationRequest struct {
+	DisplayName string `json:"displayName" optional:"true"`
+	WebsiteUrl  string `json:"websiteUrl"  optional:"true"`
+	Favicon     string `json:"favicon"     optional:"true"`
+	Description string `json:"description" optional:"true"`
+}
+
+// OrganizationBase represents a organization restful resource.
+type OrganizationBase struct {
+	// May add TypeMeta in the future.
+	// metav1.TypeMeta `json:",inline"`
+
+	// Standard object's metadata.
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	DisplayName string `json:"displayName"`
+	WebsiteUrl  string `json:"websiteUrl"`
+	Favicon     string `json:"favicon"`
+	Disabled    bool   `json:"disabled"`
+	Description string `json:"description"`
+}
+
+// DetailOrganizationResponse org detail.
+type DetailOrganizationResponse struct {
+	OrganizationBase
+}
+
+// OrganizationList is the whole list of all org which have been stored in stroage.
+type OrganizationList struct {
+	// May add TypeMeta in the future.
+	// metav1.TypeMeta `json:",inline"`
+
+	// Standard list metadata.
+	// +optional
+	metav1.ListMeta `json:",inline"`
+
+	Items []*OrganizationBase `json:"items"`
+}

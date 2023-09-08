@@ -13,6 +13,7 @@ type Factory interface {
 	ResourceRepository() ResourceRepository
 	RoleRepository() RoleRepository
 	PolicyRepository() PolicyRepository
+	OrganizationRepository() OrganizationRepository
 	Close() error
 }
 

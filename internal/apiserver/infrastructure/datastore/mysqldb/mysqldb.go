@@ -81,6 +81,10 @@ func (m *mysqldb) PolicyRepository() repository.PolicyRepository {
 	return newPolicyRepository(m.client)
 }
 
+func (m *mysqldb) OrganizationRepository() repository.OrganizationRepository {
+	return newOrganizationRepository(m.client)
+}
+
 func (m *mysqldb) Close() error {
 	db, err := m.client.DB()
 	if err != nil {

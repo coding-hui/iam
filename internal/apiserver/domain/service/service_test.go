@@ -18,5 +18,5 @@ func TestInitServiceBean(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, len(InitServiceBean(*cfg)), 4)
+	assert.Equal(t, len(InitServiceBean(*cfg)), 6)
 }
