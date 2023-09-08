@@ -68,8 +68,6 @@ image.build.%:
 	$(MAKE) image.daemon.verify ;\
 	$(DOCKER) buildx create --use ;\
 	$(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) $(ROOT_DIR)/ \
-		--cache-from=type=local,src=$(TMP_DIR)/images/cache \
-		--cache-to=type=local,dest=$(TMP_DIR)/images/cache \
 		--platform ${PLATFORMS} \
 		$(BUILD_SUFFIX)
 
