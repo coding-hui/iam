@@ -19,11 +19,6 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
-const (
-	// DefaultOrganization default organization name.
-	DefaultOrganization string = "Platform"
-)
-
 // OrganizationService Organization manage api.
 type OrganizationService interface {
 	CreateOrganization(ctx context.Context, req v1.CreateOrganizationRequest, opts metav1.CreateOptions) error
@@ -48,7 +43,7 @@ func NewOrganizationService(c config.Config) OrganizationService {
 
 // Init initialize default org.
 func (o *organizationServiceImpl) Init(ctx context.Context) error {
-	old, err := o.Store.OrganizationRepository().GetByName(ctx, DefaultOrganization, metav1.GetOptions{})
+	old, err := o.Store.OrganizationRepository().GetByName(ctx, model.DefaultOrganization, metav1.GetOptions{})
 	if err != nil && !errors.IsCode(err, code.ErrOrgNotFound) {
 		return err
 	}
@@ -56,9 +51,9 @@ func (o *organizationServiceImpl) Init(ctx context.Context) error {
 		return nil
 	}
 	createReq := v1.CreateOrganizationRequest{
-		Name:        DefaultOrganization,
-		DisplayName: DefaultOrganization,
-		WebsiteUrl:  "iam.wecoding.top",
+		Name:        model.DefaultOrganization,
+		DisplayName: "Platform",
+		WebsiteUrl:  "http://iam.wecoding.top",
 		Favicon:     "",
 		Disabled:    false,
 		Description: "System Build-in Organization",
@@ -86,6 +81,9 @@ func (o *organizationServiceImpl) CreateOrganization(
 		Favicon:     req.Favicon,
 		Disabled:    req.Disabled,
 		Description: req.Description,
+	}
+	if org.DisplayName == "" {
+		org.DisplayName = req.Name
 	}
 	err := o.Store.OrganizationRepository().Create(ctx, org, opts)
 	if err != nil {
@@ -126,7 +124,14 @@ func (o *organizationServiceImpl) UpdateOrganization(
 }
 
 func (o *organizationServiceImpl) DeleteOrganization(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
-	err := o.Store.OrganizationRepository().DeleteByInstanceId(ctx, instanceId, opts)
+	org, err := o.Store.OrganizationRepository().GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	if org.IsSystemBuiltIn() {
+		return errors.WithCode(code.ErrCannotDeleteBuiltInOrg, "")
+	}
+	err = o.Store.OrganizationRepository().DeleteByInstanceId(ctx, instanceId, opts)
 	if err != nil {
 		return err
 	}
@@ -167,6 +172,9 @@ func (o *organizationServiceImpl) DisableOrganization(ctx context.Context, insta
 	org, err := o.Store.OrganizationRepository().GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
 		return err
+	}
+	if org.IsSystemBuiltIn() {
+		return errors.WithCode(code.ErrCannotDisableBuiltInOrg, "")
 	}
 	if org.Disabled {
 		return errors.WithCode(code.ErrOrgAlreadyDisabled, "The organization [%s] is already disabled.", org.Name)

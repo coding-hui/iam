@@ -38,6 +38,8 @@ func init() {
 	register(ErrOrgAlreadyDisabled, 400, "The organization is already disabled")
 	register(ErrOrgAlreadyEnabled, 400, "The organization is already enabled")
 	register(ErrOrgHasDisabled, 401, "The organization has been disabled")
+	register(ErrCannotDeleteBuiltInOrg, 400, "Built-in organizations cannot be deleted")
+	register(ErrCannotDisableBuiltInOrg, 400, "Built-in organizations cannot be disabled")
 	register(ErrSuccess, 200, "OK")
 	register(ErrUnknown, 500, "Internal server error")
 	register(ErrBind, 400, "Error occurred while binding the request body to the struct")

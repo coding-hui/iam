@@ -112,4 +112,10 @@ const (
 
 	// ErrOrgHasDisabled - 401: The organization has been disabled.
 	ErrOrgHasDisabled
+
+	// ErrCannotDeleteBuiltInOrg - 400: Built-in organizations cannot be deleted.
+	ErrCannotDeleteBuiltInOrg
+
+	// ErrCannotDisableBuiltInOrg - 400: Built-in organizations cannot be disabled.
+	ErrCannotDisableBuiltInOrg
 )

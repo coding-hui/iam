@@ -11,6 +11,11 @@ import (
 	"github.com/coding-hui/common/util/idutil"
 )
 
+const (
+	// DefaultOrganization default organization name.
+	DefaultOrganization string = "built-in"
+)
+
 func init() {
 	RegisterModel(&Organization{})
 }
@@ -40,4 +45,8 @@ func (o *Organization) AfterCreate(tx *gorm.DB) error {
 	o.InstanceID = idutil.GetInstanceID(o.ID, "o-")
 
 	return tx.Save(o).Error
+}
+
+func (o *Organization) IsSystemBuiltIn() bool {
+	return o.Name == DefaultOrganization
 }
