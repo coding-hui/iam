@@ -57,6 +57,10 @@ func (o *organization) createOrganization(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
+	if errs := createReq.Validate(); errs != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		return
+	}
 	err = o.OrganizationService.CreateOrganization(c.Request.Context(), createReq, metav1.CreateOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
@@ -83,6 +87,10 @@ func (o *organization) updateOrganization(c *gin.Context) {
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		return
+	}
+	if errs := updateReq.ValidateUpdate(); errs != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
 	err = o.OrganizationService.UpdateOrganization(c.Request.Context(), c.Param("instanceId"), updateReq, metav1.UpdateOptions{})

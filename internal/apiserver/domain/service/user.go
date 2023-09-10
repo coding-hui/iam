@@ -32,7 +32,7 @@ const (
 // UserService User manage api.
 type UserService interface {
 	CreateUser(ctx context.Context, req v1.CreateUserRequest) (*v1.CreateUserResponse, error)
-	UpdateUser(ctx context.Context, instanceId string, req v1.UpdateUserRequest) error
+	UpdateUser(ctx context.Context, instanceId string, req v1.UpdateUserRequest) (*v1.UpdateUserResponse, error)
 	DeleteUser(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error
 	BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error
 	GetUser(ctx context.Context, username string, opts metav1.GetOptions) (*model.User, error)
@@ -105,15 +105,15 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	base := assembler.ConvertUserModelToBase(createUser)
 
 	return &v1.CreateUserResponse{
-		User: *base,
+		UserBase: *base,
 	}, nil
 }
 
 // UpdateUser update user.
-func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req v1.UpdateUserRequest) error {
+func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req v1.UpdateUserRequest) (*v1.UpdateUserResponse, error) {
 	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if req.Alias != "" {
 		user.Alias = req.Alias
@@ -127,15 +127,18 @@ func (u *userServiceImpl) UpdateUser(ctx context.Context, instanceId string, req
 	if req.Password != "" {
 		hash, err := auth.Encrypt(req.Password)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		user.Password = hash
 	}
 	if err := u.Store.UserRepository().Update(ctx, user, metav1.UpdateOptions{}); err != nil {
-		return err
+		return nil, err
 	}
+	base := assembler.ConvertUserModelToBase(user)
 
-	return nil
+	return &v1.UpdateUserResponse{
+		UserBase: *base,
+	}, nil
 }
 
 // DeleteUser delete user.

@@ -146,7 +146,7 @@ func (a *authenticationServiceImpl) AuthenticateByProvider(
 		if err != nil {
 			return nil, err
 		}
-		userBase = &createResp.User
+		userBase = &createResp.UserBase
 	}
 
 	accessToken, err := a.generateJWTToken(userBase.InstanceID, userBase.UserType, GrantTypeAccess, a.cfg.JwtOptions.Timeout)

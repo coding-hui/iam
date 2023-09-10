@@ -94,13 +94,13 @@ func (u *user) updateUser(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = u.UserService.UpdateUser(c.Request.Context(), c.Param("instanceId"), updateReq)
+	user, err := u.UserService.UpdateUser(c.Request.Context(), c.Param("instanceId"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
 
-	api.Ok(c)
+	api.OkWithData(user, c)
 }
 
 //	@Tags			Users

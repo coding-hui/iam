@@ -4,7 +4,7 @@
 
 package v1
 
-// Returns string version of PolicyType.
-func (p PolicyType) String() string {
-	return string(p)
+// Returns string version of UserType.
+func (r UserType) String() string {
+	return string(r)
 }

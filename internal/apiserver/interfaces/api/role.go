@@ -61,6 +61,10 @@ func (r *role) createRole(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
+	if errs := createReq.Validate(); errs != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		return
+	}
 	err = r.RoleService.CreateRole(c.Request.Context(), createReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
@@ -86,6 +90,10 @@ func (r *role) updateRole(c *gin.Context) {
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		return
+	}
+	if errs := updateReq.ValidateUpdate(); errs != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
 	err = r.RoleService.UpdateRole(c.Request.Context(), c.Param("instanceId"), updateReq)

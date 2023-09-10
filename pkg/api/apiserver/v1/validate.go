@@ -29,3 +29,67 @@ func (u *UpdateUserRequest) ValidateUpdate() field.ErrorList {
 
 	return allErrs
 }
+
+// Validate validates that a organization object is valid.
+func (o *CreateOrganizationRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(o)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// ValidateUpdate validates that a organization object is valid when update.
+func (o *UpdateOrganizationRequest) ValidateUpdate() field.ErrorList {
+	val := validation.NewValidator(o)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// Validate validates that a role object is valid.
+func (r *CreateRoleRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(r)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// ValidateUpdate validates that a role object is valid when update.
+func (r *UpdateRoleRequest) ValidateUpdate() field.ErrorList {
+	val := validation.NewValidator(r)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// Validate validates that a resource object is valid.
+func (r *CreateResourceRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(r)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// ValidateUpdate validates that a user resource is valid when update.
+func (r *UpdateResourceRequest) ValidateUpdate() field.ErrorList {
+	val := validation.NewValidator(r)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// Validate validates that a policy object is valid.
+func (p *CreatePolicyRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(p)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// ValidateUpdate validates that a policy object is valid when update.
+func (p *UpdatePolicyRequest) ValidateUpdate() field.ErrorList {
+	val := validation.NewValidator(p)
+	allErrs := val.Validate()
+
+	return allErrs
+}

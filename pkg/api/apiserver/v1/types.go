@@ -12,8 +12,6 @@ import (
 )
 
 var (
-	// CtxKeyUserRole request context key of user role.
-	CtxKeyUserRole = "user_role"
 	// CtxKeyUserInstanceId request context key of username.
 	CtxKeyUserInstanceId = "user_instance_id"
 	// CtxKeyUserType request context key of user type.
@@ -24,7 +22,6 @@ var (
 	CtxKeyPolicy = "policy"
 	// CtxKeyResource request context key of resource.
 	CtxKeyResource = "resource"
-
 	// CtxKeyRoutes initialize context key of routes.
 	CtxKeyRoutes = "routes"
 	// CtxKeyApiPrefix initialize context key of api-prefix.
@@ -49,34 +46,6 @@ const (
 	Default UserType = "default"
 )
 
-func (r UserType) String() string {
-	return string(r)
-}
-
-// UserState user account state.
-type UserState string
-
-const (
-	// UserActive means the user is available.
-	UserActive UserState = "Active"
-	// UserDisabled means the user is disabled.
-	UserDisabled UserState = "Disabled"
-	// UserAuthLimitExceeded means restrict user login.
-	UserAuthLimitExceeded UserState = "AuthLimitExceeded"
-)
-
-// LoginType authenticate type.
-type LoginType string
-
-const (
-	// BasicAuth basic auth type.
-	BasicAuth LoginType = "Basic"
-	// OAuth oauth2 auth type.
-	OAuth LoginType = "OAuth"
-	// Token jwt token auth type.
-	Token LoginType = "Token"
-)
-
 // ResourceType resource type.
 type ResourceType string
 
@@ -87,28 +56,28 @@ const (
 
 // CreateUserRequest create user request.
 type CreateUserRequest struct {
-	Name             string `json:"name"             validate:"required,name"`
-	Password         string `json:"password"         validate:"required"`
-	Alias            string `json:"alias,omitempty"                           optional:"true"`
-	Email            string `json:"email"                                     optional:"true"`
-	Phone            string `json:"phone"                                     optional:"true"`
-	UserType         string `json:"userType"                                  optional:"true"`
-	Avatar           string `json:"avatar"                                    optional:"true"`
-	IdentifyProvider string `json:"identifyProvider"                          optional:"true"`
-	ExternalUID      string `json:"externalUID"                               optional:"true"`
+	Name             string `json:"name"                       validate:"required,name"`
+	Alias            string `json:"alias"                      validate:"required,min=1,max=30"`
+	Email            string `json:"email"                      validate:"required,email"`
+	Password         string `json:"password"                   validate:"required"`
+	Phone            string `json:"phone,omitempty"            validate:"omitempty"`
+	UserType         string `json:"userType,omitempty"`
+	Avatar           string `json:"avatar,omitempty"`
+	IdentifyProvider string `json:"identifyProvider,omitempty"`
+	ExternalUID      string `json:"externalUID,omitempty"`
 }
 
 // CreateUserResponse create user response.
 type CreateUserResponse struct {
-	User UserBase `json:",inline"`
+	UserBase `json:",inline"`
 }
 
 // UpdateUserRequest update user request.
 type UpdateUserRequest struct {
-	Alias    string `json:"alias,omitempty"    validate:"min=1,max=30"                 optional:"true"`
-	Email    string `json:"email"              validate:"required,email,min=1,max=100"`
-	Phone    string `json:"phone"`
-	Password string `json:"password,omitempty" validate:"required"                     optional:"true"`
+	Alias    string `json:"alias"              validate:"required,min=1,max=30"`
+	Email    string `json:"email"              validate:"required,email"`
+	Phone    string `json:"phone,omitempty"    validate:"omitempty"`
+	Password string `json:"password,omitempty" validate:"omitempty"`
 }
 
 // UpdateUserResponse update user response.
@@ -154,12 +123,9 @@ type UserList struct {
 type TenantBase struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `       json:"metadata,omitempty"`
-	// Owner tenant owner name.
-	Owner string `json:"owner,omitempty"    gorm:"column:owner"       validate:"required"`
-	// Disabled tenant state.
-	Disabled bool `json:"disabled"           gorm:"column:disabled"`
-	// Description tenant description.
-	Description string `json:"description"        gorm:"column:description"`
+	Owner             string `json:"owner,omitempty"    validate:"required"`
+	Disabled          bool   `json:"disabled"`
+	Description       string `json:"description"`
 }
 
 // TenantList is the whole list of all tenants which have been stored in stroage.
@@ -216,29 +182,27 @@ type AuthorizeResources struct {
 
 // CreateRoleRequest create role request.
 type CreateRoleRequest struct {
-	Name        string `json:"name"            validate:"required,name"`
-	Owner       string `json:"owner,omitempty" validate:"min=1,max=30"  optional:"true"`
-	DisplayName string `json:"displayName"                              optional:"true"`
-	Description string `json:"description"                              optional:"true"`
+	Name        string `json:"name"                  validate:"required,name"`
+	Owner       string `json:"owner,omitempty"`
+	DisplayName string `json:"displayName,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 // UpdateRoleRequest update role request.
 type UpdateRoleRequest struct {
-	DisplayName string `json:"displayName" optional:"true"`
-	Description string `json:"description" optional:"true"`
-	Owner       string `json:"owner"       optional:"true"`
+	DisplayName string `json:"displayName"           validate:"required,min=1,max=30"`
+	Description string `json:"description,omitempty"`
+	Owner       string `json:"owner,omitempty"`
 }
 
 // RoleBase represents a role restful resource.
 type RoleBase struct {
 	// Standard object's metadata.
-	metav1.ObjectMeta `       json:"metadata,omitempty"`
-	// Owner tenant owner name.
-	Owner string `json:"owner,omitempty"    gorm:"column:owner"       validate:"required"`
-	// Disabled tenant state.
-	Disabled bool `json:"disabled"           gorm:"column:disabled"`
-	// Description tenant description.
-	Description string `json:"description"        gorm:"column:description"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Owner       string `json:"owner,omitempty"`
+	Disabled    bool   `json:"disabled"`
+	Description string `json:"description"`
 }
 
 // RoleList is the whole list of all roles which have been stored in stroage.
@@ -270,10 +234,10 @@ type WechatMiniAppCodePayload struct {
 
 // AuthenticateRequest is the request body for login.
 type AuthenticateRequest struct {
-	Username                 string                   `json:"username,omitempty"       optional:"true"`
-	Password                 string                   `json:"password,omitempty"       optional:"true"`
-	Provider                 string                   `json:"provider"                 optional:"true"`
-	WechatMiniAppCodePayload WechatMiniAppCodePayload `json:"wechatMiniAppCodePayload" optional:"true"`
+	Username                 string                   `json:"username,omitempty"`
+	Password                 string                   `json:"password,omitempty"`
+	Provider                 string                   `json:"provider,omitempty"`
+	WechatMiniAppCodePayload WechatMiniAppCodePayload `json:"wechatMiniAppCodePayload,omitempty"`
 }
 
 // AuthenticateResponse is the response of login request.
@@ -372,20 +336,20 @@ type ResourceList struct {
 
 // CreateOrganizationRequest create organization request.
 type CreateOrganizationRequest struct {
-	Name        string `json:"name"        validate:"required,name"`
-	DisplayName string `json:"displayName"                          optional:"true"`
-	WebsiteUrl  string `json:"websiteUrl"                           optional:"true"`
-	Favicon     string `json:"favicon"                              optional:"true"`
-	Disabled    bool   `json:"disabled"                             optional:"true"`
-	Description string `json:"description"                          optional:"true"`
+	Name        string `json:"name"                  validate:"required,name"`
+	DisplayName string `json:"displayName,omitempty"`
+	WebsiteUrl  string `json:"websiteUrl,omitempty"`
+	Favicon     string `json:"favicon,omitempty"`
+	Disabled    bool   `json:"disabled,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 // UpdateOrganizationRequest update organization request.
 type UpdateOrganizationRequest struct {
-	DisplayName string `json:"displayName" optional:"true"`
-	WebsiteUrl  string `json:"websiteUrl"  optional:"true"`
-	Favicon     string `json:"favicon"     optional:"true"`
-	Description string `json:"description" optional:"true"`
+	DisplayName string `json:"displayName"           validate:"required,min=1,max=30"`
+	WebsiteUrl  string `json:"websiteUrl,omitempty"`
+	Favicon     string `json:"favicon,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 // OrganizationBase represents a organization restful resource.
@@ -418,4 +382,91 @@ type OrganizationList struct {
 	metav1.ListMeta `json:",inline"`
 
 	Items []*OrganizationBase `json:"items"`
+}
+
+const (
+	// AllowAccess should be used as effect for policies that allow access.
+	AllowAccess string = "allow"
+	// DenyAccess should be used as effect for policies that deny access.
+	DenyAccess string = "deny"
+)
+
+// PolicyType define policy type.
+type PolicyType string
+
+const (
+	// SystemBuildInPolicy system default policy type.
+	SystemBuildInPolicy PolicyType = "SYSTEM"
+	// CustomPolicy user custom policy type.
+	CustomPolicy PolicyType = "CUSTOM"
+)
+
+type Statement struct {
+	Effect             string   `json:"effect"             validate:"required"`
+	Resource           string   `json:"resource"           validate:"required"`
+	ResourceIdentifier string   `json:"resourceIdentifier" validate:"required"`
+	Actions            []string `json:"actions"            validate:"required"`
+}
+
+// CreatePolicyRequest create policy request.
+type CreatePolicyRequest struct {
+	Name        string      `json:"name"        validate:"required,name"`
+	Description string      `json:"description" validate:"min=1,max=30"`
+	Type        string      `json:"type"        validate:"required"`
+	Statements  []Statement `json:"statements"  validate:"required"`
+	Subjects    []string    `json:"subjects"    validate:"required"`
+	Status      string      `json:"status"`
+	Owner       string      `json:"owner"`
+	Meta        string      `json:"meta"`
+}
+
+// UpdatePolicyRequest update policy request.
+type UpdatePolicyRequest struct {
+	Description string      `json:"description" validate:"min=1,max=30"`
+	Type        string      `json:"type"        validate:"required"`
+	Subjects    []string    `json:"subjects"    validate:"required"`
+	Statements  []Statement `json:"statements"  validate:"required"`
+	Status      string      `json:"status"`
+	Owner       string      `json:"owner"`
+	Meta        string      `json:"meta"`
+}
+
+// PolicyBase represents a policy restful resource.
+type PolicyBase struct {
+	// May add TypeMeta in the future.
+	// metav1.TypeMeta `json:",inline"`
+
+	// Standard object's metadata.
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Subjects   []string    `json:"subjects"`
+	Statements []Statement `json:"statements"`
+
+	Type        string `json:"type"`
+	Status      string `json:"status"`
+	Owner       string `json:"owner"`
+	Description string `json:"description"`
+
+	// casbin required
+	Adapter     string     `json:"adapter"`
+	Model       string     `json:"model"`
+	PolicyRules [][]string `json:"policyRules"`
+}
+
+// DetailPolicyResponse policy detail.
+type DetailPolicyResponse struct {
+	PolicyBase
+	Resources []ResourceBase `json:"resources,omitempty"`
+}
+
+// PolicyList is the whole list of all policies which have been stored in stroage.
+type PolicyList struct {
+	// May add TypeMeta in the future.
+	// metav1.TypeMeta `json:",inline"`
+
+	// Standard list metadata.
+	// +optional
+	metav1.ListMeta `json:",inline"`
+
+	Items []*PolicyBase `json:"items"`
 }
