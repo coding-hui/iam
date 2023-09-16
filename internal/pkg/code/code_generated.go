@@ -54,6 +54,7 @@ func init() {
 	register(ErrRecordNotExist, 500, "Entity primary key is not exist")
 	register(ErrIndexInvalid, 500, "Entity index is invalid")
 	register(ErrEntityInvalid, 500, "Entity is invalid")
+	register(ErrTableNameEmpty, 500, "Entity table name is empty")
 	register(ErrEncrypt, 401, "Error occurred while encrypting the user password")
 	register(ErrSignatureInvalid, 401, "Signature is invalid")
 	register(ErrTokenMalformed, 401, "Token is malformed")

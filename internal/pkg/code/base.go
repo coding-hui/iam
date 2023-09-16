@@ -54,6 +54,9 @@ const (
 
 	// ErrEntityInvalid - 500: Entity is invalid.
 	ErrEntityInvalid
+
+	// ErrTableNameEmpty - 500: Entity table name is empty.
+	ErrTableNameEmpty
 )
 
 // common: authorization and authentication errors.

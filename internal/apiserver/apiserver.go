@@ -146,7 +146,7 @@ func (s *apiServer) buildIoCContainer() (err error) {
 	// datastore repository
 	var factory repository.Factory
 	if s.cfg.MySQLOptions != nil {
-		factory, err = mysqldb.GetMySQLFactory(context.Background(), s.cfg)
+		factory, err = mysqldb.New(context.Background(), s.cfg)
 		if err != nil {
 			return fmt.Errorf("create mysqldb datastore instance failure %w", err)
 		}

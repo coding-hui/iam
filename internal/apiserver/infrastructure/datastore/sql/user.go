@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package mysqldb
+package sql
 
 import (
 	"context"
@@ -10,15 +10,14 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/coding-hui/common/errors"
-	"github.com/coding-hui/common/fields"
-	metav1 "github.com/coding-hui/common/meta/v1"
-
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 type userRepositoryImpl struct {
@@ -97,8 +96,8 @@ func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 	return nil
 }
 
-// DeleteCollection batch deletes the users.
-func (u *userRepositoryImpl) DeleteCollection(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error {
+// BatchDelete batch deletes the users.
+func (u *userRepositoryImpl) BatchDelete(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error {
 	if opts.Unscoped {
 		u.db = u.db.Unscoped()
 	}
@@ -172,23 +171,19 @@ func (u *userRepositoryImpl) GetByExternalId(
 // List list users.
 func (u *userRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error) {
 	list := &v1.UserList{}
-
-	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
-
-	db := u.db.WithContext(ctx).Model(model.User{})
-	var clauses []clause.Expression
-	selector, _ := fields.ParseSelector(opts.FieldSelector)
-	clauses = _applyFieldSelector(clauses, selector)
-	db.Offset(ol.Offset).
-		Limit(ol.Limit).
-		Clauses(clauses...).
+	err := u.db.WithContext(ctx).Model(model.User{}).
+		Scopes(
+			makeCondition(opts),
+			paginate(opts),
+		).
 		Order("id desc").
-		Find(&list.Items).
-		Offset(-1).
-		Limit(-1).
-		Count(&list.TotalCount)
+		Find(&list.Items).Offset(-1).Limit(-1).
+		Count(&list.TotalCount).Error
+	if err != nil {
+		return nil, datastore.NewDBError(err, "failed to list users")
+	}
 
-	return list, db.Error
+	return list, err
 }
 
 func (u *userRepositoryImpl) deleteExternalUser(ctx context.Context, userId, externalUid, idp string) error {

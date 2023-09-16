@@ -2,24 +2,22 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package mysqldb
+package sql
 
 import (
 	"context"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
-
-	"github.com/coding-hui/common/errors"
-	"github.com/coding-hui/common/fields"
-	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 type resourceRepositoryImpl struct {
@@ -151,28 +149,18 @@ func (r *resourceRepositoryImpl) GetByInstanceId(
 func (r *resourceRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.ResourceList, error) {
 	resources := &[]model.Resource{}
 	res := &v1.ResourceList{}
-
-	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
-
-	db := r.db.WithContext(ctx)
-	var clauses []clause.Expression
-	selector, _ := fields.ParseSelector(opts.FieldSelector)
-	clauses = _applyFieldSelector(clauses, selector)
-	err := db.Model(&model.Resource{}).
-		Clauses(clauses...).
+	err := r.db.WithContext(ctx).Model(model.Resource{}).
+		Scopes(
+			makeCondition(opts),
+			paginate(opts),
+		).
 		Preload("Actions").
-		Offset(ol.Offset).
-		Limit(ol.Limit).
 		Order("id desc").
-		Find(resources).
-		Offset(-1).
-		Limit(-1).
-		Count(&res.TotalCount).
-		Error
+		Find(resources).Offset(-1).Limit(-1).
+		Count(&res.TotalCount).Error
 	if err != nil {
-		return nil, errors.WithCode(code.ErrDatabase, "failed to list resources")
+		return nil, datastore.NewDBError(err, "failed to list resources")
 	}
-
 	for _, resource := range *resources {
 		res.Items = append(res.Items, assembler.ConvertResourceModelToBase(&resource))
 	}

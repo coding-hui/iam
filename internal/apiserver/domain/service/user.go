@@ -166,7 +166,7 @@ func (u *userServiceImpl) DeleteUser(ctx context.Context, instanceId string, opt
 
 // BatchDeleteUsers batch delete user.
 func (u *userServiceImpl) BatchDeleteUsers(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error {
-	if err := u.Store.UserRepository().DeleteCollection(ctx, usernames, opts); err != nil {
+	if err := u.Store.UserRepository().BatchDelete(ctx, usernames, opts); err != nil {
 		return err
 	}
 

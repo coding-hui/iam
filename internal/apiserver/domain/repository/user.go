@@ -18,7 +18,7 @@ type UserRepository interface {
 	Create(ctx context.Context, user *model.User, opts metav1.CreateOptions) (*model.User, error)
 	Update(ctx context.Context, user *model.User, opts metav1.UpdateOptions) error
 	DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error
-	DeleteCollection(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error
+	BatchDelete(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error
 	GetByName(ctx context.Context, username string, opts metav1.GetOptions) (*model.User, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.User, error)
 	GetByExternalId(ctx context.Context, openId, externalId string, opts metav1.GetOptions) (*model.User, error)

@@ -2,23 +2,22 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package mysqldb
+package sql
 
 import (
 	"context"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
-
-	"github.com/coding-hui/common/errors"
-	"github.com/coding-hui/common/fields"
-	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 type roleRepositoryImpl struct {
@@ -120,24 +119,19 @@ func (u *roleRepositoryImpl) GetByInstanceID(ctx context.Context, instanceID str
 // List list roles.
 func (u *roleRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.RoleList, error) {
 	list := &v1.RoleList{}
-
-	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
-
-	db := u.db.WithContext(ctx)
-	var clauses []clause.Expression
-	selector, _ := fields.ParseSelector(opts.FieldSelector)
-	clauses = _applyFieldSelector(clauses, selector)
-	db.Model(&model.Role{}).
-		Offset(ol.Offset).
-		Limit(ol.Limit).
-		Clauses(clauses...).
+	err := u.db.WithContext(ctx).Model(&model.Role{}).
+		Scopes(
+			makeCondition(opts),
+			paginate(opts),
+		).
 		Order("id desc").
-		Find(&list.Items).
-		Offset(-1).
-		Limit(-1).
-		Count(&list.TotalCount)
+		Find(&list.Items).Offset(-1).Limit(-1).
+		Count(&list.TotalCount).Error
+	if err != nil {
+		return nil, datastore.NewDBError(err, "failed to list roles")
+	}
 
-	return list, db.Error
+	return list, err
 }
 
 // ListByUserInstanceId list roles by user instanceId.

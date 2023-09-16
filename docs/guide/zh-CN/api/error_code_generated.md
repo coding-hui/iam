@@ -67,6 +67,7 @@ IAM 系统支持的错误码列表如下：
 | ErrRecordNotExist | 100105 | 500 | Entity primary key is not exist |
 | ErrIndexInvalid | 100106 | 500 | Entity index is invalid |
 | ErrEntityInvalid | 100107 | 500 | Entity is invalid |
+| ErrTableNameEmpty | 100108 | 500 | Entity table name is empty |
 | ErrEncrypt | 100201 | 401 | Error occurred while encrypting the user password |
 | ErrSignatureInvalid | 100202 | 401 | Signature is invalid |
 | ErrTokenMalformed | 100203 | 401 | Token is malformed |
