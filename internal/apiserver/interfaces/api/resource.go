@@ -45,8 +45,8 @@ func (r *resource) RegisterApiGroup(g *gin.Engine) {
 //	@Description	Create resource
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1alpha1.CreateResourceRequest	true	"resource info"
-//	@Success		200		{object}	api.Response					"create a new resource"
+//	@Param			data	body		v1.CreateResourceRequest	true	"resource info"
+//	@Success		200		{object}	api.Response				"create a new resource"
 //	@Router			/api/v1/resources [post]
 //	@Security		BearerTokenAuth
 //
@@ -76,8 +76,8 @@ func (r *resource) createResource(c *gin.Context) {
 //	@Description	Update resource
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1alpha1.UpdateResourceRequest	true	"resource info"
-//	@Success		200		{object}	api.Response					"update resource info"
+//	@Param			data	body		v1.UpdateResourceRequest	true	"resource info"
+//	@Success		200		{object}	api.Response				"update resource info"
 //	@Router			/api/v1/resources/{instanceId}  [put]
 //	@Security		BearerTokenAuth
 //
@@ -128,8 +128,8 @@ func (r *resource) deleteResource(c *gin.Context) {
 //	@Tags			Resource
 //	@Summary		GetResourceInfo
 //	@Description	GetByName resource info
-//	@Param			name	path		string												true	"name of a resource"
-//	@Success		200		{object}	api.Response{data=v1alpha1.DetailResourceResponse}	"resource detail"
+//	@Param			name	path		string											true	"name of a resource"
+//	@Success		200		{object}	api.Response{data=v1.DetailResourceResponse}	"resource detail"
 //	@Router			/api/v1/resources/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -148,10 +148,10 @@ func (r *resource) detailResource(c *gin.Context) {
 //	@Tags			Resource
 //	@Summary		ListResources
 //	@Description	List resources
-//	@Param			name	query		string										false	"fuzzy search based on name"
-//	@Param			offset	query		int											false	"query the page number"
-//	@Param			limit	query		int											false	"query the page size number"
-//	@Success		200		{object}	api.Response{data=v1alpha1.ResourceList}	"resources"
+//	@Param			name	query		string								false	"fuzzy search based on name"
+//	@Param			offset	query		int									false	"query the page number"
+//	@Param			limit	query		int									false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=v1.ResourceList}	"resources"
 //	@Router			/api/v1/resources [get]
 //	@Security		BearerTokenAuth
 //

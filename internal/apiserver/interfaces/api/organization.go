@@ -75,9 +75,9 @@ func (o *organization) createOrganization(c *gin.Context) {
 //	@Description	Update organization info
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			name	path		string								true	"identifier of a organization"
-//	@Param			data	body		v1alpha1.UpdateOrganizationRequest	true	"organization info"
-//	@Success		200		{object}	api.Response						"update organization info"
+//	@Param			name	path		string							true	"identifier of a organization"
+//	@Param			data	body		v1.UpdateOrganizationRequest	true	"organization info"
+//	@Success		200		{object}	api.Response					"update organization info"
 //	@Router			/api/v1/organizations/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
@@ -124,8 +124,8 @@ func (o *organization) deleteOrganization(c *gin.Context) {
 //	@Tags			Organizations
 //	@Summary		GetOrganizationInfo
 //	@Description	Get organization info
-//	@Param			name	path		string											true	"identifier of a organization"
-//	@Success		200		{object}	api.Response{data=v1alpha1.OrganizationBase}	"organization detail"
+//	@Param			name	path		string									true	"identifier of a organization"
+//	@Success		200		{object}	api.Response{data=v1.OrganizationBase}	"organization detail"
 //	@Router			/api/v1/organizations/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -179,7 +179,7 @@ func (o *organization) listOrganization(c *gin.Context) {
 //	@Description	Enable a organization
 //	@Param			instanceId	path		string	true	"identifier of a organization"
 //	@Success		200			{object}	api.Response
-//	@Router			/api/v1/organizations/{instanceId}/enable [get]
+//	@Router			/api/v1/organizations/{instanceId}/disable [get]
 //	@Security		BearerTokenAuth
 //
 // getOrganizationRoles get organization roles.

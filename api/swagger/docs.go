@@ -56,7 +56,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.RefreshTokenResponse"
+                                            "$ref": "#/definitions/v1.RefreshTokenResponse"
                                         }
                                     }
                                 }
@@ -83,7 +83,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.AuthenticateRequest"
+                            "$ref": "#/definitions/v1.AuthenticateRequest"
                         }
                     }
                 ],
@@ -99,11 +99,268 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.AuthenticateResponse"
+                                            "$ref": "#/definitions/v1.AuthenticateResponse"
                                         }
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "List organizations",
+                "tags": [
+                    "Organizations"
+                ],
+                "summary": "ListOrganizations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "query the page number",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "query the page size number",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "organizations",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.OrganizationList"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Create organization",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organizations"
+                ],
+                "summary": "CreateOrganization",
+                "parameters": [
+                    {
+                        "description": "organization info",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.CreateOrganizationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "create a nnw organization",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{instanceId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Get organization info",
+                "tags": [
+                    "Organizations"
+                ],
+                "summary": "GetOrganizationInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a organization",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "organization detail",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.OrganizationBase"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Update organization info",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organizations"
+                ],
+                "summary": "UpdateOrganization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a organization",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "organization info",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.UpdateOrganizationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "update organization info",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Delete organization",
+                "tags": [
+                    "Organizations"
+                ],
+                "summary": "DeleteOrganization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a organization",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "delete organization",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{instanceId}/disable": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Enable a organization",
+                "tags": [
+                    "Organizations"
+                ],
+                "summary": "EnableOrganization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a organization",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{instanceId}/enable": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Enable a organization",
+                "tags": [
+                    "Organizations"
+                ],
+                "summary": "EnableOrganization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a organization",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
                         }
                     }
                 }
@@ -153,7 +410,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.PolicyList"
+                                            "$ref": "#/definitions/v1.PolicyList"
                                         }
                                     }
                                 }
@@ -183,7 +440,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.CreatePolicyRequest"
+                            "$ref": "#/definitions/v1.CreatePolicyRequest"
                         }
                     }
                 ],
@@ -230,7 +487,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.DetailPolicyResponse"
+                                            "$ref": "#/definitions/v1.DetailPolicyResponse"
                                         }
                                     }
                                 }
@@ -260,7 +517,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.UpdatePolicyRequest"
+                            "$ref": "#/definitions/v1.UpdatePolicyRequest"
                         }
                     }
                 ],
@@ -347,7 +604,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.ResourceList"
+                                            "$ref": "#/definitions/v1.ResourceList"
                                         }
                                     }
                                 }
@@ -377,7 +634,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.CreateResourceRequest"
+                            "$ref": "#/definitions/v1.CreateResourceRequest"
                         }
                     }
                 ],
@@ -424,7 +681,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.DetailResourceResponse"
+                                            "$ref": "#/definitions/v1.DetailResourceResponse"
                                         }
                                     }
                                 }
@@ -454,7 +711,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.UpdateResourceRequest"
+                            "$ref": "#/definitions/v1.UpdateResourceRequest"
                         }
                     }
                 ],
@@ -543,7 +800,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/v1alpha1.RoleBase"
+                                                "$ref": "#/definitions/v1.RoleBase"
                                             }
                                         }
                                     }
@@ -574,13 +831,46 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.CreateRoleRequest"
+                            "$ref": "#/definitions/v1.CreateRoleRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "create a new role",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/roles/batch-assign": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Batch assign role",
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "BatchAssignRole",
+                "parameters": [
+                    {
+                        "description": "batch assign role request",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.BatchAssignRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "assign role",
                         "schema": {
                             "$ref": "#/definitions/api.Response"
                         }
@@ -621,7 +911,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.DetailRoleResponse"
+                                            "$ref": "#/definitions/v1.DetailRoleResponse"
                                         }
                                     }
                                 }
@@ -651,7 +941,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.UpdateRoleRequest"
+                            "$ref": "#/definitions/v1.UpdateRoleRequest"
                         }
                     }
                 ],
@@ -701,19 +991,19 @@ const docTemplate = `{
                         "BearerTokenAuth": []
                     }
                 ],
-                "description": "Batch assign role",
+                "description": "Assign role",
                 "tags": [
                     "Roles"
                 ],
-                "summary": "BatchAssignRole",
+                "summary": "AssignRole",
                 "parameters": [
                     {
-                        "description": "batch assign role request",
+                        "description": "assign role request",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.BatchAssignRoleRequest"
+                            "$ref": "#/definitions/v1.AssignRoleRequest"
                         }
                     }
                 ],
@@ -746,7 +1036,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.RevokeRoleRequest"
+                            "$ref": "#/definitions/v1.RevokeRoleRequest"
                         }
                     }
                 ],
@@ -816,7 +1106,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.UserList"
+                                            "$ref": "#/definitions/v1.UserList"
                                         }
                                     }
                                 }
@@ -846,7 +1136,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.CreateUserRequest"
+                            "$ref": "#/definitions/v1.CreateUserRequest"
                         }
                     }
                 ],
@@ -893,7 +1183,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.UserBase"
+                                            "$ref": "#/definitions/v1.UserBase"
                                         }
                                     }
                                 }
@@ -930,7 +1220,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1alpha1.UpdateUserRequest"
+                            "$ref": "#/definitions/v1.UpdateUserRequest"
                         }
                     }
                 ],
@@ -973,6 +1263,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/{instanceId}/disable": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Enable a user",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "EnableUser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a user",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{instanceId}/enable": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Enable a user",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "EnableUser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a user",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/{instanceId}/roles": {
             "get": {
                 "security": [
@@ -989,7 +1341,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a user",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -1006,7 +1358,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/v1alpha1.RoleList"
+                                            "$ref": "#/definitions/v1.RoleList"
                                         }
                                     }
                                 }
@@ -1059,44 +1411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.Extend": {
-            "type": "object",
-            "additionalProperties": true
-        },
-        "v1.ObjectMeta": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "description": "CreatedAt is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
-                    "type": "string"
-                },
-                "extend": {
-                    "description": "Extend store the fields that need to be added, but do not want to add a new table column, will not be stored in\ndb.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.Extend"
-                        }
-                    ]
-                },
-                "id": {
-                    "description": "ID is the unique in time and space value for this object. It is typically generated by\nthe storage on successful creation of a resource and is not allowed to change on PUT\noperations.\n\nPopulated by the system.\nRead-only.",
-                    "type": "integer"
-                },
-                "instanceId": {
-                    "description": "InstanceID defines a string type resource identifier,\nuse prefixed to distinguish resource types, easy to remember, Url-friendly.",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "Required: true\nName must be unique. Is required when creating resources.\nName is primarily intended for creation idempotence and configuration\ndefinition.\nIt will be generated automated only if Name is not specified.\nCannot be updated.",
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt is a timestamp representing the server time when this object was updated.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
-                    "type": "string"
-                }
-            }
-        },
-        "v1alpha1.Action": {
+        "v1.Action": {
             "type": "object",
             "properties": {
                 "description": {
@@ -1107,7 +1422,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.AssignRoleRequest": {
+        "v1.AssignRoleRequest": {
             "type": "object",
             "required": [
                 "instanceId"
@@ -1126,18 +1441,24 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.AuthenticateRequest": {
+        "v1.AuthenticateRequest": {
             "type": "object",
             "properties": {
                 "password": {
                     "type": "string"
                 },
+                "provider": {
+                    "type": "string"
+                },
                 "username": {
                     "type": "string"
+                },
+                "wechatMiniAppCodePayload": {
+                    "$ref": "#/definitions/v1.WechatMiniAppCodePayload"
                 }
             }
         },
-        "v1alpha1.AuthenticateResponse": {
+        "v1.AuthenticateResponse": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -1160,13 +1481,13 @@ const docTemplate = `{
                     "description": "User user info",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/v1alpha1.UserBase"
+                            "$ref": "#/definitions/v1.UserBase"
                         }
                     ]
                 }
             }
         },
-        "v1alpha1.BatchAssignRoleRequest": {
+        "v1.BatchAssignRoleRequest": {
             "type": "object",
             "required": [
                 "instanceIds"
@@ -1188,7 +1509,33 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.CreatePolicyRequest": {
+        "v1.CreateOrganizationRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "favicon": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "websiteUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.CreatePolicyRequest": {
             "type": "object",
             "required": [
                 "name",
@@ -1214,7 +1561,7 @@ const docTemplate = `{
                 "statements": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Statement"
+                        "$ref": "#/definitions/v1.Statement"
                     }
                 },
                 "status": {
@@ -1231,7 +1578,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.CreateResourceRequest": {
+        "v1.CreateResourceRequest": {
             "type": "object",
             "required": [
                 "actions",
@@ -1244,7 +1591,7 @@ const docTemplate = `{
                 "actions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Action"
+                        "$ref": "#/definitions/v1.Action"
                     }
                 },
                 "api": {
@@ -1267,7 +1614,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.CreateRoleRequest": {
+        "v1.CreateRoleRequest": {
             "type": "object",
             "required": [
                 "name"
@@ -1283,23 +1630,34 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "owner": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
+                    "type": "string"
                 }
             }
         },
-        "v1alpha1.CreateUserRequest": {
+        "v1.CreateUserRequest": {
             "type": "object",
             "required": [
+                "alias",
+                "email",
                 "name",
                 "password"
             ],
             "properties": {
                 "alias": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
+                "avatar": {
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                },
+                "externalUID": {
+                    "type": "string"
+                },
+                "identifyProvider": {
                     "type": "string"
                 },
                 "name": {
@@ -1316,7 +1674,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.DetailPolicyResponse": {
+        "v1.DetailPolicyResponse": {
             "type": "object",
             "properties": {
                 "adapter": {
@@ -1352,13 +1710,13 @@ const docTemplate = `{
                 "resources": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.ResourceBase"
+                        "$ref": "#/definitions/v1.ResourceBase"
                     }
                 },
                 "statements": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Statement"
+                        "$ref": "#/definitions/v1.Statement"
                     }
                 },
                 "status": {
@@ -1375,7 +1733,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.DetailResourceResponse": {
+        "v1.DetailResourceResponse": {
             "type": "object",
             "required": [
                 "actions",
@@ -1388,7 +1746,7 @@ const docTemplate = `{
                     "description": "Actions resource access mode.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Action"
+                        "$ref": "#/definitions/v1.Action"
                     }
                 },
                 "api": {
@@ -1417,18 +1775,13 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.DetailRoleResponse": {
+        "v1.DetailRoleResponse": {
             "type": "object",
-            "required": [
-                "owner"
-            ],
             "properties": {
                 "description": {
-                    "description": "Description tenant description.",
                     "type": "string"
                 },
                 "disabled": {
-                    "description": "Disabled tenant state.",
                     "type": "boolean"
                 },
                 "metadata": {
@@ -1440,18 +1793,92 @@ const docTemplate = `{
                     ]
                 },
                 "owner": {
-                    "description": "Owner tenant owner name.",
                     "type": "string"
                 },
                 "users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.UserBase"
+                        "$ref": "#/definitions/v1.UserBase"
                     }
                 }
             }
         },
-        "v1alpha1.PolicyBase": {
+        "v1.Extend": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "v1.ObjectMeta": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
+                    "type": "string"
+                },
+                "extend": {
+                    "description": "Extend store the fields that need to be added, but do not want to add a new table column, will not be stored in\ndb.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.Extend"
+                        }
+                    ]
+                },
+                "instanceId": {
+                    "description": "InstanceID defines a string type resource identifier,\nuse prefixed to distinguish resource types, easy to remember, Url-friendly.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Required: true\nName must be unique. Is required when creating resources.\nName is primarily intended for creation idempotence and configuration\ndefinition.\nIt will be generated automated only if Name is not specified.\nCannot be updated.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt is a timestamp representing the server time when this object was updated.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.OrganizationBase": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "favicon": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Standard object's metadata.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.ObjectMeta"
+                        }
+                    ]
+                },
+                "websiteUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.OrganizationList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.OrganizationBase"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "v1.PolicyBase": {
             "type": "object",
             "properties": {
                 "adapter": {
@@ -1487,7 +1914,7 @@ const docTemplate = `{
                 "statements": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Statement"
+                        "$ref": "#/definitions/v1.Statement"
                     }
                 },
                 "status": {
@@ -1504,21 +1931,21 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.PolicyList": {
+        "v1.PolicyList": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.PolicyBase"
+                        "$ref": "#/definitions/v1.PolicyBase"
                     }
                 },
-                "totalCount": {
+                "total": {
                     "type": "integer"
                 }
             }
         },
-        "v1alpha1.RefreshTokenResponse": {
+        "v1.RefreshTokenResponse": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -1529,7 +1956,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.ResourceBase": {
+        "v1.ResourceBase": {
             "type": "object",
             "required": [
                 "actions",
@@ -1542,7 +1969,7 @@ const docTemplate = `{
                     "description": "Actions resource access mode.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Action"
+                        "$ref": "#/definitions/v1.Action"
                     }
                 },
                 "api": {
@@ -1571,21 +1998,21 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.ResourceList": {
+        "v1.ResourceList": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.ResourceBase"
+                        "$ref": "#/definitions/v1.ResourceBase"
                     }
                 },
-                "totalCount": {
+                "total": {
                     "type": "integer"
                 }
             }
         },
-        "v1alpha1.RevokeRoleRequest": {
+        "v1.RevokeRoleRequest": {
             "type": "object",
             "required": [
                 "instanceId"
@@ -1604,18 +2031,13 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.RoleBase": {
+        "v1.RoleBase": {
             "type": "object",
-            "required": [
-                "owner"
-            ],
             "properties": {
                 "description": {
-                    "description": "Description tenant description.",
                     "type": "string"
                 },
                 "disabled": {
-                    "description": "Disabled tenant state.",
                     "type": "boolean"
                 },
                 "metadata": {
@@ -1627,26 +2049,25 @@ const docTemplate = `{
                     ]
                 },
                 "owner": {
-                    "description": "Owner tenant owner name.",
                     "type": "string"
                 }
             }
         },
-        "v1alpha1.RoleList": {
+        "v1.RoleList": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.RoleBase"
+                        "$ref": "#/definitions/v1.RoleBase"
                     }
                 },
-                "totalCount": {
+                "total": {
                     "type": "integer"
                 }
             }
         },
-        "v1alpha1.Statement": {
+        "v1.Statement": {
             "type": "object",
             "required": [
                 "actions",
@@ -1672,7 +2093,29 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.UpdatePolicyRequest": {
+        "v1.UpdateOrganizationRequest": {
+            "type": "object",
+            "required": [
+                "displayName"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "displayName": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
+                "favicon": {
+                    "type": "string"
+                },
+                "websiteUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.UpdatePolicyRequest": {
             "type": "object",
             "required": [
                 "statements",
@@ -1694,7 +2137,7 @@ const docTemplate = `{
                 "statements": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Statement"
+                        "$ref": "#/definitions/v1.Statement"
                     }
                 },
                 "status": {
@@ -1711,7 +2154,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.UpdateResourceRequest": {
+        "v1.UpdateResourceRequest": {
             "type": "object",
             "required": [
                 "actions",
@@ -1724,7 +2167,7 @@ const docTemplate = `{
                 "actions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.Action"
+                        "$ref": "#/definitions/v1.Action"
                     }
                 },
                 "api": {
@@ -1747,23 +2190,29 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.UpdateRoleRequest": {
+        "v1.UpdateRoleRequest": {
             "type": "object",
+            "required": [
+                "displayName"
+            ],
             "properties": {
                 "description": {
                     "type": "string"
                 },
                 "displayName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
                 },
                 "owner": {
                     "type": "string"
                 }
             }
         },
-        "v1alpha1.UpdateUserRequest": {
+        "v1.UpdateUserRequest": {
             "type": "object",
             "required": [
+                "alias",
                 "email"
             ],
             "properties": {
@@ -1773,19 +2222,23 @@ const docTemplate = `{
                     "minLength": 1
                 },
                 "email": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 },
                 "phone": {
                     "type": "string"
                 }
             }
         },
-        "v1alpha1.UserBase": {
+        "v1.UserBase": {
             "type": "object",
             "properties": {
                 "alias": {
+                    "type": "string"
+                },
+                "avatar": {
                     "type": "string"
                 },
                 "disabled": {
@@ -1822,17 +2275,34 @@ const docTemplate = `{
                 }
             }
         },
-        "v1alpha1.UserList": {
+        "v1.UserList": {
             "type": "object",
             "properties": {
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1alpha1.UserBase"
+                        "$ref": "#/definitions/v1.UserBase"
                     }
                 },
-                "totalCount": {
+                "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "v1.WechatMiniAppCodePayload": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code wx.login 接口返回的用户 code",
+                    "type": "string"
+                },
+                "encryptedData": {
+                    "description": "EncryptedData 获取微信开放数据返回的加密数据（encryptedData）",
+                    "type": "string"
+                },
+                "iv": {
+                    "description": "Iv 对称解密算法初始向量，由微信返回",
+                    "type": "string"
                 }
             }
         }
@@ -1849,7 +2319,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "v1alpha",
+	Version:          "v1",
 	Host:             "localhost:8000",
 	BasePath:         "",
 	Schemes:          []string{},

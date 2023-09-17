@@ -116,8 +116,8 @@ func permissionCheckFunc(r string) gin.HandlerFunc {
 //	@Description	Login by user account and password
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1alpha1.AuthenticateRequest						true	"login request"
-//	@Success		200		{object}	api.Response{data=v1alpha1.AuthenticateResponse}	"token info"
+//	@Param			data	body		v1.AuthenticateRequest						true	"login request"
+//	@Success		200		{object}	api.Response{data=v1.AuthenticateResponse}	"token info"
 //	@Router			/api/v1/login [post]
 //
 // authenticate login by user.
@@ -186,8 +186,8 @@ func parseWithBody(c *gin.Context) (v1.AuthenticateRequest, error) {
 //	@Description	RefreshToken
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			RefreshToken	header		string												true	"refresh token"
-//	@Success		200				{object}	api.Response{data=v1alpha1.RefreshTokenResponse}	"token info"
+//	@Param			RefreshToken	header		string										true	"refresh token"
+//	@Success		200				{object}	api.Response{data=v1.RefreshTokenResponse}	"token info"
 //	@Router			/api/v1/auth/refresh-token [get]
 //
 // refreshToken refresh token.

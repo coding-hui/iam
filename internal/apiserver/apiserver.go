@@ -33,7 +33,7 @@ import (
 )
 
 //	@title			IAM API
-//	@version		v1alpha
+//	@version		v1
 //	@description	IAM ApiService API Doc.
 //	@termsOfService	http://iam.wecoding.top/
 

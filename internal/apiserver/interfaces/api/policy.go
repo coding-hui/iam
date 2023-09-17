@@ -45,8 +45,8 @@ func (p *policy) RegisterApiGroup(g *gin.Engine) {
 //	@Description	Create a policy
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1alpha1.CreatePolicyRequest	true	"policy rule"
-//	@Success		200		{object}	api.Response					"Create a nnw policy"
+//	@Param			data	body		v1.CreatePolicyRequest	true	"policy rule"
+//	@Success		200		{object}	api.Response			"Create a nnw policy"
 //	@Router			/api/v1/policies [post]
 //	@Security		BearerTokenAuth
 //
@@ -76,8 +76,8 @@ func (p *policy) createPolicy(c *gin.Context) {
 //	@Description	Update a Policy
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1alpha1.UpdatePolicyRequest	true	"Policy rule"
-//	@Success		200		{object}	api.Response					"Update policy info"
+//	@Param			data	body		v1.UpdatePolicyRequest	true	"Policy rule"
+//	@Success		200		{object}	api.Response			"Update policy info"
 //	@Router			/api/v1/policies/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
@@ -128,8 +128,8 @@ func (p *policy) deletePolicy(c *gin.Context) {
 //	@Tags			Policies
 //	@Summary		GetPolicyInfo
 //	@Description	GetByName a policy by name
-//	@Param			name	path		string												true	"name of a policy"
-//	@Success		200		{object}	api.Response{data=v1alpha1.DetailPolicyResponse}	"Policy detail"
+//	@Param			name	path		string										true	"name of a policy"
+//	@Success		200		{object}	api.Response{data=v1.DetailPolicyResponse}	"Policy detail"
 //	@Router			/api/v1/policies/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -148,10 +148,10 @@ func (p *policy) detailPolicy(c *gin.Context) {
 //	@Tags			Policies
 //	@Summary		ListPolicies
 //	@Description	List policies
-//	@Param			name	query		string									false	"fuzzy search based on name"
-//	@Param			offset	query		int										false	"query the page number"
-//	@Param			limit	query		int										false	"query the page size number"
-//	@Success		200		{object}	api.Response{data=v1alpha1.PolicyList}	"policies"
+//	@Param			name	query		string								false	"fuzzy search based on name"
+//	@Param			offset	query		int									false	"query the page number"
+//	@Param			limit	query		int									false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=v1.PolicyList}	"policies"
 //	@Router			/api/v1/policies [get]
 //	@Security		BearerTokenAuth
 //

@@ -48,8 +48,8 @@ func (r *role) RegisterApiGroup(g *gin.Engine) {
 //	@Description	Create role
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1alpha1.CreateRoleRequest	true	"role info"
-//	@Success		200		{object}	api.Response				"create a new role"
+//	@Param			data	body		v1.CreateRoleRequest	true	"role info"
+//	@Success		200		{object}	api.Response			"create a new role"
 //	@Router			/api/v1/roles [post]
 //	@Security		BearerTokenAuth
 //
@@ -79,8 +79,8 @@ func (r *role) createRole(c *gin.Context) {
 //	@Description	Update role
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1alpha1.UpdateRoleRequest	true	"role info"
-//	@Success		200		{object}	api.Response				"update role info"
+//	@Param			data	body		v1.UpdateRoleRequest	true	"role info"
+//	@Success		200		{object}	api.Response			"update role info"
 //	@Router			/api/v1/roles/{instanceId}  [put]
 //	@Security		BearerTokenAuth
 //
@@ -127,8 +127,8 @@ func (r *role) deleteRole(c *gin.Context) {
 //	@Tags			Roles
 //	@Summary		GetRoleInfo
 //	@Description	GetByName role info
-//	@Param			name	path		string											true	"identifier of a role"
-//	@Success		200		{object}	api.Response{data=v1alpha1.DetailRoleResponse}	"role detail"
+//	@Param			name	path		string										true	"identifier of a role"
+//	@Success		200		{object}	api.Response{data=v1.DetailRoleResponse}	"role detail"
 //	@Router			/api/v1/roles/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -147,10 +147,10 @@ func (r *role) detailRole(c *gin.Context) {
 //	@Tags			Roles
 //	@Summary		ListRoles
 //	@Description	List role
-//	@Param			name	query		string									false	"fuzzy search based on name"
-//	@Param			offset	query		int										false	"query the page number"
-//	@Param			limit	query		int										false	"query the page size number"
-//	@Success		200		{object}	api.Response{data=[]v1alpha1.RoleBase}	"roles"
+//	@Param			name	query		string								false	"fuzzy search based on name"
+//	@Param			offset	query		int									false	"query the page number"
+//	@Param			limit	query		int									false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=[]v1.RoleBase}	"roles"
 //	@Router			/api/v1/roles [get]
 //	@Security		BearerTokenAuth
 //
@@ -177,8 +177,8 @@ func (r *role) listRole(c *gin.Context) {
 //	@Tags			Roles
 //	@Summary		AssignRole
 //	@Description	Assign role
-//	@Param			data	body		v1alpha1.AssignRoleRequest	true	"assign role request"
-//	@Success		200		{object}	api.Response				"assign role"
+//	@Param			data	body		v1.AssignRoleRequest	true	"assign role request"
+//	@Success		200		{object}	api.Response			"assign role"
 //	@Router			/api/v1/roles/{instanceId}/assign [post]
 //	@Security		BearerTokenAuth
 //
@@ -203,9 +203,9 @@ func (r *role) assignRole(c *gin.Context) {
 //	@Tags			Roles
 //	@Summary		BatchAssignRole
 //	@Description	Batch assign role
-//	@Param			data	body		v1alpha1.BatchAssignRoleRequest	true	"batch assign role request"
-//	@Success		200		{object}	api.Response					"assign role"
-//	@Router			/api/v1/roles/{instanceId}/assign [post]
+//	@Param			data	body		v1.BatchAssignRoleRequest	true	"batch assign role request"
+//	@Success		200		{object}	api.Response				"assign role"
+//	@Router			/api/v1/roles/batch-assign [post]
 //	@Security		BearerTokenAuth
 //
 // batchAssignRole assign role.
@@ -228,8 +228,8 @@ func (r *role) batchAssignRole(c *gin.Context) {
 //	@Tags			Roles
 //	@Summary		RevokeRole
 //	@Description	Revoke role
-//	@Param			data	body		v1alpha1.RevokeRoleRequest	true	"revoke role request"
-//	@Success		200		{object}	api.Response				"revoke role"
+//	@Param			data	body		v1.RevokeRoleRequest	true	"revoke role request"
+//	@Success		200		{object}	api.Response			"revoke role"
 //	@Router			/api/v1/roles/{instanceId}/revoke [post]
 //	@Security		BearerTokenAuth
 //

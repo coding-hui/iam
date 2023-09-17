@@ -45,8 +45,8 @@ func (u *user) RegisterApiGroup(g *gin.Engine) {
 //	@Description	Create user
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1alpha1.CreateUserRequest	true	"user info"
-//	@Success		200		{object}	api.Response				"create a nnw user"
+//	@Param			data	body		v1.CreateUserRequest	true	"user info"
+//	@Success		200		{object}	api.Response			"create a nnw user"
 //	@Router			/api/v1/users [post]
 //	@Security		BearerTokenAuth
 //
@@ -76,9 +76,9 @@ func (u *user) createUser(c *gin.Context) {
 //	@Description	Update user info
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			name	path		string						true	"identifier of a user"
-//	@Param			data	body		v1alpha1.UpdateUserRequest	true	"user info"
-//	@Success		200		{object}	api.Response				"update user info"
+//	@Param			name	path		string					true	"identifier of a user"
+//	@Param			data	body		v1.UpdateUserRequest	true	"user info"
+//	@Success		200		{object}	api.Response			"update user info"
 //	@Router			/api/v1/users/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
@@ -125,8 +125,8 @@ func (u *user) deleteUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		GetUserInfo
 //	@Description	GetByName user info
-//	@Param			name	path		string									true	"identifier of a user"
-//	@Success		200		{object}	api.Response{data=v1alpha1.UserBase}	"user detail"
+//	@Param			name	path		string							true	"identifier of a user"
+//	@Success		200		{object}	api.Response{data=v1.UserBase}	"user detail"
 //	@Router			/api/v1/users/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -149,12 +149,12 @@ func (u *user) getUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		ListUsers
 //	@Description	List users
-//	@Param			name	query		string									false	"fuzzy search based on name"
-//	@Param			alias	query		string									false	"fuzzy search based on alias"
-//	@Param			email	query		string									false	"fuzzy search based on email"
-//	@Param			offset	query		int										false	"query the page number"
-//	@Param			limit	query		int										false	"query the page size number"
-//	@Success		200		{object}	api.Response{data=v1alpha1.UserList}	"users"
+//	@Param			name	query		string							false	"fuzzy search based on name"
+//	@Param			alias	query		string							false	"fuzzy search based on alias"
+//	@Param			email	query		string							false	"fuzzy search based on email"
+//	@Param			offset	query		int								false	"query the page number"
+//	@Param			limit	query		int								false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=v1.UserList}	"users"
 //	@Router			/api/v1/users [get]
 //	@Security		BearerTokenAuth
 //
@@ -181,8 +181,8 @@ func (u *user) listUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		GetUserRoles
 //	@Description	Get user roles
-//	@Param			instanceId	path		string									true	"identifier of a user"
-//	@Success		200			{object}	api.Response{data=v1alpha1.RoleList}	"user roles"
+//	@Param			instanceId	path		string							true	"identifier of a user"
+//	@Success		200			{object}	api.Response{data=v1.RoleList}	"user roles"
 //	@Router			/api/v1/users/{instanceId}/roles [get]
 //	@Security		BearerTokenAuth
 //
@@ -202,7 +202,7 @@ func (u *user) getUserRoles(c *gin.Context) {
 //	@Description	Enable a user
 //	@Param			instanceId	path		string	true	"identifier of a user"
 //	@Success		200			{object}	api.Response
-//	@Router			/api/v1/users/{instanceId}/enable [get]
+//	@Router			/api/v1/users/{instanceId}/disable [get]
 //	@Security		BearerTokenAuth
 //
 // getUserRoles get user roles.

@@ -1,7 +1,3 @@
-# Copyright (c) 2023 coding-hui. All rights reserved.
-# Use of this source code is governed by a MIT style
-# license that can be found in the LICENSE file.
-
 definitions:
   api.Response:
     properties:
@@ -22,6 +18,275 @@ definitions:
       success:
         description: Success request is successful
         type: boolean
+    type: object
+  v1.Action:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  v1.AssignRoleRequest:
+    properties:
+      instanceId:
+        description: InstanceID role instanceID.
+        type: string
+      targets:
+        description: Targets target resource instanceIds.
+        items:
+          type: string
+        type: array
+    required:
+    - instanceId
+    type: object
+  v1.AuthenticateRequest:
+    properties:
+      password:
+        type: string
+      provider:
+        type: string
+      username:
+        type: string
+      wechatMiniAppCodePayload:
+        $ref: '#/definitions/v1.WechatMiniAppCodePayload'
+    type: object
+  v1.AuthenticateResponse:
+    properties:
+      access_token:
+        description: |-
+          AccessToken is the token that authorizes and authenticates
+          the requests.
+        type: string
+      expires_in:
+        description: ExpiresIn is the optional expiration second of the access token.
+        type: integer
+      refresh_token:
+        description: |-
+          RefreshToken is a token that's used by the application
+          (as opposed to the user) to refresh the access token
+          if it expires.
+        type: string
+      token_type:
+        description: |-
+          TokenType is the type of token.
+          The Type method returns either this or "Bearer", the default.
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/v1.UserBase'
+        description: User user info
+    type: object
+  v1.BatchAssignRoleRequest:
+    properties:
+      instanceIds:
+        description: InstanceIds role instanceIds.
+        items:
+          type: string
+        type: array
+      targets:
+        description: Targets target resource instanceIds.
+        items:
+          type: string
+        type: array
+    required:
+    - instanceIds
+    type: object
+  v1.CreateOrganizationRequest:
+    properties:
+      description:
+        type: string
+      disabled:
+        type: boolean
+      displayName:
+        type: string
+      favicon:
+        type: string
+      name:
+        type: string
+      websiteUrl:
+        type: string
+    required:
+    - name
+    type: object
+  v1.CreatePolicyRequest:
+    properties:
+      description:
+        maxLength: 30
+        minLength: 1
+        type: string
+      meta:
+        type: string
+      name:
+        type: string
+      owner:
+        type: string
+      statements:
+        items:
+          $ref: '#/definitions/v1.Statement'
+        type: array
+      status:
+        type: string
+      subjects:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+    required:
+    - name
+    - statements
+    - subjects
+    - type
+    type: object
+  v1.CreateResourceRequest:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/v1.Action'
+        type: array
+      api:
+        type: string
+      description:
+        type: string
+      isDefault:
+        type: boolean
+      method:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    required:
+    - actions
+    - api
+    - method
+    - name
+    - type
+    type: object
+  v1.CreateRoleRequest:
+    properties:
+      description:
+        type: string
+      displayName:
+        type: string
+      name:
+        type: string
+      owner:
+        type: string
+    required:
+    - name
+    type: object
+  v1.CreateUserRequest:
+    properties:
+      alias:
+        maxLength: 30
+        minLength: 1
+        type: string
+      avatar:
+        type: string
+      email:
+        type: string
+      externalUID:
+        type: string
+      identifyProvider:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      userType:
+        type: string
+    required:
+    - alias
+    - email
+    - name
+    - password
+    type: object
+  v1.DetailPolicyResponse:
+    properties:
+      adapter:
+        description: casbin required
+        type: string
+      description:
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/v1.ObjectMeta'
+        description: Standard object's metadata.
+      model:
+        type: string
+      owner:
+        type: string
+      policyRules:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      resources:
+        items:
+          $ref: '#/definitions/v1.ResourceBase'
+        type: array
+      statements:
+        items:
+          $ref: '#/definitions/v1.Statement'
+        type: array
+      status:
+        type: string
+      subjects:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+    type: object
+  v1.DetailResourceResponse:
+    properties:
+      actions:
+        description: Actions resource access mode.
+        items:
+          $ref: '#/definitions/v1.Action'
+        type: array
+      api:
+        description: Type unique identification of resource API.
+        type: string
+      description:
+        description: Description resource description.
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/v1.ObjectMeta'
+        description: Standard object's metadata.
+      method:
+        description: Method resource method.
+        type: string
+      type:
+        description: Type resource type.
+        type: string
+    required:
+    - actions
+    - api
+    - method
+    - type
+    type: object
+  v1.DetailRoleResponse:
+    properties:
+      description:
+        type: string
+      disabled:
+        type: boolean
+      metadata:
+        allOf:
+        - $ref: '#/definitions/v1.ObjectMeta'
+        description: Standard object's metadata.
+      owner:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/v1.UserBase'
+        type: array
     type: object
   v1.Extend:
     additionalProperties: true
@@ -44,15 +309,6 @@ definitions:
         description: |-
           Extend store the fields that need to be added, but do not want to add a new table column, will not be stored in
           db.
-      id:
-        description: |-
-          ID is the unique in time and space value for this object. It is typically generated by
-          the storage on successful creation of a resource and is not allowed to change on PUT
-          operations.
-
-          Populated by the system.
-          Read-only.
-        type: integer
       instanceId:
         description: |-
           InstanceID defines a string type resource identifier,
@@ -77,307 +333,88 @@ definitions:
           Null for lists.
         type: string
     type: object
-  v1alpha1.Action:
+  v1.OrganizationBase:
     properties:
       description:
         type: string
-      name:
-        type: string
-    type: object
-  v1alpha1.AssignRoleRequest:
-    properties:
-      instanceId:
-        description: InstanceID role instanceID.
-        type: string
-      targets:
-        description: Targets target resource instanceIds.
-        items:
-          type: string
-        type: array
-    required:
-    - instanceId
-    type: object
-  v1alpha1.AuthenticateRequest:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    type: object
-  v1alpha1.AuthenticateResponse:
-    properties:
-      access_token:
-        description: |-
-          AccessToken is the token that authorizes and authenticates
-          the requests.
-        type: string
-      expires_in:
-        description: ExpiresIn is the optional expiration second of the access token.
-        type: integer
-      refresh_token:
-        description: |-
-          RefreshToken is a token that's used by the application
-          (as opposed to the user) to refresh the access token
-          if it expires.
-        type: string
-      token_type:
-        description: |-
-          TokenType is the type of token.
-          The Type method returns either this or "Bearer", the default.
-        type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/v1alpha1.UserBase'
-        description: User user info
-    type: object
-  v1alpha1.BatchAssignRoleRequest:
-    properties:
-      instanceIds:
-        description: InstanceIds role instanceIds.
-        items:
-          type: string
-        type: array
-      targets:
-        description: Targets target resource instanceIds.
-        items:
-          type: string
-        type: array
-    required:
-    - instanceIds
-    type: object
-  v1alpha1.CreatePolicyRequest:
-    properties:
-      description:
-        maxLength: 30
-        minLength: 1
-        type: string
-      meta:
-        type: string
-      name:
-        type: string
-      owner:
-        type: string
-      statements:
-        items:
-          $ref: '#/definitions/v1alpha1.Statement'
-        type: array
-      status:
-        type: string
-      subjects:
-        items:
-          type: string
-        type: array
-      type:
-        type: string
-    required:
-    - name
-    - statements
-    - subjects
-    - type
-    type: object
-  v1alpha1.CreateResourceRequest:
-    properties:
-      actions:
-        items:
-          $ref: '#/definitions/v1alpha1.Action'
-        type: array
-      api:
-        type: string
-      description:
-        type: string
-      isDefault:
+      disabled:
         type: boolean
-      method:
-        type: string
-      name:
-        type: string
-      type:
-        type: string
-    required:
-    - actions
-    - api
-    - method
-    - name
-    - type
-    type: object
-  v1alpha1.CreateRoleRequest:
-    properties:
-      description:
-        type: string
       displayName:
         type: string
-      name:
-        type: string
-      owner:
-        maxLength: 30
-        minLength: 1
-        type: string
-    required:
-    - name
-    type: object
-  v1alpha1.CreateUserRequest:
-    properties:
-      alias:
-        type: string
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-      phone:
-        type: string
-      userType:
-        type: string
-    required:
-    - name
-    - password
-    type: object
-  v1alpha1.DetailPolicyResponse:
-    properties:
-      adapter:
-        description: casbin required
-        type: string
-      description:
+      favicon:
         type: string
       metadata:
         allOf:
         - $ref: '#/definitions/v1.ObjectMeta'
         description: Standard object's metadata.
-      model:
-        type: string
-      owner:
-        type: string
-      policyRules:
-        items:
-          items:
-            type: string
-          type: array
-        type: array
-      resources:
-        items:
-          $ref: '#/definitions/v1alpha1.ResourceBase'
-        type: array
-      statements:
-        items:
-          $ref: '#/definitions/v1alpha1.Statement'
-        type: array
-      status:
-        type: string
-      subjects:
-        items:
-          type: string
-        type: array
-      type:
+      websiteUrl:
         type: string
     type: object
-  v1alpha1.DetailResourceResponse:
-    properties:
-      actions:
-        description: Actions resource access mode.
-        items:
-          $ref: '#/definitions/v1alpha1.Action'
-        type: array
-      api:
-        description: Type unique identification of resource API.
-        type: string
-      description:
-        description: Description resource description.
-        type: string
-      metadata:
-        allOf:
-        - $ref: '#/definitions/v1.ObjectMeta'
-        description: Standard object's metadata.
-      method:
-        description: Method resource method.
-        type: string
-      type:
-        description: Type resource type.
-        type: string
-    required:
-    - actions
-    - api
-    - method
-    - type
-    type: object
-  v1alpha1.DetailRoleResponse:
-    properties:
-      description:
-        description: Description tenant description.
-        type: string
-      disabled:
-        description: Disabled tenant state.
-        type: boolean
-      metadata:
-        allOf:
-        - $ref: '#/definitions/v1.ObjectMeta'
-        description: Standard object's metadata.
-      owner:
-        description: Owner tenant owner name.
-        type: string
-      users:
-        items:
-          $ref: '#/definitions/v1alpha1.UserBase'
-        type: array
-    required:
-    - owner
-    type: object
-  v1alpha1.PolicyBase:
-    properties:
-      adapter:
-        description: casbin required
-        type: string
-      description:
-        type: string
-      metadata:
-        allOf:
-        - $ref: '#/definitions/v1.ObjectMeta'
-        description: Standard object's metadata.
-      model:
-        type: string
-      owner:
-        type: string
-      policyRules:
-        items:
-          items:
-            type: string
-          type: array
-        type: array
-      statements:
-        items:
-          $ref: '#/definitions/v1alpha1.Statement'
-        type: array
-      status:
-        type: string
-      subjects:
-        items:
-          type: string
-        type: array
-      type:
-        type: string
-    type: object
-  v1alpha1.PolicyList:
+  v1.OrganizationList:
     properties:
       items:
         items:
-          $ref: '#/definitions/v1alpha1.PolicyBase'
+          $ref: '#/definitions/v1.OrganizationBase'
         type: array
-      totalCount:
+      total:
         type: integer
     type: object
-  v1alpha1.RefreshTokenResponse:
+  v1.PolicyBase:
+    properties:
+      adapter:
+        description: casbin required
+        type: string
+      description:
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/v1.ObjectMeta'
+        description: Standard object's metadata.
+      model:
+        type: string
+      owner:
+        type: string
+      policyRules:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      statements:
+        items:
+          $ref: '#/definitions/v1.Statement'
+        type: array
+      status:
+        type: string
+      subjects:
+        items:
+          type: string
+        type: array
+      type:
+        type: string
+    type: object
+  v1.PolicyList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/v1.PolicyBase'
+        type: array
+      total:
+        type: integer
+    type: object
+  v1.RefreshTokenResponse:
     properties:
       access_token:
         type: string
       refresh_token:
         type: string
     type: object
-  v1alpha1.ResourceBase:
+  v1.ResourceBase:
     properties:
       actions:
         description: Actions resource access mode.
         items:
-          $ref: '#/definitions/v1alpha1.Action'
+          $ref: '#/definitions/v1.Action'
         type: array
       api:
         description: Type unique identification of resource API.
@@ -401,16 +438,16 @@ definitions:
     - method
     - type
     type: object
-  v1alpha1.ResourceList:
+  v1.ResourceList:
     properties:
       items:
         items:
-          $ref: '#/definitions/v1alpha1.ResourceBase'
+          $ref: '#/definitions/v1.ResourceBase'
         type: array
-      totalCount:
+      total:
         type: integer
     type: object
-  v1alpha1.RevokeRoleRequest:
+  v1.RevokeRoleRequest:
     properties:
       instanceId:
         description: InstanceID role instanceID.
@@ -423,34 +460,29 @@ definitions:
     required:
     - instanceId
     type: object
-  v1alpha1.RoleBase:
+  v1.RoleBase:
     properties:
       description:
-        description: Description tenant description.
         type: string
       disabled:
-        description: Disabled tenant state.
         type: boolean
       metadata:
         allOf:
         - $ref: '#/definitions/v1.ObjectMeta'
         description: Standard object's metadata.
       owner:
-        description: Owner tenant owner name.
         type: string
-    required:
-    - owner
     type: object
-  v1alpha1.RoleList:
+  v1.RoleList:
     properties:
       items:
         items:
-          $ref: '#/definitions/v1alpha1.RoleBase'
+          $ref: '#/definitions/v1.RoleBase'
         type: array
-      totalCount:
+      total:
         type: integer
     type: object
-  v1alpha1.Statement:
+  v1.Statement:
     properties:
       actions:
         items:
@@ -468,7 +500,22 @@ definitions:
     - resource
     - resourceIdentifier
     type: object
-  v1alpha1.UpdatePolicyRequest:
+  v1.UpdateOrganizationRequest:
+    properties:
+      description:
+        type: string
+      displayName:
+        maxLength: 30
+        minLength: 1
+        type: string
+      favicon:
+        type: string
+      websiteUrl:
+        type: string
+    required:
+    - displayName
+    type: object
+  v1.UpdatePolicyRequest:
     properties:
       description:
         maxLength: 30
@@ -480,7 +527,7 @@ definitions:
         type: string
       statements:
         items:
-          $ref: '#/definitions/v1alpha1.Statement'
+          $ref: '#/definitions/v1.Statement'
         type: array
       status:
         type: string
@@ -495,11 +542,11 @@ definitions:
     - subjects
     - type
     type: object
-  v1alpha1.UpdateResourceRequest:
+  v1.UpdateResourceRequest:
     properties:
       actions:
         items:
-          $ref: '#/definitions/v1alpha1.Action'
+          $ref: '#/definitions/v1.Action'
         type: array
       api:
         type: string
@@ -520,33 +567,40 @@ definitions:
     - name
     - type
     type: object
-  v1alpha1.UpdateRoleRequest:
+  v1.UpdateRoleRequest:
     properties:
       description:
         type: string
       displayName:
+        maxLength: 30
+        minLength: 1
         type: string
       owner:
         type: string
+    required:
+    - displayName
     type: object
-  v1alpha1.UpdateUserRequest:
+  v1.UpdateUserRequest:
     properties:
       alias:
         maxLength: 30
         minLength: 1
         type: string
       email:
-        maxLength: 100
-        minLength: 1
+        type: string
+      password:
         type: string
       phone:
         type: string
     required:
+    - alias
     - email
     type: object
-  v1alpha1.UserBase:
+  v1.UserBase:
     properties:
       alias:
+        type: string
+      avatar:
         type: string
       disabled:
         type: boolean
@@ -569,14 +623,26 @@ definitions:
       userType:
         type: string
     type: object
-  v1alpha1.UserList:
+  v1.UserList:
     properties:
       items:
         items:
-          $ref: '#/definitions/v1alpha1.UserBase'
+          $ref: '#/definitions/v1.UserBase'
         type: array
-      totalCount:
+      total:
         type: integer
+    type: object
+  v1.WechatMiniAppCodePayload:
+    properties:
+      code:
+        description: Code wx.login 接口返回的用户 code
+        type: string
+      encryptedData:
+        description: EncryptedData 获取微信开放数据返回的加密数据（encryptedData）
+        type: string
+      iv:
+        description: Iv 对称解密算法初始向量，由微信返回
+        type: string
     type: object
 host: localhost:8000
 info:
@@ -590,7 +656,7 @@ info:
     url: https://en.wikipedia.org/wiki/MIT_License
   termsOfService: http://iam.wecoding.top/
   title: IAM API
-  version: v1alpha
+  version: v1
 paths:
   /api/v1/auth/refresh-token:
     get:
@@ -611,7 +677,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.RefreshTokenResponse'
+                  $ref: '#/definitions/v1.RefreshTokenResponse'
               type: object
       summary: RefreshToken
       tags:
@@ -627,7 +693,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.AuthenticateRequest'
+          $ref: '#/definitions/v1.AuthenticateRequest'
       responses:
         "200":
           description: token info
@@ -636,11 +702,165 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.AuthenticateResponse'
+                  $ref: '#/definitions/v1.AuthenticateResponse'
               type: object
       summary: LoginSystem
       tags:
       - Authentication
+  /api/v1/organizations:
+    get:
+      description: List organizations
+      parameters:
+      - description: query the page number
+        in: query
+        name: offset
+        type: integer
+      - description: query the page size number
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: organizations
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.OrganizationList'
+              type: object
+      security:
+      - BearerTokenAuth: []
+      summary: ListOrganizations
+      tags:
+      - Organizations
+    post:
+      consumes:
+      - application/json
+      description: Create organization
+      parameters:
+      - description: organization info
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateOrganizationRequest'
+      responses:
+        "200":
+          description: create a nnw organization
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: CreateOrganization
+      tags:
+      - Organizations
+  /api/v1/organizations/{instanceId}:
+    delete:
+      description: Delete organization
+      parameters:
+      - description: identifier of a organization
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: delete organization
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: DeleteOrganization
+      tags:
+      - Organizations
+    get:
+      description: Get organization info
+      parameters:
+      - description: identifier of a organization
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: organization detail
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.OrganizationBase'
+              type: object
+      security:
+      - BearerTokenAuth: []
+      summary: GetOrganizationInfo
+      tags:
+      - Organizations
+    put:
+      consumes:
+      - application/json
+      description: Update organization info
+      parameters:
+      - description: identifier of a organization
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: organization info
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpdateOrganizationRequest'
+      responses:
+        "200":
+          description: update organization info
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: UpdateOrganization
+      tags:
+      - Organizations
+  /api/v1/organizations/{instanceId}/disable:
+    get:
+      description: Enable a organization
+      parameters:
+      - description: identifier of a organization
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: EnableOrganization
+      tags:
+      - Organizations
+  /api/v1/organizations/{instanceId}/enable:
+    get:
+      description: Enable a organization
+      parameters:
+      - description: identifier of a organization
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: EnableOrganization
+      tags:
+      - Organizations
   /api/v1/policies:
     get:
       description: List policies
@@ -665,7 +885,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.PolicyList'
+                  $ref: '#/definitions/v1.PolicyList'
               type: object
       security:
       - BearerTokenAuth: []
@@ -682,7 +902,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.CreatePolicyRequest'
+          $ref: '#/definitions/v1.CreatePolicyRequest'
       responses:
         "200":
           description: Create a nnw policy
@@ -728,7 +948,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.DetailPolicyResponse'
+                  $ref: '#/definitions/v1.DetailPolicyResponse'
               type: object
       security:
       - BearerTokenAuth: []
@@ -745,7 +965,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.UpdatePolicyRequest'
+          $ref: '#/definitions/v1.UpdatePolicyRequest'
       responses:
         "200":
           description: Update policy info
@@ -780,7 +1000,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.ResourceList'
+                  $ref: '#/definitions/v1.ResourceList'
               type: object
       security:
       - BearerTokenAuth: []
@@ -797,7 +1017,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.CreateResourceRequest'
+          $ref: '#/definitions/v1.CreateResourceRequest'
       responses:
         "200":
           description: create a new resource
@@ -843,7 +1063,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.DetailResourceResponse'
+                  $ref: '#/definitions/v1.DetailResourceResponse'
               type: object
       security:
       - BearerTokenAuth: []
@@ -860,7 +1080,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.UpdateResourceRequest'
+          $ref: '#/definitions/v1.UpdateResourceRequest'
       responses:
         "200":
           description: update resource info
@@ -896,7 +1116,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/v1alpha1.RoleBase'
+                    $ref: '#/definitions/v1.RoleBase'
                   type: array
               type: object
       security:
@@ -914,7 +1134,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.CreateRoleRequest'
+          $ref: '#/definitions/v1.CreateRoleRequest'
       responses:
         "200":
           description: create a new role
@@ -960,7 +1180,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.DetailRoleResponse'
+                  $ref: '#/definitions/v1.DetailRoleResponse'
               type: object
       security:
       - BearerTokenAuth: []
@@ -977,7 +1197,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.UpdateRoleRequest'
+          $ref: '#/definitions/v1.UpdateRoleRequest'
       responses:
         "200":
           description: update role info
@@ -990,14 +1210,14 @@ paths:
       - Roles
   /api/v1/roles/{instanceId}/assign:
     post:
-      description: Batch assign role
+      description: Assign role
       parameters:
-      - description: batch assign role request
+      - description: assign role request
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.BatchAssignRoleRequest'
+          $ref: '#/definitions/v1.AssignRoleRequest'
       responses:
         "200":
           description: assign role
@@ -1005,7 +1225,7 @@ paths:
             $ref: '#/definitions/api.Response'
       security:
       - BearerTokenAuth: []
-      summary: BatchAssignRole
+      summary: AssignRole
       tags:
       - Roles
   /api/v1/roles/{instanceId}/revoke:
@@ -1017,7 +1237,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.RevokeRoleRequest'
+          $ref: '#/definitions/v1.RevokeRoleRequest'
       responses:
         "200":
           description: revoke role
@@ -1026,6 +1246,26 @@ paths:
       security:
       - BearerTokenAuth: []
       summary: RevokeRole
+      tags:
+      - Roles
+  /api/v1/roles/batch-assign:
+    post:
+      description: Batch assign role
+      parameters:
+      - description: batch assign role request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.BatchAssignRoleRequest'
+      responses:
+        "200":
+          description: assign role
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: BatchAssignRole
       tags:
       - Roles
   /api/v1/users:
@@ -1060,7 +1300,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.UserList'
+                  $ref: '#/definitions/v1.UserList'
               type: object
       security:
       - BearerTokenAuth: []
@@ -1077,7 +1317,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.CreateUserRequest'
+          $ref: '#/definitions/v1.CreateUserRequest'
       responses:
         "200":
           description: create a nnw user
@@ -1123,7 +1363,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.UserBase'
+                  $ref: '#/definitions/v1.UserBase'
               type: object
       security:
       - BearerTokenAuth: []
@@ -1145,7 +1385,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/v1alpha1.UpdateUserRequest'
+          $ref: '#/definitions/v1.UpdateUserRequest'
       responses:
         "200":
           description: update user info
@@ -1156,13 +1396,51 @@ paths:
       summary: UpdateUser
       tags:
       - Users
+  /api/v1/users/{instanceId}/disable:
+    get:
+      description: Enable a user
+      parameters:
+      - description: identifier of a user
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: EnableUser
+      tags:
+      - Users
+  /api/v1/users/{instanceId}/enable:
+    get:
+      description: Enable a user
+      parameters:
+      - description: identifier of a user
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: EnableUser
+      tags:
+      - Users
   /api/v1/users/{instanceId}/roles:
     get:
       description: Get user roles
       parameters:
       - description: identifier of a user
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -1173,7 +1451,7 @@ paths:
             - $ref: '#/definitions/api.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/v1alpha1.RoleList'
+                  $ref: '#/definitions/v1.RoleList'
               type: object
       security:
       - BearerTokenAuth: []
