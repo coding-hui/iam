@@ -5,6 +5,8 @@
 package model
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 
 	metav1 "github.com/coding-hui/common/meta/v1"
@@ -18,6 +20,7 @@ const (
 
 func init() {
 	RegisterModel(&Organization{})
+	RegisterModel(&DepartmentMember{})
 }
 
 // Organization represents a organization restful resource. It is also used as gorm model.
@@ -49,4 +52,16 @@ func (o *Organization) AfterCreate(tx *gorm.DB) error {
 
 func (o *Organization) IsSystemBuiltIn() bool {
 	return o.Name == DefaultOrganization
+}
+
+// DepartmentMember represents a organization member restful resource. It is also used as gorm model.
+type DepartmentMember struct {
+	DepartmentId string    `json:"departmentId"        gorm:"primary_key;column:department_id;type:varchar(64)"`
+	MemberId     string    `json:"memberId"            gorm:"primary_key;column:member_id;type:varchar(64)"`
+	CreatedAt    time.Time `json:"createdAt,omitempty" gorm:"column:created_at"`
+}
+
+// TableName maps to mysql table name.
+func (o *DepartmentMember) TableName() string {
+	return TableNamePrefix + "department_member"
 }

@@ -56,15 +56,16 @@ const (
 
 // CreateUserRequest create user request.
 type CreateUserRequest struct {
-	Name             string `json:"name"                       validate:"required,name"`
-	Alias            string `json:"alias"                      validate:"required,min=1,max=30"`
-	Email            string `json:"email"                      validate:"required,email"`
-	Password         string `json:"password"                   validate:"required"`
-	Phone            string `json:"phone,omitempty"            validate:"omitempty"`
-	UserType         string `json:"userType,omitempty"`
-	Avatar           string `json:"avatar,omitempty"`
-	IdentifyProvider string `json:"identifyProvider,omitempty"`
-	ExternalUID      string `json:"externalUID,omitempty"`
+	Name             string   `json:"name"                       validate:"required,name"`
+	Alias            string   `json:"alias"                      validate:"required,min=1,max=30"`
+	Email            string   `json:"email"                      validate:"required,email"`
+	Password         string   `json:"password"                   validate:"required"`
+	Phone            string   `json:"phone,omitempty"            validate:"omitempty"`
+	UserType         string   `json:"userType,omitempty"`
+	Avatar           string   `json:"avatar,omitempty"`
+	IdentifyProvider string   `json:"identifyProvider,omitempty"`
+	ExternalUID      string   `json:"externalUID,omitempty"`
+	DepartmentIds    []string `json:"departmentIds,omitempty"`
 }
 
 // CreateUserResponse create user response.
@@ -89,7 +90,6 @@ type UpdateUserResponse struct {
 type UserBase struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	TenantId          uint64     `json:"tenantId,omitempty"`
 	Status            int        `json:"status"`
 	Alias             string     `json:"alias"`
 	Password          string     `json:"password,omitempty"`
@@ -98,6 +98,7 @@ type UserBase struct {
 	UserType          string     `json:"userType"`
 	Disabled          bool       `json:"disabled"`
 	Avatar            string     `json:"avatar"`
+	DepartmentIds     []string   `json:"departmentIds,omitempty"`
 	LastLoginTime     *time.Time `json:"lastLoginTime,omitempty"`
 }
 
@@ -469,4 +470,57 @@ type PolicyList struct {
 	metav1.ListMeta `json:",inline"`
 
 	Items []*PolicyBase `json:"items"`
+}
+
+// CreateDepartmentRequest create organization department request.
+type CreateDepartmentRequest struct {
+	Name        string `json:"name"                  validate:"required,name"`
+	DisplayName string `json:"displayName,omitempty"`
+	WebsiteUrl  string `json:"websiteUrl,omitempty"`
+	Favicon     string `json:"favicon,omitempty"`
+	Disabled    bool   `json:"disabled,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+// UpdateDepartmentRequest update organization department request.
+type UpdateDepartmentRequest struct {
+	DisplayName string `json:"displayName"           validate:"required,min=1,max=30"`
+	WebsiteUrl  string `json:"websiteUrl,omitempty"`
+	Favicon     string `json:"favicon,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+// DepartmentMember department member.
+type DepartmentMember struct {
+	MemberId   string `json:"memberId"             validate:"required"`
+	MemberType string `json:"memberType,omitempty"`
+}
+
+// AddDepartmentMemberRequest add department members request.
+type AddDepartmentMemberRequest struct {
+	DepartmentMember `json:",inline"`
+}
+
+// BatchAddDepartmentMemberRequest batch add department members request.
+type BatchAddDepartmentMemberRequest struct {
+	Members []DepartmentMember `json:"members"`
+}
+
+// RemoveDepartmentMemberRequest remove department members request.
+type RemoveDepartmentMemberRequest struct {
+	DepartmentMember `json:",inline"`
+}
+
+// BatchRemoveDepartmentMemberRequest batch remove department members request.
+type BatchRemoveDepartmentMemberRequest struct {
+	Members []DepartmentMember `json:"members"`
+}
+
+// DepartmentMemberList is the whole list of all department members which have been stored in stroage.
+type DepartmentMemberList struct {
+	// Standard list metadata.
+	// +optional
+	metav1.ListMeta `json:",inline"`
+
+	Members []*DepartmentMember `json:"members"`
 }

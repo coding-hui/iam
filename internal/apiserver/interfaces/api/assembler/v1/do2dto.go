@@ -14,7 +14,6 @@ import (
 func ConvertUserModelToBase(user *model.User) *v1.UserBase {
 	return &v1.UserBase{
 		ObjectMeta:    user.ObjectMeta,
-		TenantId:      user.TenantId,
 		Status:        user.Status,
 		Alias:         user.Alias,
 		Email:         user.Email,
@@ -23,6 +22,7 @@ func ConvertUserModelToBase(user *model.User) *v1.UserBase {
 		UserType:      user.UserType,
 		LastLoginTime: user.LastLoginTime,
 		Disabled:      user.Disabled,
+		DepartmentIds: user.DepartmentIds,
 	}
 }
 

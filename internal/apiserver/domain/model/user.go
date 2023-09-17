@@ -28,7 +28,6 @@ type User struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	TenantId      uint64        `json:"tenantId,omitempty"      gorm:"column:tenant_id;type:varchar(64)"`
 	Status        int           `json:"status"                  gorm:"column:status;"`
 	Alias         string        `json:"alias"                   gorm:"column:alias;type:varchar(64)"`
 	Password      string        `json:"password,omitempty"      gorm:"column:password;type:varchar(256)"`
@@ -39,6 +38,8 @@ type User struct {
 	Disabled      bool          `json:"disabled"                gorm:"column:disabled;type:bool"`
 	LastLoginTime *time.Time    `json:"lastLoginTime,omitempty" gorm:"column:last_login_time"`
 	External      *UserExternal `json:"external"                gorm:"-"`
+	Organization  *Organization `json:"organization"            gorm:"-"`
+	DepartmentIds []string      `json:"departmentIds"           gorm:"-"`
 }
 
 // TableName maps to mysql table name.

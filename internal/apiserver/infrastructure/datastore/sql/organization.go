@@ -6,6 +6,7 @@ package sql
 
 import (
 	"context"
+	"strings"
 
 	"gorm.io/gorm"
 
@@ -130,4 +131,62 @@ func (o *orgRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (
 	}
 
 	return list, err
+}
+
+func (o *orgRepositoryImpl) AddDepartmentMembers(ctx context.Context, members []*model.DepartmentMember) error {
+	db := o.db.WithContext(ctx).Model(&model.DepartmentMember{})
+	err := db.CreateInBatches(members, 500).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) || strings.Contains(err.Error(), "Duplicate entry") {
+			return errors.WithCode(code.ErrMemberAlreadyInDepartment, err.Error())
+		}
+		return datastore.NewDBError(err, "failed to add department members")
+	}
+
+	return err
+}
+
+func (o *orgRepositoryImpl) RemoveDepartmentMembers(ctx context.Context, members []*model.DepartmentMember) error {
+	db := o.db.WithContext(ctx).Model(&model.DepartmentMember{})
+	err := db.Delete(members).Error
+	if err != nil {
+		return datastore.NewDBError(err, "failed to remove department members")
+	}
+
+	return err
+}
+
+func (o *orgRepositoryImpl) ListDepartmentMembers(
+	ctx context.Context,
+	department string,
+	opts metav1.ListOptions,
+) ([]model.DepartmentMember, error) {
+	var members []model.DepartmentMember
+	err := o.db.WithContext(ctx).Model(&model.DepartmentMember{}).
+		Scopes(
+			makeCondition(opts),
+			paginate(opts),
+		).
+		Where("department_id = ?", department).
+		Find(&members).Error
+	if err != nil {
+		return nil, datastore.NewDBError(err, "failed to list department members")
+	}
+
+	return members, nil
+}
+
+func (o *orgRepositoryImpl) CountDepartmentMembers(ctx context.Context, department string, opts metav1.ListOptions) (int64, error) {
+	var totalCount int64
+	err := o.db.WithContext(ctx).Model(&model.DepartmentMember{}).
+		Scopes(
+			makeCondition(opts),
+		).
+		Where("department_id = ?", department).
+		Count(&totalCount).Error
+	if err != nil {
+		return 0, datastore.NewDBError(err, "failed to get department total members")
+	}
+
+	return totalCount, nil
 }

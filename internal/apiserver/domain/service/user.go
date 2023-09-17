@@ -78,7 +78,6 @@ func (u *userServiceImpl) Init(ctx context.Context) error {
 
 // CreateUser create user.
 func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserRequest) (*v1.CreateUserResponse, error) {
-	encryptPassword, _ := auth.Encrypt(req.Password)
 	var external *model.UserExternal
 	if req.ExternalUID != "" && req.IdentifyProvider != "" {
 		external = &model.UserExternal{
@@ -86,26 +85,27 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 			IdentifyProvider: req.IdentifyProvider,
 		}
 	}
-	user := &model.User{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: req.Name,
-		},
-		Password: encryptPassword,
-		Alias:    req.Alias,
-		Email:    req.Email,
-		Avatar:   req.Avatar,
-		UserType: req.UserType,
-		Disabled: false,
-		External: external,
-	}
+	// create user
+	user := assembler.ConvertCreateUserReqToUserModel(req, external)
 	createUser, err := u.Store.UserRepository().Create(ctx, user, metav1.CreateOptions{})
 	if err != nil {
 		return nil, err
 	}
-	base := assembler.ConvertUserModelToBase(createUser)
+	// user org association
+	var deptMembers []*model.DepartmentMember
+	for _, dept := range req.DepartmentIds {
+		deptMembers = append(deptMembers, &model.DepartmentMember{
+			DepartmentId: dept,
+			MemberId:     user.GetInstanceID(),
+		})
+	}
+	err = u.Store.OrganizationRepository().AddDepartmentMembers(ctx, deptMembers)
+	if err != nil {
+		log.Errorf("Failed to add user to the department: %w", err)
+	}
 
 	return &v1.CreateUserResponse{
-		UserBase: *base,
+		UserBase: *assembler.ConvertUserModelToBase(createUser),
 	}, nil
 }
 

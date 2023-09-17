@@ -119,3 +119,9 @@ const (
 	// ErrCannotDisableBuiltInOrg - 400: Built-in organizations cannot be disabled.
 	ErrCannotDisableBuiltInOrg
 )
+
+// iam-apiserver: organization department errors.
+const (
+	// ErrMemberAlreadyInDepartment - 400: Member is already in department.
+	ErrMemberAlreadyInDepartment int = iota + 110601
+)

@@ -52,6 +52,7 @@ func InitAPIBean(c config.Config) []interface{} {
 	RegisterAPI(NewResource())
 	RegisterAPI(NewRole())
 	RegisterAPI(NewOrganization())
+	RegisterAPI(NewDepartment())
 
 	// policies
 	RegisterAPI(NewPolicy())

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	metav1 "github.com/coding-hui/common/meta/v1"
+	"github.com/coding-hui/common/util/auth"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
@@ -71,4 +72,21 @@ func ConvertToStatementModel(statements []v1.Statement) []model.Statement {
 	}
 
 	return list
+}
+
+// ConvertCreateUserReqToUserModel assemble the create user request to User Model.
+func ConvertCreateUserReqToUserModel(req v1.CreateUserRequest, external *model.UserExternal) *model.User {
+	encryptPassword, _ := auth.Encrypt(req.Password)
+	return &model.User{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: req.Name,
+		},
+		Password: encryptPassword,
+		Alias:    req.Alias,
+		Email:    req.Email,
+		Avatar:   req.Avatar,
+		UserType: req.UserType,
+		Disabled: false,
+		External: external,
+	}
 }

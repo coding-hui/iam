@@ -29,6 +29,9 @@ type OrganizationService interface {
 	ListOrganizations(ctx context.Context, opts metav1.ListOptions) (*v1.OrganizationList, error)
 	DisableOrganization(ctx context.Context, instanceId string) error
 	EnableOrganization(ctx context.Context, instanceId string) error
+	BatchAddDepartmentMembers(ctx context.Context, department string, batchAddReq v1.BatchAddDepartmentMemberRequest) error
+	BatchRemoveDepartmentMembers(ctx context.Context, department string, batchRemoveReq v1.BatchRemoveDepartmentMemberRequest) error
+	ListDepartmentMembers(ctx context.Context, department string, opts metav1.ListOptions) (*v1.DepartmentMemberList, error)
 	Init(ctx context.Context) error
 }
 
@@ -195,4 +198,82 @@ func (o *organizationServiceImpl) EnableOrganization(ctx context.Context, instan
 	org.Disabled = false
 
 	return o.Store.OrganizationRepository().Update(ctx, org, metav1.UpdateOptions{})
+}
+
+func (o *organizationServiceImpl) BatchAddDepartmentMembers(
+	ctx context.Context,
+	department string,
+	batchAddReq v1.BatchAddDepartmentMemberRequest,
+) error {
+	dept, err := o.GetOrganization(ctx, department, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	var deptMembers []*model.DepartmentMember
+	for _, member := range batchAddReq.Members {
+		deptMembers = append(deptMembers, &model.DepartmentMember{
+			DepartmentId: dept.GetInstanceID(),
+			MemberId:     member.MemberId,
+		})
+	}
+	err = o.Store.OrganizationRepository().AddDepartmentMembers(ctx, deptMembers)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *organizationServiceImpl) BatchRemoveDepartmentMembers(
+	ctx context.Context,
+	department string,
+	batchRemoveReq v1.BatchRemoveDepartmentMemberRequest,
+) error {
+	dept, err := o.GetOrganization(ctx, department, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	var deptMembers []*model.DepartmentMember
+	for _, member := range batchRemoveReq.Members {
+		deptMembers = append(deptMembers, &model.DepartmentMember{
+			DepartmentId: dept.GetInstanceID(),
+			MemberId:     member.MemberId,
+		})
+	}
+	err = o.Store.OrganizationRepository().RemoveDepartmentMembers(ctx, deptMembers)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *organizationServiceImpl) ListDepartmentMembers(
+	ctx context.Context,
+	department string,
+	opts metav1.ListOptions,
+) (*v1.DepartmentMemberList, error) {
+	items, err := o.Store.OrganizationRepository().ListDepartmentMembers(ctx, department, opts)
+	if err != nil {
+		return nil, err
+	}
+	var deptMembers []*v1.DepartmentMember
+	for _, item := range items {
+		deptMembers = append(deptMembers, &v1.DepartmentMember{
+			MemberId:   item.MemberId,
+			MemberType: "user",
+		})
+	}
+	totalCount, err := o.Store.OrganizationRepository().CountDepartmentMembers(ctx, department, opts)
+	if err != nil {
+		return nil, err
+	}
+	resp := &v1.DepartmentMemberList{
+		ListMeta: metav1.ListMeta{
+			TotalCount: totalCount,
+		},
+		Members: deptMembers,
+	}
+
+	return resp, nil
 }

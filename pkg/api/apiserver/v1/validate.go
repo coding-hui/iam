@@ -93,3 +93,35 @@ func (p *UpdatePolicyRequest) ValidateUpdate() field.ErrorList {
 
 	return allErrs
 }
+
+// Validate validates that a policy object is valid when add department member.
+func (d *AddDepartmentMemberRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(d)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// Validate validates that a policy object is valid when batch add department member.
+func (d *BatchAddDepartmentMemberRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(d)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// Validate validates that a policy object is valid when remove department member.
+func (d *RemoveDepartmentMemberRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(d)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// Validate validates that a policy object is valid when batch remove department member.
+func (d *BatchRemoveDepartmentMemberRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(d)
+	allErrs := val.Validate()
+
+	return allErrs
+}

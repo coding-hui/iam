@@ -53,6 +53,7 @@ IAM 系统支持的错误码列表如下：
 | ErrOrgHasDisabled | 110505 | 401 | The organization has been disabled |
 | ErrCannotDeleteBuiltInOrg | 110506 | 400 | Built-in organizations cannot be deleted |
 | ErrCannotDisableBuiltInOrg | 110507 | 400 | Built-in organizations cannot be disabled |
+| ErrMemberAlreadyInDepartment | 110601 | 400 | Member is already in department |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |

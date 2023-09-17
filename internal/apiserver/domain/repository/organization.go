@@ -22,4 +22,8 @@ type OrganizationRepository interface {
 	GetByName(ctx context.Context, name string, opts metav1.GetOptions) (*model.Organization, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.Organization, error)
 	List(ctx context.Context, opts metav1.ListOptions) (*v1.OrganizationList, error)
+	ListDepartmentMembers(ctx context.Context, department string, opts metav1.ListOptions) ([]model.DepartmentMember, error)
+	CountDepartmentMembers(ctx context.Context, department string, opts metav1.ListOptions) (int64, error)
+	AddDepartmentMembers(ctx context.Context, members []*model.DepartmentMember) error
+	RemoveDepartmentMembers(ctx context.Context, members []*model.DepartmentMember) error
 }

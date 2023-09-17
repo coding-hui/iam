@@ -131,8 +131,11 @@ func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId str
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
 		}
-
 		return nil, err
+	}
+	departmentIds, _ := u.getUserDepartments(ctx, instanceId)
+	for _, v := range departmentIds {
+		user.DepartmentIds = append(user.DepartmentIds, v.DepartmentId)
 	}
 
 	return user, nil
@@ -196,4 +199,16 @@ func (u *userRepositoryImpl) deleteExternalUser(ctx context.Context, userId, ext
 		Where("external_uid = ?", externalUid).
 		Where("idp = ?", idp).
 		Delete(&externalUser).Error
+}
+
+func (u *userRepositoryImpl) getUserDepartments(ctx context.Context, user string) ([]*model.DepartmentMember, error) {
+	var resp []*model.DepartmentMember
+	err := u.db.WithContext(ctx).
+		Model(&model.DepartmentMember{}).
+		Where("member_id = ?", user).
+		Find(&resp).Error
+	if err != nil {
+		return nil, datastore.NewDBError(err, "failed to get user departments.")
+	}
+	return resp, err
 }
