@@ -91,7 +91,7 @@ func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v
 		return nil, err
 	}
 	if userBase.Disabled {
-		return nil, errors.WithCode(code.ErrUserHasDisabled, "The account [%d] has been disabled.", userBase.Name)
+		return nil, errors.WithCode(code.ErrUserHasDisabled, "The account [%s] has been disabled.", userBase.Name)
 	}
 	accessToken, err := a.generateJWTToken(userBase.InstanceID, userBase.UserType, GrantTypeAccess, a.cfg.JwtOptions.Timeout)
 	if err != nil {
