@@ -66,6 +66,435 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/departments": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "List departments",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "ListDepartments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "query the page number",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "query the page size number",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "departments",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.OrganizationList"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Create department",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "CreateDepartment",
+                "parameters": [
+                    {
+                        "description": "department info",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.CreateDepartmentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "create a new department",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/departments/{instanceId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Get department info",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "GetDepartmentInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "department detail",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.OrganizationBase"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Update department info",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "UpdateDepartment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "department info",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.UpdateDepartmentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "update department info",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Delete department",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "DeleteDepartment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "delete department",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/departments/{instanceId}/disable": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Enable a department",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "EnableDepartment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/departments/{instanceId}/enable": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Enable a department",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "EnableDepartment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/departments/{instanceId}/member": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "List department members",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "ListDepartmentMembers",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "query the page number",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "query the page size number",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "departments",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/v1.DepartmentMemberList"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/departments/{instanceId}/member/add": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Add user to the department",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "AddDepartmentMember",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/departments/{instanceId}/member/batch_add": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Batch add user to the department",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "BatchAddDepartmentMember",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/departments/{instanceId}/member/batch_remove": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Batch remove user from the department",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "BatchRemoveDepartmentMember",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/departments/{instanceId}/member/remove": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "Remove user from the department",
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "RemoveDepartmentMember",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/login": {
             "post": {
                 "description": "Login by user account and password",
@@ -207,7 +636,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a organization",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -251,7 +680,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a organization",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     },
@@ -289,7 +718,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a organization",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -470,7 +899,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name of a policy",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -545,7 +974,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name of a policy",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -664,7 +1093,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name of a resource",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -739,7 +1168,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "name of a resource",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -894,7 +1323,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a role",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -969,7 +1398,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a role",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -1166,7 +1595,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a user",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -1210,7 +1639,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a user",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     },
@@ -1248,7 +1677,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "identifier of a user",
-                        "name": "name",
+                        "name": "instanceId",
                         "in": "path",
                         "required": true
                     }
@@ -1509,6 +1938,32 @@ const docTemplate = `{
                 }
             }
         },
+        "v1.CreateDepartmentRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "displayName": {
+                    "type": "string"
+                },
+                "favicon": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "websiteUrl": {
+                    "type": "string"
+                }
+            }
+        },
         "v1.CreateOrganizationRequest": {
             "type": "object",
             "required": [
@@ -1651,6 +2106,12 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
+                "departmentIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "email": {
                     "type": "string"
                 },
@@ -1671,6 +2132,34 @@ const docTemplate = `{
                 },
                 "userType": {
                     "type": "string"
+                }
+            }
+        },
+        "v1.DepartmentMember": {
+            "type": "object",
+            "required": [
+                "memberId"
+            ],
+            "properties": {
+                "memberId": {
+                    "type": "string"
+                },
+                "memberType": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.DepartmentMemberList": {
+            "type": "object",
+            "properties": {
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.DepartmentMember"
+                    }
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -1800,6 +2289,58 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/v1.UserBase"
                     }
+                }
+            }
+        },
+        "v1.DetailUserResponse": {
+            "type": "object",
+            "properties": {
+                "alias": {
+                    "type": "string"
+                },
+                "avatar": {
+                    "type": "string"
+                },
+                "departmentIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "lastLoginTime": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Standard object's metadata.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.ObjectMeta"
+                        }
+                    ]
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.RoleBase"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "userType": {
+                    "type": "string"
                 }
             }
         },
@@ -2093,6 +2634,28 @@ const docTemplate = `{
                 }
             }
         },
+        "v1.UpdateDepartmentRequest": {
+            "type": "object",
+            "required": [
+                "displayName"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "displayName": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 1
+                },
+                "favicon": {
+                    "type": "string"
+                },
+                "websiteUrl": {
+                    "type": "string"
+                }
+            }
+        },
         "v1.UpdateOrganizationRequest": {
             "type": "object",
             "required": [
@@ -2241,6 +2804,12 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
+                "departmentIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "disabled": {
                     "type": "boolean"
                 },
@@ -2267,9 +2836,6 @@ const docTemplate = `{
                 "status": {
                     "type": "integer"
                 },
-                "tenantId": {
-                    "type": "integer"
-                },
                 "userType": {
                     "type": "string"
                 }
@@ -2281,7 +2847,7 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1.UserBase"
+                        "$ref": "#/definitions/v1.DetailUserResponse"
                     }
                 },
                 "total": {

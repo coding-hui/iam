@@ -91,6 +91,23 @@ definitions:
     required:
     - instanceIds
     type: object
+  v1.CreateDepartmentRequest:
+    properties:
+      description:
+        type: string
+      disabled:
+        type: boolean
+      displayName:
+        type: string
+      favicon:
+        type: string
+      name:
+        type: string
+      websiteUrl:
+        type: string
+    required:
+    - name
+    type: object
   v1.CreateOrganizationRequest:
     properties:
       description:
@@ -184,6 +201,10 @@ definitions:
         type: string
       avatar:
         type: string
+      departmentIds:
+        items:
+          type: string
+        type: array
       email:
         type: string
       externalUID:
@@ -203,6 +224,24 @@ definitions:
     - email
     - name
     - password
+    type: object
+  v1.DepartmentMember:
+    properties:
+      memberId:
+        type: string
+      memberType:
+        type: string
+    required:
+    - memberId
+    type: object
+  v1.DepartmentMemberList:
+    properties:
+      members:
+        items:
+          $ref: '#/definitions/v1.DepartmentMember'
+        type: array
+      total:
+        type: integer
     type: object
   v1.DetailPolicyResponse:
     properties:
@@ -287,6 +326,39 @@ definitions:
         items:
           $ref: '#/definitions/v1.UserBase'
         type: array
+    type: object
+  v1.DetailUserResponse:
+    properties:
+      alias:
+        type: string
+      avatar:
+        type: string
+      departmentIds:
+        items:
+          type: string
+        type: array
+      disabled:
+        type: boolean
+      email:
+        type: string
+      lastLoginTime:
+        type: string
+      metadata:
+        allOf:
+        - $ref: '#/definitions/v1.ObjectMeta'
+        description: Standard object's metadata.
+      password:
+        type: string
+      phone:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/v1.RoleBase'
+        type: array
+      status:
+        type: integer
+      userType:
+        type: string
     type: object
   v1.Extend:
     additionalProperties: true
@@ -500,6 +572,21 @@ definitions:
     - resource
     - resourceIdentifier
     type: object
+  v1.UpdateDepartmentRequest:
+    properties:
+      description:
+        type: string
+      displayName:
+        maxLength: 30
+        minLength: 1
+        type: string
+      favicon:
+        type: string
+      websiteUrl:
+        type: string
+    required:
+    - displayName
+    type: object
   v1.UpdateOrganizationRequest:
     properties:
       description:
@@ -602,6 +689,10 @@ definitions:
         type: string
       avatar:
         type: string
+      departmentIds:
+        items:
+          type: string
+        type: array
       disabled:
         type: boolean
       email:
@@ -618,8 +709,6 @@ definitions:
         type: string
       status:
         type: integer
-      tenantId:
-        type: integer
       userType:
         type: string
     type: object
@@ -627,7 +716,7 @@ definitions:
     properties:
       items:
         items:
-          $ref: '#/definitions/v1.UserBase'
+          $ref: '#/definitions/v1.DetailUserResponse'
         type: array
       total:
         type: integer
@@ -682,6 +771,263 @@ paths:
       summary: RefreshToken
       tags:
       - Authentication
+  /api/v1/departments:
+    get:
+      description: List departments
+      parameters:
+      - description: query the page number
+        in: query
+        name: offset
+        type: integer
+      - description: query the page size number
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: departments
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.OrganizationList'
+              type: object
+      security:
+      - BearerTokenAuth: []
+      summary: ListDepartments
+      tags:
+      - Departments
+    post:
+      consumes:
+      - application/json
+      description: Create department
+      parameters:
+      - description: department info
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateDepartmentRequest'
+      responses:
+        "200":
+          description: create a new department
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: CreateDepartment
+      tags:
+      - Departments
+  /api/v1/departments/{instanceId}:
+    delete:
+      description: Delete department
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: delete department
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: DeleteDepartment
+      tags:
+      - Departments
+    get:
+      description: Get department info
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: department detail
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.OrganizationBase'
+              type: object
+      security:
+      - BearerTokenAuth: []
+      summary: GetDepartmentInfo
+      tags:
+      - Departments
+    put:
+      consumes:
+      - application/json
+      description: Update department info
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      - description: department info
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpdateDepartmentRequest'
+      responses:
+        "200":
+          description: update department info
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: UpdateDepartment
+      tags:
+      - Departments
+  /api/v1/departments/{instanceId}/disable:
+    get:
+      description: Enable a department
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: EnableDepartment
+      tags:
+      - Departments
+  /api/v1/departments/{instanceId}/enable:
+    get:
+      description: Enable a department
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: EnableDepartment
+      tags:
+      - Departments
+  /api/v1/departments/{instanceId}/member:
+    get:
+      description: List department members
+      parameters:
+      - description: query the page number
+        in: query
+        name: offset
+        type: integer
+      - description: query the page size number
+        in: query
+        name: limit
+        type: integer
+      responses:
+        "200":
+          description: departments
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.DepartmentMemberList'
+              type: object
+      security:
+      - BearerTokenAuth: []
+      summary: ListDepartmentMembers
+      tags:
+      - Departments
+  /api/v1/departments/{instanceId}/member/add:
+    post:
+      description: Add user to the department
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: AddDepartmentMember
+      tags:
+      - Departments
+  /api/v1/departments/{instanceId}/member/batch_add:
+    post:
+      description: Batch add user to the department
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: BatchAddDepartmentMember
+      tags:
+      - Departments
+  /api/v1/departments/{instanceId}/member/batch_remove:
+    post:
+      description: Batch remove user from the department
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: BatchRemoveDepartmentMember
+      tags:
+      - Departments
+  /api/v1/departments/{instanceId}/member/remove:
+    post:
+      description: Remove user from the department
+      parameters:
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: RemoveDepartmentMember
+      tags:
+      - Departments
   /api/v1/login:
     post:
       consumes:
@@ -761,7 +1107,7 @@ paths:
       parameters:
       - description: identifier of a organization
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -779,7 +1125,7 @@ paths:
       parameters:
       - description: identifier of a organization
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -804,7 +1150,7 @@ paths:
       parameters:
       - description: identifier of a organization
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       - description: organization info
@@ -919,7 +1265,7 @@ paths:
       parameters:
       - description: name of a policy
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -937,7 +1283,7 @@ paths:
       parameters:
       - description: name of a policy
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -1034,7 +1380,7 @@ paths:
       parameters:
       - description: name of a resource
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -1052,7 +1398,7 @@ paths:
       parameters:
       - description: name of a resource
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -1151,7 +1497,7 @@ paths:
       parameters:
       - description: identifier of a role
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -1169,7 +1515,7 @@ paths:
       parameters:
       - description: identifier of a role
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -1334,7 +1680,7 @@ paths:
       parameters:
       - description: identifier of a user
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -1352,7 +1698,7 @@ paths:
       parameters:
       - description: identifier of a user
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       responses:
@@ -1377,7 +1723,7 @@ paths:
       parameters:
       - description: identifier of a user
         in: path
-        name: name
+        name: instanceId
         required: true
         type: string
       - description: user info

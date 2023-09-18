@@ -76,7 +76,7 @@ func (u *user) createUser(c *gin.Context) {
 //	@Description	Update user info
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			name	path		string					true	"identifier of a user"
+//	@Param			instanceId	path		string					true	"identifier of a user"
 //	@Param			data	body		v1.UpdateUserRequest	true	"user info"
 //	@Success		200		{object}	api.Response			"update user info"
 //	@Router			/api/v1/users/{instanceId} [put]
@@ -106,7 +106,7 @@ func (u *user) updateUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		DeleteUser
 //	@Description	DeleteByInstanceId user
-//	@Param			name	path		string			true	"identifier of a user"
+//	@Param			instanceId	path		string			true	"identifier of a user"
 //	@Success		200		{object}	api.Response	"delete user"
 //	@Router			/api/v1/users/{instanceId} [delete]
 //	@Security		BearerTokenAuth
@@ -125,7 +125,7 @@ func (u *user) deleteUser(c *gin.Context) {
 //	@Tags			Users
 //	@Summary		GetUserInfo
 //	@Description	GetByName user info
-//	@Param			name	path		string							true	"identifier of a user"
+//	@Param			instanceId	path		string							true	"identifier of a user"
 //	@Success		200		{object}	api.Response{data=v1.UserBase}	"user detail"
 //	@Router			/api/v1/users/{instanceId} [get]
 //	@Security		BearerTokenAuth

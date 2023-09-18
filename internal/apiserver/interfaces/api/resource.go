@@ -105,7 +105,7 @@ func (r *resource) updateResource(c *gin.Context) {
 //	@Tags			Resource
 //	@Summary		DeleteResource
 //	@Description	DeleteByInstanceId resource
-//	@Param			name	path		string			true	"name of a resource"
+//	@Param			instanceId	path		string			true	"name of a resource"
 //	@Success		200		{object}	api.Response	"delete resource"
 //	@Router			/api/v1/resources/{instanceId} [delete]
 //	@Security		BearerTokenAuth
@@ -128,7 +128,7 @@ func (r *resource) deleteResource(c *gin.Context) {
 //	@Tags			Resource
 //	@Summary		GetResourceInfo
 //	@Description	GetByName resource info
-//	@Param			name	path		string											true	"name of a resource"
+//	@Param			instanceId	path		string											true	"name of a resource"
 //	@Success		200		{object}	api.Response{data=v1.DetailResourceResponse}	"resource detail"
 //	@Router			/api/v1/resources/{instanceId} [get]
 //	@Security		BearerTokenAuth

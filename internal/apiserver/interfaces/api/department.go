@@ -80,7 +80,7 @@ func (d *department) createDepartment(c *gin.Context) {
 //	@Description	Update department info
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			name	path		string						true	"identifier of a department"
+//	@Param			instanceId	path		string						true	"identifier of a department"
 //	@Param			data	body		v1.UpdateDepartmentRequest	true	"department info"
 //	@Success		200		{object}	api.Response				"update department info"
 //	@Router			/api/v1/departments/{instanceId} [put]
@@ -110,7 +110,7 @@ func (d *department) updateDepartment(c *gin.Context) {
 //	@Tags			Departments
 //	@Summary		DeleteDepartment
 //	@Description	Delete department
-//	@Param			name	path		string			true	"identifier of a department"
+//	@Param			instanceId	path		string			true	"identifier of a department"
 //	@Success		200		{object}	api.Response	"delete department"
 //	@Router			/api/v1/departments/{instanceId} [delete]
 //	@Security		BearerTokenAuth
@@ -129,8 +129,8 @@ func (d *department) deleteDepartment(c *gin.Context) {
 //	@Tags			Departments
 //	@Summary		GetDepartmentInfo
 //	@Description	Get department info
-//	@Param			name	path		string									true	"identifier of a department"
-//	@Success		200		{object}	api.Response{data=v1.DepartmentBase}	"department detail"
+//	@Param			instanceId	path		string									true	"identifier of a department"
+//	@Success		200		{object}	api.Response{data=v1.OrganizationBase}	"department detail"
 //	@Router			/api/v1/departments/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -155,7 +155,7 @@ func (d *department) getDepartment(c *gin.Context) {
 //	@Description	List departments
 //	@Param			offset	query		int										false	"query the page number"
 //	@Param			limit	query		int										false	"query the page size number"
-//	@Success		200		{object}	api.Response{data=v1.DepartmentList}	"departments"
+//	@Success		200		{object}	api.Response{data=v1.OrganizationList}	"departments"
 //	@Router			/api/v1/departments [get]
 //	@Security		BearerTokenAuth
 //
@@ -344,7 +344,7 @@ func (d *department) batchRemoveDepartmentMember(c *gin.Context) {
 //	@Description	List department members
 //	@Param			offset	query		int										false	"query the page number"
 //	@Param			limit	query		int										false	"query the page size number"
-//	@Success		200		{object}	api.Response{data=v1.DepartmentList}	"departments"
+//	@Success		200		{object}	api.Response{data=v1.DepartmentMemberList}	"departments"
 //	@Router			/api/v1/departments/{instanceId}/member [get]
 //	@Security		BearerTokenAuth
 //
