@@ -76,8 +76,9 @@ func (r *resource) createResource(c *gin.Context) {
 //	@Description	Update resource
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1.UpdateResourceRequest	true	"resource info"
-//	@Success		200		{object}	api.Response				"update resource info"
+//	@Param			data		body		v1.UpdateResourceRequest	true	"resource info"
+//	@Param			instanceId	path		string						true	"identifier of a resource"
+//	@Success		200			{object}	api.Response				"update resource info"
 //	@Router			/api/v1/resources/{instanceId}  [put]
 //	@Security		BearerTokenAuth
 //
@@ -105,8 +106,8 @@ func (r *resource) updateResource(c *gin.Context) {
 //	@Tags			Resource
 //	@Summary		DeleteResource
 //	@Description	DeleteByInstanceId resource
-//	@Param			instanceId	path		string			true	"name of a resource"
-//	@Success		200		{object}	api.Response	"delete resource"
+//	@Param			instanceId	path		string			true	"identifier of a resource"
+//	@Success		200			{object}	api.Response	"delete resource"
 //	@Router			/api/v1/resources/{instanceId} [delete]
 //	@Security		BearerTokenAuth
 //
@@ -129,7 +130,7 @@ func (r *resource) deleteResource(c *gin.Context) {
 //	@Summary		GetResourceInfo
 //	@Description	GetByName resource info
 //	@Param			instanceId	path		string											true	"name of a resource"
-//	@Success		200		{object}	api.Response{data=v1.DetailResourceResponse}	"resource detail"
+//	@Success		200			{object}	api.Response{data=v1.DetailResourceResponse}	"resource detail"
 //	@Router			/api/v1/resources/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //

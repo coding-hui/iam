@@ -948,6 +948,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/v1.UpdatePolicyRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "identifier of a policy",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -973,7 +980,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name of a policy",
+                        "description": "identifier of a policy",
                         "name": "instanceId",
                         "in": "path",
                         "required": true
@@ -1142,6 +1149,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/v1.UpdateResourceRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "identifier of a resource",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1167,7 +1181,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name of a resource",
+                        "description": "identifier of a resource",
                         "name": "instanceId",
                         "in": "path",
                         "required": true
@@ -1372,6 +1386,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/v1.UpdateRoleRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "identifier of a role",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1434,6 +1455,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/v1.AssignRoleRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "identifier of a role",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1467,6 +1495,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/v1.RevokeRoleRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "identifier of a role",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

@@ -76,8 +76,9 @@ func (p *policy) createPolicy(c *gin.Context) {
 //	@Description	Update a Policy
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1.UpdatePolicyRequest	true	"Policy rule"
-//	@Success		200		{object}	api.Response			"Update policy info"
+//	@Param			data		body		v1.UpdatePolicyRequest	true	"Policy rule"
+//	@Param			instanceId	path		string					true	"identifier of a policy"
+//	@Success		200			{object}	api.Response			"Update policy info"
 //	@Router			/api/v1/policies/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
@@ -105,8 +106,8 @@ func (p *policy) updatePolicy(c *gin.Context) {
 //	@Tags			Policies
 //	@Summary		DeletePolicy
 //	@Description	DeleteByInstanceId policy by instanceId
-//	@Param			instanceId	path		string			true	"name of a policy"
-//	@Success		200		{object}	api.Response	"Policy successfully deleted"
+//	@Param			instanceId	path		string			true	"identifier of a policy"
+//	@Success		200			{object}	api.Response	"Policy successfully deleted"
 //	@Router			/api/v1/policies/{instanceId} [DELETE]
 //	@Security		BearerTokenAuth
 //
@@ -129,7 +130,7 @@ func (p *policy) deletePolicy(c *gin.Context) {
 //	@Summary		GetPolicyInfo
 //	@Description	GetByName a policy by name
 //	@Param			instanceId	path		string										true	"name of a policy"
-//	@Success		200		{object}	api.Response{data=v1.DetailPolicyResponse}	"Policy detail"
+//	@Success		200			{object}	api.Response{data=v1.DetailPolicyResponse}	"Policy detail"
 //	@Router			/api/v1/policies/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //

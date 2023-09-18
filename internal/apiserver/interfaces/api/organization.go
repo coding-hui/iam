@@ -76,8 +76,8 @@ func (o *organization) createOrganization(c *gin.Context) {
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			instanceId	path		string							true	"identifier of a organization"
-//	@Param			data	body		v1.UpdateOrganizationRequest	true	"organization info"
-//	@Success		200		{object}	api.Response					"update organization info"
+//	@Param			data		body		v1.UpdateOrganizationRequest	true	"organization info"
+//	@Success		200			{object}	api.Response					"update organization info"
 //	@Router			/api/v1/organizations/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
@@ -106,7 +106,7 @@ func (o *organization) updateOrganization(c *gin.Context) {
 //	@Summary		DeleteOrganization
 //	@Description	Delete organization
 //	@Param			instanceId	path		string			true	"identifier of a organization"
-//	@Success		200		{object}	api.Response	"delete organization"
+//	@Success		200			{object}	api.Response	"delete organization"
 //	@Router			/api/v1/organizations/{instanceId} [delete]
 //	@Security		BearerTokenAuth
 //
@@ -125,7 +125,7 @@ func (o *organization) deleteOrganization(c *gin.Context) {
 //	@Summary		GetOrganizationInfo
 //	@Description	Get organization info
 //	@Param			instanceId	path		string									true	"identifier of a organization"
-//	@Success		200		{object}	api.Response{data=v1.OrganizationBase}	"organization detail"
+//	@Success		200			{object}	api.Response{data=v1.OrganizationBase}	"organization detail"
 //	@Router			/api/v1/organizations/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //

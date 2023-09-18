@@ -81,8 +81,8 @@ func (d *department) createDepartment(c *gin.Context) {
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			instanceId	path		string						true	"identifier of a department"
-//	@Param			data	body		v1.UpdateDepartmentRequest	true	"department info"
-//	@Success		200		{object}	api.Response				"update department info"
+//	@Param			data		body		v1.UpdateDepartmentRequest	true	"department info"
+//	@Success		200			{object}	api.Response				"update department info"
 //	@Router			/api/v1/departments/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
@@ -111,7 +111,7 @@ func (d *department) updateDepartment(c *gin.Context) {
 //	@Summary		DeleteDepartment
 //	@Description	Delete department
 //	@Param			instanceId	path		string			true	"identifier of a department"
-//	@Success		200		{object}	api.Response	"delete department"
+//	@Success		200			{object}	api.Response	"delete department"
 //	@Router			/api/v1/departments/{instanceId} [delete]
 //	@Security		BearerTokenAuth
 //
@@ -130,7 +130,7 @@ func (d *department) deleteDepartment(c *gin.Context) {
 //	@Summary		GetDepartmentInfo
 //	@Description	Get department info
 //	@Param			instanceId	path		string									true	"identifier of a department"
-//	@Success		200		{object}	api.Response{data=v1.OrganizationBase}	"department detail"
+//	@Success		200			{object}	api.Response{data=v1.OrganizationBase}	"department detail"
 //	@Router			/api/v1/departments/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -342,8 +342,8 @@ func (d *department) batchRemoveDepartmentMember(c *gin.Context) {
 //	@Tags			Departments
 //	@Summary		ListDepartmentMembers
 //	@Description	List department members
-//	@Param			offset	query		int										false	"query the page number"
-//	@Param			limit	query		int										false	"query the page size number"
+//	@Param			offset	query		int											false	"query the page number"
+//	@Param			limit	query		int											false	"query the page size number"
 //	@Success		200		{object}	api.Response{data=v1.DepartmentMemberList}	"departments"
 //	@Router			/api/v1/departments/{instanceId}/member [get]
 //	@Security		BearerTokenAuth

@@ -1263,7 +1263,7 @@ paths:
     delete:
       description: DeleteByInstanceId policy by instanceId
       parameters:
-      - description: name of a policy
+      - description: identifier of a policy
         in: path
         name: instanceId
         required: true
@@ -1312,6 +1312,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/v1.UpdatePolicyRequest'
+      - description: identifier of a policy
+        in: path
+        name: instanceId
+        required: true
+        type: string
       responses:
         "200":
           description: Update policy info
@@ -1378,7 +1383,7 @@ paths:
     delete:
       description: DeleteByInstanceId resource
       parameters:
-      - description: name of a resource
+      - description: identifier of a resource
         in: path
         name: instanceId
         required: true
@@ -1427,6 +1432,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/v1.UpdateResourceRequest'
+      - description: identifier of a resource
+        in: path
+        name: instanceId
+        required: true
+        type: string
       responses:
         "200":
           description: update resource info
@@ -1544,6 +1554,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/v1.UpdateRoleRequest'
+      - description: identifier of a role
+        in: path
+        name: instanceId
+        required: true
+        type: string
       responses:
         "200":
           description: update role info
@@ -1564,6 +1579,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/v1.AssignRoleRequest'
+      - description: identifier of a role
+        in: path
+        name: instanceId
+        required: true
+        type: string
       responses:
         "200":
           description: assign role
@@ -1584,6 +1604,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/v1.RevokeRoleRequest'
+      - description: identifier of a role
+        in: path
+        name: instanceId
+        required: true
+        type: string
       responses:
         "200":
           description: revoke role

@@ -79,8 +79,9 @@ func (r *role) createRole(c *gin.Context) {
 //	@Description	Update role
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			data	body		v1.UpdateRoleRequest	true	"role info"
-//	@Success		200		{object}	api.Response			"update role info"
+//	@Param			data		body		v1.UpdateRoleRequest	true	"role info"
+//	@Param			instanceId	path		string					true	"identifier of a role"
+//	@Success		200			{object}	api.Response			"update role info"
 //	@Router			/api/v1/roles/{instanceId}  [put]
 //	@Security		BearerTokenAuth
 //
@@ -109,7 +110,7 @@ func (r *role) updateRole(c *gin.Context) {
 //	@Summary		DeleteRole
 //	@Description	DeleteByInstanceId role
 //	@Param			instanceId	path		string			true	"identifier of a role"
-//	@Success		200		{object}	api.Response	"delete role"
+//	@Success		200			{object}	api.Response	"delete role"
 //	@Router			/api/v1/roles/{instanceId} [delete]
 //	@Security		BearerTokenAuth
 //
@@ -128,7 +129,7 @@ func (r *role) deleteRole(c *gin.Context) {
 //	@Summary		GetRoleInfo
 //	@Description	GetByName role info
 //	@Param			instanceId	path		string										true	"identifier of a role"
-//	@Success		200		{object}	api.Response{data=v1.DetailRoleResponse}	"role detail"
+//	@Success		200			{object}	api.Response{data=v1.DetailRoleResponse}	"role detail"
 //	@Router			/api/v1/roles/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
@@ -177,8 +178,9 @@ func (r *role) listRole(c *gin.Context) {
 //	@Tags			Roles
 //	@Summary		AssignRole
 //	@Description	Assign role
-//	@Param			data	body		v1.AssignRoleRequest	true	"assign role request"
-//	@Success		200		{object}	api.Response			"assign role"
+//	@Param			data		body		v1.AssignRoleRequest	true	"assign role request"
+//	@Param			instanceId	path		string					true	"identifier of a role"
+//	@Success		200			{object}	api.Response			"assign role"
 //	@Router			/api/v1/roles/{instanceId}/assign [post]
 //	@Security		BearerTokenAuth
 //
@@ -228,8 +230,9 @@ func (r *role) batchAssignRole(c *gin.Context) {
 //	@Tags			Roles
 //	@Summary		RevokeRole
 //	@Description	Revoke role
-//	@Param			data	body		v1.RevokeRoleRequest	true	"revoke role request"
-//	@Success		200		{object}	api.Response			"revoke role"
+//	@Param			data		body		v1.RevokeRoleRequest	true	"revoke role request"
+//	@Param			instanceId	path		string					true	"identifier of a role"
+//	@Success		200			{object}	api.Response			"revoke role"
 //	@Router			/api/v1/roles/{instanceId}/revoke [post]
 //	@Security		BearerTokenAuth
 //
