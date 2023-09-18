@@ -347,6 +347,13 @@ const docTemplate = `{
                         "description": "query the page size number",
                         "name": "limit",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "identifier of a department",
+                        "name": "instanceId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

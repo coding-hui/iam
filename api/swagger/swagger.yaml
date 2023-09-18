@@ -937,6 +937,11 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: identifier of a department
+        in: path
+        name: instanceId
+        required: true
+        type: string
       responses:
         "200":
           description: departments
