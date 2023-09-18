@@ -45,7 +45,7 @@ func (o *Organization) TableName() string {
 
 // AfterCreate run after create database record.
 func (o *Organization) AfterCreate(tx *gorm.DB) error {
-	o.InstanceID = idutil.GetInstanceID(o.ID, "o-")
+	o.InstanceID = idutil.GetInstanceID(o.ID, "org-")
 
 	return tx.Save(o).Error
 }

@@ -342,10 +342,10 @@ func (d *department) batchRemoveDepartmentMember(c *gin.Context) {
 //	@Tags			Departments
 //	@Summary		ListDepartmentMembers
 //	@Description	List department members
-//	@Param			offset	query		int											false	"query the page number"
-//	@Param			limit	query		int											false	"query the page size number"
-//	@Param			instanceId	path		string	true	"identifier of a department"
-//	@Success		200		{object}	api.Response{data=v1.DepartmentMemberList}	"departments"
+//	@Param			offset		query		int											false	"query the page number"
+//	@Param			limit		query		int											false	"query the page size number"
+//	@Param			instanceId	path		string										true	"identifier of a department"
+//	@Success		200			{object}	api.Response{data=v1.DepartmentMemberList}	"departments"
 //	@Router			/api/v1/departments/{instanceId}/member [get]
 //	@Security		BearerTokenAuth
 //
