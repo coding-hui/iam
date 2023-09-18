@@ -117,7 +117,7 @@ type UserList struct {
 	// +optional
 	metav1.ListMeta `json:",inline"`
 
-	Items []*UserBase `json:"items"`
+	Items []*DetailUserResponse `json:"items"`
 }
 
 // TenantBase represents a tenant restful resource.

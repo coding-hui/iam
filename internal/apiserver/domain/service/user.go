@@ -204,12 +204,26 @@ func (u *userServiceImpl) DetailUser(ctx context.Context, user *model.User) (*v1
 
 // ListUsers list users.
 func (u *userServiceImpl) ListUsers(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error) {
-	users, err := u.Store.UserRepository().List(ctx, opts)
+	userRepo := u.Store.UserRepository()
+	var userList []*v1.DetailUserResponse
+	users, err := userRepo.List(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range users {
+		userList = append(userList, convertUserModel(&v))
+	}
+	count, err := userRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
 
-	return users, nil
+	return &v1.UserList{
+		Items: userList,
+		ListMeta: metav1.ListMeta{
+			TotalCount: count,
+		},
+	}, nil
 }
 
 // ListUserRoles list users.
@@ -260,4 +274,10 @@ func (u *userServiceImpl) EnableUser(ctx context.Context, instanceId string) err
 	user.Disabled = false
 
 	return u.Store.UserRepository().Update(ctx, user, metav1.UpdateOptions{})
+}
+
+func convertUserModel(user *model.User) *v1.DetailUserResponse {
+	return &v1.DetailUserResponse{
+		UserBase: *assembler.ConvertUserModelToBase(user),
+	}
 }

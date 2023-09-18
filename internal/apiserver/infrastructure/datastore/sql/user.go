@@ -172,21 +172,35 @@ func (u *userRepositoryImpl) GetByExternalId(
 }
 
 // List list users.
-func (u *userRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error) {
-	list := &v1.UserList{}
+func (u *userRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) ([]model.User, error) {
+	var list []model.User
 	err := u.db.WithContext(ctx).Model(model.User{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),
 		).
 		Order("id desc").
-		Find(&list.Items).Offset(-1).Limit(-1).
-		Count(&list.TotalCount).Error
+		Find(&list).Error
 	if err != nil {
 		return nil, datastore.NewDBError(err, "failed to list users")
 	}
 
 	return list, err
+}
+
+// Count count users.
+func (u *userRepositoryImpl) Count(ctx context.Context, opts metav1.ListOptions) (int64, error) {
+	var totalCount int64
+	err := u.db.WithContext(ctx).Model(&model.User{}).
+		Scopes(
+			makeCondition(opts),
+		).
+		Count(&totalCount).Error
+	if err != nil {
+		return 0, datastore.NewDBError(err, "failed to get user total")
+	}
+
+	return totalCount, nil
 }
 
 func (u *userRepositoryImpl) deleteExternalUser(ctx context.Context, userId, externalUid, idp string) error {
