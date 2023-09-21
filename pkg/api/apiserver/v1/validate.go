@@ -46,6 +46,22 @@ func (o *UpdateOrganizationRequest) ValidateUpdate() field.ErrorList {
 	return allErrs
 }
 
+// Validate validates that a organization department object is valid.
+func (o *CreateDepartmentRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(o)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// ValidateUpdate validates that a organization department object is valid when update.
+func (o *UpdateDepartmentRequest) ValidateUpdate() field.ErrorList {
+	val := validation.NewValidator(o)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
 // Validate validates that a role object is valid.
 func (r *CreateRoleRequest) Validate() field.ErrorList {
 	val := validation.NewValidator(r)

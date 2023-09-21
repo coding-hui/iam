@@ -41,9 +41,9 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts 
 		return nil, err
 	}
 	if user.External != nil && user.External.ExternalUID != "" && user.External.IdentifyProvider != "" {
-		user.External.UserId = user.InstanceID
+		user.External.UserID = user.InstanceID
 		externalUser := &model.UserExternal{
-			UserId:           user.InstanceID,
+			UserID:           user.InstanceID,
 			ExternalUID:      user.External.ExternalUID,
 			IdentifyProvider: user.External.IdentifyProvider,
 		}
@@ -135,7 +135,7 @@ func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId str
 	}
 	departmentIds, _ := u.getUserDepartments(ctx, instanceId)
 	for _, v := range departmentIds {
-		user.DepartmentIds = append(user.DepartmentIds, v.DepartmentId)
+		user.DepartmentIds = append(user.DepartmentIds, v.DepartmentID)
 	}
 
 	return user, nil
@@ -159,7 +159,7 @@ func (u *userRepositoryImpl) GetByExternalId(
 
 		return nil, err
 	}
-	user, err := u.GetByInstanceId(ctx, externalUser.UserId, opts)
+	user, err := u.GetByInstanceId(ctx, externalUser.UserID, opts)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
@@ -205,7 +205,7 @@ func (u *userRepositoryImpl) Count(ctx context.Context, opts metav1.ListOptions)
 
 func (u *userRepositoryImpl) deleteExternalUser(ctx context.Context, userId, externalUid, idp string) error {
 	externalUser := &model.UserExternal{
-		UserId:           userId,
+		UserID:           userId,
 		ExternalUID:      externalUid,
 		IdentifyProvider: idp,
 	}

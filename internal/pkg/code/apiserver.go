@@ -118,6 +118,9 @@ const (
 
 	// ErrCannotDisableBuiltInOrg - 400: Built-in organizations cannot be disabled.
 	ErrCannotDisableBuiltInOrg
+
+	// ErrMaxDepartmentsReached  - 400: The number of departments has reached its limit.
+	ErrMaxDepartmentsReached
 )
 
 // iam-apiserver: organization department errors.

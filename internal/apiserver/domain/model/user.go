@@ -65,7 +65,7 @@ func (u *User) Compare(pwd string) error {
 
 type UserExternal struct {
 	ID               uint64 `json:"-"                gorm:"primary_key;AUTO_INCREMENT;column:id"`
-	UserId           string `json:"userId"           gorm:"column:user_id;type:varchar(64)"`
+	UserID           string `json:"userId"           gorm:"column:user_id;type:varchar(64)"`
 	ExternalUID      string `json:"externalUID"      gorm:"column:external_uid;type:varchar(64)"`
 	IdentifyProvider string `json:"identifyProvider" gorm:"column:idp;type:varchar(64)"`
 }

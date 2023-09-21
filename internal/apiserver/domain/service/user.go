@@ -95,8 +95,8 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	var deptMembers []*model.DepartmentMember
 	for _, dept := range req.DepartmentIds {
 		deptMembers = append(deptMembers, &model.DepartmentMember{
-			DepartmentId: dept,
-			MemberId:     user.GetInstanceID(),
+			DepartmentID: dept,
+			MemberID:     user.GetInstanceID(),
 		})
 	}
 	err = u.Store.OrganizationRepository().AddDepartmentMembers(ctx, deptMembers)

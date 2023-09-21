@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"strings"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
@@ -16,7 +17,12 @@ import (
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
+	"github.com/coding-hui/common/fields"
 	metav1 "github.com/coding-hui/common/meta/v1"
+)
+
+const (
+	DefaultMaxChildrenDepartments = 500
 )
 
 // OrganizationService Organization manage api.
@@ -32,6 +38,8 @@ type OrganizationService interface {
 	BatchAddDepartmentMembers(ctx context.Context, department string, batchAddReq v1.BatchAddDepartmentMemberRequest) error
 	BatchRemoveDepartmentMembers(ctx context.Context, department string, batchRemoveReq v1.BatchRemoveDepartmentMemberRequest) error
 	ListDepartmentMembers(ctx context.Context, department string, opts metav1.ListOptions) (*v1.DepartmentMemberList, error)
+	CreateDepartment(ctx context.Context, req v1.CreateDepartmentRequest, opts metav1.CreateOptions) error
+	UpdateDepartment(ctx context.Context, dept string, req v1.UpdateDepartmentRequest, opts metav1.UpdateOptions) error
 	Init(ctx context.Context) error
 }
 
@@ -79,6 +87,8 @@ func (o *organizationServiceImpl) CreateOrganization(
 		ObjectMeta: metav1.ObjectMeta{
 			Name: req.Name,
 		},
+		ParentID:    model.RootOrganizationID,
+		Ancestors:   model.RootOrganizationID,
 		DisplayName: req.DisplayName,
 		WebsiteUrl:  req.WebsiteUrl,
 		Favicon:     req.Favicon,
@@ -163,6 +173,11 @@ func (o *organizationServiceImpl) DetailOrganization(_ context.Context, org *mod
 }
 
 func (o *organizationServiceImpl) ListOrganizations(ctx context.Context, opts metav1.ListOptions) (*v1.OrganizationList, error) {
+	selector, err := fields.ParseSelector(opts.FieldSelector)
+	if err != nil {
+		return nil, err
+	}
+	opts.FieldSelector = fields.AndSelectors(selector, fields.OneTermEqualSelector("parentId", model.RootOrganizationID)).String()
 	items, err := o.Store.OrganizationRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err
@@ -212,8 +227,8 @@ func (o *organizationServiceImpl) BatchAddDepartmentMembers(
 	var deptMembers []*model.DepartmentMember
 	for _, member := range batchAddReq.Members {
 		deptMembers = append(deptMembers, &model.DepartmentMember{
-			DepartmentId: dept.GetInstanceID(),
-			MemberId:     member.MemberId,
+			DepartmentID: dept.GetInstanceID(),
+			MemberID:     member.MemberID,
 		})
 	}
 	err = o.Store.OrganizationRepository().AddDepartmentMembers(ctx, deptMembers)
@@ -236,8 +251,8 @@ func (o *organizationServiceImpl) BatchRemoveDepartmentMembers(
 	var deptMembers []*model.DepartmentMember
 	for _, member := range batchRemoveReq.Members {
 		deptMembers = append(deptMembers, &model.DepartmentMember{
-			DepartmentId: dept.GetInstanceID(),
-			MemberId:     member.MemberId,
+			DepartmentID: dept.GetInstanceID(),
+			MemberID:     member.MemberID,
 		})
 	}
 	err = o.Store.OrganizationRepository().RemoveDepartmentMembers(ctx, deptMembers)
@@ -260,7 +275,7 @@ func (o *organizationServiceImpl) ListDepartmentMembers(
 	var deptMembers []*v1.DepartmentMember
 	for _, item := range items {
 		deptMembers = append(deptMembers, &v1.DepartmentMember{
-			MemberId:   item.MemberId,
+			MemberID:   item.MemberID,
 			MemberType: "user",
 		})
 	}
@@ -276,4 +291,108 @@ func (o *organizationServiceImpl) ListDepartmentMembers(
 	}
 
 	return resp, nil
+}
+
+func (o *organizationServiceImpl) CreateDepartment(
+	ctx context.Context,
+	req v1.CreateDepartmentRequest,
+	opts metav1.CreateOptions,
+) error {
+	orgRepo := o.Store.OrganizationRepository()
+	org, err := orgRepo.GetByInstanceId(ctx, req.OrganizationID, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	childCount, err := orgRepo.CountDepartmentByOrg(ctx, org.GetInstanceID(), metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	if childCount > DefaultMaxChildrenDepartments {
+		return errors.WithCode(code.ErrMaxDepartmentsReached,
+			"Organization [%s] creates an upper limit on the number of departments", org.GetName())
+	}
+	parent, err := orgRepo.GetByInstanceId(ctx, req.ParentID, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	dept := assembler.ConvertCreateDeptReqToModel(req, parent)
+	if dept.DisplayName == "" {
+		dept.DisplayName = req.Name
+	}
+	err = orgRepo.Create(ctx, dept, opts)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *organizationServiceImpl) UpdateDepartment(
+	ctx context.Context,
+	deptId string,
+	req v1.UpdateDepartmentRequest,
+	opts metav1.UpdateOptions,
+) error {
+	orgRepo := o.Store.OrganizationRepository()
+	_, err := orgRepo.GetByInstanceId(ctx, req.OrganizationID, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	newParent, err := orgRepo.GetByInstanceId(ctx, req.ParentID, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	dept, err := orgRepo.GetByInstanceId(ctx, deptId, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	oldAncestors := dept.Ancestors
+	newAncestors := newParent.Ancestors + "," + newParent.InstanceID
+	dept.Ancestors = newAncestors
+	if oldAncestors != newAncestors {
+		err = o.updateDeptChildren(deptId, newAncestors, oldAncestors)
+		if err != nil {
+			log.Errorf("Failed to update the [%s] sub department.", dept.GetName())
+			return err
+		}
+	}
+
+	if dept.DisplayName != "" {
+		dept.DisplayName = req.DisplayName
+	}
+	if dept.WebsiteUrl != "" {
+		dept.WebsiteUrl = req.WebsiteUrl
+	}
+	if dept.Description != "" {
+		dept.Description = req.Description
+	}
+	if dept.Favicon != "" {
+		dept.Favicon = req.Favicon
+	}
+
+	err = orgRepo.Update(ctx, dept, opts)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *organizationServiceImpl) updateDeptChildren(deptId, newAncestors, oldAncestors string) error {
+	children, err := o.Store.OrganizationRepository().ListChildDepartments(context.Background(), deptId, metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	var needUpdates []*model.Organization
+	for _, child := range children {
+		child.Ancestors = strings.ReplaceAll(child.Ancestors, oldAncestors, newAncestors)
+		needUpdates = append(needUpdates, &child)
+	}
+	if len(needUpdates) > 0 {
+		return o.Store.OrganizationRepository().BatchUpdate(context.Background(), needUpdates, metav1.UpdateOptions{})
+	}
+	return nil
 }

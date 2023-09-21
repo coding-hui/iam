@@ -474,25 +474,28 @@ type PolicyList struct {
 
 // CreateDepartmentRequest create organization department request.
 type CreateDepartmentRequest struct {
-	Name        string `json:"name"                  validate:"required,name"`
-	DisplayName string `json:"displayName,omitempty"`
-	WebsiteUrl  string `json:"websiteUrl,omitempty"`
-	Favicon     string `json:"favicon,omitempty"`
-	Disabled    bool   `json:"disabled,omitempty"`
-	Description string `json:"description,omitempty"`
+	Name           string `json:"name"                  validate:"required,name"`
+	OrganizationID string `json:"organizationId"        validate:"required"`
+	ParentID       string `json:"parentId"              validate:"required"`
+	DisplayName    string `json:"displayName,omitempty"`
+	WebsiteUrl     string `json:"websiteUrl,omitempty"`
+	Favicon        string `json:"favicon,omitempty"`
+	Description    string `json:"description,omitempty"`
 }
 
 // UpdateDepartmentRequest update organization department request.
 type UpdateDepartmentRequest struct {
-	DisplayName string `json:"displayName"           validate:"required,min=1,max=30"`
-	WebsiteUrl  string `json:"websiteUrl,omitempty"`
-	Favicon     string `json:"favicon,omitempty"`
-	Description string `json:"description,omitempty"`
+	OrganizationID string `json:"organizationId"        validate:"required"`
+	ParentID       string `json:"parentId"              validate:"required"`
+	DisplayName    string `json:"displayName"           validate:"required,min=1,max=30"`
+	WebsiteUrl     string `json:"websiteUrl,omitempty"`
+	Favicon        string `json:"favicon,omitempty"`
+	Description    string `json:"description,omitempty"`
 }
 
 // DepartmentMember department member.
 type DepartmentMember struct {
-	MemberId   string `json:"memberId"             validate:"required"`
+	MemberID   string `json:"memberId"             validate:"required"`
 	MemberType string `json:"memberType,omitempty"`
 }
 

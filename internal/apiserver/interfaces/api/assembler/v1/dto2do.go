@@ -90,3 +90,19 @@ func ConvertCreateUserReqToUserModel(req v1.CreateUserRequest, external *model.U
 		External: external,
 	}
 }
+
+// ConvertCreateDeptReqToModel assemble the create org dept request to Organization Model.
+func ConvertCreateDeptReqToModel(req v1.CreateDepartmentRequest, parent *model.Organization) *model.Organization {
+	return &model.Organization{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: req.Name,
+		},
+		Ancestors:   parent.Ancestors + "," + parent.InstanceID,
+		ParentID:    req.ParentID,
+		DisplayName: req.DisplayName,
+		WebsiteUrl:  req.WebsiteUrl,
+		Favicon:     req.Favicon,
+		Disabled:    false,
+		Description: req.Description,
+	}
+}

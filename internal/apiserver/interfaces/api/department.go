@@ -56,7 +56,7 @@ func (d *department) RegisterApiGroup(g *gin.Engine) {
 //
 // createDepartment create a new department.
 func (d *department) createDepartment(c *gin.Context) {
-	createReq := v1.CreateOrganizationRequest{}
+	createReq := v1.CreateDepartmentRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -66,7 +66,7 @@ func (d *department) createDepartment(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = d.OrganizationService.CreateOrganization(c.Request.Context(), createReq, metav1.CreateOptions{})
+	err = d.OrganizationService.CreateDepartment(c.Request.Context(), createReq, metav1.CreateOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -88,7 +88,7 @@ func (d *department) createDepartment(c *gin.Context) {
 //
 // updateDepartment update department info.
 func (d *department) updateDepartment(c *gin.Context) {
-	updateReq := v1.UpdateOrganizationRequest{}
+	updateReq := v1.UpdateDepartmentRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
@@ -98,7 +98,7 @@ func (d *department) updateDepartment(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = d.OrganizationService.UpdateOrganization(c.Request.Context(), c.Param("instanceId"), updateReq, metav1.UpdateOptions{})
+	err = d.OrganizationService.UpdateDepartment(c.Request.Context(), c.Param("instanceId"), updateReq, metav1.UpdateOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

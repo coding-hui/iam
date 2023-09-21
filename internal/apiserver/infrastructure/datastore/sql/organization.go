@@ -6,6 +6,7 @@ package sql
 
 import (
 	"context"
+	"gorm.io/gorm/clause"
 	"strings"
 
 	"gorm.io/gorm"
@@ -51,6 +52,31 @@ func (o *orgRepositoryImpl) Update(ctx context.Context, org *model.Organization,
 		}
 
 		return err
+	}
+
+	return nil
+}
+
+func (o *orgRepositoryImpl) BatchUpdate(ctx context.Context, list []*model.Organization, opts metav1.UpdateOptions) error {
+	db := o.db.Debug().WithContext(ctx).Model(model.Organization{})
+	if len(opts.DryRun) > 0 {
+		db.DryRun = true
+	}
+	needUpdatesColumns := []string{
+		"ancestors",
+		"parent_id",
+		"display_name",
+		"website_url",
+		"favicon",
+		"disabled",
+		"description",
+	}
+	err := db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "instance_id"}},
+		DoUpdates: clause.AssignmentColumns(needUpdatesColumns),
+	}).CreateInBatches(&list, 500).Error
+	if err != nil {
+		return datastore.NewDBError(err, "failed to batch update organizations.")
 	}
 
 	return nil
@@ -133,6 +159,21 @@ func (o *orgRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (
 	return list, err
 }
 
+func (o *orgRepositoryImpl) CountDepartmentByOrg(ctx context.Context, org string, opts metav1.ListOptions) (int64, error) {
+	var totalCount int64
+	err := o.db.WithContext(ctx).Model(&model.Organization{}).
+		Scopes(
+			makeCondition(opts),
+		).
+		Where("FIND_IN_SET(?, ancestors)", org).
+		Count(&totalCount).Error
+	if err != nil {
+		return 0, datastore.NewDBError(err, "failed to get department total")
+	}
+
+	return totalCount, nil
+}
+
 func (o *orgRepositoryImpl) AddDepartmentMembers(ctx context.Context, members []*model.DepartmentMember) error {
 	db := o.db.WithContext(ctx).Model(&model.DepartmentMember{})
 	err := db.CreateInBatches(members, 500).Error
@@ -154,6 +195,26 @@ func (o *orgRepositoryImpl) RemoveDepartmentMembers(ctx context.Context, members
 	}
 
 	return err
+}
+
+func (o *orgRepositoryImpl) ListChildDepartments(
+	ctx context.Context,
+	org string,
+	opts metav1.ListOptions,
+) ([]model.Organization, error) {
+	var child []model.Organization
+	err := o.db.WithContext(ctx).Model(&model.Organization{}).
+		Scopes(
+			makeCondition(opts),
+			paginate(opts),
+		).
+		Where("FIND_IN_SET(?, ancestors)", org).
+		Find(&child).Error
+	if err != nil {
+		return nil, datastore.NewDBError(err, "failed to list 【org】 child departments")
+	}
+
+	return child, nil
 }
 
 func (o *orgRepositoryImpl) ListDepartmentMembers(
