@@ -363,8 +363,7 @@ func (o *organizationServiceImpl) CreateDepartment(
 		log.Errorf("Failed to get parent dept [%s]", parent.GetName())
 		return err
 	}
-	parent.IsLeaf = false
-	err = orgRepo.Update(ctx, parent, metav1.UpdateOptions{})
+	err = orgRepo.UpdateIsLeafState(ctx, parent.GetInstanceID(), false)
 	if err != nil {
 		log.Errorf("Failed to update parent dept [%s] isLeaf", parent.GetName())
 		return err
