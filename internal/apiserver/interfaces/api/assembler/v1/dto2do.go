@@ -103,6 +103,8 @@ func ConvertCreateDeptReqToModel(req v1.CreateDepartmentRequest, parent *model.O
 		WebsiteUrl:  req.WebsiteUrl,
 		Favicon:     req.Favicon,
 		Disabled:    false,
+		IsLeaf:      false,
+		Owner:       req.OrganizationID,
 		Description: req.Description,
 	}
 }

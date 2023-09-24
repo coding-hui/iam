@@ -38,7 +38,7 @@ type UserService interface {
 	GetUser(ctx context.Context, username string, opts metav1.GetOptions) (*model.User, error)
 	GetUserByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.User, error)
 	DetailUser(ctx context.Context, user *model.User) (*v1.DetailUserResponse, error)
-	ListUsers(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error)
+	ListUsers(ctx context.Context, opts v1.ListUserOptions) (*v1.UserList, error)
 	ListUserRoles(ctx context.Context, instanceId string, opts metav1.ListOptions) (*v1.RoleList, error)
 	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	DisableUser(ctx context.Context, instanceId string) error
@@ -203,7 +203,7 @@ func (u *userServiceImpl) DetailUser(ctx context.Context, user *model.User) (*v1
 }
 
 // ListUsers list users.
-func (u *userServiceImpl) ListUsers(ctx context.Context, opts metav1.ListOptions) (*v1.UserList, error) {
+func (u *userServiceImpl) ListUsers(ctx context.Context, opts v1.ListUserOptions) (*v1.UserList, error) {
 	userRepo := u.Store.UserRepository()
 	var userList []*v1.DetailUserResponse
 	users, err := userRepo.List(ctx, opts)

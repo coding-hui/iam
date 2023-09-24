@@ -7,9 +7,10 @@ package repository
 import (
 	"context"
 
-	metav1 "github.com/coding-hui/common/meta/v1"
-
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 // UserRepository defines the user repository interface.
@@ -21,6 +22,6 @@ type UserRepository interface {
 	GetByName(ctx context.Context, username string, opts metav1.GetOptions) (*model.User, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.User, error)
 	GetByExternalId(ctx context.Context, openId, externalId string, opts metav1.GetOptions) (*model.User, error)
-	List(ctx context.Context, opts metav1.ListOptions) ([]model.User, error)
-	Count(ctx context.Context, opts metav1.ListOptions) (int64, error)
+	List(ctx context.Context, opts v1.ListUserOptions) ([]model.User, error)
+	Count(ctx context.Context, opts v1.ListUserOptions) (int64, error)
 }

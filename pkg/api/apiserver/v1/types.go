@@ -54,6 +54,12 @@ const (
 	API ResourceType = "API"
 )
 
+// ListUserOptions list user options.
+type ListUserOptions struct {
+	metav1.ListOptions `       json:",inline"`
+	DepartmentID       string `json:"departmentId"`
+}
+
 // CreateUserRequest create user request.
 type CreateUserRequest struct {
 	Name             string   `json:"name"                       validate:"required,name"`
@@ -361,11 +367,15 @@ type OrganizationBase struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	DisplayName string `json:"displayName"`
-	WebsiteUrl  string `json:"websiteUrl"`
-	Favicon     string `json:"favicon"`
-	Disabled    bool   `json:"disabled"`
-	Description string `json:"description"`
+	DisplayName  string `json:"displayName"`
+	WebsiteUrl   string `json:"websiteUrl"`
+	Favicon      string `json:"favicon"`
+	Disabled     bool   `json:"disabled"`
+	Description  string `json:"description"`
+	IsLeaf       bool   `json:"isLeaf"`
+	ParentID     string `json:"parentId"`
+	Owner        string `json:"owner"`
+	MembersCount int64  `json:"membersCount"`
 }
 
 // DetailOrganizationResponse org detail.
@@ -382,7 +392,7 @@ type OrganizationList struct {
 	// +optional
 	metav1.ListMeta `json:",inline"`
 
-	Items []*OrganizationBase `json:"items"`
+	Items []*DetailOrganizationResponse `json:"items"`
 }
 
 const (
@@ -472,6 +482,22 @@ type PolicyList struct {
 	Items []*PolicyBase `json:"items"`
 }
 
+// DetailDepartmentResponse department detail.
+type DetailDepartmentResponse struct {
+	OrganizationBase `json:",inline"`
+
+	OrganizationID string `json:"organizationId"`
+}
+
+// DepartmentList is the whole list of all departments which have been stored in stroage.
+type DepartmentList struct {
+	// Standard list metadata.
+	// +optional
+	metav1.ListMeta `json:",inline"`
+
+	Items []*DetailDepartmentResponse `json:"items"`
+}
+
 // CreateDepartmentRequest create organization department request.
 type CreateDepartmentRequest struct {
 	Name           string `json:"name"                  validate:"required,name"`
@@ -487,7 +513,7 @@ type CreateDepartmentRequest struct {
 type UpdateDepartmentRequest struct {
 	OrganizationID string `json:"organizationId"        validate:"required"`
 	ParentID       string `json:"parentId"              validate:"required"`
-	DisplayName    string `json:"displayName"           validate:"required,min=1,max=30"`
+	DisplayName    string `json:"displayName,omitempty"`
 	WebsiteUrl     string `json:"websiteUrl,omitempty"`
 	Favicon        string `json:"favicon,omitempty"`
 	Description    string `json:"description,omitempty"`

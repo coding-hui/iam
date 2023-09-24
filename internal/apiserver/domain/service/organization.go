@@ -35,10 +35,12 @@ type OrganizationService interface {
 	ListOrganizations(ctx context.Context, opts metav1.ListOptions) (*v1.OrganizationList, error)
 	DisableOrganization(ctx context.Context, instanceId string) error
 	EnableOrganization(ctx context.Context, instanceId string) error
+	ListDepartments(ctx context.Context, opts metav1.ListOptions) (*v1.DepartmentList, error)
 	BatchAddDepartmentMembers(ctx context.Context, department string, batchAddReq v1.BatchAddDepartmentMemberRequest) error
 	BatchRemoveDepartmentMembers(ctx context.Context, department string, batchRemoveReq v1.BatchRemoveDepartmentMemberRequest) error
 	ListDepartmentMembers(ctx context.Context, department string, opts metav1.ListOptions) (*v1.DepartmentMemberList, error)
 	CreateDepartment(ctx context.Context, req v1.CreateDepartmentRequest, opts metav1.CreateOptions) error
+	DeleteDepartment(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error
 	UpdateDepartment(ctx context.Context, dept string, req v1.UpdateDepartmentRequest, opts metav1.UpdateOptions) error
 	Init(ctx context.Context) error
 }
@@ -63,7 +65,7 @@ func (o *organizationServiceImpl) Init(ctx context.Context) error {
 	}
 	createReq := v1.CreateOrganizationRequest{
 		Name:        model.DefaultOrganization,
-		DisplayName: "Platform",
+		DisplayName: "Built-in Organization",
 		WebsiteUrl:  "http://iam.wecoding.top",
 		Favicon:     "",
 		Disabled:    false,
@@ -165,8 +167,13 @@ func (o *organizationServiceImpl) GetOrganization(
 	return org, nil
 }
 
-func (o *organizationServiceImpl) DetailOrganization(_ context.Context, org *model.Organization) (*v1.DetailOrganizationResponse, error) {
-	base := *assembler.ConvertOrganizationModelToBase(org)
+func (o *organizationServiceImpl) DetailOrganization(ctx context.Context, org *model.Organization) (*v1.DetailOrganizationResponse, error) {
+	base := *assembler.ConvertModelToOrganizationBase(org)
+	membersCount, err := o.Store.OrganizationRepository().CountDepartmentMembers(ctx, base.InstanceID, metav1.ListOptions{})
+	if err != nil {
+		log.Warnf("Failed to get org [%s] members", base.Name)
+	}
+	base.MembersCount = membersCount
 	return &v1.DetailOrganizationResponse{
 		OrganizationBase: base,
 	}, nil
@@ -178,12 +185,29 @@ func (o *organizationServiceImpl) ListOrganizations(ctx context.Context, opts me
 		return nil, err
 	}
 	opts.FieldSelector = fields.AndSelectors(selector, fields.OneTermEqualSelector("parentId", model.RootOrganizationID)).String()
-	items, err := o.Store.OrganizationRepository().List(ctx, opts)
+	orgRepo := o.Store.OrganizationRepository()
+
+	var orgList []*v1.DetailOrganizationResponse
+	organizations, err := orgRepo.List(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range organizations {
+		orgList = append(orgList, &v1.DetailOrganizationResponse{
+			OrganizationBase: *assembler.ConvertModelToOrganizationBase(&v),
+		})
+	}
+	count, err := orgRepo.Count(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
 
-	return items, nil
+	return &v1.OrganizationList{
+		Items: orgList,
+		ListMeta: metav1.ListMeta{
+			TotalCount: count,
+		},
+	}, nil
 }
 
 func (o *organizationServiceImpl) DisableOrganization(ctx context.Context, instanceId string) error {
@@ -213,6 +237,29 @@ func (o *organizationServiceImpl) EnableOrganization(ctx context.Context, instan
 	org.Disabled = false
 
 	return o.Store.OrganizationRepository().Update(ctx, org, metav1.UpdateOptions{})
+}
+
+func (o *organizationServiceImpl) ListDepartments(ctx context.Context, opts metav1.ListOptions) (*v1.DepartmentList, error) {
+	orgRepo := o.Store.OrganizationRepository()
+	var deptList []*v1.DetailDepartmentResponse
+	departments, err := orgRepo.List(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range departments {
+		deptList = append(deptList, convertToDepartmentDetail(&v))
+	}
+	count, err := orgRepo.Count(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.DepartmentList{
+		Items: deptList,
+		ListMeta: metav1.ListMeta{
+			TotalCount: count,
+		},
+	}, nil
 }
 
 func (o *organizationServiceImpl) BatchAddDepartmentMembers(
@@ -303,7 +350,7 @@ func (o *organizationServiceImpl) CreateDepartment(
 	if err != nil {
 		return err
 	}
-	childCount, err := orgRepo.CountDepartmentByOrg(ctx, org.GetInstanceID(), metav1.ListOptions{})
+	childCount, err := orgRepo.CountDepartmentByParent(ctx, org.GetInstanceID(), metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
@@ -313,6 +360,13 @@ func (o *organizationServiceImpl) CreateDepartment(
 	}
 	parent, err := orgRepo.GetByInstanceId(ctx, req.ParentID, metav1.GetOptions{})
 	if err != nil {
+		log.Errorf("Failed to get parent dept [%s]", parent.GetName())
+		return err
+	}
+	parent.IsLeaf = false
+	err = orgRepo.Update(ctx, parent, metav1.UpdateOptions{})
+	if err != nil {
+		log.Errorf("Failed to update parent dept [%s] isLeaf", parent.GetName())
 		return err
 	}
 	dept := assembler.ConvertCreateDeptReqToModel(req, parent)
@@ -327,30 +381,61 @@ func (o *organizationServiceImpl) CreateDepartment(
 	return nil
 }
 
+func (o *organizationServiceImpl) DeleteDepartment(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
+	orgRepo := o.Store.OrganizationRepository()
+	dept, err := orgRepo.GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	if count, err := orgRepo.CountDepartmentByParent(ctx, dept.InstanceID, metav1.ListOptions{}); err != nil || count > 0 {
+		if err != nil {
+			return err
+		}
+		return errors.WithCode(code.ErrSubDepartmentsExist, "[%d] sub-departments exist and cannot be deleted", count)
+	}
+	err = orgRepo.DeleteByInstanceId(ctx, instanceId, opts)
+	if err != nil {
+		return err
+	}
+	if err := o.updateIsLeafStateIfNecessary(dept.ParentID); err != nil {
+		log.Errorf("Failed to update parent [%s] isLeaf state", dept.ParentID)
+		return err
+	}
+
+	return nil
+}
+
 func (o *organizationServiceImpl) UpdateDepartment(
 	ctx context.Context,
 	deptId string,
 	req v1.UpdateDepartmentRequest,
 	opts metav1.UpdateOptions,
 ) error {
-	orgRepo := o.Store.OrganizationRepository()
+	var (
+		orgRepo      = o.Store.OrganizationRepository()
+		dept         *model.Organization
+		newParent    *model.Organization
+		oldParentID  string
+		oldAncestors string
+		newAncestors string
+	)
+
 	_, err := orgRepo.GetByInstanceId(ctx, req.OrganizationID, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
-
-	newParent, err := orgRepo.GetByInstanceId(ctx, req.ParentID, metav1.GetOptions{})
+	newParent, err = orgRepo.GetByInstanceId(ctx, req.ParentID, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
-
-	dept, err := orgRepo.GetByInstanceId(ctx, deptId, metav1.GetOptions{})
+	dept, err = orgRepo.GetByInstanceId(ctx, deptId, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
+	oldParentID = dept.ParentID
 
-	oldAncestors := dept.Ancestors
-	newAncestors := newParent.Ancestors + "," + newParent.InstanceID
+	oldAncestors = dept.Ancestors
+	newAncestors = newParent.Ancestors + "," + newParent.InstanceID
 	dept.Ancestors = newAncestors
 	if oldAncestors != newAncestors {
 		err = o.updateDeptChildren(deptId, newAncestors, oldAncestors)
@@ -360,24 +445,52 @@ func (o *organizationServiceImpl) UpdateDepartment(
 		}
 	}
 
-	if dept.DisplayName != "" {
+	if req.DisplayName != "" {
 		dept.DisplayName = req.DisplayName
 	}
-	if dept.WebsiteUrl != "" {
+	if req.WebsiteUrl != "" {
 		dept.WebsiteUrl = req.WebsiteUrl
 	}
-	if dept.Description != "" {
+	if req.Description != "" {
 		dept.Description = req.Description
 	}
-	if dept.Favicon != "" {
+	if req.Favicon != "" {
 		dept.Favicon = req.Favicon
 	}
-
+	dept.ParentID = newParent.GetInstanceID()
+	// update dept info
 	err = orgRepo.Update(ctx, dept, opts)
 	if err != nil {
 		return err
 	}
+	// update new parent isLeaf state
+	err = orgRepo.UpdateIsLeafState(ctx, newParent.GetInstanceID(), false)
+	if err != nil {
+		log.Errorf("Failed to update new parent [%s] isLeaf state", newParent.GetName())
+		return err
+	}
+	// update old parent isLeaf state if necessary
+	err = o.updateIsLeafStateIfNecessary(oldParentID)
+	if err != nil {
+		log.Errorf("Failed to update old parent [%s] isLeaf state", oldParentID)
+		return err
+	}
 
+	return nil
+}
+
+func (o *organizationServiceImpl) updateIsLeafStateIfNecessary(orgOrDept string) error {
+	orgRepo := o.Store.OrganizationRepository()
+	childCount, err := orgRepo.CountDepartmentByParent(context.Background(), orgOrDept, metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	// if the parent department has no children, update the parent isLeaf to true
+	isLeaf := childCount <= 0
+	err = orgRepo.UpdateIsLeafState(context.Background(), orgOrDept, isLeaf)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -395,4 +508,11 @@ func (o *organizationServiceImpl) updateDeptChildren(deptId, newAncestors, oldAn
 		return o.Store.OrganizationRepository().BatchUpdate(context.Background(), needUpdates, metav1.UpdateOptions{})
 	}
 	return nil
+}
+
+func convertToDepartmentDetail(model *model.Organization) *v1.DetailDepartmentResponse {
+	return &v1.DetailDepartmentResponse{
+		OrganizationBase: *assembler.ConvertModelToOrganizationBase(model),
+		OrganizationID:   model.Owner,
+	}
 }

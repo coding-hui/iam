@@ -127,4 +127,7 @@ const (
 const (
 	// ErrMemberAlreadyInDepartment - 400: Member is already in department.
 	ErrMemberAlreadyInDepartment int = iota + 110601
+
+	// ErrSubDepartmentsExist - 400: Sub departments exist and cannot be deleted.
+	ErrSubDepartmentsExist
 )

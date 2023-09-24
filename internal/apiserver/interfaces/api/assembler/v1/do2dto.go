@@ -94,8 +94,8 @@ func ConvertPolicyModelToProtoInfo(policy *model.Policy) *pb.PolicyInfo {
 	}
 }
 
-// ConvertOrganizationModelToBase assemble the Organization model to DTO.
-func ConvertOrganizationModelToBase(org *model.Organization) *v1.OrganizationBase {
+// ConvertModelToOrganizationBase assemble the Organization model to DTO.
+func ConvertModelToOrganizationBase(org *model.Organization) *v1.OrganizationBase {
 	return &v1.OrganizationBase{
 		ObjectMeta:  org.ObjectMeta,
 		DisplayName: org.DisplayName,
@@ -103,5 +103,8 @@ func ConvertOrganizationModelToBase(org *model.Organization) *v1.OrganizationBas
 		Favicon:     org.Favicon,
 		Disabled:    org.Disabled,
 		Description: org.Description,
+		IsLeaf:      org.IsLeaf,
+		ParentID:    org.ParentID,
+		Owner:       org.Owner,
 	}
 }

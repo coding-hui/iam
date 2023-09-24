@@ -17,7 +17,7 @@ const (
 	// DefaultOrganization default organization name.
 	DefaultOrganization string = "built-in"
 	// RootOrganizationID root org id
-	RootOrganizationID string = "0"
+	RootOrganizationID string = "root"
 )
 
 func init() {
@@ -33,12 +33,14 @@ type Organization struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
+	Owner       string `json:"owner"       gorm:"column:owner;varchar(64)"`
 	Ancestors   string `json:"ancestors"   gorm:"column:ancestors;varchar(521)"`
 	ParentID    string `json:"parentId"    gorm:"column:parent_id;varchar(64)"`
 	DisplayName string `json:"displayName" gorm:"column:display_name;varchar(100)"`
 	WebsiteUrl  string `json:"websiteUrl"  gorm:"column:website_url;varchar(100)"`
 	Favicon     string `json:"favicon"     gorm:"column:favicon;varchar(100)"`
 	Disabled    bool   `json:"disabled"    gorm:"column:disabled;type:bool"`
+	IsLeaf      bool   `json:"isLeaf"      gorm:"column:is_leaf;type:bool;default:true"`
 	Description string `json:"description" gorm:"column:description;type:varchar(512)"`
 
 	Children []Organization `json:"children" gorm:"-"`

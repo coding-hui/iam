@@ -165,10 +165,13 @@ func (u *user) listUser(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := u.UserService.ListUsers(c.Request.Context(), metav1.ListOptions{
-		Limit:         &pageSize,
-		Offset:        &page,
-		FieldSelector: c.Query("fieldSelector"),
+	resp, err := u.UserService.ListUsers(c.Request.Context(), v1.ListUserOptions{
+		ListOptions: metav1.ListOptions{
+			Limit:         &pageSize,
+			Offset:        &page,
+			FieldSelector: c.Query("fieldSelector"),
+		},
+		DepartmentID: c.Query("departmentId"),
 	})
 	if err != nil {
 		api.FailWithErrCode(err, c)

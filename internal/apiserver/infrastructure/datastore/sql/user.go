@@ -6,6 +6,7 @@ package sql
 
 import (
 	"context"
+	"fmt"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -172,15 +173,24 @@ func (u *userRepositoryImpl) GetByExternalId(
 }
 
 // List list users.
-func (u *userRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) ([]model.User, error) {
+func (u *userRepositoryImpl) List(ctx context.Context, opts v1.ListUserOptions) ([]model.User, error) {
 	var list []model.User
-	err := u.db.WithContext(ctx).Model(model.User{}).
+	db := u.db.WithContext(ctx).Model(model.User{}).
 		Scopes(
-			makeCondition(opts),
-			paginate(opts),
+			paginate(opts.ListOptions),
 		).
-		Order("id desc").
-		Find(&list).Error
+		Order("id desc")
+	if opts.DepartmentID != "" {
+		member := model.User{}
+		deptMember := model.DepartmentMember{}
+		db.Joins(fmt.Sprintf("left join %s on %s = %s",
+			deptMember.TableName(),
+			deptMember.TableName()+".member_id",
+			member.TableName()+".instance_id",
+		)).Where(deptMember.TableName()+".department_id = ?", opts.DepartmentID)
+	}
+
+	err := db.Debug().Find(&list).Error
 	if err != nil {
 		return nil, datastore.NewDBError(err, "failed to list users")
 	}
@@ -189,11 +199,11 @@ func (u *userRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) 
 }
 
 // Count count users.
-func (u *userRepositoryImpl) Count(ctx context.Context, opts metav1.ListOptions) (int64, error) {
+func (u *userRepositoryImpl) Count(ctx context.Context, opts v1.ListUserOptions) (int64, error) {
 	var totalCount int64
 	err := u.db.WithContext(ctx).Model(&model.User{}).
 		Scopes(
-			makeCondition(opts),
+			makeCondition(opts.ListOptions),
 		).
 		Count(&totalCount).Error
 	if err != nil {

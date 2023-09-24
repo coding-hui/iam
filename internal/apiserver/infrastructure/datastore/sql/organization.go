@@ -6,19 +6,18 @@ package sql
 
 import (
 	"context"
-	"gorm.io/gorm/clause"
 	"strings"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
-
-	"github.com/coding-hui/common/errors"
-	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 type orgRepositoryImpl struct {
@@ -142,16 +141,15 @@ func (o *orgRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId stri
 	return org, err
 }
 
-func (o *orgRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.OrganizationList, error) {
-	list := &v1.OrganizationList{}
-	err := o.db.WithContext(ctx).Model(model.Organization{}).
+func (o *orgRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) ([]model.Organization, error) {
+	var list []model.Organization
+	err := o.db.Debug().WithContext(ctx).Model(model.Organization{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),
 		).
 		Order("id desc").
-		Find(&list.Items).Offset(-1).Limit(-1).
-		Count(&list.TotalCount).Error
+		Find(&list).Error
 	if err != nil {
 		return nil, datastore.NewDBError(err, "failed to list organizations")
 	}
@@ -159,13 +157,27 @@ func (o *orgRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (
 	return list, err
 }
 
-func (o *orgRepositoryImpl) CountDepartmentByOrg(ctx context.Context, org string, opts metav1.ListOptions) (int64, error) {
+func (o *orgRepositoryImpl) Count(ctx context.Context, opts metav1.ListOptions) (int64, error) {
 	var totalCount int64
 	err := o.db.WithContext(ctx).Model(&model.Organization{}).
 		Scopes(
 			makeCondition(opts),
 		).
-		Where("FIND_IN_SET(?, ancestors)", org).
+		Count(&totalCount).Error
+	if err != nil {
+		return 0, datastore.NewDBError(err, "failed to get organization total")
+	}
+
+	return totalCount, nil
+}
+
+func (o *orgRepositoryImpl) CountDepartmentByParent(ctx context.Context, parent string, opts metav1.ListOptions) (int64, error) {
+	var totalCount int64
+	err := o.db.WithContext(ctx).Model(&model.Organization{}).
+		Scopes(
+			makeCondition(opts),
+		).
+		Where("FIND_IN_SET(?, ancestors)", parent).
 		Count(&totalCount).Error
 	if err != nil {
 		return 0, datastore.NewDBError(err, "failed to get department total")
@@ -250,4 +262,16 @@ func (o *orgRepositoryImpl) CountDepartmentMembers(ctx context.Context, departme
 	}
 
 	return totalCount, nil
+}
+
+func (o *orgRepositoryImpl) UpdateIsLeafState(ctx context.Context, orgOrDept string, isLeaf bool) error {
+	err := o.db.WithContext(ctx).Model(&model.Organization{}).
+		Where("instance_id = ?", orgOrDept).
+		Update("is_leaf", isLeaf).
+		Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

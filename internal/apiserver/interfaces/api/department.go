@@ -117,7 +117,7 @@ func (d *department) updateDepartment(c *gin.Context) {
 //
 // deleteDepartment delete department by identifier.
 func (d *department) deleteDepartment(c *gin.Context) {
-	err := d.OrganizationService.DeleteOrganization(c.Request.Context(), c.Param("instanceId"), metav1.DeleteOptions{})
+	err := d.OrganizationService.DeleteDepartment(c.Request.Context(), c.Param("instanceId"), metav1.DeleteOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -166,7 +166,7 @@ func (d *department) listDepartment(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
-	resp, err := d.OrganizationService.ListOrganizations(c.Request.Context(), metav1.ListOptions{
+	resp, err := d.OrganizationService.ListDepartments(c.Request.Context(), metav1.ListOptions{
 		Limit:         &pageSize,
 		Offset:        &page,
 		FieldSelector: c.Query("fieldSelector"),
