@@ -9,10 +9,9 @@ import (
 	"sync"
 
 	"github.com/casbin/casbin/v2"
-	rediswatcher "github.com/casbin/redis-watcher/v2"
 	"github.com/redis/go-redis/v9"
-	"gorm.io/gorm"
 
+	rediswatcher "github.com/casbin/redis-watcher/v2"
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/channel"
@@ -22,19 +21,19 @@ import (
 
 type casbinRepositoryImpl struct {
 	once      sync.Once
-	db        *gorm.DB
+	client    *Client
 	redisOpts *genericoptions.RedisOptions
 	enforcer  *casbin.SyncedEnforcer
 }
 
 // newCasbinRepository new SyncedEnforcer Repository.
-func newCasbinRepository(db *gorm.DB, redisOpts *genericoptions.RedisOptions) repository.CasbinRepository {
-	return &casbinRepositoryImpl{db: db, redisOpts: redisOpts}
+func newCasbinRepository(client *Client, redisOpts *genericoptions.RedisOptions) repository.CasbinRepository {
+	return &casbinRepositoryImpl{client: client, redisOpts: redisOpts}
 }
 
 func (c *casbinRepositoryImpl) SyncedEnforcer() *casbin.SyncedEnforcer {
 	c.once.Do(func() {
-		c.enforcer = mycasbin.Setup(c.db, model.TableNamePrefix, "casbin_rules")
+		c.enforcer = mycasbin.Setup(c.client.db, model.TableNamePrefix, "casbin_rules")
 
 		// Initialize the watcher.
 		// Use the Redis host as parameter.

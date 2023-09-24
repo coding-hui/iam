@@ -21,17 +21,17 @@ import (
 )
 
 type resourceRepositoryImpl struct {
-	db *gorm.DB
+	client *Client
 }
 
 // newResourceRepository new User Repository.
-func newResourceRepository(db *gorm.DB) repository.ResourceRepository {
-	return &resourceRepositoryImpl{db}
+func newResourceRepository(client *Client) repository.ResourceRepository {
+	return &resourceRepositoryImpl{client}
 }
 
 // BatchCreate creates a new resource.
 func (r *resourceRepositoryImpl) BatchCreate(ctx context.Context, resources []*model.Resource, opts metav1.CreateOptions) error {
-	if err := r.db.WithContext(ctx).CreateInBatches(&resources, 500).Error; err != nil {
+	if err := r.client.WithCtx(ctx).CreateInBatches(&resources, 500).Error; err != nil {
 		return err
 	}
 
@@ -40,7 +40,7 @@ func (r *resourceRepositoryImpl) BatchCreate(ctx context.Context, resources []*m
 
 // Create creates a new resource.
 func (r *resourceRepositoryImpl) Create(ctx context.Context, resource *model.Resource, opts metav1.CreateOptions) error {
-	if err := r.db.WithContext(ctx).Create(&resource).Error; err != nil {
+	if err := r.client.WithCtx(ctx).Create(&resource).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return errors.WithCode(code.ErrResourceAlreadyExist, err.Error())
 		}
@@ -52,15 +52,12 @@ func (r *resourceRepositoryImpl) Create(ctx context.Context, resource *model.Res
 
 // Update updates an resource information.
 func (r *resourceRepositoryImpl) Update(ctx context.Context, resource *model.Resource, opts metav1.UpdateOptions) error {
-	db := r.db.WithContext(ctx)
-	err := db.Transaction(func(tx *gorm.DB) error {
-		err := tx.Where("resource_id = ?", resource.ID).Delete(&model.Action{}).Error
-		if err != nil {
-			return errors.WithCode(code.ErrDatabase, "failed to delete resource actions")
-		}
-		err = tx.Save(resource).Error
-		return err
-	})
+	db := r.client.WithCtx(ctx)
+	err := db.Where("resource_id = ?", resource.ID).Delete(&model.Action{}).Error
+	if err != nil {
+		return errors.WithCode(code.ErrDatabase, "failed to delete resource actions")
+	}
+	err = db.Save(resource).Error
 	if err != nil {
 		return err
 	}
@@ -70,15 +67,15 @@ func (r *resourceRepositoryImpl) Update(ctx context.Context, resource *model.Res
 
 // DeleteByInstanceId deletes the resource by the resource identifier.
 func (r *resourceRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
+	db := r.client.WithCtx(ctx)
 	if opts.Unscoped {
-		r.db = r.db.Unscoped()
+		db = db.Unscoped()
 	}
 	resource, err := r.GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return errors.WithCode(code.ErrResourceNotFound, err.Error())
 	}
-	err = r.db.WithContext(ctx).
-		Select("Actions").
+	err = db.Select("Actions").
 		Where("id = ?", resource.ID).
 		Delete(&model.Resource{}).Error
 	if err != nil {
@@ -94,12 +91,12 @@ func (r *resourceRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanc
 
 // DeleteCollection batch deletes the resource.
 func (r *resourceRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1.DeleteOptions) error {
+	db := r.client.WithCtx(ctx)
 	if opts.Unscoped {
-		r.db = r.db.Unscoped()
+		db = db.Unscoped()
 	}
 
-	return r.db.WithContext(ctx).
-		Select("Actions").
+	return db.Select("Actions").
 		Where("name in (?)", names).
 		Delete(&model.Resource{}).
 		Error
@@ -111,7 +108,7 @@ func (r *resourceRepositoryImpl) GetByName(ctx context.Context, name string, _ m
 	if name == "" {
 		return nil, errors.WithCode(code.ErrResourceNameIsEmpty, "Resource name is empty")
 	}
-	err := r.db.WithContext(ctx).Preload("Actions").Where("name = ?", name).First(&resource).Error
+	err := r.client.WithCtx(ctx).Preload("Actions").Where("name = ?", name).First(&resource).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrResourceNotFound, err.Error())
@@ -133,7 +130,7 @@ func (r *resourceRepositoryImpl) GetByInstanceId(
 	if instanceId == "" {
 		return nil, errors.WithCode(code.ErrResourceNameIsEmpty, "Resource instanceId is empty")
 	}
-	err := r.db.WithContext(ctx).Preload("Actions").Where("instance_id = ?", instanceId).First(&resource).Error
+	err := r.client.WithCtx(ctx).Preload("Actions").Where("instance_id = ?", instanceId).First(&resource).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrResourceNotFound, err.Error())
@@ -149,7 +146,7 @@ func (r *resourceRepositoryImpl) GetByInstanceId(
 func (r *resourceRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.ResourceList, error) {
 	resources := &[]model.Resource{}
 	res := &v1.ResourceList{}
-	err := r.db.WithContext(ctx).Model(model.Resource{}).
+	err := r.client.WithCtx(ctx).Model(model.Resource{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),

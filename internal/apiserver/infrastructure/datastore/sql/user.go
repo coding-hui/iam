@@ -22,12 +22,12 @@ import (
 )
 
 type userRepositoryImpl struct {
-	db *gorm.DB
+	client *Client
 }
 
 // newUserRepository new User Repository.
-func newUserRepository(db *gorm.DB) repository.UserRepository {
-	return &userRepositoryImpl{db}
+func newUserRepository(client *Client) repository.UserRepository {
+	return &userRepositoryImpl{client}
 }
 
 // Create creates a new user account.
@@ -35,7 +35,7 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts 
 	if oldUser, _ := u.GetByName(ctx, user.Name, metav1.GetOptions{}); oldUser != nil {
 		return nil, errors.WithCode(code.ErrUserAlreadyExist, "User %s already exist", user.Name)
 	}
-	if err := u.db.WithContext(ctx).Create(&user).Error; err != nil {
+	if err := u.client.WithCtx(ctx).Create(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return nil, errors.WithCode(code.ErrUserAlreadyExist, err.Error())
 		}
@@ -52,7 +52,7 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts 
 		if err != nil {
 			return nil, err
 		}
-		err = u.db.WithContext(ctx).Create(&externalUser).Error
+		err = u.client.WithCtx(ctx).Create(&externalUser).Error
 		if err != nil {
 			return nil, err
 		}
@@ -63,7 +63,7 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts 
 
 // Update updates an user account information.
 func (u *userRepositoryImpl) Update(ctx context.Context, user *model.User, opts metav1.UpdateOptions) error {
-	if err := u.db.WithContext(ctx).Save(user).Error; err != nil {
+	if err := u.client.WithCtx(ctx).Save(user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrUserNotFound, err.Error())
 		}
@@ -76,8 +76,9 @@ func (u *userRepositoryImpl) Update(ctx context.Context, user *model.User, opts 
 
 // DeleteByInstanceId deletes the user by the user identifier.
 func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
+	db := u.client.WithCtx(ctx)
 	if opts.Unscoped {
-		u.db = u.db.Unscoped()
+		db = db.Unscoped()
 	}
 	user, err := u.GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
@@ -89,7 +90,7 @@ func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 	if currentUser := ctx.Value(&v1.CtxKeyUserInstanceId); currentUser != "" && currentUser == user.InstanceID {
 		return errors.WithCode(code.ErrDeleteOneself, "User %s failed to be deleted and cannot delete itself", currentUser)
 	}
-	err = u.db.WithContext(ctx).Where("instance_id = ?", instanceId).Select(clause.Associations).Delete(&model.User{}).Error
+	err = db.Where("instance_id = ?", instanceId).Select(clause.Associations).Delete(&model.User{}).Error
 	if err != nil {
 		return err
 	}
@@ -99,11 +100,12 @@ func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 
 // BatchDelete batch deletes the users.
 func (u *userRepositoryImpl) BatchDelete(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error {
+	db := u.client.WithCtx(ctx)
 	if opts.Unscoped {
-		u.db = u.db.Unscoped()
+		db = db.Unscoped()
 	}
 
-	return u.db.WithContext(ctx).Where("name in (?)", usernames).Delete(&model.User{}).Error
+	return db.Where("name in (?)", usernames).Delete(&model.User{}).Error
 }
 
 // GetByName get user by username.
@@ -112,7 +114,7 @@ func (u *userRepositoryImpl) GetByName(ctx context.Context, username string, _ m
 	if username == "" {
 		return nil, errors.WithCode(code.ErrUserNameIsEmpty, "Username is empty")
 	}
-	err := u.db.WithContext(ctx).Where("name = ?", username).First(&user).Error
+	err := u.client.WithCtx(ctx).Where("name = ?", username).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
@@ -127,7 +129,7 @@ func (u *userRepositoryImpl) GetByName(ctx context.Context, username string, _ m
 // GetByInstanceId get user by instanceId.
 func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId string, _ metav1.GetOptions) (*model.User, error) {
 	user := &model.User{}
-	err := u.db.WithContext(ctx).Where("instance_id = ?", instanceId).First(&user).Error
+	err := u.client.WithCtx(ctx).Where("instance_id = ?", instanceId).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
@@ -149,7 +151,7 @@ func (u *userRepositoryImpl) GetByExternalId(
 	opts metav1.GetOptions,
 ) (*model.User, error) {
 	externalUser := &model.UserExternal{}
-	err := u.db.WithContext(ctx).
+	err := u.client.WithCtx(ctx).
 		Where("external_uid = ?", externalUid).
 		Where("idp = ?", externalIdp).
 		First(&externalUser).Error
@@ -175,7 +177,7 @@ func (u *userRepositoryImpl) GetByExternalId(
 // List list users.
 func (u *userRepositoryImpl) List(ctx context.Context, opts v1.ListUserOptions) ([]model.User, error) {
 	var list []model.User
-	db := u.db.WithContext(ctx).Model(model.User{}).
+	db := u.client.WithCtx(ctx).Model(model.User{}).
 		Scopes(
 			paginate(opts.ListOptions),
 		).
@@ -201,7 +203,7 @@ func (u *userRepositoryImpl) List(ctx context.Context, opts v1.ListUserOptions) 
 // Count count users.
 func (u *userRepositoryImpl) Count(ctx context.Context, opts v1.ListUserOptions) (int64, error) {
 	var totalCount int64
-	err := u.db.WithContext(ctx).Model(&model.User{}).
+	err := u.client.WithCtx(ctx).Model(&model.User{}).
 		Scopes(
 			makeCondition(opts.ListOptions),
 		).
@@ -219,7 +221,7 @@ func (u *userRepositoryImpl) deleteExternalUser(ctx context.Context, userId, ext
 		ExternalUID:      externalUid,
 		IdentifyProvider: idp,
 	}
-	return u.db.WithContext(ctx).
+	return u.client.WithCtx(ctx).
 		Where("external_uid = ?", externalUid).
 		Where("idp = ?", idp).
 		Delete(&externalUser).Error
@@ -227,7 +229,7 @@ func (u *userRepositoryImpl) deleteExternalUser(ctx context.Context, userId, ext
 
 func (u *userRepositoryImpl) getUserDepartments(ctx context.Context, user string) ([]*model.DepartmentMember, error) {
 	var resp []*model.DepartmentMember
-	err := u.db.WithContext(ctx).
+	err := u.client.WithCtx(ctx).
 		Model(&model.DepartmentMember{}).
 		Where("member_id = ?", user).
 		Find(&resp).Error

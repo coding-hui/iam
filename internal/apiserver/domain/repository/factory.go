@@ -8,6 +8,8 @@ var client Factory
 
 // Factory defines the repository interface.
 type Factory interface {
+	Transaction
+
 	UserRepository() UserRepository
 	CasbinRepository() CasbinRepository
 	ResourceRepository() ResourceRepository

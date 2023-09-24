@@ -21,12 +21,12 @@ import (
 )
 
 type policyRepositoryImpl struct {
-	db *gorm.DB
+	client *Client
 }
 
 // newPolicyRepository new Policy Repository.
-func newPolicyRepository(db *gorm.DB) repository.PolicyRepository {
-	return &policyRepositoryImpl{db}
+func newPolicyRepository(client *Client) repository.PolicyRepository {
+	return &policyRepositoryImpl{client}
 }
 
 // Create creates a new policy.
@@ -34,7 +34,7 @@ func (p *policyRepositoryImpl) Create(ctx context.Context, policy *model.Policy,
 	if oldPolicy, _ := p.GetByName(ctx, policy.Name, metav1.GetOptions{}); oldPolicy != nil {
 		return errors.WithCode(code.ErrPolicyAlreadyExist, "Policy %s already exist", policy.Name)
 	}
-	if err := p.db.WithContext(ctx).Create(&policy).Error; err != nil {
+	if err := p.client.WithCtx(ctx).Create(&policy).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return errors.WithCode(code.ErrPolicyAlreadyExist, err.Error())
 		}
@@ -46,7 +46,7 @@ func (p *policyRepositoryImpl) Create(ctx context.Context, policy *model.Policy,
 
 // CreateBatch creates a new policy.
 func (p *policyRepositoryImpl) CreateBatch(ctx context.Context, policy []*model.Policy, _ metav1.CreateOptions) error {
-	if err := p.db.WithContext(ctx).CreateInBatches(&policy, 500).Error; err != nil {
+	if err := p.client.WithCtx(ctx).CreateInBatches(&policy, 500).Error; err != nil {
 		return err
 	}
 
@@ -55,11 +55,11 @@ func (p *policyRepositoryImpl) CreateBatch(ctx context.Context, policy []*model.
 
 // Update updates an policy information.
 func (p *policyRepositoryImpl) Update(ctx context.Context, policy *model.Policy, _ metav1.UpdateOptions) error {
-	err := p.db.WithContext(ctx).Model(policy).Association("Statements").Replace(policy.Statements)
+	err := p.client.WithCtx(ctx).Model(policy).Association("Statements").Replace(policy.Statements)
 	if err != nil {
 		return err
 	}
-	err = p.db.WithContext(ctx).Model(policy).Save(policy).Error
+	err = p.client.WithCtx(ctx).Model(policy).Save(policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrPolicyNotFound, err.Error())
@@ -73,10 +73,11 @@ func (p *policyRepositoryImpl) Update(ctx context.Context, policy *model.Policy,
 
 // Delete deletes the policy by the user identifier.
 func (p *policyRepositoryImpl) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
+	db := p.client.WithCtx(ctx)
 	if opts.Unscoped {
-		p.db = p.db.Unscoped()
+		db = db.Unscoped()
 	}
-	err := p.db.WithContext(ctx).Where("name = ?", name).Delete(&model.Policy{}).Error
+	err := db.Where("name = ?", name).Delete(&model.Policy{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrPolicyNotFound, err.Error())
@@ -90,16 +91,17 @@ func (p *policyRepositoryImpl) Delete(ctx context.Context, name string, opts met
 
 // DeleteCollection batch deletes the policies.
 func (p *policyRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1.DeleteOptions) error {
+	db := p.client.WithCtx(ctx)
 	if opts.Unscoped {
-		p.db = p.db.Unscoped()
+		db = db.Unscoped()
 	}
 
-	return p.db.WithContext(ctx).Where("name in (?)", names).Delete(&model.User{}).Error
+	return db.Where("name in (?)", names).Delete(&model.User{}).Error
 }
 
 // GetByName get policy.
 func (p *policyRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1.GetOptions) (policy *model.Policy, err error) {
-	err = p.db.WithContext(ctx).Preload("Statements").Where("name = ?", name).First(&policy).Error
+	err = p.client.WithCtx(ctx).Preload("Statements").Where("name = ?", name).First(&policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrPolicyNotFound, err.Error())
@@ -117,7 +119,7 @@ func (p *policyRepositoryImpl) GetByInstanceId(
 	instanceId string,
 	_ metav1.GetOptions,
 ) (policy *model.Policy, err error) {
-	err = p.db.WithContext(ctx).Debug().Preload("Statements").Where("instance_id = ?", instanceId).First(&policy).Error
+	err = p.client.WithCtx(ctx).Debug().Preload("Statements").Where("instance_id = ?", instanceId).First(&policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrPolicyNotFound, err.Error())
@@ -133,7 +135,7 @@ func (p *policyRepositoryImpl) GetByInstanceId(
 func (p *policyRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.PolicyList, error) {
 	var policies []*model.Policy
 	var totalCount int64
-	err := p.db.WithContext(ctx).Model(model.Policy{}).
+	err := p.client.WithCtx(ctx).Model(model.Policy{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),
@@ -158,7 +160,7 @@ func (p *policyRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions
 // CountStatementByResource get statement count by resource.
 func (p *policyRepositoryImpl) CountStatementByResource(ctx context.Context, resource ...string) (int64, error) {
 	var count int64
-	db := p.db.WithContext(ctx).Model(&model.Statement{})
+	db := p.client.WithCtx(ctx).Model(&model.Statement{})
 	db.Where("resource in ?", resource)
 	db.Where("policy_id is not null")
 	err := db.Count(&count).Error

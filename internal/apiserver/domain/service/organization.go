@@ -346,10 +346,12 @@ func (o *organizationServiceImpl) CreateDepartment(
 	opts metav1.CreateOptions,
 ) error {
 	orgRepo := o.Store.OrganizationRepository()
+
 	org, err := orgRepo.GetByInstanceId(ctx, req.OrganizationID, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
+
 	childCount, err := orgRepo.CountDepartmentByParent(ctx, org.GetInstanceID(), metav1.ListOptions{})
 	if err != nil {
 		return err
@@ -358,47 +360,56 @@ func (o *organizationServiceImpl) CreateDepartment(
 		return errors.WithCode(code.ErrMaxDepartmentsReached,
 			"Organization [%s] creates an upper limit on the number of departments", org.GetName())
 	}
+
 	parent, err := orgRepo.GetByInstanceId(ctx, req.ParentID, metav1.GetOptions{})
 	if err != nil {
 		log.Errorf("Failed to get parent dept [%s]", parent.GetName())
 		return err
 	}
-	err = orgRepo.UpdateIsLeafState(ctx, parent.GetInstanceID(), false)
-	if err != nil {
-		log.Errorf("Failed to update parent dept [%s] isLeaf", parent.GetName())
-		return err
-	}
-	dept := assembler.ConvertCreateDeptReqToModel(req, parent)
-	if dept.DisplayName == "" {
-		dept.DisplayName = req.Name
-	}
-	err = orgRepo.Create(ctx, dept, opts)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	err = o.Store.ExecTx(ctx, func(ctx context.Context) error {
+		err = orgRepo.UpdateIsLeafState(ctx, parent.GetInstanceID(), false)
+		if err != nil {
+			log.Errorf("Failed to update parent dept [%s] isLeaf", parent.GetName())
+			return err
+		}
+		dept := assembler.ConvertCreateDeptReqToModel(req, parent)
+		if dept.DisplayName == "" {
+			dept.DisplayName = req.Name
+		}
+		err = orgRepo.Create(ctx, dept, opts)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return err
 }
 
 func (o *organizationServiceImpl) DeleteDepartment(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
 	orgRepo := o.Store.OrganizationRepository()
+
 	dept, err := orgRepo.GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
-	if count, err := orgRepo.CountDepartmentByParent(ctx, dept.InstanceID, metav1.ListOptions{}); err != nil || count > 0 {
+
+	count, err := orgRepo.CountDepartmentByParent(ctx, dept.InstanceID, metav1.ListOptions{})
+	if err != nil || count > 0 {
 		if err != nil {
 			return err
 		}
 		return errors.WithCode(code.ErrSubDepartmentsExist, "[%d] sub-departments exist and cannot be deleted", count)
 	}
+
 	err = orgRepo.DeleteByInstanceId(ctx, instanceId, opts)
 	if err != nil {
 		return err
 	}
+
 	if err := o.updateIsLeafStateIfNecessary(dept.ParentID); err != nil {
 		log.Errorf("Failed to update parent [%s] isLeaf state", dept.ParentID)
-		return err
 	}
 
 	return nil
@@ -423,59 +434,65 @@ func (o *organizationServiceImpl) UpdateDepartment(
 	if err != nil {
 		return err
 	}
+
 	newParent, err = orgRepo.GetByInstanceId(ctx, req.ParentID, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
+
 	dept, err = orgRepo.GetByInstanceId(ctx, deptId, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
-	oldParentID = dept.ParentID
 
-	oldAncestors = dept.Ancestors
-	newAncestors = newParent.Ancestors + "," + newParent.InstanceID
-	dept.Ancestors = newAncestors
-	if oldAncestors != newAncestors {
-		err = o.updateDeptChildren(deptId, newAncestors, oldAncestors)
+	err = o.Store.ExecTx(ctx, func(ctx context.Context) error {
+		oldParentID = dept.ParentID
+		oldAncestors = dept.Ancestors
+		newAncestors = newParent.Ancestors + "," + newParent.InstanceID
+		dept.Ancestors = newAncestors
+		if oldAncestors != newAncestors {
+			err = o.updateDeptChildren(deptId, newAncestors, oldAncestors)
+			if err != nil {
+				log.Errorf("Failed to update the [%s] sub department.", dept.GetName())
+				return err
+			}
+		}
+
+		if req.DisplayName != "" {
+			dept.DisplayName = req.DisplayName
+		}
+		if req.WebsiteUrl != "" {
+			dept.WebsiteUrl = req.WebsiteUrl
+		}
+		if req.Description != "" {
+			dept.Description = req.Description
+		}
+		if req.Favicon != "" {
+			dept.Favicon = req.Favicon
+		}
+		dept.ParentID = newParent.GetInstanceID()
+
+		// update dept info
+		err = orgRepo.Update(ctx, dept, opts)
 		if err != nil {
-			log.Errorf("Failed to update the [%s] sub department.", dept.GetName())
 			return err
 		}
-	}
+		// update new parent isLeaf state
+		err = orgRepo.UpdateIsLeafState(ctx, newParent.GetInstanceID(), false)
+		if err != nil {
+			log.Errorf("Failed to update new parent [%s] isLeaf state", newParent.GetName())
+			return err
+		}
+		return nil
+	})
 
-	if req.DisplayName != "" {
-		dept.DisplayName = req.DisplayName
-	}
-	if req.WebsiteUrl != "" {
-		dept.WebsiteUrl = req.WebsiteUrl
-	}
-	if req.Description != "" {
-		dept.Description = req.Description
-	}
-	if req.Favicon != "" {
-		dept.Favicon = req.Favicon
-	}
-	dept.ParentID = newParent.GetInstanceID()
-	// update dept info
-	err = orgRepo.Update(ctx, dept, opts)
-	if err != nil {
-		return err
-	}
-	// update new parent isLeaf state
-	err = orgRepo.UpdateIsLeafState(ctx, newParent.GetInstanceID(), false)
-	if err != nil {
-		log.Errorf("Failed to update new parent [%s] isLeaf state", newParent.GetName())
-		return err
-	}
 	// update old parent isLeaf state if necessary
 	err = o.updateIsLeafStateIfNecessary(oldParentID)
 	if err != nil {
 		log.Errorf("Failed to update old parent [%s] isLeaf state", oldParentID)
-		return err
 	}
 
-	return nil
+	return err
 }
 
 func (o *organizationServiceImpl) updateIsLeafStateIfNecessary(orgOrDept string) error {

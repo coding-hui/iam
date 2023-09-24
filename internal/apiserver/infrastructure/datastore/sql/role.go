@@ -21,12 +21,12 @@ import (
 )
 
 type roleRepositoryImpl struct {
-	db *gorm.DB
+	client *Client
 }
 
 // newRoleRepository new Role Repository.
-func newRoleRepository(db *gorm.DB) repository.RoleRepository {
-	return &roleRepositoryImpl{db}
+func newRoleRepository(client *Client) repository.RoleRepository {
+	return &roleRepositoryImpl{client}
 }
 
 // Create creates a new role.
@@ -34,7 +34,7 @@ func (u *roleRepositoryImpl) Create(ctx context.Context, role *model.Role, _ met
 	if oldRole, _ := u.GetByName(ctx, role.Name, metav1.GetOptions{}); oldRole != nil {
 		return errors.WithCode(code.ErrRoleAlreadyExist, "Role %s already exist", role.Name)
 	}
-	if err := u.db.WithContext(ctx).Create(&role).Error; err != nil {
+	if err := u.client.WithCtx(ctx).Create(&role).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return errors.WithCode(code.ErrRoleAlreadyExist, "Role %s already exist", role.Name)
 		}
@@ -46,7 +46,7 @@ func (u *roleRepositoryImpl) Create(ctx context.Context, role *model.Role, _ met
 
 // Update updates a role information.
 func (u *roleRepositoryImpl) Update(ctx context.Context, role *model.Role, _ metav1.UpdateOptions) error {
-	if err := u.db.WithContext(ctx).Save(role).Error; err != nil {
+	if err := u.client.WithCtx(ctx).Save(role).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrRoleNotFound, err.Error())
 		}
@@ -59,10 +59,11 @@ func (u *roleRepositoryImpl) Update(ctx context.Context, role *model.Role, _ met
 
 // DeleteByInstanceId deletes the role by the role identifier.
 func (u *roleRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
+	db := u.client.WithCtx(ctx)
 	if opts.Unscoped {
-		u.db = u.db.Unscoped()
+		db = db.Unscoped()
 	}
-	err := u.db.WithContext(ctx).Where("instance_id = ?", instanceId).Delete(&model.Role{}).Error
+	err := db.Where("instance_id = ?", instanceId).Delete(&model.Role{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrRoleNotFound, err.Error())
@@ -76,11 +77,12 @@ func (u *roleRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 
 // DeleteCollection batch deletes the roles.
 func (u *roleRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1.DeleteOptions) error {
+	db := u.client.WithCtx(ctx)
 	if opts.Unscoped {
-		u.db = u.db.Unscoped()
+		db = db.Unscoped()
 	}
 
-	return u.db.WithContext(ctx).Where("name in (?)", names).Delete(&model.Role{}).Error
+	return db.Where("name in (?)", names).Delete(&model.Role{}).Error
 }
 
 // GetByName get role.
@@ -89,7 +91,7 @@ func (u *roleRepositoryImpl) GetByName(ctx context.Context, name string, _ metav
 	if name == "" {
 		return nil, errors.WithCode(code.ErrRoleNameIsEmpty, "Role name is empty")
 	}
-	err := u.db.WithContext(ctx).Preload("Users").Where("name = ?", name).First(&role).Error
+	err := u.client.WithCtx(ctx).Preload("Users").Where("name = ?", name).First(&role).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrRoleNotFound, err.Error())
@@ -104,7 +106,7 @@ func (u *roleRepositoryImpl) GetByName(ctx context.Context, name string, _ metav
 // GetByInstanceID get role by instanceID.
 func (u *roleRepositoryImpl) GetByInstanceID(ctx context.Context, instanceID string, _ metav1.GetOptions) (*model.Role, error) {
 	role := &model.Role{}
-	err := u.db.WithContext(ctx).Preload("Users").Where("instance_id = ?", instanceID).First(&role).Error
+	err := u.client.WithCtx(ctx).Preload("Users").Where("instance_id = ?", instanceID).First(&role).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrRoleNotFound, err.Error())
@@ -119,7 +121,7 @@ func (u *roleRepositoryImpl) GetByInstanceID(ctx context.Context, instanceID str
 // List list roles.
 func (u *roleRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (*v1.RoleList, error) {
 	list := &v1.RoleList{}
-	err := u.db.WithContext(ctx).Model(&model.Role{}).
+	err := u.client.WithCtx(ctx).Model(&model.Role{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),
@@ -144,7 +146,7 @@ func (u *roleRepositoryImpl) ListByUserInstanceId(
 	var roleIds []uint64
 
 	ol := gormutil.Unpointer(opts.Offset, opts.Limit)
-	db := u.db.WithContext(ctx)
+	db := u.client.WithCtx(ctx)
 	db.Raw("SELECT role_id FROM iam_user_role WHERE user_instance_id = ?", userInstanceId).Find(&roleIds)
 	db.Model(&model.Role{}).
 		Where("id in ?", roleIds).
@@ -160,11 +162,11 @@ func (u *roleRepositoryImpl) ListByUserInstanceId(
 
 // AssignUserRoles assign user roles.
 func (u *roleRepositoryImpl) AssignUserRoles(ctx context.Context, role *model.Role, userInstanceIds []string) (int64, error) {
-	err := u.db.WithContext(ctx).Model(&model.User{}).Where("instance_id in ?", userInstanceIds).Find(&role.Users).Error
+	err := u.client.WithCtx(ctx).Model(&model.User{}).Where("instance_id in ?", userInstanceIds).Find(&role.Users).Error
 	if err != nil {
 		return 0, errors.WithCode(code.ErrAssignRoleFailed, err.Error())
 	}
-	res := u.db.WithContext(ctx).Model(&role).Save(role)
+	res := u.client.WithCtx(ctx).Model(&role).Save(role)
 	if res.Error != nil {
 		return 0, errors.WithCode(code.ErrAssignRoleFailed, res.Error.Error())
 	}
@@ -174,11 +176,11 @@ func (u *roleRepositoryImpl) AssignUserRoles(ctx context.Context, role *model.Ro
 
 // RevokeUserRoles revoke user roles.
 func (u *roleRepositoryImpl) RevokeUserRoles(ctx context.Context, role *model.Role, userInstanceIds []string) (int64, error) {
-	err := u.db.WithContext(ctx).Model(&role).Where("instance_id in ?", userInstanceIds).Association("Users").Find(&role.Users)
+	err := u.client.WithCtx(ctx).Model(&role).Where("instance_id in ?", userInstanceIds).Association("Users").Find(&role.Users)
 	if err != nil {
 		return 0, errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
 	}
-	err = u.db.WithContext(ctx).Model(&role).Association("Users").Delete(&role.Users)
+	err = u.client.WithCtx(ctx).Model(&role).Association("Users").Delete(&role.Users)
 	if err != nil {
 		return 0, errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
 	}

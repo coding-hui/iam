@@ -5,6 +5,7 @@
 package sql
 
 import (
+	"context"
 	"strings"
 
 	"gorm.io/gorm"
@@ -23,10 +24,38 @@ import (
 	"github.com/coding-hui/common/selection"
 )
 
+type contextTxKey struct{}
+
 // Driver is a unified implementation of SQL driver of datastore
 type Driver struct {
-	Client *gorm.DB
-	Cfg    config.Config
+	Client *Client
+	cfg    config.Config
+}
+
+func NewDriver(db *gorm.DB, cfg config.Config) Driver {
+	return Driver{
+		Client: &Client{db},
+		cfg:    cfg,
+	}
+}
+
+type Client struct {
+	db *gorm.DB
+}
+
+func (c *Client) WithCtx(ctx context.Context) *gorm.DB {
+	tx, ok := ctx.Value(contextTxKey{}).(*gorm.DB)
+	if ok {
+		return tx
+	}
+	return c.db
+}
+
+func (m *Driver) ExecTx(ctx context.Context, fn func(ctx context.Context) error) error {
+	return m.Client.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		ctx = context.WithValue(ctx, contextTxKey{}, tx)
+		return fn(ctx)
+	})
 }
 
 func (m *Driver) UserRepository() repository.UserRepository {
@@ -34,7 +63,7 @@ func (m *Driver) UserRepository() repository.UserRepository {
 }
 
 func (m *Driver) CasbinRepository() repository.CasbinRepository {
-	return newCasbinRepository(m.Client, m.Cfg.RedisOptions)
+	return newCasbinRepository(m.Client, m.cfg.RedisOptions)
 }
 
 func (m *Driver) ResourceRepository() repository.ResourceRepository {
@@ -54,7 +83,7 @@ func (m *Driver) OrganizationRepository() repository.OrganizationRepository {
 }
 
 func (m *Driver) Close() error {
-	db, err := m.Client.DB()
+	db, err := m.Client.db.DB()
 	if err != nil {
 		return errors.WithCode(code.ErrDatabase, err.Error())
 	}

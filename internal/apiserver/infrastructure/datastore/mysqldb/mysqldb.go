@@ -41,17 +41,12 @@ func New(ctx context.Context, c config.Config) (factory repository.Factory, last
 	}
 	dbIns, lastErr = db.New(options)
 
-	m := &mysqldb{
-		Driver: sql.Driver{
-			Client: dbIns.WithContext(ctx),
-			Cfg:    c,
-		},
-	}
+	m := &mysqldb{Driver: sql.NewDriver(dbIns.WithContext(ctx), c)}
 	if m == nil || lastErr != nil {
 		return nil, fmt.Errorf("failed to get mysql store fatory, mysqlFactory: %+v, error: %w", m, lastErr)
 	}
 
-	migrate(m.Driver.Client)
+	migrate(m.Driver.Client.WithCtx(ctx))
 
 	log.Infof("create mysqldb datastore instance successful")
 

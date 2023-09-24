@@ -21,19 +21,19 @@ import (
 )
 
 type orgRepositoryImpl struct {
-	db *gorm.DB
+	client *Client
 }
 
 // newOrganizationRepository new Organization Repository.
-func newOrganizationRepository(db *gorm.DB) repository.OrganizationRepository {
-	return &orgRepositoryImpl{db}
+func newOrganizationRepository(client *Client) repository.OrganizationRepository {
+	return &orgRepositoryImpl{client}
 }
 
 func (o *orgRepositoryImpl) Create(ctx context.Context, org *model.Organization, opts metav1.CreateOptions) error {
 	if old, _ := o.GetByName(ctx, org.Name, metav1.GetOptions{}); old != nil {
 		return errors.WithCode(code.ErrOrgAlreadyExist, "Organization %s already exist", org.Name)
 	}
-	if err := o.db.WithContext(ctx).Create(&org).Error; err != nil {
+	if err := o.client.WithCtx(ctx).Create(&org).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return errors.WithCode(code.ErrOrgAlreadyExist, err.Error())
 		}
@@ -44,7 +44,7 @@ func (o *orgRepositoryImpl) Create(ctx context.Context, org *model.Organization,
 }
 
 func (o *orgRepositoryImpl) Update(ctx context.Context, org *model.Organization, opts metav1.UpdateOptions) error {
-	err := o.db.WithContext(ctx).Save(org).Error
+	err := o.client.WithCtx(ctx).Save(org).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrOrgNotFound, err.Error())
@@ -57,7 +57,7 @@ func (o *orgRepositoryImpl) Update(ctx context.Context, org *model.Organization,
 }
 
 func (o *orgRepositoryImpl) BatchUpdate(ctx context.Context, list []*model.Organization, opts metav1.UpdateOptions) error {
-	db := o.db.Debug().WithContext(ctx).Model(model.Organization{})
+	db := o.client.WithCtx(ctx).Model(model.Organization{})
 	if len(opts.DryRun) > 0 {
 		db.DryRun = true
 	}
@@ -82,10 +82,11 @@ func (o *orgRepositoryImpl) BatchUpdate(ctx context.Context, list []*model.Organ
 }
 
 func (o *orgRepositoryImpl) DeleteByName(ctx context.Context, name string, opts metav1.DeleteOptions) error {
+	db := o.client.WithCtx(ctx)
 	if opts.Unscoped {
-		o.db = o.db.Unscoped()
+		db = db.Unscoped()
 	}
-	err := o.db.WithContext(ctx).Where("name = ?", name).Delete(&model.Organization{}).Error
+	err := o.client.WithCtx(ctx).Where("name = ?", name).Delete(&model.Organization{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrOrgNotFound, err.Error())
@@ -98,10 +99,11 @@ func (o *orgRepositoryImpl) DeleteByName(ctx context.Context, name string, opts 
 }
 
 func (o *orgRepositoryImpl) DeleteByInstanceId(ctx context.Context, uid string, opts metav1.DeleteOptions) error {
+	db := o.client.WithCtx(ctx)
 	if opts.Unscoped {
-		o.db = o.db.Unscoped()
+		db = db.Unscoped()
 	}
-	err := o.db.WithContext(ctx).Where("instance_id = ?", uid).Delete(&model.Organization{}).Error
+	err := o.client.WithCtx(ctx).Where("instance_id = ?", uid).Delete(&model.Organization{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrOrgNotFound, err.Error())
@@ -115,7 +117,7 @@ func (o *orgRepositoryImpl) DeleteByInstanceId(ctx context.Context, uid string, 
 
 func (o *orgRepositoryImpl) GetByName(ctx context.Context, name string, opts metav1.GetOptions) (*model.Organization, error) {
 	var org *model.Organization
-	err := o.db.WithContext(ctx).Where("name = ?", name).First(&org).Error
+	err := o.client.WithCtx(ctx).Where("name = ?", name).First(&org).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrOrgNotFound, err.Error())
@@ -129,7 +131,7 @@ func (o *orgRepositoryImpl) GetByName(ctx context.Context, name string, opts met
 
 func (o *orgRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.Organization, error) {
 	var org *model.Organization
-	err := o.db.WithContext(ctx).Where("instance_id = ?", instanceId).First(&org).Error
+	err := o.client.WithCtx(ctx).Where("instance_id = ?", instanceId).First(&org).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrOrgNotFound, err.Error())
@@ -143,7 +145,7 @@ func (o *orgRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId stri
 
 func (o *orgRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) ([]model.Organization, error) {
 	var list []model.Organization
-	err := o.db.Debug().WithContext(ctx).Model(model.Organization{}).
+	err := o.client.WithCtx(ctx).Model(model.Organization{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),
@@ -159,7 +161,7 @@ func (o *orgRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) (
 
 func (o *orgRepositoryImpl) Count(ctx context.Context, opts metav1.ListOptions) (int64, error) {
 	var totalCount int64
-	err := o.db.WithContext(ctx).Model(&model.Organization{}).
+	err := o.client.WithCtx(ctx).Model(&model.Organization{}).
 		Scopes(
 			makeCondition(opts),
 		).
@@ -173,7 +175,7 @@ func (o *orgRepositoryImpl) Count(ctx context.Context, opts metav1.ListOptions) 
 
 func (o *orgRepositoryImpl) CountDepartmentByParent(ctx context.Context, parent string, opts metav1.ListOptions) (int64, error) {
 	var totalCount int64
-	err := o.db.WithContext(ctx).Model(&model.Organization{}).
+	err := o.client.WithCtx(ctx).Model(&model.Organization{}).
 		Scopes(
 			makeCondition(opts),
 		).
@@ -187,7 +189,7 @@ func (o *orgRepositoryImpl) CountDepartmentByParent(ctx context.Context, parent 
 }
 
 func (o *orgRepositoryImpl) AddDepartmentMembers(ctx context.Context, members []*model.DepartmentMember) error {
-	db := o.db.WithContext(ctx).Model(&model.DepartmentMember{})
+	db := o.client.WithCtx(ctx).Model(&model.DepartmentMember{})
 	err := db.CreateInBatches(members, 500).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) || strings.Contains(err.Error(), "Duplicate entry") {
@@ -200,7 +202,7 @@ func (o *orgRepositoryImpl) AddDepartmentMembers(ctx context.Context, members []
 }
 
 func (o *orgRepositoryImpl) RemoveDepartmentMembers(ctx context.Context, members []*model.DepartmentMember) error {
-	db := o.db.WithContext(ctx).Model(&model.DepartmentMember{})
+	db := o.client.WithCtx(ctx).Model(&model.DepartmentMember{})
 	err := db.Delete(members).Error
 	if err != nil {
 		return datastore.NewDBError(err, "failed to remove department members")
@@ -215,7 +217,7 @@ func (o *orgRepositoryImpl) ListChildDepartments(
 	opts metav1.ListOptions,
 ) ([]model.Organization, error) {
 	var child []model.Organization
-	err := o.db.WithContext(ctx).Model(&model.Organization{}).
+	err := o.client.WithCtx(ctx).Model(&model.Organization{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),
@@ -235,7 +237,7 @@ func (o *orgRepositoryImpl) ListDepartmentMembers(
 	opts metav1.ListOptions,
 ) ([]model.DepartmentMember, error) {
 	var members []model.DepartmentMember
-	err := o.db.WithContext(ctx).Model(&model.DepartmentMember{}).
+	err := o.client.WithCtx(ctx).Model(&model.DepartmentMember{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),
@@ -251,7 +253,7 @@ func (o *orgRepositoryImpl) ListDepartmentMembers(
 
 func (o *orgRepositoryImpl) CountDepartmentMembers(ctx context.Context, department string, opts metav1.ListOptions) (int64, error) {
 	var totalCount int64
-	err := o.db.WithContext(ctx).Model(&model.DepartmentMember{}).
+	err := o.client.WithCtx(ctx).Model(&model.DepartmentMember{}).
 		Scopes(
 			makeCondition(opts),
 		).
@@ -265,7 +267,7 @@ func (o *orgRepositoryImpl) CountDepartmentMembers(ctx context.Context, departme
 }
 
 func (o *orgRepositoryImpl) UpdateIsLeafState(ctx context.Context, orgOrDept string, isLeaf bool) error {
-	err := o.db.WithContext(ctx).Model(&model.Organization{}).
+	err := o.client.WithCtx(ctx).Model(&model.Organization{}).
 		Where("instance_id = ?", orgOrDept).
 		Update("is_leaf", isLeaf).
 		Error
