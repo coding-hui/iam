@@ -5,6 +5,8 @@
 package api
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/coding-hui/common/errors"
@@ -165,13 +167,15 @@ func (u *user) listUser(c *gin.Context) {
 		api.Fail(c)
 		return
 	}
+	includeChildrenDepartments, _ := strconv.ParseBool(c.Query("includeChildrenDepartments"))
 	resp, err := u.UserService.ListUsers(c.Request.Context(), v1.ListUserOptions{
 		ListOptions: metav1.ListOptions{
 			Limit:         &pageSize,
 			Offset:        &page,
 			FieldSelector: c.Query("fieldSelector"),
 		},
-		DepartmentID: c.Query("departmentId"),
+		DepartmentID:               c.Query("departmentId"),
+		IncludeChildrenDepartments: includeChildrenDepartments,
 	})
 	if err != nil {
 		api.FailWithErrCode(err, c)

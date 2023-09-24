@@ -6,7 +6,6 @@ package sql
 
 import (
 	"context"
-	"fmt"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -183,16 +182,14 @@ func (u *userRepositoryImpl) List(ctx context.Context, opts v1.ListUserOptions) 
 		).
 		Order("id desc")
 	if opts.DepartmentID != "" {
-		member := model.User{}
-		deptMember := model.DepartmentMember{}
-		db.Joins(fmt.Sprintf("left join %s on %s = %s",
-			deptMember.TableName(),
-			deptMember.TableName()+".member_id",
-			member.TableName()+".instance_id",
-		)).Where(deptMember.TableName()+".department_id = ?", opts.DepartmentID)
+		db.Joins("INNER JOIN iam_department_member dm ON dm.member_id = iam_user.instance_id").
+			Joins("INNER JOIN iam_organization o ON o.instance_id = dm.department_id").
+			Where("dm.department_id = ?", opts.DepartmentID)
+		if opts.IncludeChildrenDepartments {
+			db.Or("FIND_IN_SET(?, o.ancestors)", opts.DepartmentID)
+		}
 	}
-
-	err := db.Debug().Find(&list).Error
+	err := db.Find(&list).Error
 	if err != nil {
 		return nil, datastore.NewDBError(err, "failed to list users")
 	}

@@ -56,8 +56,9 @@ const (
 
 // ListUserOptions list user options.
 type ListUserOptions struct {
-	metav1.ListOptions `       json:",inline"`
-	DepartmentID       string `json:"departmentId"`
+	metav1.ListOptions         `json:",inline"`
+	DepartmentID               string `json:"departmentId,omitempty"`
+	IncludeChildrenDepartments bool   `json:"includeChildrenDepartments,omitempty"`
 }
 
 // CreateUserRequest create user request.
