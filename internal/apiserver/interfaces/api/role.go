@@ -14,7 +14,6 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
-	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
@@ -157,16 +156,13 @@ func (r *role) detailRole(c *gin.Context) {
 //
 // listRole list role page.
 func (r *role) listRole(c *gin.Context) {
-	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
+	var opts metav1.ListOptions
+	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.Fail(c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	resp, err := r.RoleService.ListRoles(c.Request.Context(), metav1.ListOptions{
-		Limit:         &pageSize,
-		Offset:        &page,
-		FieldSelector: c.Query("fieldSelector"),
-	})
+	resp, err := r.RoleService.ListRoles(c.Request.Context(), opts)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

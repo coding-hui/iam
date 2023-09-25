@@ -57,17 +57,17 @@ const (
 // ListUserOptions list user options.
 type ListUserOptions struct {
 	metav1.ListOptions         `json:",inline"`
-	DepartmentID               string `json:"departmentId,omitempty"`
-	IncludeChildrenDepartments bool   `json:"includeChildrenDepartments,omitempty"`
+	DepartmentID               string `json:"departmentId,omitempty"               form:"departmentId"`
+	IncludeChildrenDepartments bool   `json:"includeChildrenDepartments,omitempty" form:"includeChildrenDepartments"`
 }
 
 // CreateUserRequest create user request.
 type CreateUserRequest struct {
 	Name             string   `json:"name"                       validate:"required,name"`
-	Alias            string   `json:"alias"                      validate:"required,min=1,max=30"`
-	Email            string   `json:"email"                      validate:"required,email"`
 	Password         string   `json:"password"                   validate:"required"`
-	Phone            string   `json:"phone,omitempty"            validate:"omitempty"`
+	Alias            string   `json:"alias,omitempty"`
+	Email            string   `json:"email,omitempty"`
+	Phone            string   `json:"phone,omitempty"`
 	UserType         string   `json:"userType,omitempty"`
 	Avatar           string   `json:"avatar,omitempty"`
 	IdentifyProvider string   `json:"identifyProvider,omitempty"`
@@ -83,9 +83,9 @@ type CreateUserResponse struct {
 // UpdateUserRequest update user request.
 type UpdateUserRequest struct {
 	Alias    string `json:"alias"              validate:"required,min=1,max=30"`
-	Email    string `json:"email"              validate:"required,email"`
-	Phone    string `json:"phone,omitempty"    validate:"omitempty"`
-	Password string `json:"password,omitempty" validate:"omitempty"`
+	Email    string `json:"email,omitempty"`
+	Phone    string `json:"phone,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 // UpdateUserResponse update user response.

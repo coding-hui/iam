@@ -87,6 +87,9 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	}
 	// create user
 	user := assembler.ConvertCreateUserReqToUserModel(req, external)
+	if user.Alias == "" {
+		user.Alias = req.Name
+	}
 	createUser, err := u.Store.UserRepository().Create(ctx, user, metav1.CreateOptions{})
 	if err != nil {
 		return nil, err

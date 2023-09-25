@@ -11,7 +11,6 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
-	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
@@ -156,16 +155,13 @@ func (o *organization) getOrganization(c *gin.Context) {
 //
 // listOrganization list organizations page.
 func (o *organization) listOrganization(c *gin.Context) {
-	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
+	var opts metav1.ListOptions
+	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.Fail(c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	resp, err := o.OrganizationService.ListOrganizations(c.Request.Context(), metav1.ListOptions{
-		Limit:         &pageSize,
-		Offset:        &page,
-		FieldSelector: c.Query("fieldSelector"),
-	})
+	resp, err := o.OrganizationService.ListOrganizations(c.Request.Context(), opts)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

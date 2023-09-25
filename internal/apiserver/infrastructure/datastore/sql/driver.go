@@ -102,12 +102,20 @@ func makeCondition(opts metav1.ListOptions) func(db *gorm.DB) *gorm.DB {
 
 func paginate(opts metav1.ListOptions) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		ol := gormutil.Unpointer(opts.Offset, opts.Limit)
-		offset, limit := ol.Offset, ol.Limit
-		if offset < 0 {
-			offset = 0
+		if opts.Offset != nil && opts.Limit != nil {
+			ol := gormutil.Unpointer(opts.Offset, opts.Limit)
+			offset, limit := ol.Offset, ol.Limit
+			if offset < 0 {
+				offset = 0
+			}
+			return db.Offset(offset).Limit(limit)
 		}
-		return db.Offset(offset).Limit(limit)
+		ol := gormutil.Unpointer(opts.Page, opts.PageSize)
+		page, pageSize := ol.Offset, ol.Limit
+		if page < 0 {
+			page = 0
+		}
+		return db.Offset((page - 1) * pageSize).Limit(pageSize)
 	}
 }
 

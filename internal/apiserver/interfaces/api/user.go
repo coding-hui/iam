@@ -5,15 +5,12 @@
 package api
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
-	"github.com/coding-hui/iam/internal/apiserver/utils"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
@@ -162,21 +159,13 @@ func (u *user) getUser(c *gin.Context) {
 //
 // listUser list users page.
 func (u *user) listUser(c *gin.Context) {
-	page, pageSize, err := utils.ExtractPagingParams(c, minPageSize, maxPageSize)
+	var opts v1.ListUserOptions
+	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.Fail(c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
 		return
 	}
-	includeChildrenDepartments, _ := strconv.ParseBool(c.Query("includeChildrenDepartments"))
-	resp, err := u.UserService.ListUsers(c.Request.Context(), v1.ListUserOptions{
-		ListOptions: metav1.ListOptions{
-			Limit:         &pageSize,
-			Offset:        &page,
-			FieldSelector: c.Query("fieldSelector"),
-		},
-		DepartmentID:               c.Query("departmentId"),
-		IncludeChildrenDepartments: includeChildrenDepartments,
-	})
+	resp, err := u.UserService.ListUsers(c.Request.Context(), opts)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return

@@ -178,17 +178,11 @@ func (u *userRepositoryImpl) List(ctx context.Context, opts v1.ListUserOptions) 
 	var list []model.User
 	db := u.client.WithCtx(ctx).Model(model.User{}).
 		Scopes(
+			makeCondition(opts.ListOptions),
 			paginate(opts.ListOptions),
+			joinDepartments(opts),
 		).
 		Order("id desc")
-	if opts.DepartmentID != "" {
-		db.Joins("INNER JOIN iam_department_member dm ON dm.member_id = iam_user.instance_id").
-			Joins("INNER JOIN iam_organization o ON o.instance_id = dm.department_id").
-			Where("dm.department_id = ?", opts.DepartmentID)
-		if opts.IncludeChildrenDepartments {
-			db.Or("FIND_IN_SET(?, o.ancestors)", opts.DepartmentID)
-		}
-	}
 	err := db.Find(&list).Error
 	if err != nil {
 		return nil, datastore.NewDBError(err, "failed to list users")
@@ -203,6 +197,7 @@ func (u *userRepositoryImpl) Count(ctx context.Context, opts v1.ListUserOptions)
 	err := u.client.WithCtx(ctx).Model(&model.User{}).
 		Scopes(
 			makeCondition(opts.ListOptions),
+			joinDepartments(opts),
 		).
 		Count(&totalCount).Error
 	if err != nil {
@@ -234,4 +229,18 @@ func (u *userRepositoryImpl) getUserDepartments(ctx context.Context, user string
 		return nil, datastore.NewDBError(err, "failed to get user departments.")
 	}
 	return resp, err
+}
+
+func joinDepartments(opts v1.ListUserOptions) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if opts.DepartmentID != "" {
+			db.Joins("INNER JOIN iam_department_member dm ON dm.member_id = iam_user.instance_id").
+				Joins("INNER JOIN iam_organization o ON o.instance_id = dm.department_id").
+				Where("dm.department_id = ?", opts.DepartmentID)
+			if opts.IncludeChildrenDepartments {
+				db.Or("FIND_IN_SET(?, o.ancestors)", opts.DepartmentID)
+			}
+		}
+		return db
+	}
 }

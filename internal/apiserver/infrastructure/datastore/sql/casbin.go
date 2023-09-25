@@ -9,9 +9,9 @@ import (
 	"sync"
 
 	"github.com/casbin/casbin/v2"
+	rediswatcher "github.com/casbin/redis-watcher/v2"
 	"github.com/redis/go-redis/v9"
 
-	rediswatcher "github.com/casbin/redis-watcher/v2"
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/channel"
