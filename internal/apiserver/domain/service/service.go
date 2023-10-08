@@ -9,13 +9,15 @@ import (
 	"fmt"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/pkg/token"
 )
 
 // needInitData register the service that need to init data.
 var needInitData []DataInit
 
 // InitServiceBean init all service instance.
-func InitServiceBean(c config.Config) []interface{} {
+func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
+	tokenService := NewTokenService(c, issuer)
 	authenticationService := NewAuthenticationService(c)
 	userService := NewUserService()
 	resourceService := NewResourceService()
@@ -28,6 +30,7 @@ func InitServiceBean(c config.Config) []interface{} {
 	return []interface{}{
 		userService, authenticationService, resourceService,
 		roleService, policyService, organizationService,
+		tokenService,
 	}
 }
 

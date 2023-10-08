@@ -1,0 +1,42 @@
+<!-- Copyright (c) 2023 coding-hui. All rights reserved. -->
+<!-- Use of this source code is governed by a MIT style -->
+<!-- license that can be found in the LICENSE file. -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>oauth github</title>
+</head>
+<body>
+登陆中...
+<script>
+    const message = {
+        success: "{{ .Success }}",
+        code: "{{ .Code }}",
+        msg: "{{ .Msg }}",
+        data: {
+            {{- if and .Data .Data.AccessToken }}
+            "access_token": "{{ .Data.AccessToken }}",
+            {{- end }}
+            {{- if and .Data .Data.AccessToken }}
+            "token_type": "{{ .Data.TokenType }}",
+            {{- end }}
+            {{- if and .Data .Data.RefreshToken }}
+            "refresh_token": "{{ .Data.RefreshToken }}",
+            {{- end }}
+            {{- if and .Data .Data.ExpiresIn }}
+            "expires_in": {{ .Data.ExpiresIn }}
+            {{- end }}
+        }
+    }
+    window.onload = function () {
+        window.opener.postMessage(message, "http://192.168.1.7:8000");
+        window.close();
+    }
+</script>
+</body>
+</html>

@@ -11,6 +11,7 @@ import (
 
 	"github.com/coding-hui/iam/cmd/iam-apiserver/app/options"
 	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/pkg/token"
 )
 
 func TestInitServiceBean(t *testing.T) {
@@ -18,5 +19,9 @@ func TestInitServiceBean(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, len(InitServiceBean(*cfg)), 6)
+	issuer, err := token.NewIssuer(cfg.AuthenticationOptions)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, len(InitServiceBean(*cfg, issuer)), 7)
 }

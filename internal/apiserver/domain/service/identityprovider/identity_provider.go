@@ -61,7 +61,7 @@ func SetupWithOptions(options []options.IdentityProviderOptions) error {
 				log.Errorf("failed to create identity provider %s: %s", o.Name, err)
 			} else {
 				oauthProviders[o.Name] = provider
-				log.V(4).Infof("create identity provider %s successfully", o.Name)
+				log.Infof("create identity provider %s successfully", o.Name)
 			}
 		}
 		if factory, ok := genericProviderFactories[o.Type]; ok {

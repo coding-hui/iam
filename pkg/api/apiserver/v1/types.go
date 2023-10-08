@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	// CtxKeyUserInstanceId request context key of username.
-	CtxKeyUserInstanceId = "user_instance_id"
+	// CtxKeyUserInstanceID request context key of username.
+	CtxKeyUserInstanceID = "user_instance_id"
 	// CtxKeyUserType request context key of user type.
 	CtxKeyUserType = "user_type"
 	// CtxKeyRole request context key of role.
@@ -56,7 +56,7 @@ const (
 
 // ListUserOptions list user options.
 type ListUserOptions struct {
-	metav1.ListOptions         `json:",inline"`
+	metav1.ListOptions         `       json:",inline"`
 	DepartmentID               string `json:"departmentId,omitempty"               form:"departmentId"`
 	IncludeChildrenDepartments bool   `json:"includeChildrenDepartments,omitempty" form:"includeChildrenDepartments"`
 }
@@ -435,9 +435,9 @@ type CreatePolicyRequest struct {
 // UpdatePolicyRequest update policy request.
 type UpdatePolicyRequest struct {
 	Description string      `json:"description" validate:"min=1,max=30"`
-	Type        string      `json:"type"        validate:"required"`
 	Subjects    []string    `json:"subjects"    validate:"required"`
 	Statements  []Statement `json:"statements"  validate:"required"`
+	Type        string      `json:"type"`
 	Status      string      `json:"status"`
 	Owner       string      `json:"owner"`
 	Meta        string      `json:"meta"`

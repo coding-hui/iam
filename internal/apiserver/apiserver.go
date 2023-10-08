@@ -12,19 +12,16 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "github.com/coding-hui/iam/api/swagger"
-	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/github"
-	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/ldap"
-	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/wechatmini"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
-	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	"github.com/coding-hui/iam/internal/apiserver/event"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
 	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
+	"github.com/coding-hui/iam/internal/pkg/token"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
@@ -64,6 +61,9 @@ type apiServer struct {
 	gRPCAPIServer    *grpcAPIServer
 	beanContainer    *container.Container
 	repositoryFactor repository.Factory
+
+	// entity that issues tokens
+	issuer token.Issuer
 }
 
 // New create iam-apiserver with config data.
@@ -102,7 +102,7 @@ func New(cfg *config.Config) (a APIServer, err error) {
 	return server, nil
 }
 
-func (s *apiServer) Run(ctx context.Context, errChan chan error) error {
+func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error) {
 	s.gs.AddShutdownCallback(shutdown.ShutdownFunc(func(string) error {
 		s.webServer.Close()
 		s.gRPCAPIServer.Close()
@@ -113,22 +113,23 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) error {
 		return nil
 	}))
 
+	// create token issuer
+	s.issuer, lastErr = token.NewIssuer(s.cfg.AuthenticationOptions)
+	if lastErr != nil {
+		return fmt.Errorf("unable to create issuer: %v", lastErr)
+	}
+
 	// build the Ioc Container
-	if err := s.buildIoCContainer(); err != nil {
-		return fmt.Errorf("failed to build IoCContainer %w", err)
+	if lastErr = s.buildIoCContainer(); lastErr != nil {
+		return fmt.Errorf("failed to build IoCContainer %w", lastErr)
 	}
 
 	// register apis
 	s.registerAPIRoute()
 
 	// init database
-	if err := service.InitData(s.withRoutesContext(ctx)); err != nil {
-		return fmt.Errorf("failed to init database %w", err)
-	}
-
-	// init identity providers
-	if err := identityprovider.SetupWithOptions(s.cfg.OAuthOptions.IdentityProviders); err != nil {
-		return fmt.Errorf("fail to init identity providers: %w", err)
+	if lastErr = service.InitData(s.withRoutesContext(ctx)); lastErr != nil {
+		return fmt.Errorf("failed to init database %w", lastErr)
 	}
 
 	go event.StartEventWorker(ctx, errChan)
@@ -159,7 +160,7 @@ func (s *apiServer) buildIoCContainer() (err error) {
 	repository.SetClient(factory)
 
 	// domain
-	if err = s.beanContainer.Provides(service.InitServiceBean(s.cfg)...); err != nil {
+	if err = s.beanContainer.Provides(service.InitServiceBean(s.cfg, s.issuer)...); err != nil {
 		return fmt.Errorf("fail to provides the service bean to the container: %w", err)
 	}
 

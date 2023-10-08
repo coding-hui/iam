@@ -86,7 +86,7 @@ func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 		}
 		return err
 	}
-	if currentUser := ctx.Value(&v1.CtxKeyUserInstanceId); currentUser != "" && currentUser == user.InstanceID {
+	if currentUser := ctx.Value(&v1.CtxKeyUserInstanceID); currentUser != "" && currentUser == user.InstanceID {
 		return errors.WithCode(code.ErrDeleteOneself, "User %s failed to be deleted and cannot delete itself", currentUser)
 	}
 	err = db.Where("instance_id = ?", instanceId).Select(clause.Associations).Delete(&model.User{}).Error

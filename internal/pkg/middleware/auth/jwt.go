@@ -12,7 +12,6 @@ import (
 
 	"github.com/coding-hui/common/errors"
 
-	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
@@ -25,14 +24,14 @@ const AuthzAudience = "iam.api.wecoding.top"
 
 // JWTStrategy defines jwt bearer authentication strategy.
 type JWTStrategy struct {
-	signedKey string
+	verify func(tokenStr string) (*token.VerifiedResponse, error)
 }
 
 var _ middleware.AuthStrategy = &JWTStrategy{}
 
 // NewJWTStrategy create jwt bearer strategy with GinJWTMiddleware.
-func NewJWTStrategy(signedKey string) JWTStrategy {
-	return JWTStrategy{signedKey: signedKey}
+func NewJWTStrategy(verify func(tokenStr string) (*token.VerifiedResponse, error)) JWTStrategy {
+	return JWTStrategy{verify: verify}
 }
 
 // AuthFunc defines jwt bearer strategy as the gin authentication middleware.
@@ -54,19 +53,19 @@ func (j JWTStrategy) AuthFunc() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		t, err := token.ParseToken(tokenValue, j.signedKey)
+		t, err := j.verify(tokenValue)
 		if err != nil {
 			api.FailWithErrCode(err, c)
 			c.Abort()
 			return
 		}
-		if t.GrantType != service.GrantTypeAccess {
+		if t.TokenType != token.AccessToken {
 			api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Invalid authorization header"), c)
 			c.Abort()
 			return
 		}
 
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserInstanceId, t.UserInstanceId))
+		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserInstanceID, t.Subject))
 		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserType, t.UserType))
 
 		c.Next()

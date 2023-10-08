@@ -90,6 +90,16 @@ func OkWithPageDetailed(result interface{}, total int64, message string, c *gin.
 	PageResult(code.ErrSuccess, result, total, message, c)
 }
 
+// OkWithHTML return the HTTP template specified by its file name.
+func OkWithHTML(name string, data interface{}, c *gin.Context) {
+	c.HTML(http.StatusOK, name, Response{
+		Success: true,
+		Code:    code.ErrSuccess,
+		Msg:     "success",
+		Data:    data,
+	})
+}
+
 // Fail return fail.
 func Fail(c *gin.Context) {
 	Result(code.ErrUnknown, map[string]interface{}{}, "failed", c)
@@ -98,6 +108,28 @@ func Fail(c *gin.Context) {
 // FailWithMessage return fail with message.
 func FailWithMessage(message string, c *gin.Context) {
 	Result(code.ErrUnknown, map[string]interface{}{}, message, c)
+}
+
+// FailWithHTML return the HTTP template specified by its file name.
+func FailWithHTML(name string, err error, c *gin.Context) {
+	if err != nil {
+		log.Errorf("%#+v", err)
+		coder := errors.ParseCoder(err)
+		c.HTML(coder.HTTPStatus(), name, Response{
+			Success:   false,
+			Code:      coder.Code(),
+			Msg:       coder.String(),
+			Reference: coder.Reference(),
+		})
+
+		return
+	}
+
+	c.HTML(http.StatusOK, name, Response{
+		Success: false,
+		Code:    code.ErrUnknown,
+		Msg:     "failed",
+	})
 }
 
 // FailWithErrCode write an error or the response data into http response body.

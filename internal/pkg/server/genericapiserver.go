@@ -86,6 +86,7 @@ func (s *GenericAPIServer) Setup() {
 	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
 		log.Infof("%-6s %-s --> %s (%d handlers)", httpMethod, absolutePath, handlerName, nuHandlers)
 	}
+	s.Engine.LoadHTMLGlob("template/*")
 }
 
 // InstallMiddlewares install generic middlewares.

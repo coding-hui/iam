@@ -18,6 +18,7 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
 	"github.com/coding-hui/iam/internal/pkg/middleware/auth"
+	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
@@ -31,6 +32,7 @@ var autoAuthCheck middleware.AuthStrategy
 type authentication struct {
 	UserService           service.UserService           `inject:""`
 	AuthenticationService service.AuthenticationService `inject:""`
+	TokenService          service.TokenService          `inject:""`
 
 	cfg config.Config
 }
@@ -43,13 +45,18 @@ func NewAuthentication(c config.Config) Interface {
 func (a *authentication) RegisterApiGroup(g *gin.Engine) {
 	autoAuthCheck = auth.NewAutoStrategy(
 		newBasicAuth(a.AuthenticationService).(auth.BasicStrategy),
-		newJWTAuth(a.cfg.JwtOptions.Key).(auth.JWTStrategy),
+		newJWTAuth(a.TokenService).(auth.JWTStrategy),
 	)
 	apiv1 := g.Group(versionPrefix)
 	{
 		apiv1.POST("/login", a.authenticate)
 		apiv1.GET("/auth/refresh-token", a.refreshToken)
 		apiv1.GET("/auth/user-info", autoAuthCheck.AuthFunc(), a.userInfo)
+	}
+
+	oauth := g.Group("/login/oauth")
+	{
+		oauth.GET("/callback/:callback", a.oauthCallback)
 	}
 }
 
@@ -68,8 +75,10 @@ func newBasicAuth(authentication service.AuthenticationService) middleware.AuthS
 	})
 }
 
-func newJWTAuth(signedKey string) middleware.AuthStrategy {
-	return auth.NewJWTStrategy(signedKey)
+func newJWTAuth(tokenService service.TokenService) middleware.AuthStrategy {
+	return auth.NewJWTStrategy(func(tokenStr string) (*token.VerifiedResponse, error) {
+		return tokenService.Verify(tokenStr)
+	})
 }
 
 func permissionCheckFunc(r string) gin.HandlerFunc {
@@ -80,7 +89,7 @@ func permissionCheckFunc(r string) gin.HandlerFunc {
 			return
 		}
 
-		sub, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceId).(string)
+		sub, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceID).(string)
 		if !ok {
 			api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user role"), c)
 			c.Abort()
@@ -205,7 +214,7 @@ func (a *authentication) refreshToken(c *gin.Context) {
 }
 
 func (a *authentication) userInfo(c *gin.Context) {
-	instanceId, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceId).(string)
+	instanceId, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceID).(string)
 	if !ok {
 		api.FailWithErrCode(
 			errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
@@ -225,4 +234,18 @@ func (a *authentication) userInfo(c *gin.Context) {
 	}
 
 	api.OkWithData(resp, c)
+}
+
+func (a *authentication) oauthCallback(c *gin.Context) {
+	provider := c.Param("callback")
+	login := v1.AuthenticateRequest{
+		Provider: provider,
+	}
+	tokenInfo, err := a.AuthenticationService.OauthAuthenticateByProvider(c.Request.Context(), login, c.Request)
+	if err != nil {
+		api.FailWithHTML("authorize.html", err, c)
+		return
+	}
+
+	api.OkWithHTML("authorize.html", tokenInfo, c)
 }
