@@ -24,18 +24,6 @@ import (
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
-const (
-	jwtIssuer = "iam-issuer"
-	audience  = "iam.api.wecoding.top"
-
-	// GrantTypeAccess is the grant type for access token.
-	GrantTypeAccess = "access"
-	// GrantTypeRefresh is the grant type for refresh token.
-	GrantTypeRefresh = "refresh"
-)
-
-var signedKey string
-
 // AuthenticationService authentication service.
 type AuthenticationService interface {
 	Authenticate(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
@@ -53,7 +41,6 @@ type authenticationServiceImpl struct {
 
 // NewAuthenticationService new authentication service.
 func NewAuthenticationService(c config.Config) AuthenticationService {
-	signedKey = c.JwtOptions.Key
 	return &authenticationServiceImpl{cfg: c}
 }
 
