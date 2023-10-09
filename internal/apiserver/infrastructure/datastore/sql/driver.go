@@ -82,6 +82,10 @@ func (m *Driver) OrganizationRepository() repository.OrganizationRepository {
 	return newOrganizationRepository(m.Client)
 }
 
+func (m *Driver) ProviderRepository() repository.ProviderRepository {
+	return newProviderRepository(m.Client)
+}
+
 func (m *Driver) Close() error {
 	db, err := m.Client.db.DB()
 	if err != nil {

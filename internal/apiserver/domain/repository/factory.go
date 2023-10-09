@@ -9,13 +9,13 @@ var client Factory
 // Factory defines the repository interface.
 type Factory interface {
 	Transaction
-
 	UserRepository() UserRepository
 	CasbinRepository() CasbinRepository
 	ResourceRepository() ResourceRepository
 	RoleRepository() RoleRepository
 	PolicyRepository() PolicyRepository
 	OrganizationRepository() OrganizationRepository
+	ProviderRepository() ProviderRepository
 	Close() error
 }
 
