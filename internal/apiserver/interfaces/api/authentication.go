@@ -243,9 +243,9 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 	}
 	tokenInfo, err := a.AuthenticationService.OauthAuthenticateByProvider(c.Request.Context(), login, c.Request)
 	if err != nil {
-		api.FailWithHTML("authorize.html", err, c)
+		api.FailWithHTML("authorize_callback.html", err, c)
 		return
 	}
 
-	api.OkWithHTML("authorize.html", tokenInfo, c)
+	api.OkWithHTML("authorize_callback.html", tokenInfo, c)
 }
