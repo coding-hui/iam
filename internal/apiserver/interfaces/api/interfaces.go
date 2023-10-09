@@ -10,11 +10,6 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/config"
 )
 
-const (
-	minPageSize = 5
-	maxPageSize = 100
-)
-
 // versionPrefix API version prefix.
 var versionPrefix = "/api/v1"
 
