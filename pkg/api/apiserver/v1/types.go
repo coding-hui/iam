@@ -584,9 +584,9 @@ const (
 
 // CreateProviderRequest create provider request.
 type CreateProviderRequest struct {
-	Name          string        `json:"name"                  validate:"required,name"`
-	Type          string        `json:"type" validate:"required"`
-	Category      string        `json:"category" validate:"required"`
+	Name          string        `json:"name"          validate:"required,name"`
+	Type          string        `json:"type"          validate:"required"`
+	Category      string        `json:"category"      validate:"required"`
 	Status        string        `json:"status"`
 	Owner         string        `json:"owner"`
 	DisplayName   string        `json:"displayName"`

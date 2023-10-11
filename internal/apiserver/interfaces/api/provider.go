@@ -41,7 +41,7 @@ func (p *provider) RegisterApiGroup(g *gin.Engine) {
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1.CreateProviderRequest	true	"provider"
-//	@Success		200		{object}	api.Response			"Create a nnw provider"
+//	@Success		200		{object}	api.Response				"Create a nnw provider"
 //	@Router			/api/v1/providers [post]
 //	@Security		BearerTokenAuth
 //
@@ -72,8 +72,8 @@ func (p *provider) createProvider(c *gin.Context) {
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data		body		v1.UpdateProviderRequest	true	"provider"
-//	@Param			instanceId	path		string					true	"identifier of a provider"
-//	@Success		200			{object}	api.Response			"Update provider info"
+//	@Param			instanceId	path		string						true	"identifier of a provider"
+//	@Success		200			{object}	api.Response				"Update provider info"
 //	@Router			/api/v1/providers/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
@@ -124,7 +124,7 @@ func (p *provider) deleteProvider(c *gin.Context) {
 //	@Tags			Providers
 //	@Summary		GetProviderInfo
 //	@Description	GetByName a provider by name
-//	@Param			instanceId	path		string										true	"name of a provider"
+//	@Param			instanceId	path		string											true	"identifier of a provider"
 //	@Success		200			{object}	api.Response{data=v1.DetailProviderResponse}	"Provider detail"
 //	@Router			/api/v1/providers/{instanceId} [get]
 //	@Security		BearerTokenAuth
