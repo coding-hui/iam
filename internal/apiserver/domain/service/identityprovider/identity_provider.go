@@ -5,13 +5,18 @@
 package identityprovider
 
 import (
+	"context"
 	"fmt"
+	"sync"
 
-	"github.com/coding-hui/common/errors"
-
+	"github.com/coding-hui/iam/internal/apiserver/domain/model"
+	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/pkg/log"
+
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 var (
@@ -19,6 +24,8 @@ var (
 	genericProviderFactories = make(map[string]GenericProviderFactory)
 	oauthProviders           = make(map[string]OAuthProvider)
 	genericProviders         = make(map[string]GenericProvider)
+
+	lock = sync.Mutex{}
 )
 
 type UserInfo interface {
@@ -77,19 +84,54 @@ func SetupWithOptions(options []options.IdentityProviderOptions) error {
 }
 
 // GetGenericProvider returns GenericProvider with given name
-func GetGenericProvider(providerName string) (GenericProvider, error) {
-	if provider, ok := genericProviders[providerName]; ok {
+func GetGenericProvider(idp *model.Provider) (GenericProvider, error) {
+	if provider, ok := genericProviders[idp.Name]; ok {
 		return provider, nil
 	}
-	return nil, errors.WithCode(code.ErrIdentityProviderNotFound, "identity provider [%s] not found", providerName)
+	providerRepo := repository.Client().ProviderRepository()
+	providerInfo, err := providerRepo.GetByName(context.Background(), idp.Name, metav1.GetOptions{})
+	if err != nil {
+		return nil, errors.WithCode(code.ErrIdentityProviderNotFound, "identity provider [%s] not found", idp.Name)
+	}
+	if genericProviderFactories[providerInfo.Type] == nil {
+		err := fmt.Errorf("identity provider %s with type %s is not supported", providerInfo.Name, providerInfo.Type)
+		return nil, err
+	}
+	if factory, ok := genericProviderFactories[providerInfo.Type]; ok {
+		if provider, err := factory.Create(options.DynamicOptions(idp.Extend)); err != nil {
+			log.Errorf("failed to create identity provider %s: %s", providerInfo.Name, err)
+		} else {
+			lock.TryLock()
+			defer lock.Unlock()
+			genericProviders[providerInfo.Name] = provider
+			log.Infof("create identity provider %s successfully", providerInfo.Name)
+			return provider, nil
+		}
+	}
+	return nil, errors.WithCode(code.ErrIdentityProviderNotFound, "identity provider [%s] not found", idp.Name)
 }
 
 // GetOAuthProvider returns OAuthProvider with given name
-func GetOAuthProvider(providerName string) (OAuthProvider, error) {
-	if provider, ok := oauthProviders[providerName]; ok {
+func GetOAuthProvider(idp *model.Provider) (OAuthProvider, error) {
+	if provider, ok := oauthProviders[idp.Name]; ok {
 		return provider, nil
 	}
-	return nil, errors.WithCode(code.ErrIdentityProviderNotFound, "identity provider [%s] not found", providerName)
+	if oauthProviderFactories[idp.Type] == nil {
+		err := fmt.Errorf("identity provider %s with type %s is not supported", idp.Name, idp.Type)
+		return nil, err
+	}
+	if factory, ok := oauthProviderFactories[idp.Type]; ok {
+		if provider, err := factory.Create(options.DynamicOptions(idp.Extend)); err != nil {
+			log.Errorf("failed to create identity provider %s: %s", idp.Name, err)
+		} else {
+			lock.TryLock()
+			defer lock.Unlock()
+			oauthProviders[idp.Name] = provider
+			log.Infof("create identity provider %s successfully", idp.Name)
+			return provider, nil
+		}
+	}
+	return nil, errors.WithCode(code.ErrIdentityProviderNotFound, "identity provider [%s] not found", idp.Name)
 }
 
 // RegisterOAuthProvider register OAuthProviderFactory with the specified type

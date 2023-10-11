@@ -554,3 +554,57 @@ type DepartmentMemberList struct {
 
 	Members []*DepartmentMember `json:"members"`
 }
+
+type ProviderCategory string
+type GrantHandlerType string
+type MappingMethod string
+type IdentityProviderType string
+
+const (
+	// GrantHandlerAuto auto-approves client authorization grant requests
+	GrantHandlerAuto GrantHandlerType = "auto"
+	// GrantHandlerPrompt prompts the user to approve new client authorization grant requests
+	GrantHandlerPrompt GrantHandlerType = "prompt"
+	// GrantHandlerDeny auto-denies client authorization grant requests
+	GrantHandlerDeny GrantHandlerType = "deny"
+	// MappingMethodAuto  The default value.
+	// The user will automatically create and mapping when login successful.
+	// Fails if a user with that username is already mapped to another identity.
+	MappingMethodAuto MappingMethod = "auto"
+	// MappingMethodLookup Looks up an existing identity, user identity mapping, and user, but does not automatically
+	// provision users or identities. Using this method requires you to manually provision users.
+	MappingMethodLookup MappingMethod = "lookup"
+	// MappingMethodMixed  A user entity can be mapped with multiple identifyProvider.
+	// not supported yet.
+	MappingMethodMixed MappingMethod = "mixed"
+
+	OAuth ProviderCategory = "OAuth"
+	Email ProviderCategory = "Email"
+)
+
+// CreateProviderRequest create provider request.
+type CreateProviderRequest struct {
+	Name          string        `json:"name"                  validate:"required,name"`
+	Type          string        `json:"type" validate:"required"`
+	Category      string        `json:"category" validate:"required"`
+	Status        string        `json:"status"`
+	Owner         string        `json:"owner"`
+	DisplayName   string        `json:"displayName"`
+	Description   string        `json:"description"`
+	MappingMethod MappingMethod `json:"mappingMethod"`
+
+	Extend metav1.Extend `json:"extend,omitempty" validate:"omitempty"`
+}
+
+// UpdateProviderRequest update provider request.
+type UpdateProviderRequest struct {
+	OrganizationID string `json:"organizationId"        validate:"required"`
+	ParentID       string `json:"parentId"              validate:"required"`
+	DisplayName    string `json:"displayName,omitempty"`
+	WebsiteUrl     string `json:"websiteUrl,omitempty"`
+	Favicon        string `json:"favicon,omitempty"`
+	Description    string `json:"description,omitempty"`
+	MappingMethod  string `json:"mappingMethod"`
+
+	Extend metav1.Extend `json:"extend,omitempty" validate:"omitempty"`
+}

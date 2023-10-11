@@ -141,3 +141,19 @@ func (d *BatchRemoveDepartmentMemberRequest) Validate() field.ErrorList {
 
 	return allErrs
 }
+
+// Validate validates that a provider object is valid.
+func (u *CreateProviderRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(u)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// ValidateUpdate validates that a provider object is valid when update.
+func (u *UpdateProviderRequest) ValidateUpdate() field.ErrorList {
+	val := validation.NewValidator(u)
+	allErrs := val.Validate()
+
+	return allErrs
+}

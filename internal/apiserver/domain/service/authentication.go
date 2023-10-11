@@ -19,7 +19,6 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
@@ -33,10 +32,11 @@ type AuthenticationService interface {
 }
 
 type authenticationServiceImpl struct {
-	cfg          config.Config
-	Store        repository.Factory `inject:"repository"`
-	UserService  UserService        `inject:""`
-	TokenService TokenService       `inject:""`
+	cfg             config.Config
+	Store           repository.Factory `inject:"repository"`
+	UserService     UserService        `inject:""`
+	TokenService    TokenService       `inject:""`
+	ProviderService ProviderService    `inject:""`
 }
 
 // NewAuthenticationService new authentication service.
@@ -114,11 +114,11 @@ func (a *authenticationServiceImpl) AuthenticateByProvider(
 	ctx context.Context,
 	loginReq v1.AuthenticateRequest,
 ) (*v1.AuthenticateResponse, error) {
-	providerOptions, err := a.cfg.AuthenticationOptions.OAuthOptions.IdentityProviderOptions(loginReq.Provider)
+	provider, err := a.Store.ProviderRepository().GetByName(ctx, loginReq.Provider, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
-	genericProvider, err := identityprovider.GetGenericProvider(providerOptions.Name)
+	genericProvider, err := identityprovider.GetGenericProvider(provider)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func (a *authenticationServiceImpl) AuthenticateByProvider(
 		return nil, err
 	}
 	linkedAccount, err := a.Store.UserRepository().
-		GetByExternalId(ctx, authenticated.GetUserID(), providerOptions.Name, metav1.GetOptions{})
+		GetByExternalId(ctx, authenticated.GetUserID(), provider.Name, metav1.GetOptions{})
 	if err != nil && !errors.IsCode(err, code.ErrUserNotFound) {
 		return nil, err
 	}
@@ -138,8 +138,8 @@ func (a *authenticationServiceImpl) AuthenticateByProvider(
 		userBase = assembler.ConvertUserModelToBase(linkedAccount)
 	}
 	// the user will automatically create and mapping when login successful.
-	if userBase == nil && providerOptions.MappingMethod == options.MappingMethodAuto {
-		createResp, err := a.UserService.CreateUser(ctx, mappedUser(providerOptions.Name, authenticated))
+	if userBase == nil && provider.MappingMethod == v1.MappingMethodAuto {
+		createResp, err := a.UserService.CreateUser(ctx, mappedUser(provider.Name, authenticated))
 		if err != nil {
 			return nil, err
 		}
@@ -179,20 +179,20 @@ func (a *authenticationServiceImpl) OauthAuthenticateByProvider(
 	loginReq v1.AuthenticateRequest,
 	req *http.Request,
 ) (*v1.AuthenticateResponse, error) {
-	providerOptions, err := a.cfg.AuthenticationOptions.OAuthOptions.IdentityProviderOptions(loginReq.Provider)
+	provider, err := a.Store.ProviderRepository().GetByName(ctx, loginReq.Provider, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
-	genericProvider, err := identityprovider.GetOAuthProvider(providerOptions.Name)
+	oauthProvider, err := identityprovider.GetOAuthProvider(provider)
 	if err != nil {
 		return nil, err
 	}
-	authenticated, err := genericProvider.IdentityExchangeCallback(req)
+	authenticated, err := oauthProvider.IdentityExchangeCallback(req)
 	if err != nil {
 		return nil, err
 	}
 	linkedAccount, err := a.Store.UserRepository().
-		GetByExternalId(ctx, authenticated.GetUserID(), providerOptions.Name, metav1.GetOptions{})
+		GetByExternalId(ctx, authenticated.GetUserID(), provider.Name, metav1.GetOptions{})
 	if err != nil && !errors.IsCode(err, code.ErrUserNotFound) {
 		return nil, err
 	}
@@ -203,8 +203,8 @@ func (a *authenticationServiceImpl) OauthAuthenticateByProvider(
 		userBase = assembler.ConvertUserModelToBase(linkedAccount)
 	}
 	// the user will automatically create and mapping when login successful.
-	if userBase == nil && providerOptions.MappingMethod == options.MappingMethodAuto {
-		createResp, err := a.UserService.CreateUser(ctx, mappedUser(providerOptions.Name, authenticated))
+	if userBase == nil && provider.MappingMethod == v1.MappingMethodAuto {
+		createResp, err := a.UserService.CreateUser(ctx, mappedUser(provider.Name, authenticated))
 		if err != nil {
 			return nil, err
 		}

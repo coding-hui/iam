@@ -63,7 +63,7 @@ func (p *providerRepositoryImpl) Delete(ctx context.Context, name string, opts m
 	if opts.Unscoped {
 		db = db.Unscoped()
 	}
-	err := db.Where("name = ?", name).Delete(&model.Policy{}).Error
+	err := db.Where("instance_id = ?", name).Delete(&model.Policy{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return datastore.ErrRecordNotExist

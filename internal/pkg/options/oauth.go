@@ -10,32 +10,13 @@ import (
 
 	"github.com/spf13/pflag"
 
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+
 	"github.com/coding-hui/common/errors"
 	"github.com/coding-hui/common/util/sliceutil"
 )
 
-type GrantHandlerType string
-type MappingMethod string
-type IdentityProviderType string
-
 const (
-	// GrantHandlerAuto auto-approves client authorization grant requests
-	GrantHandlerAuto GrantHandlerType = "auto"
-	// GrantHandlerPrompt prompts the user to approve new client authorization grant requests
-	GrantHandlerPrompt GrantHandlerType = "prompt"
-	// GrantHandlerDeny auto-denies client authorization grant requests
-	GrantHandlerDeny GrantHandlerType = "deny"
-	// MappingMethodAuto  The default value.
-	// The user will automatically create and mapping when login successful.
-	// Fails if a user with that username is already mapped to another identity.
-	MappingMethodAuto MappingMethod = "auto"
-	// MappingMethodLookup Looks up an existing identity, user identity mapping, and user, but does not automatically
-	// provision users or identities. Using this method requires you to manually provision users.
-	MappingMethodLookup MappingMethod = "lookup"
-	// MappingMethodMixed  A user entity can be mapped with multiple identifyProvider.
-	// not supported yet.
-	MappingMethodMixed MappingMethod = "mixed"
-
 	DefaultIssuer string = "iam-apiserver"
 )
 
@@ -89,7 +70,7 @@ type IdentityProviderOptions struct {
 	//  - lookup: Looks up an existing identity, user identity mapping, and user, but does not automatically
 	//            provision users or identities. Using this method requires you to manually provision users.
 	//  - mixed:  A user entity can be mapped with multiple identifyProvider.
-	MappingMethod MappingMethod `json:"mappingMethod" mapstructure:"mappingMethod"`
+	MappingMethod v1.MappingMethod `json:"mappingMethod" mapstructure:"mappingMethod"`
 
 	// DisableLoginConfirmation means that when the user login successfully,
 	// reconfirm the account information is not required.
@@ -99,6 +80,10 @@ type IdentityProviderOptions struct {
 	// The type of identify provider
 	// OpenIDIdentityProvider LDAPIdentityProvider GitHubIdentityProvider
 	Type string `json:"type" mapstructure:"type"`
+
+	// The category of identify provider
+	// OAuth Email Storage
+	Category string `json:"category" mapstructure:"category"`
 
 	// The options of identify provider
 	Provider DynamicOptions `json:"provider" mapstructure:"provider"`
@@ -124,7 +109,7 @@ type Client struct {
 	//  - auto:   always approves grant requests, useful for trusted clients
 	//  - prompt: prompts the end user for approval of grant requests, useful for third-party clients
 	//  - deny:   always denies grant requests, useful for black-listed clients
-	GrantMethod GrantHandlerType `json:"grantMethod,omitempty" mapstructure:"grantMethod,omitempty"`
+	GrantMethod v1.GrantHandlerType `json:"grantMethod,omitempty" mapstructure:"grantMethod,omitempty"`
 
 	// ScopeRestrictions describes which scopes this client can request.  Each requested scope
 	// is checked against each restriction.  If any restriction matches, then the scope is allowed.
