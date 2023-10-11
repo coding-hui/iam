@@ -22,13 +22,14 @@ type Provider struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Type          string           `json:"type"          gorm:"column:type;type:varchar(64)"`
-	Category      string           `json:"category"      gorm:"column:category;type:varchar(20)"`
-	Status        string           `json:"status"        gorm:"column:status;type:varchar(20);default:0"`
-	Owner         string           `json:"owner"         gorm:"column:owner;type:varchar(100)"`
-	DisplayName   string           `json:"displayName"   gorm:"column:display_name;type:varchar(100)"`
-	Description   string           `json:"description"   gorm:"column:description;type:varchar(100)"`
-	MappingMethod v1.MappingMethod `json:"mappingMethod" gorm:"column:mapping_method;type:varchar(20)"`
+	Type          v1.ProviderType     `json:"type"          gorm:"column:type;type:varchar(64)"`
+	Category      v1.ProviderCategory `json:"category"      gorm:"column:category;type:varchar(20)"`
+	MappingMethod v1.MappingMethod    `json:"mappingMethod" gorm:"column:mapping_method;type:varchar(20)"`
+
+	Status      string `json:"status"        gorm:"column:status;type:varchar(20);default:0"`
+	Owner       string `json:"owner"         gorm:"column:owner;type:varchar(100)"`
+	DisplayName string `json:"displayName"   gorm:"column:display_name;type:varchar(100)"`
+	Description string `json:"description"   gorm:"column:description;type:varchar(100)"`
 }
 
 // TableName maps to mysql table name.

@@ -25,8 +25,7 @@ import (
 )
 
 const (
-	ldapIdentityProvider = "LDAPIdentityProvider"
-	defaultReadTimeout   = 15000
+	defaultReadTimeout = 15000
 )
 
 func init() {
@@ -72,8 +71,8 @@ type ldapProvider struct {
 type ldapProviderFactory struct {
 }
 
-func (l *ldapProviderFactory) Type() string {
-	return ldapIdentityProvider
+func (l *ldapProviderFactory) Type() v1.ProviderType {
+	return v1.LDAPIdentityProvider
 }
 
 func (l *ldapProviderFactory) Create(opts options.DynamicOptions) (identityprovider.GenericProvider, error) {

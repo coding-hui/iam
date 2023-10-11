@@ -22,10 +22,6 @@ import (
 	"github.com/coding-hui/common/util/idutil"
 )
 
-const (
-	wechatMiniIdentityProvider = "WeChatMiniProgramIdentityProvider"
-)
-
 func init() {
 	identityprovider.RegisterGenericProvider(&wechatMiniProviderFactory{})
 }
@@ -41,8 +37,8 @@ type wechatMiniProvider struct {
 type wechatMiniProviderFactory struct {
 }
 
-func (w *wechatMiniProviderFactory) Type() string {
-	return wechatMiniIdentityProvider
+func (w *wechatMiniProviderFactory) Type() v1.ProviderType {
+	return v1.WeChatMiniProgramIdentityProvider
 }
 
 func (w *wechatMiniProviderFactory) Create(opts options.DynamicOptions) (identityprovider.GenericProvider, error) {

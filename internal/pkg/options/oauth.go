@@ -79,11 +79,11 @@ type IdentityProviderOptions struct {
 
 	// The type of identify provider
 	// OpenIDIdentityProvider LDAPIdentityProvider GitHubIdentityProvider
-	Type string `json:"type" mapstructure:"type"`
+	Type v1.ProviderType `json:"type" mapstructure:"type"`
 
 	// The category of identify provider
 	// OAuth Email Storage
-	Category string `json:"category" mapstructure:"category"`
+	Category v1.ProviderCategory `json:"category" mapstructure:"category"`
 
 	// The options of identify provider
 	Provider DynamicOptions `json:"provider" mapstructure:"provider"`

@@ -16,6 +16,7 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	"github.com/coding-hui/iam/internal/pkg/options"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 const (
@@ -97,8 +98,8 @@ type giteeIdentity struct {
 type giteeProviderFactory struct {
 }
 
-func (g *giteeProviderFactory) Type() string {
-	return "GiteeIdentityProvider"
+func (g *giteeProviderFactory) Type() v1.ProviderType {
+	return v1.GiteeIdentityProvider
 }
 
 func (g *giteeProviderFactory) Create(opts options.DynamicOptions) (identityprovider.OAuthProvider, error) {

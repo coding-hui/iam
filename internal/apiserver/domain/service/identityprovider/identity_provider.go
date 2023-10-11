@@ -13,6 +13,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/options"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
@@ -20,8 +21,8 @@ import (
 )
 
 var (
-	oauthProviderFactories   = make(map[string]OAuthProviderFactory)
-	genericProviderFactories = make(map[string]GenericProviderFactory)
+	oauthProviderFactories   = make(map[v1.ProviderType]OAuthProviderFactory)
+	genericProviderFactories = make(map[v1.ProviderType]GenericProviderFactory)
 	oauthProviders           = make(map[string]OAuthProvider)
 	genericProviders         = make(map[string]GenericProvider)
 

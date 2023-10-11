@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/coding-hui/iam/internal/pkg/options"
+	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 type OAuthProvider interface {
@@ -17,7 +18,7 @@ type OAuthProvider interface {
 
 type OAuthProviderFactory interface {
 	// Type unique type of the provider
-	Type() string
+	Type() v1.ProviderType
 	// Create Apply the dynamic options
 	Create(options options.DynamicOptions) (OAuthProvider, error)
 }

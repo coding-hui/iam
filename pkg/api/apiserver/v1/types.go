@@ -558,7 +558,7 @@ type DepartmentMemberList struct {
 type ProviderCategory string
 type GrantHandlerType string
 type MappingMethod string
-type IdentityProviderType string
+type ProviderType string
 
 const (
 	// GrantHandlerAuto auto-approves client authorization grant requests
@@ -580,18 +580,24 @@ const (
 
 	OAuth ProviderCategory = "OAuth"
 	Email ProviderCategory = "Email"
+
+	GithubIdentityProvider            ProviderType = "GitHub"
+	GiteeIdentityProvider             ProviderType = "Gitee"
+	LDAPIdentityProvider              ProviderType = "LDAP"
+	WeChatMiniProgramIdentityProvider ProviderType = "WeChatMiniProgram"
 )
 
 // CreateProviderRequest create provider request.
 type CreateProviderRequest struct {
-	Name          string        `json:"name"          validate:"required,name"`
-	Type          string        `json:"type"          validate:"required"`
-	Category      string        `json:"category"      validate:"required"`
-	Status        string        `json:"status"`
-	Owner         string        `json:"owner"`
-	DisplayName   string        `json:"displayName"`
-	Description   string        `json:"description"`
-	MappingMethod MappingMethod `json:"mappingMethod"`
+	Type          ProviderType     `json:"type"          validate:"required"`
+	Category      ProviderCategory `json:"category"      validate:"required"`
+	MappingMethod MappingMethod    `json:"mappingMethod,omitempty"`
+
+	Name        string `json:"name"          validate:"required,name"`
+	Status      string `json:"status"`
+	Owner       string `json:"owner"`
+	DisplayName string `json:"displayName"`
+	Description string `json:"description"`
 
 	Extend metav1.Extend `json:"extend,omitempty" validate:"omitempty"`
 }

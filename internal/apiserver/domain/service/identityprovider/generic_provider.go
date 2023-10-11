@@ -16,7 +16,7 @@ type GenericProvider interface {
 
 type GenericProviderFactory interface {
 	// Type unique type of the provider
-	Type() string
+	Type() v1.ProviderType
 	// Create Apply the dynamic options from iam-apiserver-config
 	Create(options options.DynamicOptions) (GenericProvider, error)
 }
