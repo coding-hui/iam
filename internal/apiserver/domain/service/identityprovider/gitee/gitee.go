@@ -11,7 +11,6 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/mitchellh/mapstructure"
 	"golang.org/x/oauth2"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
@@ -34,7 +33,7 @@ type gitee struct {
 	ClientID string `json:"clientID" yaml:"clientID"`
 
 	// ClientSecret is the application's secret.
-	ClientSecret string `json:"-" yaml:"clientSecret"`
+	ClientSecret string `json:"clientSecret" yaml:"clientSecret"`
 
 	// Endpoint contains the resource server's token endpoint
 	// URLs. These are constants specific to each server and are
@@ -98,13 +97,13 @@ type giteeIdentity struct {
 type giteeProviderFactory struct {
 }
 
-func (g *giteeProviderFactory) Type() v1.ProviderType {
+func (g *giteeProviderFactory) Type() v1.IdentityProviderType {
 	return v1.GiteeIdentityProvider
 }
 
 func (g *giteeProviderFactory) Create(opts options.DynamicOptions) (identityprovider.OAuthProvider, error) {
 	var gitee gitee
-	if err := mapstructure.Decode(opts, &gitee); err != nil {
+	if err := opts.To(&gitee); err != nil {
 		return nil, err
 	}
 

@@ -49,7 +49,7 @@ type ldapProvider struct {
 	// Username (DN) of the "manager" user identity.
 	ManagerDN string `json:"managerDN,omitempty"            yaml:"managerDN"`
 	// The password for the manager DN.
-	ManagerPassword string `json:"-,omitempty"                    yaml:"managerPassword"`
+	ManagerPassword string `json:"managerPassword,omitempty"                    yaml:"managerPassword"`
 	// User search scope.
 	UserSearchBase string `json:"userSearchBase,omitempty"       yaml:"userSearchBase"`
 	// LDAP filter used to identify objects of type user. e.g. (objectClass=person)
@@ -71,7 +71,7 @@ type ldapProvider struct {
 type ldapProviderFactory struct {
 }
 
-func (l *ldapProviderFactory) Type() v1.ProviderType {
+func (l *ldapProviderFactory) Type() v1.IdentityProviderType {
 	return v1.LDAPIdentityProvider
 }
 

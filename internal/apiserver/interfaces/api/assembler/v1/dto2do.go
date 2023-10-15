@@ -108,3 +108,35 @@ func ConvertCreateDeptReqToModel(req v1.CreateDepartmentRequest, parent *model.O
 		Description: req.Description,
 	}
 }
+
+// ConvertUpdateAppReqToModel assemble the update app request to Application Model.
+func ConvertUpdateAppReqToModel(req v1.UpdateApplicationRequest, detail *v1.DetailApplicationResponse) *model.Application {
+	app := &model.Application{
+		ObjectMeta:  detail.ObjectMeta,
+		Status:      detail.Status,
+		Owner:       detail.Owner,
+		Logo:        detail.Logo,
+		HomepageUrl: detail.HomepageUrl,
+		DisplayName: detail.DisplayName,
+		Description: detail.Description,
+	}
+	if req.DisplayName != "" {
+		app.DisplayName = req.DisplayName
+	}
+	if req.Status != "" {
+		app.Status = req.Status
+	}
+	if req.Owner != "" {
+		app.Owner = req.Owner
+	}
+	if req.Logo != "" {
+		app.Logo = req.Logo
+	}
+	if req.HomepageUrl != "" {
+		app.HomepageUrl = req.HomepageUrl
+	}
+	if req.Description != "" {
+		app.Description = req.Description
+	}
+	return app
+}

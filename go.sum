@@ -119,6 +119,10 @@ github.com/coding-hui/common v0.8.6-0.20231010153131-e8010a9911d1 h1:VlG4L1pKKvV
 github.com/coding-hui/common v0.8.6-0.20231010153131-e8010a9911d1/go.mod h1:D5IjUCNJbObxYj/ERotqFn1sZYYVrd0k68LnaJ2G8UQ=
 github.com/coding-hui/common v0.8.6-0.20231011142151-f60ba0300117 h1:Z0+RcfgMoUafD2QheHCmDIBq2rrLpOVhSsaaG9VZIQk=
 github.com/coding-hui/common v0.8.6-0.20231011142151-f60ba0300117/go.mod h1:D5IjUCNJbObxYj/ERotqFn1sZYYVrd0k68LnaJ2G8UQ=
+github.com/coding-hui/common v0.8.6 h1:6AfJZ3/ZsysHJS177BYzIkji+MKpwZK0w64iJ7sRJyY=
+github.com/coding-hui/common v0.8.6/go.mod h1:D5IjUCNJbObxYj/ERotqFn1sZYYVrd0k68LnaJ2G8UQ=
+github.com/coding-hui/common v0.8.7-0.20231015073032-b7e4de1d9a89 h1:ymLZdSu9oBg/xucFkkxSnV+ZamJDHlKEVKM4lflAuZ0=
+github.com/coding-hui/common v0.8.7-0.20231015073032-b7e4de1d9a89/go.mod h1:D5IjUCNJbObxYj/ERotqFn1sZYYVrd0k68LnaJ2G8UQ=
 github.com/coding-hui/wecoding-sdk-go v0.8.3 h1:tOl1XW8vUjGcPXmP1hAsPzcLt4APQnd/jEQUQQNFGk8=
 github.com/coding-hui/wecoding-sdk-go v0.8.3/go.mod h1:KbQP0grQ6UNjhV8jhmkgyLH8p/IxNqfRMF0UrwCGpQw=
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=

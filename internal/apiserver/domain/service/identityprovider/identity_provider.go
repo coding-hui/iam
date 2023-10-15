@@ -5,32 +5,23 @@
 package identityprovider
 
 import (
-	"context"
 	"fmt"
 	"sync"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
-	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/options"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
-
-	"github.com/coding-hui/common/errors"
-	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 var (
-	oauthProviderFactories   = make(map[v1.ProviderType]OAuthProviderFactory)
-	genericProviderFactories = make(map[v1.ProviderType]GenericProviderFactory)
+	oauthProviderFactories   = make(map[v1.IdentityProviderType]OAuthProviderFactory)
+	genericProviderFactories = make(map[v1.IdentityProviderType]GenericProviderFactory)
 	oauthProviders           = make(map[string]OAuthProvider)
 	genericProviders         = make(map[string]GenericProvider)
 
 	lock = sync.Mutex{}
 )
-
-type UserInfo interface {
-}
 
 // Identity represents the account mapped to iam
 type Identity interface {
@@ -46,79 +37,54 @@ type Identity interface {
 	GetAvatar() string
 }
 
-// SetupWithOptions will verify the configuration and initialize the identityProviders
-func SetupWithOptions(options []options.IdentityProviderOptions) error {
-	// Clear all providers when reloading configuration
-	oauthProviders = make(map[string]OAuthProvider)
-	genericProviders = make(map[string]GenericProvider)
-
-	for _, o := range options {
-		if oauthProviders[o.Name] != nil || genericProviders[o.Name] != nil {
-			err := fmt.Errorf("duplicate identity provider found: %s, name must be unique", o.Name)
-			log.Error(err.Error())
-			return err
-		}
-		if genericProviderFactories[o.Type] == nil && oauthProviderFactories[o.Type] == nil {
-			err := fmt.Errorf("identity provider %s with type %s is not supported", o.Name, o.Type)
-			log.Error(err.Error())
-			return err
-		}
-		if factory, ok := oauthProviderFactories[o.Type]; ok {
-			if provider, err := factory.Create(o.Provider); err != nil {
-				// don’t return errors, decoupling external dependencies
-				log.Errorf("failed to create identity provider %s: %s", o.Name, err)
-			} else {
-				oauthProviders[o.Name] = provider
-				log.Infof("create identity provider %s successfully", o.Name)
-			}
-		}
-		if factory, ok := genericProviderFactories[o.Type]; ok {
-			if provider, err := factory.Create(o.Provider); err != nil {
-				log.Errorf("failed to create identity provider %s: %s", o.Name, err)
-			} else {
-				genericProviders[o.Name] = provider
-				log.Infof("create identity provider %s successfully", o.Name)
-			}
-		}
-	}
-	return nil
-}
-
 // GetGenericProvider returns GenericProvider with given name
-func GetGenericProvider(idp *model.Provider) (GenericProvider, error) {
+func GetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
 	if provider, ok := genericProviders[idp.Name]; ok {
 		return provider, nil
 	}
-	providerRepo := repository.Client().ProviderRepository()
-	providerInfo, err := providerRepo.GetByName(context.Background(), idp.Name, metav1.GetOptions{})
-	if err != nil {
-		return nil, errors.WithCode(code.ErrIdentityProviderNotFound, "identity provider [%s] not found", idp.Name)
-	}
-	if genericProviderFactories[providerInfo.Type] == nil {
-		err := fmt.Errorf("identity provider %s with type %s is not supported", providerInfo.Name, providerInfo.Type)
+	if genericProviderFactories[idp.Type] == nil {
+		err := fmt.Errorf("identity provider %s with type %s is not supported", idp.Name, idp.Type)
 		return nil, err
 	}
-	if factory, ok := genericProviderFactories[providerInfo.Type]; ok {
+	return SetGenericProvider(idp)
+}
+
+// SetGenericProvider update GenericProvider based on the name
+func SetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
+	if idp.Extend == nil {
+		err := fmt.Errorf("identity provider %s config is empty", idp.Name)
+		return nil, err
+	}
+	if factory, ok := genericProviderFactories[idp.Type]; ok {
 		if provider, err := factory.Create(options.DynamicOptions(idp.Extend)); err != nil {
-			log.Errorf("failed to create identity provider %s: %s", providerInfo.Name, err)
+			log.Errorf("failed to create identity provider %s: %s", idp.Name, err)
 		} else {
 			lock.TryLock()
 			defer lock.Unlock()
-			genericProviders[providerInfo.Name] = provider
-			log.Infof("create identity provider %s successfully", providerInfo.Name)
+			genericProviders[idp.Name] = provider
+			log.Infof("create identity provider %s successfully", idp.Name)
 			return provider, nil
 		}
 	}
-	return nil, errors.WithCode(code.ErrIdentityProviderNotFound, "identity provider [%s] not found", idp.Name)
+	return nil, fmt.Errorf("identity provider %s with type %s is not supported", idp.Name, idp.Type)
 }
 
 // GetOAuthProvider returns OAuthProvider with given name
-func GetOAuthProvider(idp *model.Provider) (OAuthProvider, error) {
+func GetOAuthProvider(idp *model.IdentityProvider) (OAuthProvider, error) {
 	if provider, ok := oauthProviders[idp.Name]; ok {
 		return provider, nil
 	}
 	if oauthProviderFactories[idp.Type] == nil {
 		err := fmt.Errorf("identity provider %s with type %s is not supported", idp.Name, idp.Type)
+		return nil, err
+	}
+	return SetOAuthProvider(idp)
+}
+
+// SetOAuthProvider update OAuthProvider based on the name
+func SetOAuthProvider(idp *model.IdentityProvider) (OAuthProvider, error) {
+	if idp.Extend == nil {
+		err := fmt.Errorf("identity provider %s config is empty", idp.Name)
 		return nil, err
 	}
 	if factory, ok := oauthProviderFactories[idp.Type]; ok {
@@ -132,7 +98,7 @@ func GetOAuthProvider(idp *model.Provider) (OAuthProvider, error) {
 			return provider, nil
 		}
 	}
-	return nil, errors.WithCode(code.ErrIdentityProviderNotFound, "identity provider [%s] not found", idp.Name)
+	return nil, fmt.Errorf("identity provider %s with type %s is not supported", idp.Name, idp.Type)
 }
 
 // RegisterOAuthProvider register OAuthProviderFactory with the specified type

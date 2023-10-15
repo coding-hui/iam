@@ -7,6 +7,8 @@ package options
 import (
 	"encoding/json"
 	"strings"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 // DynamicOptions accept dynamic configuration, the type of key MUST be string
@@ -15,6 +17,14 @@ type DynamicOptions map[string]interface{}
 func (o DynamicOptions) MarshalJSON() ([]byte, error) {
 	data, err := json.Marshal(desensitize(o))
 	return data, err
+}
+
+func (o DynamicOptions) To(target interface{}) error {
+	err := mapstructure.Decode(o, target)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 var (

@@ -24,14 +24,18 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 	roleService := NewRoleService()
 	policyService := NewPolicyService()
 	organizationService := NewOrganizationService(c)
-	providerService := NewProviderService(c)
+	providerService := NewIdentityProviderService(c)
+	appService := NewApplicationService(c)
 
-	needInitData = []DataInit{userService, roleService, resourceService, policyService, organizationService, providerService}
+	needInitData = []DataInit{
+		organizationService, userService, roleService, resourceService,
+		policyService, providerService, appService,
+	}
 
 	return []interface{}{
-		userService, authenticationService, resourceService,
-		roleService, policyService, organizationService,
-		tokenService, providerService,
+		organizationService, userService, authenticationService,
+		resourceService, roleService, policyService,
+		tokenService, providerService, appService,
 	}
 }
 

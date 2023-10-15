@@ -56,7 +56,10 @@ func InitAPIBean(c config.Config) []interface{} {
 	RegisterAPI(NewCacheServer())
 
 	// providers
-	RegisterAPI(NewProvider())
+	RegisterAPI(NewIdentityProvider())
+
+	// apps
+	RegisterAPI(NewApplication())
 
 	beans := make([]interface{}, 0, len(registeredAPI))
 	for i := range registeredAPI {

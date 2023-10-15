@@ -27,8 +27,8 @@ func init() {
 }
 
 type wechatMiniProvider struct {
-	AppID     string `json:"app_id"     mapstructure:"app-id"`     // appid
-	AppSecret string `json:"app_secret" mapstructure:"app-secret"` // appSecret
+	AppID     string `json:"appID"     mapstructure:"appID"`
+	AppSecret string `json:"appSecret" mapstructure:"appSecret"`
 
 	miniprogram *miniprogram.MiniProgram
 	cache       cache.Cache
@@ -37,7 +37,7 @@ type wechatMiniProvider struct {
 type wechatMiniProviderFactory struct {
 }
 
-func (w *wechatMiniProviderFactory) Type() v1.ProviderType {
+func (w *wechatMiniProviderFactory) Type() v1.IdentityProviderType {
 	return v1.WeChatMiniProgramIdentityProvider
 }
 

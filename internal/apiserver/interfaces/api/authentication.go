@@ -30,9 +30,10 @@ import (
 var autoAuthCheck middleware.AuthStrategy
 
 type authentication struct {
-	UserService           service.UserService           `inject:""`
-	AuthenticationService service.AuthenticationService `inject:""`
-	TokenService          service.TokenService          `inject:""`
+	UserService             service.UserService             `inject:""`
+	AuthenticationService   service.AuthenticationService   `inject:""`
+	TokenService            service.TokenService            `inject:""`
+	IdentityProviderService service.IdentityProviderService `inject:""`
 
 	cfg config.Config
 }
@@ -237,15 +238,17 @@ func (a *authentication) userInfo(c *gin.Context) {
 }
 
 func (a *authentication) oauthCallback(c *gin.Context) {
-	provider := c.Param("callback")
-	login := v1.AuthenticateRequest{
-		Provider: provider,
-	}
-	tokenInfo, err := a.AuthenticationService.OauthAuthenticateByProvider(c.Request.Context(), login, c.Request)
+	callback := c.Param("callback")
+	idp, err := a.IdentityProviderService.GetIdentityProvider(c.Request.Context(), callback, metav1.GetOptions{})
 	if err != nil {
-		api.FailWithHTML("authorize_callback.html", err, c)
+		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
+		return
+	}
+	tokenInfo, err := a.AuthenticationService.OauthAuthenticateByProvider(c.Request.Context(), idp, c.Request)
+	if err != nil {
+		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
 		return
 	}
 
-	api.OkWithHTML("authorize_callback.html", tokenInfo, c)
+	api.OkWithHTML("authorize_callback.html", gin.H{"tokenInfo": tokenInfo, "idp": idp}, c)
 }

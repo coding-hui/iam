@@ -15,6 +15,7 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
@@ -27,16 +28,16 @@ import (
 type AuthenticationService interface {
 	Authenticate(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
 	AuthenticateByProvider(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
-	OauthAuthenticateByProvider(ctx context.Context, loginReq v1.AuthenticateRequest, req *http.Request) (*v1.AuthenticateResponse, error)
+	OauthAuthenticateByProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*v1.RefreshTokenResponse, error)
 }
 
 type authenticationServiceImpl struct {
 	cfg             config.Config
-	Store           repository.Factory `inject:"repository"`
-	UserService     UserService        `inject:""`
-	TokenService    TokenService       `inject:""`
-	ProviderService ProviderService    `inject:""`
+	Store           repository.Factory      `inject:"repository"`
+	UserService     UserService             `inject:""`
+	TokenService    TokenService            `inject:""`
+	ProviderService IdentityProviderService `inject:""`
 }
 
 // NewAuthenticationService new authentication service.
@@ -114,7 +115,7 @@ func (a *authenticationServiceImpl) AuthenticateByProvider(
 	ctx context.Context,
 	loginReq v1.AuthenticateRequest,
 ) (*v1.AuthenticateResponse, error) {
-	provider, err := a.Store.ProviderRepository().GetByName(ctx, loginReq.Provider, metav1.GetOptions{})
+	provider, err := a.Store.IdentityProviderRepository().GetByName(ctx, loginReq.Provider, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -174,16 +175,8 @@ func (a *authenticationServiceImpl) AuthenticateByProvider(
 	}, nil
 }
 
-func (a *authenticationServiceImpl) OauthAuthenticateByProvider(
-	ctx context.Context,
-	loginReq v1.AuthenticateRequest,
-	req *http.Request,
-) (*v1.AuthenticateResponse, error) {
-	provider, err := a.Store.ProviderRepository().GetByName(ctx, loginReq.Provider, metav1.GetOptions{})
-	if err != nil {
-		return nil, err
-	}
-	oauthProvider, err := identityprovider.GetOAuthProvider(provider)
+func (a *authenticationServiceImpl) OauthAuthenticateByProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error) {
+	oauthProvider, err := identityprovider.GetOAuthProvider(idp)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +185,7 @@ func (a *authenticationServiceImpl) OauthAuthenticateByProvider(
 		return nil, err
 	}
 	linkedAccount, err := a.Store.UserRepository().
-		GetByExternalId(ctx, authenticated.GetUserID(), provider.Name, metav1.GetOptions{})
+		GetByExternalId(ctx, authenticated.GetUserID(), idp.Name, metav1.GetOptions{})
 	if err != nil && !errors.IsCode(err, code.ErrUserNotFound) {
 		return nil, err
 	}
@@ -203,8 +196,8 @@ func (a *authenticationServiceImpl) OauthAuthenticateByProvider(
 		userBase = assembler.ConvertUserModelToBase(linkedAccount)
 	}
 	// the user will automatically create and mapping when login successful.
-	if userBase == nil && provider.MappingMethod == v1.MappingMethodAuto {
-		createResp, err := a.UserService.CreateUser(ctx, mappedUser(provider.Name, authenticated))
+	if userBase == nil && idp.MappingMethod == v1.MappingMethodAuto {
+		createResp, err := a.UserService.CreateUser(ctx, mappedUser(idp.Name, authenticated))
 		if err != nil {
 			return nil, err
 		}

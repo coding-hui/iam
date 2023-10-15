@@ -111,7 +111,7 @@ func FailWithMessage(message string, c *gin.Context) {
 }
 
 // FailWithHTML return the HTTP template specified by its file name.
-func FailWithHTML(name string, err error, c *gin.Context) {
+func FailWithHTML(name string, data interface{}, err error, c *gin.Context) {
 	if err != nil {
 		log.Errorf("%#+v", err)
 		coder := errors.ParseCoder(err)
@@ -120,6 +120,7 @@ func FailWithHTML(name string, err error, c *gin.Context) {
 			Code:      coder.Code(),
 			Msg:       coder.String(),
 			Reference: coder.Reference(),
+			Data:      data,
 		})
 
 		return
@@ -129,6 +130,7 @@ func FailWithHTML(name string, err error, c *gin.Context) {
 		Success: false,
 		Code:    code.ErrUnknown,
 		Msg:     "failed",
+		Data:    data,
 	})
 }
 

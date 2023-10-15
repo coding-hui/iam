@@ -11,7 +11,7 @@ require (
 	github.com/casbin/casbin/v2 v2.77.2
 	github.com/casbin/gorm-adapter/v3 v3.19.0
 	github.com/casbin/redis-watcher/v2 v2.5.0
-	github.com/coding-hui/common v0.8.6-0.20231011142151-f60ba0300117
+	github.com/coding-hui/common v0.8.7-0.20231015073032-b7e4de1d9a89
 	github.com/coding-hui/wecoding-sdk-go v0.8.3
 	github.com/fatih/color v1.15.0
 	github.com/ghodss/yaml v1.0.0

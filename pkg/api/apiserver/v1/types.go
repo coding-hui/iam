@@ -558,7 +558,7 @@ type DepartmentMemberList struct {
 type ProviderCategory string
 type GrantHandlerType string
 type MappingMethod string
-type ProviderType string
+type IdentityProviderType string
 
 const (
 	// GrantHandlerAuto auto-approves client authorization grant requests
@@ -581,36 +581,134 @@ const (
 	OAuth ProviderCategory = "OAuth"
 	Email ProviderCategory = "Email"
 
-	GithubIdentityProvider            ProviderType = "GitHub"
-	GiteeIdentityProvider             ProviderType = "Gitee"
-	LDAPIdentityProvider              ProviderType = "LDAP"
-	WeChatMiniProgramIdentityProvider ProviderType = "WeChatMiniProgram"
+	GithubIdentityProvider            IdentityProviderType = "GitHub"
+	GiteeIdentityProvider             IdentityProviderType = "Gitee"
+	LDAPIdentityProvider              IdentityProviderType = "LDAP"
+	WeChatMiniProgramIdentityProvider IdentityProviderType = "WeChatMiniProgram"
 )
 
-// CreateProviderRequest create provider request.
-type CreateProviderRequest struct {
-	Type          ProviderType     `json:"type"          validate:"required"`
-	Category      ProviderCategory `json:"category"      validate:"required"`
-	MappingMethod MappingMethod    `json:"mappingMethod,omitempty"`
+// CreateIdentityProviderRequest create IdentityProvider request.
+type CreateIdentityProviderRequest struct {
+	Type          IdentityProviderType `json:"type"          validate:"required"`
+	Category      ProviderCategory     `json:"category"      validate:"required"`
+	MappingMethod MappingMethod        `json:"mappingMethod,omitempty"`
 
 	Name        string `json:"name"          validate:"required,name"`
 	Status      string `json:"status"`
 	Owner       string `json:"owner"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
+	CallbackURL string `json:"callbackURL"`
 
-	Extend metav1.Extend `json:"extend,omitempty" validate:"omitempty"`
+	Config metav1.Extend `json:"config,omitempty" validate:"omitempty"`
 }
 
-// UpdateProviderRequest update provider request.
-type UpdateProviderRequest struct {
-	OrganizationID string `json:"organizationId"        validate:"required"`
-	ParentID       string `json:"parentId"              validate:"required"`
-	DisplayName    string `json:"displayName,omitempty"`
-	WebsiteUrl     string `json:"websiteUrl,omitempty"`
-	Favicon        string `json:"favicon,omitempty"`
-	Description    string `json:"description,omitempty"`
-	MappingMethod  string `json:"mappingMethod"`
+// UpdateIdentityProviderRequest update IdentityProvider request.
+type UpdateIdentityProviderRequest struct {
+	Category      ProviderCategory `json:"category"      validate:"required"`
+	MappingMethod MappingMethod    `json:"mappingMethod,omitempty"`
 
-	Extend metav1.Extend `json:"extend,omitempty" validate:"omitempty"`
+	Status      string `json:"status"`
+	Owner       string `json:"owner"`
+	DisplayName string `json:"displayName"`
+	Description string `json:"description"`
+	CallbackURL string `json:"callbackURL"`
+
+	Config metav1.Extend `json:"config,omitempty" validate:"omitempty"`
+}
+
+type IdentityProviderBase struct {
+	// Standard object's metadata.
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Type          IdentityProviderType `json:"type"`
+	Category      ProviderCategory     `json:"category"`
+	MappingMethod MappingMethod        `json:"mappingMethod"`
+
+	Status      string `json:"status"`
+	Owner       string `json:"owner"`
+	DisplayName string `json:"displayName"`
+	Description string `json:"description"`
+
+	Config metav1.Extend `json:"config"`
+}
+
+// DetailIdentityProviderResponse IdentityProvider detail.
+type DetailIdentityProviderResponse struct {
+	IdentityProviderBase `json:",inline"`
+}
+
+// CreateApplicationRequest create app request.
+type CreateApplicationRequest struct {
+	Name                string   `json:"name"          validate:"required,name"`
+	Status              string   `json:"status"`
+	Owner               string   `json:"owner"`
+	DisplayName         string   `json:"displayName"`
+	Description         string   `json:"description"`
+	Logo                string   `json:"logo"`
+	HomepageUrl         string   `json:"homepageUrl"`
+	IdentityProviderIds []string `json:"identityProviderIds"`
+}
+
+// UpdateApplicationRequest update app request.
+type UpdateApplicationRequest struct {
+	DisplayName         string   `json:"displayName"`
+	Status              string   `json:"status"`
+	Owner               string   `json:"owner"`
+	Description         string   `json:"description"`
+	Logo                string   `json:"logo"`
+	HomepageUrl         string   `json:"homepageUrl"`
+	IdentityProviderIds []string `json:"identityProviderIds"`
+}
+
+// ApplicationBase represents a application restful resource.
+type ApplicationBase struct {
+	// Standard object's metadata.
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Status      string `json:"status"`
+	Owner       string `json:"owner"`
+	DisplayName string `json:"displayName"`
+	Description string `json:"description"`
+	Logo        string `json:"icon"`
+	HomepageUrl string `json:"homepageUrl"`
+
+	IdentityProviders []IdentityProviderBase `json:"identityProviders"`
+}
+
+// DetailApplicationResponse application detail.
+type DetailApplicationResponse struct {
+	ApplicationBase `json:",inline"`
+}
+
+type IdentityProviderConfig struct {
+	OAuthConfig `yaml:",inline" json:",inline"`
+}
+
+type OAuthConfig struct {
+	// ClientID is the application's ID.
+	ClientID string `json:"clientID" yaml:"clientID"`
+
+	// ClientSecret is the application's secret.
+	ClientSecret string `json:"-" yaml:"clientSecret"`
+
+	// Endpoint contains the resource server's token endpoint
+	// URLs. These are constants specific to each server and are
+	// often available via site-specific packages, such as
+	// google.Endpoint or gitee.endpoint.
+	Endpoint struct {
+		AuthURL     string `json:"authURL"     yaml:"authURL"`
+		TokenURL    string `json:"tokenURL"    yaml:"tokenURL"`
+		UserInfoURL string `json:"userInfoURL" yaml:"userInfoURL"`
+	} `json:"endpoint" yaml:"endpoint"`
+
+	// RedirectURL is the URL to redirect users going through
+	// the OAuth flow, after the resource owner's URLs.
+	RedirectURL string `json:"redirectURL" yaml:"redirectURL"`
+
+	// Used to turn off TLS certificate checks
+	InsecureSkipVerify bool `json:"insecureSkipVerify" yaml:"insecureSkipVerify"`
+
+	// Scope specifies optional requested permissions.
+	Scopes []string `json:"scopes" yaml:"scopes"`
 }

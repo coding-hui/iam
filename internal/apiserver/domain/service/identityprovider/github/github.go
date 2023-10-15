@@ -35,7 +35,7 @@ type github struct {
 	ClientID string `json:"clientID" yaml:"clientID"`
 
 	// ClientSecret is the application's secret.
-	ClientSecret string `json:"-" yaml:"clientSecret"`
+	ClientSecret string `json:"clientSecret" yaml:"clientSecret"`
 
 	// Endpoint contains the resource server's token endpoint
 	// URLs. These are constants specific to each server and are
@@ -106,7 +106,7 @@ type githubIdentity struct {
 type githubProviderFactory struct {
 }
 
-func (g *githubProviderFactory) Type() v1.ProviderType {
+func (g *githubProviderFactory) Type() v1.IdentityProviderType {
 	return v1.GithubIdentityProvider
 }
 

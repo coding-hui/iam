@@ -8,6 +8,8 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 // ConvertUserModelToBase assemble the User model to DTO.
@@ -106,5 +108,62 @@ func ConvertModelToOrganizationBase(org *model.Organization) *v1.OrganizationBas
 		IsLeaf:      org.IsLeaf,
 		ParentID:    org.ParentID,
 		Owner:       org.Owner,
+	}
+}
+
+// ConvertModelToApplicationBase assemble the Application model to DTO.
+func ConvertModelToApplicationBase(app *model.Application) *v1.ApplicationBase {
+	var identityProviders []v1.IdentityProviderBase
+	if len(app.IdentityProviders) > 0 {
+		for _, idp := range app.IdentityProviders {
+			identityProviders = append(identityProviders, v1.IdentityProviderBase{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:       idp.Name,
+					InstanceID: idp.InstanceID,
+					CreatedAt:  idp.CreatedAt,
+					UpdatedAt:  idp.UpdatedAt,
+				},
+				Type:          idp.Type,
+				Category:      idp.Category,
+				MappingMethod: idp.MappingMethod,
+				Status:        idp.Status,
+				Owner:         idp.Owner,
+				DisplayName:   idp.DisplayName,
+				Description:   idp.Description,
+				Config:        idp.Extend,
+			})
+		}
+	}
+	return &v1.ApplicationBase{
+		ObjectMeta:        app.ObjectMeta,
+		DisplayName:       app.DisplayName,
+		Description:       app.Description,
+		Owner:             app.Owner,
+		Status:            app.Status,
+		Logo:              app.Logo,
+		HomepageUrl:       app.HomepageUrl,
+		IdentityProviders: identityProviders,
+	}
+}
+
+// ConvertModelToIdentityProviderBase assemble the IdentityProvider model to DTO.
+func ConvertModelToIdentityProviderBase(idp *model.IdentityProvider) *v1.IdentityProviderBase {
+	config := metav1.Extend{}
+	config.Merge(idp.Extend.String("secret", "password"))
+	return &v1.IdentityProviderBase{
+		ObjectMeta: metav1.ObjectMeta{
+			InstanceID: idp.InstanceID,
+			Name:       idp.Name,
+			CreatedAt:  idp.CreatedAt,
+			UpdatedAt:  idp.UpdatedAt,
+		},
+		Status:        idp.Status,
+		DisplayName:   idp.DisplayName,
+		Description:   idp.Description,
+		Owner:         idp.Owner,
+		Type:          idp.Type,
+		Category:      idp.Category,
+		MappingMethod: idp.MappingMethod,
+		Config:        config,
 	}
 }

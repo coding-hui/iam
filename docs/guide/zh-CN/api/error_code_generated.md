@@ -66,8 +66,8 @@ IAM 系统支持的错误码列表如下：
 | ErrDatabase | 100101 | 500 | Database error |
 | ErrPrimaryEmpty | 100102 | 500 | Primary key is empty |
 | ErrNilEntity | 100103 | 500 | Entity is nil |
-| ErrRecordExist | 100104 | 500 | Entity primary key is exist |
-| ErrRecordNotExist | 100105 | 500 | Entity primary key is not exist |
+| ErrRecordExist | 100104 | 500 | Data record is exist |
+| ErrRecordNotExist | 100105 | 500 | Data record is not exist |
 | ErrIndexInvalid | 100106 | 500 | Entity index is invalid |
 | ErrEntityInvalid | 100107 | 500 | Entity is invalid |
 | ErrTableNameEmpty | 100108 | 500 | Entity table name is empty |
@@ -76,14 +76,15 @@ IAM 系统支持的错误码列表如下：
 | ErrTokenMalformed | 100203 | 401 | Token is malformed |
 | ErrTokenNotValidYet | 100204 | 401 | Token is not valid yet |
 | ErrExpired | 100205 | 401 | Token expired |
-| ErrMissingLoginValues | 100206 | 401 | Missing Username or Password |
-| ErrInvalidAuthHeader | 100207 | 401 | Invalid authorization header |
-| ErrMissingHeader | 100208 | 401 | The `Authorization` header was empty |
-| ErrPasswordIncorrect | 100209 | 401 | Invalid Username or Password |
-| ErrInvalidRefreshToken | 100210 | 401 | Refresh token format is incorrect, please check |
-| ErrUnauthorized | 100211 | 403 | Unauthorized |
-| ErrPermissionDenied | 100212 | 403 | Permission denied |
-| ErrIdentityProviderNotFound | 100213 | 401 | Identity provider not found |
+| ErrTokenIssuedAt | 100206 | 401 | Token used before issued |
+| ErrMissingLoginValues | 100207 | 401 | Missing Username or Password |
+| ErrInvalidAuthHeader | 100208 | 401 | Invalid authorization header |
+| ErrMissingHeader | 100209 | 401 | The `Authorization` header was empty |
+| ErrPasswordIncorrect | 100210 | 401 | Invalid Username or Password |
+| ErrInvalidRefreshToken | 100211 | 401 | Refresh token format is incorrect, please check |
+| ErrUnauthorized | 100212 | 403 | Unauthorized |
+| ErrPermissionDenied | 100213 | 403 | Permission denied |
+| ErrIdentityProviderNotFound | 100214 | 401 | Identity provider not found |
 | ErrEncodingFailed | 100301 | 500 | Encoding failed due to an error with the data |
 | ErrDecodingFailed | 100302 | 500 | Decoding failed due to an error with the data |
 | ErrInvalidJSON | 100303 | 500 | Data is not valid JSON |

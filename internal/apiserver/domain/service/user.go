@@ -58,13 +58,18 @@ func NewUserService() UserService {
 
 // Init initialize user data.
 func (u *userServiceImpl) Init(ctx context.Context) error {
-	_, err := u.GetUser(ctx, DefaultAdmin, metav1.GetOptions{})
+	org, err := u.Store.OrganizationRepository().GetByName(ctx, model.DefaultOrganization, metav1.GetOptions{})
+	if err != nil {
+		return errors.WithMessagef(err, "Failed to get default org: %s", model.DefaultOrganization)
+	}
+	_, err = u.GetUser(ctx, DefaultAdmin, metav1.GetOptions{})
 	if err != nil && errors.IsCode(err, code.ErrUserNotFound) {
 		user := v1.CreateUserRequest{
-			Name:     DefaultAdmin,
-			Password: DefaultAdminPwd,
-			Alias:    DefaultAdminUserAlias,
-			UserType: v1.PlatformAdmin.String(),
+			Name:          DefaultAdmin,
+			Password:      DefaultAdminPwd,
+			Alias:         DefaultAdminUserAlias,
+			UserType:      v1.PlatformAdmin.String(),
+			DepartmentIds: []string{org.GetInstanceID()},
 		}
 		_, err = u.CreateUser(ctx, user)
 		if err != nil {
@@ -96,6 +101,13 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	}
 	// user org association
 	var deptMembers []*model.DepartmentMember
+	if len(req.DepartmentIds) == 0 {
+		defaultOrg, err := u.Store.OrganizationRepository().GetByName(ctx, model.DefaultOrganization, metav1.GetOptions{})
+		if err != nil {
+			log.Errorf("Failed to get the default org [%s]: %w", model.DefaultApplication, err)
+		}
+		req.DepartmentIds = append(req.DepartmentIds, defaultOrg.GetInstanceID())
+	}
 	for _, dept := range req.DepartmentIds {
 		deptMembers = append(deptMembers, &model.DepartmentMember{
 			DepartmentID: dept,
@@ -156,15 +168,16 @@ func (u *userServiceImpl) DeleteUser(ctx context.Context, instanceId string, opt
 	for _, r := range roles.Items {
 		batchRevokeRoleReq.InstanceIds = append(batchRevokeRoleReq.InstanceIds, r.InstanceID)
 	}
-	if err := u.RoleService.BatchRevokeRole(ctx, batchRevokeRoleReq); err != nil {
-		log.Errorf("failed to delete user [%s] roles: %s", instanceId, err.Error())
-		return err
-	}
-	if err := u.Store.UserRepository().DeleteByInstanceId(ctx, instanceId, opts); err != nil {
-		return err
-	}
-
-	return nil
+	return u.Store.ExecTx(ctx, func(ctx context.Context) error {
+		if err := u.Store.UserRepository().DeleteByInstanceId(ctx, instanceId, opts); err != nil {
+			return err
+		}
+		if err := u.RoleService.BatchRevokeRole(ctx, batchRevokeRoleReq); err != nil {
+			log.Errorf("failed to delete user [%s] roles: %s", instanceId, err.Error())
+			return err
+		}
+		return nil
+	})
 }
 
 // BatchDeleteUsers batch delete user.

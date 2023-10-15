@@ -79,7 +79,7 @@ type IdentityProviderOptions struct {
 
 	// The type of identify provider
 	// OpenIDIdentityProvider LDAPIdentityProvider GitHubIdentityProvider
-	Type v1.ProviderType `json:"type" mapstructure:"type"`
+	Type v1.IdentityProviderType `json:"type" mapstructure:"type"`
 
 	// The category of identify provider
 	// OAuth Email Storage
@@ -87,6 +87,9 @@ type IdentityProviderOptions struct {
 
 	// The options of identify provider
 	Provider DynamicOptions `json:"provider" mapstructure:"provider"`
+
+	// After the user completes the login, the browser will be redirected to this address
+	CallbackURL string `json:"callbackURL" mapstructure:"callbackURL"`
 }
 
 type Client struct {

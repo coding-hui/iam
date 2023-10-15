@@ -18,7 +18,7 @@ type OAuthProvider interface {
 
 type OAuthProviderFactory interface {
 	// Type unique type of the provider
-	Type() v1.ProviderType
+	Type() v1.IdentityProviderType
 	// Create Apply the dynamic options
 	Create(options options.DynamicOptions) (OAuthProvider, error)
 }

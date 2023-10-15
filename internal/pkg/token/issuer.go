@@ -194,15 +194,15 @@ func (s *issuer) Verify(token string) (*VerifiedResponse, error) {
 	now := time.Now()
 	if !claims.VerifyExpiresAt(now, false) {
 		delta := now.Sub(claims.ExpiresAt.Time)
-		log.Infof("jwt: token is expired by %v", delta)
-		return nil, err
+		log.Warnf("jwt: token is expired by %v", delta)
+		return nil, errors.WithCode(code.ErrExpired, "")
 	}
 
 	// allowing a clock skew when checking the time-based values.
 	skewedTime := now.Add(s.maximumClockSkew)
 	if !claims.VerifyIssuedAt(skewedTime, false) {
 		log.Warnf("jwt: token used before issued, iat:%v, now:%v", claims.IssuedAt, now)
-		return nil, err
+		return nil, errors.WithCode(code.ErrTokenIssuedAt, "")
 	}
 
 	verified := &VerifiedResponse{

@@ -15,7 +15,8 @@ type Factory interface {
 	RoleRepository() RoleRepository
 	PolicyRepository() PolicyRepository
 	OrganizationRepository() OrganizationRepository
-	ProviderRepository() ProviderRepository
+	IdentityProviderRepository() IdentityProviderRepository
+	ApplicationRepository() ApplicationRepository
 	Close() error
 }
 

@@ -82,8 +82,12 @@ func (m *Driver) OrganizationRepository() repository.OrganizationRepository {
 	return newOrganizationRepository(m.Client)
 }
 
-func (m *Driver) ProviderRepository() repository.ProviderRepository {
+func (m *Driver) IdentityProviderRepository() repository.IdentityProviderRepository {
 	return newProviderRepository(m.Client)
+}
+
+func (m *Driver) ApplicationRepository() repository.ApplicationRepository {
+	return newApplicationRepository(m.Client)
 }
 
 func (m *Driver) Close() error {

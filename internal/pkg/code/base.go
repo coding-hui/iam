@@ -43,10 +43,10 @@ const (
 	// ErrNilEntity - 500: Entity is nil.
 	ErrNilEntity
 
-	// ErrRecordExist - 500: Entity primary key is exist.
+	// ErrRecordExist - 500: Data record is exist.
 	ErrRecordExist
 
-	// ErrRecordNotExist - 500: Entity primary key is not exist.
+	// ErrRecordNotExist - 500: Data record is not exist.
 	ErrRecordNotExist
 
 	// ErrIndexInvalid - 500: Entity index is invalid.
@@ -75,6 +75,9 @@ const (
 
 	// ErrExpired - 401: Token expired.
 	ErrExpired
+
+	// ErrTokenIssuedAt - 401: Token used before issued.
+	ErrTokenIssuedAt
 
 	// ErrMissingLoginValues - 401: Missing Username or Password.
 	ErrMissingLoginValues

@@ -17,16 +17,16 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
-type providerRepositoryImpl struct {
+type identityProviderRepositoryImpl struct {
 	client *Client
 }
 
-// newProviderRepository new Provider Repository.
-func newProviderRepository(client *Client) repository.ProviderRepository {
-	return &providerRepositoryImpl{client}
+// newProviderRepository new IdentityProvider Repository.
+func newProviderRepository(client *Client) repository.IdentityProviderRepository {
+	return &identityProviderRepositoryImpl{client}
 }
 
-func (p *providerRepositoryImpl) Create(ctx context.Context, policy *model.Provider, _ metav1.CreateOptions) error {
+func (p *identityProviderRepositoryImpl) Create(ctx context.Context, policy *model.IdentityProvider, _ metav1.CreateOptions) error {
 	if err := p.client.WithCtx(ctx).Create(&policy).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return datastore.ErrRecordExist
@@ -37,7 +37,7 @@ func (p *providerRepositoryImpl) Create(ctx context.Context, policy *model.Provi
 	return nil
 }
 
-func (p *providerRepositoryImpl) CreateBatch(ctx context.Context, providers []*model.Provider, _ metav1.CreateOptions) error {
+func (p *identityProviderRepositoryImpl) CreateBatch(ctx context.Context, providers []*model.IdentityProvider, _ metav1.CreateOptions) error {
 	if err := p.client.WithCtx(ctx).CreateInBatches(&providers, 500).Error; err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (p *providerRepositoryImpl) CreateBatch(ctx context.Context, providers []*m
 	return nil
 }
 
-func (p *providerRepositoryImpl) Update(ctx context.Context, provider *model.Provider, _ metav1.UpdateOptions) error {
+func (p *identityProviderRepositoryImpl) Update(ctx context.Context, provider *model.IdentityProvider, _ metav1.UpdateOptions) error {
 	err := p.client.WithCtx(ctx).Model(provider).Save(provider).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -58,12 +58,12 @@ func (p *providerRepositoryImpl) Update(ctx context.Context, provider *model.Pro
 	return nil
 }
 
-func (p *providerRepositoryImpl) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
+func (p *identityProviderRepositoryImpl) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
 	db := p.client.WithCtx(ctx)
 	if opts.Unscoped {
 		db = db.Unscoped()
 	}
-	err := db.Where("instance_id = ?", name).Delete(&model.Policy{}).Error
+	err := db.Where("instance_id = ?", name).Delete(&model.IdentityProvider{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return datastore.ErrRecordNotExist
@@ -75,16 +75,16 @@ func (p *providerRepositoryImpl) Delete(ctx context.Context, name string, opts m
 	return nil
 }
 
-func (p *providerRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1.DeleteOptions) error {
+func (p *identityProviderRepositoryImpl) DeleteCollection(ctx context.Context, names []string, opts metav1.DeleteOptions) error {
 	db := p.client.WithCtx(ctx)
 	if opts.Unscoped {
 		db = db.Unscoped()
 	}
 
-	return db.Where("name in (?)", names).Delete(&model.Provider{}).Error
+	return db.Where("name in (?)", names).Delete(&model.IdentityProvider{}).Error
 }
 
-func (p *providerRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1.GetOptions) (provider *model.Provider, err error) {
+func (p *identityProviderRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1.GetOptions) (provider *model.IdentityProvider, err error) {
 	err = p.client.WithCtx(ctx).Where("name = ?", name).First(&provider).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -97,11 +97,11 @@ func (p *providerRepositoryImpl) GetByName(ctx context.Context, name string, _ m
 	return provider, err
 }
 
-func (p *providerRepositoryImpl) GetByInstanceId(
+func (p *identityProviderRepositoryImpl) GetByInstanceId(
 	ctx context.Context,
 	instanceId string,
 	_ metav1.GetOptions,
-) (provider *model.Provider, err error) {
+) (provider *model.IdentityProvider, err error) {
 	err = p.client.WithCtx(ctx).Where("instance_id = ?", instanceId).First(&provider).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -114,9 +114,9 @@ func (p *providerRepositoryImpl) GetByInstanceId(
 	return provider, err
 }
 
-func (p *providerRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) ([]model.Provider, error) {
-	var providers []model.Provider
-	err := p.client.WithCtx(ctx).Model(model.Provider{}).
+func (p *identityProviderRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) ([]model.IdentityProvider, error) {
+	var providers []model.IdentityProvider
+	err := p.client.WithCtx(ctx).Model(model.IdentityProvider{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),
@@ -130,9 +130,9 @@ func (p *providerRepositoryImpl) List(ctx context.Context, opts metav1.ListOptio
 	return providers, err
 }
 
-func (p *providerRepositoryImpl) Count(ctx context.Context, opts metav1.ListOptions) (int64, error) {
+func (p *identityProviderRepositoryImpl) Count(ctx context.Context, opts metav1.ListOptions) (int64, error) {
 	var totalCount int64
-	err := p.client.WithCtx(ctx).Model(model.Provider{}).
+	err := p.client.WithCtx(ctx).Model(model.IdentityProvider{}).
 		Scopes(
 			makeCondition(opts),
 			paginate(opts),

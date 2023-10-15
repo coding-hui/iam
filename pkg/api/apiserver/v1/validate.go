@@ -142,17 +142,33 @@ func (d *BatchRemoveDepartmentMemberRequest) Validate() field.ErrorList {
 	return allErrs
 }
 
-// Validate validates that a provider object is valid.
-func (u *CreateProviderRequest) Validate() field.ErrorList {
+// Validate validates that a IdentityProvider object is valid.
+func (u *CreateIdentityProviderRequest) Validate() field.ErrorList {
 	val := validation.NewValidator(u)
 	allErrs := val.Validate()
 
 	return allErrs
 }
 
-// ValidateUpdate validates that a provider object is valid when update.
-func (u *UpdateProviderRequest) ValidateUpdate() field.ErrorList {
+// ValidateUpdate validates that a IdentityProvider object is valid when update.
+func (u *UpdateIdentityProviderRequest) ValidateUpdate() field.ErrorList {
 	val := validation.NewValidator(u)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// Validate validates that a app object is valid.
+func (a *CreateApplicationRequest) Validate() field.ErrorList {
+	val := validation.NewValidator(a)
+	allErrs := val.Validate()
+
+	return allErrs
+}
+
+// ValidateUpdate validates that a app object is valid when update.
+func (a *UpdateApplicationRequest) ValidateUpdate() field.ErrorList {
+	val := validation.NewValidator(a)
 	allErrs := val.Validate()
 
 	return allErrs
