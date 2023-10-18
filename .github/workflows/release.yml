@@ -56,5 +56,5 @@ jobs:
         password: ${{ secrets.DOCKER_PWD }}
 
     - name: Daily Release
-      run: make image REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }} BUILDX_OUTPUT_TYPE=registry PLATFORMS="linux/amd64,linux/arm64"
+      run: make image REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }} BUILDX_OUTPUT_TYPE=registry PLATFORMS="linux/amd64"
 

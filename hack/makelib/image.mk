@@ -62,14 +62,19 @@ image.build.multiarch: image.verify go.build.verify $(foreach p,$(PLATFORMS),$(a
 .PHONY: image.build.%
 image.build.%:
 	$(eval IMAGE := $(word 2,$(subst ., ,$*)))
+	$(eval ARCH := $(word 2,$(subst _, ,$(PLATFORM))))
 	@echo "===========> Building docker image $(IMAGE) $(VERSION) for $(PLATFORMS)"
-	@mkdir -p $(TMP_DIR)/images/cache
-	$(eval BUILD_SUFFIX := -f $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile --output=type=${BUILDX_OUTPUT_TYPE} $(_DOCKER_BUILD_EXTRA_ARGS))
-	$(MAKE) image.daemon.verify ;\
-	$(DOCKER) buildx create --use ;\
-	$(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) $(ROOT_DIR)/ \
-		--platform ${PLATFORMS} \
-		$(BUILD_SUFFIX)
+	$(eval BUILD_SUFFIX := -f $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile $(_DOCKER_BUILD_EXTRA_ARGS))
+	@if [ $(shell $(GO) env GOARCH) == $(ARCH) ] ; then \
+	    $(DOCKER) build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) $(ROOT_DIR)/ $(BUILD_SUFFIX) ; \
+	else \
+	    $(MAKE) image.daemon.verify ;\
+	    $(DOCKER) buildx create --use ;\
+	    $(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) \
+	        --output=type=${BUILDX_OUTPUT_TYPE} $(ROOT_DIR)/ \
+	        --platform ${PLATFORMS} \
+	        $(BUILD_SUFFIX) \
+	fi
 
 .PHONY: image.push
 image.push: image.verify go.build.verify $(addprefix image.push., $(addprefix $(IMAGE_PLAT)., $(IMAGES)))
