@@ -73,7 +73,7 @@ image.build.%:
 	    $(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) \
 	        --output=type=${BUILDX_OUTPUT_TYPE} $(ROOT_DIR)/ \
 	        --platform ${PLATFORMS} \
-	        $(BUILD_SUFFIX) \
+	        $(BUILD_SUFFIX) ; \
 	fi
 
 .PHONY: image.push
