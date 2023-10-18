@@ -26,6 +26,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 
 COPY --from=builder /go/src/wecoding/iam/_output/bin/iam-apiserver /usr/local/bin/iam-apiserver
 COPY --from=builder /go/src/wecoding/iam/configs/iam-apiserver.yaml /etc/iam/iam-apiserver.yaml
+COPY --from=builder /go/src/wecoding/iam/template /etc/iam/template
 
 EXPOSE 8000
 

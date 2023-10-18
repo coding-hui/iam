@@ -12,9 +12,10 @@ import (
 
 // ServerRunOptions contains the options while running a generic api server.
 type ServerRunOptions struct {
-	Mode        string   `json:"mode"        mapstructure:"mode"`
-	Healthz     bool     `json:"healthz"     mapstructure:"healthz"`
-	Middlewares []string `json:"middlewares" mapstructure:"middlewares"`
+	Mode            string   `json:"mode"        mapstructure:"mode"`
+	Healthz         bool     `json:"healthz"     mapstructure:"healthz"`
+	Middlewares     []string `json:"middlewares" mapstructure:"middlewares"`
+	StaticLocations string   `json:"static-locations"   mapstructure:"static-locations"`
 }
 
 // NewServerRunOptions creates a new ServerRunOptions object with default parameters.
@@ -22,9 +23,10 @@ func NewServerRunOptions() *ServerRunOptions {
 	defaults := server.NewConfig()
 
 	return &ServerRunOptions{
-		Mode:        defaults.Mode,
-		Healthz:     defaults.Healthz,
-		Middlewares: defaults.Middlewares,
+		Mode:            defaults.Mode,
+		Healthz:         defaults.Healthz,
+		Middlewares:     defaults.Middlewares,
+		StaticLocations: defaults.StaticLocations,
 	}
 }
 
@@ -33,6 +35,7 @@ func (s *ServerRunOptions) ApplyTo(c *server.Config) error {
 	c.Mode = s.Mode
 	c.Healthz = s.Healthz
 	c.Middlewares = s.Middlewares
+	c.StaticLocations = s.StaticLocations
 
 	return nil
 }
@@ -56,4 +59,7 @@ func (s *ServerRunOptions) AddFlags(fs *pflag.FlagSet) {
 
 	fs.StringSliceVar(&s.Middlewares, "server.middlewares", s.Middlewares, ""+
 		"List of allowed middlewares for server, comma separated. If this list is empty default middlewares will be used.")
+
+	fs.StringVar(&s.StaticLocations, "server.static-locations", s.StaticLocations, ""+
+		"Static resource locations.")
 }

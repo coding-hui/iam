@@ -38,6 +38,7 @@ type Config struct {
 	Healthz         bool
 	EnableProfiling bool
 	EnableMetrics   bool
+	StaticLocations string
 }
 
 // CertKey contains configuration items related to certificate.
@@ -117,6 +118,7 @@ func (c CompletedConfig) New() (*GenericAPIServer, error) {
 		enableMetrics:       c.EnableMetrics,
 		enableProfiling:     c.EnableProfiling,
 		middlewares:         c.Middlewares,
+		staticLocations:     c.StaticLocations,
 		Engine:              gin.New(),
 	}
 

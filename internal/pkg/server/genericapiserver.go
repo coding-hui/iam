@@ -27,7 +27,8 @@ import (
 // GenericAPIServer contains state for an iam api server.
 // type GenericAPIServer gin.Engine.
 type GenericAPIServer struct {
-	middlewares []string
+	middlewares     []string
+	staticLocations string
 	// SecureServingInfo holds configuration of the TLS server.
 	SecureServingInfo *SecureServingInfo
 
@@ -86,7 +87,9 @@ func (s *GenericAPIServer) Setup() {
 	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
 		log.Infof("%-6s %-s --> %s (%d handlers)", httpMethod, absolutePath, handlerName, nuHandlers)
 	}
-	s.Engine.LoadHTMLGlob("template/*")
+	if s.staticLocations != "" {
+		s.Engine.LoadHTMLGlob(s.staticLocations)
+	}
 }
 
 // InstallMiddlewares install generic middlewares.
