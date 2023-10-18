@@ -149,7 +149,7 @@ func ConvertModelToApplicationBase(app *model.Application) *v1.ApplicationBase {
 // ConvertModelToIdentityProviderBase assemble the IdentityProvider model to DTO.
 func ConvertModelToIdentityProviderBase(idp *model.IdentityProvider) *v1.IdentityProviderBase {
 	config := metav1.Extend{}
-	config.Merge(idp.Extend.String("secret", "password"))
+	config.Merge(idp.Extend.String())
 	return &v1.IdentityProviderBase{
 		ObjectMeta: metav1.ObjectMeta{
 			InstanceID: idp.InstanceID,
@@ -164,6 +164,7 @@ func ConvertModelToIdentityProviderBase(idp *model.IdentityProvider) *v1.Identit
 		Type:          idp.Type,
 		Category:      idp.Category,
 		MappingMethod: idp.MappingMethod,
+		CallbackURL:   idp.CallbackURL,
 		Config:        config,
 	}
 }

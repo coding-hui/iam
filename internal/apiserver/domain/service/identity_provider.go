@@ -9,6 +9,7 @@ import (
 
 	"gopkg.in/square/go-jose.v2/json"
 
+	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/coding"
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/gitee"
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/github"
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/ldap"
@@ -34,6 +35,7 @@ type IdentityProviderService interface {
 	DeleteIdentityProvider(ctx context.Context, identifier string, opts metav1.DeleteOptions) error
 	GetIdentityProvider(ctx context.Context, identifier string, opts metav1.GetOptions) (*model.IdentityProvider, error)
 	DetailIdentityProvider(ctx context.Context, idp *model.IdentityProvider, opts metav1.GetOptions) (*v1.DetailIdentityProviderResponse, error)
+	ListIdentityProviders(ctx context.Context, opts metav1.ListOptions) (*v1.IdentityProviderList, error)
 	Init(ctx context.Context) error
 }
 
@@ -156,6 +158,31 @@ func (i *identityProviderServiceImpl) DetailIdentityProvider(_ context.Context, 
 	base := assembler.ConvertModelToIdentityProviderBase(idp)
 	return &v1.DetailIdentityProviderResponse{
 		IdentityProviderBase: *base,
+	}, nil
+}
+
+func (i *identityProviderServiceImpl) ListIdentityProviders(ctx context.Context, opts metav1.ListOptions) (*v1.IdentityProviderList, error) {
+	var idpList []*v1.DetailIdentityProviderResponse
+	idpRepo := i.Store.IdentityProviderRepository()
+	identityProviders, err := idpRepo.List(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range identityProviders {
+		idpList = append(idpList, &v1.DetailIdentityProviderResponse{
+			IdentityProviderBase: *assembler.ConvertModelToIdentityProviderBase(&v),
+		})
+	}
+	count, err := idpRepo.Count(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.IdentityProviderList{
+		Items: idpList,
+		ListMeta: metav1.ListMeta{
+			TotalCount: count,
+		},
 	}, nil
 }
 

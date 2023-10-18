@@ -582,6 +582,7 @@ const (
 	Email ProviderCategory = "Email"
 
 	GithubIdentityProvider            IdentityProviderType = "GitHub"
+	CodingIdentityProvider            IdentityProviderType = "Coding"
 	GiteeIdentityProvider             IdentityProviderType = "Gitee"
 	LDAPIdentityProvider              IdentityProviderType = "LDAP"
 	WeChatMiniProgramIdentityProvider IdentityProviderType = "WeChatMiniProgram"
@@ -590,7 +591,7 @@ const (
 // CreateIdentityProviderRequest create IdentityProvider request.
 type CreateIdentityProviderRequest struct {
 	Type          IdentityProviderType `json:"type"          validate:"required"`
-	Category      ProviderCategory     `json:"category"      validate:"required"`
+	Category      ProviderCategory     `json:"category"`
 	MappingMethod MappingMethod        `json:"mappingMethod,omitempty"`
 
 	Name        string `json:"name"          validate:"required,name"`
@@ -605,7 +606,7 @@ type CreateIdentityProviderRequest struct {
 
 // UpdateIdentityProviderRequest update IdentityProvider request.
 type UpdateIdentityProviderRequest struct {
-	Category      ProviderCategory `json:"category"      validate:"required"`
+	Category      ProviderCategory `json:"category"`
 	MappingMethod MappingMethod    `json:"mappingMethod,omitempty"`
 
 	Status      string `json:"status"`
@@ -629,8 +630,18 @@ type IdentityProviderBase struct {
 	Owner       string `json:"owner"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
+	CallbackURL string `json:"callbackURL"`
 
 	Config metav1.Extend `json:"config"`
+}
+
+// IdentityProviderList is the whole list of all IdentityProvider which have been stored in stroage.
+type IdentityProviderList struct {
+	// Standard list metadata.
+	// +optional
+	metav1.ListMeta `json:",inline"`
+
+	Items []*DetailIdentityProviderResponse `json:"items"`
 }
 
 // DetailIdentityProviderResponse IdentityProvider detail.

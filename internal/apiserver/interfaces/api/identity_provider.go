@@ -27,32 +27,33 @@ func NewIdentityProvider() Interface {
 	return &identityProvider{}
 }
 
-func (p *identityProvider) RegisterApiGroup(g *gin.Engine) {
+func (i *identityProvider) RegisterApiGroup(g *gin.Engine) {
 	apiv1 := g.Group(idpApiPath).
 		Use(
 			autoAuthCheck.AuthFunc(),
 			permissionCheckFunc("identity_providers"),
 		)
 	{
-		apiv1.POST("", p.createIdentityProvider)
-		apiv1.PUT("/:identifier", p.updateIdentityProvider)
-		apiv1.DELETE("/:identifier", p.deleteIdentityProvider)
-		apiv1.GET("/:identifier", p.detailIdentityProvider)
+		apiv1.POST("", i.createIdentityProvider)
+		apiv1.PUT("/:identifier", i.updateIdentityProvider)
+		apiv1.DELETE("/:identifier", i.deleteIdentityProvider)
+		apiv1.GET("/:identifier", i.detailIdentityProvider)
+		apiv1.GET("", i.listIdentityProviders)
 	}
 }
 
-//	@Tags			Providers
+//	@Tags			IdentityProviders
 //	@Summary		CreateIdentityProvider
 //	@Description	Create a IdentityProvider
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			data	body		v1.CreateProviderRequest	true	"IdentityProvider"
 //	@Success		200		{object}	api.Response				"Create a nnw IdentityProvider"
-//	@Router			/api/v1/providers [post]
+//	@Router			/api/v1/identity_providers [post]
 //	@Security		BearerTokenAuth
 //
 // createIdentityProvider create a new IdentityProvider.
-func (p *identityProvider) createIdentityProvider(c *gin.Context) {
+func (i *identityProvider) createIdentityProvider(c *gin.Context) {
 	createReq := v1.CreateIdentityProviderRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
@@ -63,7 +64,7 @@ func (p *identityProvider) createIdentityProvider(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = p.IdentityProviderService.CreateIdentityProvider(c.Request.Context(), createReq)
+	err = i.IdentityProviderService.CreateIdentityProvider(c.Request.Context(), createReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -72,7 +73,7 @@ func (p *identityProvider) createIdentityProvider(c *gin.Context) {
 	api.Ok(c)
 }
 
-//	@Tags			Providers
+//	@Tags			IdentityProviders
 //	@Summary		UpdateIdentityProvider
 //	@Description	Update a IdentityProvider
 //	@Accept			application/json
@@ -80,11 +81,11 @@ func (p *identityProvider) createIdentityProvider(c *gin.Context) {
 //	@Param			data		body		v1.UpdateProviderRequest	true	"IdentityProvider"
 //	@Param			instanceId	path		string						true	"identifier of a IdentityProvider"
 //	@Success		200			{object}	api.Response				"Update IdentityProvider info"
-//	@Router			/api/v1/providers/{identifier} [put]
+//	@Router			/api/v1/identity_providers/{identifier} [put]
 //	@Security		BearerTokenAuth
 //
 // updateIdentityProvider update IdentityProvider info.
-func (p *identityProvider) updateIdentityProvider(c *gin.Context) {
+func (i *identityProvider) updateIdentityProvider(c *gin.Context) {
 	updateReq := v1.UpdateIdentityProviderRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
@@ -95,7 +96,7 @@ func (p *identityProvider) updateIdentityProvider(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
 		return
 	}
-	err = p.IdentityProviderService.UpdateIdentityProvider(c.Request.Context(), c.Param("identifier"), updateReq)
+	err = i.IdentityProviderService.UpdateIdentityProvider(c.Request.Context(), c.Param("identifier"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -104,17 +105,17 @@ func (p *identityProvider) updateIdentityProvider(c *gin.Context) {
 	api.Ok(c)
 }
 
-//	@Tags			Providers
+//	@Tags			IdentityProviders
 //	@Summary		DeleteIdentityProvider
 //	@Description	Delete IdentityProvider by identifier
 //	@Param			instanceId	path		string			true	"identifier of a IdentityProvider"
 //	@Success		200			{object}	api.Response	"Provider successfully deleted"
-//	@Router			/api/v1/providers/{identifier} [DELETE]
+//	@Router			/api/v1/identity_providers/{identifier} [DELETE]
 //	@Security		BearerTokenAuth
 //
 // deleteIdentityProvider delete IdentityProvider by identifier.
-func (p *identityProvider) deleteIdentityProvider(c *gin.Context) {
-	err := p.IdentityProviderService.DeleteIdentityProvider(
+func (i *identityProvider) deleteIdentityProvider(c *gin.Context) {
+	err := i.IdentityProviderService.DeleteIdentityProvider(
 		c.Request.Context(),
 		c.Param("identifier"),
 		metav1.DeleteOptions{},
@@ -127,26 +128,52 @@ func (p *identityProvider) deleteIdentityProvider(c *gin.Context) {
 	api.Ok(c)
 }
 
-//	@Tags			Providers
+//	@Tags			IdentityProviders
 //	@Summary		GetProviderInfo
 //	@Description	Get a IdentityProvider by name
 //	@Param			instanceId	path		string											true	"identifier of a IdentityProvider"
 //	@Success		200			{object}	api.Response{data=v1.DetailProviderResponse}	"Provider detail"
-//	@Router			/api/v1/providers/{identifier} [get]
+//	@Router			/api/v1/identity_providers/{identifier} [get]
 //	@Security		BearerTokenAuth
 //
 // detailIdentityProvider get IdentityProvider detail info.
-func (p *identityProvider) detailIdentityProvider(c *gin.Context) {
-	idp, err := p.IdentityProviderService.GetIdentityProvider(c.Request.Context(), c.Param("identifier"), metav1.GetOptions{})
+func (i *identityProvider) detailIdentityProvider(c *gin.Context) {
+	idp, err := i.IdentityProviderService.GetIdentityProvider(c.Request.Context(), c.Param("identifier"), metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
-	detail, err := p.IdentityProviderService.DetailIdentityProvider(c.Request.Context(), idp, metav1.GetOptions{})
+	detail, err := i.IdentityProviderService.DetailIdentityProvider(c.Request.Context(), idp, metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
 
 	api.OkWithData(detail, c)
+}
+
+//	@Tags			IdentityProviders
+//	@Summary		ListIdentityProviders
+//	@Description	List IdentityProviders
+//	@Param			offset	query		int										false	"query the page number"
+//	@Param			limit	query		int										false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=v1.IdentityProviderList}	"IdentityProviders"
+//	@Router			/api/v1/identity_providers [get]
+//	@Security		BearerTokenAuth
+//
+// listIdentityProviders list IdentityProvider page.
+func (i *identityProvider) listIdentityProviders(c *gin.Context) {
+	var opts metav1.ListOptions
+	err := c.ShouldBindQuery(&opts)
+	if err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		return
+	}
+	resp, err := i.IdentityProviderService.ListIdentityProviders(c.Request.Context(), opts)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.OkWithPage(resp.Items, resp.TotalCount, c)
 }

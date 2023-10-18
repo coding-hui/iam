@@ -203,6 +203,15 @@ func (a *authenticationServiceImpl) OauthAuthenticateByProvider(ctx context.Cont
 		}
 		userBase = &createResp.UserBase
 	}
+	if userBase == nil {
+		userBase = &v1.UserBase{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: authenticated.GetUsername(),
+			},
+			Avatar: authenticated.GetAvatar(),
+			Email:  authenticated.GetEmail(),
+		}
+	}
 
 	accessToken, err := a.TokenService.IssueTo(&token.IssueRequest{
 		User:      *userBase,
