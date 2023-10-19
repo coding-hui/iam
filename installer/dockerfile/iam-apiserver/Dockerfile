@@ -32,8 +32,9 @@ RUN apk add --update ca-certificates && \
 
 COPY --from=builder /go/src/wecoding/iam/_output/bin/iam-apiserver /usr/local/bin/iam-apiserver
 COPY --from=builder /go/src/wecoding/iam/configs/iam-apiserver.yaml /etc/iam/iam-apiserver.yaml
-COPY --from=builder /go/src/wecoding/iam/hack/gen-k8s-secret.sh /gen-k8s-secret.sh
 COPY --from=builder /go/src/wecoding/iam/template /etc/iam/template
+
+ADD --from=builder /go/src/wecoding/iam/hack/gen-k8s-secret.sh /gen-k8s-secret.sh
 
 EXPOSE 8000
 
