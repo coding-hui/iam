@@ -17,8 +17,15 @@ LABEL maintainer="wecoding@yeah.net"
 
 WORKDIR /opt/iam/
 
-# This is required by daemon connecting with cri
-# RUN apk add --no-cache ca-certificates bash expat
+ARG KUBE_VERSION="1.25.0"
+ARG TARGETARCH
+RUN apk add --update ca-certificates && \
+    apk add --update openssl bash expat && \
+    apk add --update -t deps curl && \
+    curl -L https://storage.googleapis.com/kubernetes-release/release/v$KUBE_VERSION/bin/linux/$TARGETARCH/kubectl -o /usr/local/bin/kubectl && \
+    chmod +x /usr/local/bin/kubectl && \
+    apk del --purge deps && \
+    rm /var/cache/apk/*
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
       && echo "Asia/Shanghai" > /etc/timezone \
