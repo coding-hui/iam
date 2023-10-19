@@ -25,14 +25,14 @@ RUN apk add --update ca-certificates && \
     curl -L https://storage.googleapis.com/kubernetes-release/release/v$KUBE_VERSION/bin/linux/$TARGETARCH/kubectl -o /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/kubectl && \
     apk del --purge deps && \
-    rm /var/cache/apk/*
-
-RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    rm /var/cache/apk/* && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
       && echo "Asia/Shanghai" > /etc/timezone \
       && mkdir "/var/log/iam"
 
 COPY --from=builder /go/src/wecoding/iam/_output/bin/iam-apiserver /usr/local/bin/iam-apiserver
 COPY --from=builder /go/src/wecoding/iam/configs/iam-apiserver.yaml /etc/iam/iam-apiserver.yaml
+COPY --from=builder /go/src/wecoding/iam/hack/gen-k8s-secret.sh /gen-k8s-secret.sh
 COPY --from=builder /go/src/wecoding/iam/template /etc/iam/template
 
 EXPOSE 8000
