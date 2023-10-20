@@ -120,6 +120,26 @@ func (p *applicationRepositoryImpl) GetByInstanceId(
 	return app, err
 }
 
+func (p *applicationRepositoryImpl) GetByInstanceIdOrName(
+	ctx context.Context,
+	idOrName string,
+	_ metav1.GetOptions,
+) (app *model.Application, err error) {
+	err = p.client.WithCtx(ctx).
+		Preload("IdentityProviders").
+		Where("instance_id = ? or name = ?", idOrName, idOrName).
+		First(&app).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, datastore.ErrRecordNotExist
+		}
+
+		return nil, err
+	}
+
+	return app, err
+}
+
 func (p *applicationRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) ([]model.Application, error) {
 	var apps []model.Application
 	err := p.client.WithCtx(ctx).Model(model.Application{}).

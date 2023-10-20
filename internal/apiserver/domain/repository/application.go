@@ -21,6 +21,7 @@ type ApplicationRepository interface {
 	DeleteCollection(ctx context.Context, apps []string, opts metav1.DeleteOptions) error
 	GetByName(ctx context.Context, name string, opts metav1.GetOptions) (*model.Application, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.Application, error)
+	GetByInstanceIdOrName(ctx context.Context, idOrName string, opts metav1.GetOptions) (*model.Application, error)
 	List(ctx context.Context, opts metav1.ListOptions) ([]model.Application, error)
 	Count(ctx context.Context, opts metav1.ListOptions) (int64, error)
 }

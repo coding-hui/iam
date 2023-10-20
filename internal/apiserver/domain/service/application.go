@@ -11,11 +11,9 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
-	"github.com/coding-hui/iam/internal/pkg/code"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
-	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
@@ -102,19 +100,10 @@ func (a *applicationServiceImpl) DeleteApplication(ctx context.Context, app stri
 }
 
 func (a *applicationServiceImpl) GetApplication(ctx context.Context, idOrName string, opts metav1.GetOptions) (*v1.DetailApplicationResponse, error) {
-	app, err := a.Store.ApplicationRepository().GetByInstanceId(ctx, idOrName, opts)
+	app, err := a.Store.ApplicationRepository().GetByInstanceIdOrName(ctx, idOrName, opts)
 	if err != nil {
-		log.Warnf("failed to get the app [%s]: %v", idOrName, err)
-		if !errors.IsCode(err, code.ErrRecordNotExist) {
-			return nil, err
-		}
-	}
-	if app == nil {
-		app, err = a.Store.ApplicationRepository().GetByName(ctx, idOrName, opts)
-		if err != nil {
-			log.Errorf("failed to get the app [%s]: %v", idOrName, err)
-			return nil, err
-		}
+		log.Errorf("failed to get the app [%s]: %v", idOrName, err)
+		return nil, err
 	}
 	base := assembler.ConvertModelToApplicationBase(app)
 
