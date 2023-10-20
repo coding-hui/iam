@@ -12,10 +12,10 @@ on:
       - '**/*.md'
   workflow_dispatch: {}
 
-env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ''
-  REGISTRY_PREFIX: wecoding
+# env:
+#   # Use docker.io for Docker Hub if empty
+#   REGISTRY: ''
+#   REGISTRY_PREFIX: wecoding
 
 jobs:
 
@@ -51,7 +51,7 @@ jobs:
         # Server address of Docker registry. If not set then will default to Docker Hub
         registry: ${{ env.REGISTRY }}
         # Username used to log against the Docker registry
-        username: ${{ secrets.DOCKER_USER }}
+        username: ${{ env.DOCKER_USER }}
         # Password or personal access token used to log against the Docker registry
         password: ${{ secrets.DOCKER_PWD }}
 
