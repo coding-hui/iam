@@ -52,7 +52,7 @@ func (a *authentication) RegisterApiGroup(g *gin.Engine) {
 	apiv1 := g.Group(versionPrefix)
 	{
 		apiv1.POST("/login", a.authenticate)
-		apiv1.POST("/logout", a.logout)
+		apiv1.GET("/logout", autoAuthCheck.AuthFunc(), a.logout)
 		apiv1.GET("/auth/refresh-token", a.refreshToken)
 		apiv1.GET("/auth/user-info", autoAuthCheck.AuthFunc(), a.userInfo)
 	}

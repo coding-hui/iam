@@ -209,8 +209,9 @@ func (s *issuer) Verify(token string) (*VerifiedResponse, error) {
 		User: v1.UserBase{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:       claims.Name,
-				InstanceID: claims.Name,
+				InstanceID: claims.Subject,
 			},
+			UserType: claims.UserType,
 		},
 		Claims: claims,
 	}
