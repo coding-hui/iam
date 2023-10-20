@@ -57,7 +57,7 @@ func (a *authentication) RegisterApiGroup(g *gin.Engine) {
 		apiv1.GET("/auth/user-info", autoAuthCheck.AuthFunc(), a.userInfo)
 	}
 
-	oauth := g.Group("/login/oauth")
+	oauth := g.Group(versionPrefix + "/oauth")
 	{
 		oauth.GET("/callback/:callback", a.oauthCallback)
 	}
