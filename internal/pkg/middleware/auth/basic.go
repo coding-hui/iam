@@ -5,7 +5,6 @@
 package auth
 
 import (
-	"context"
 	"encoding/base64"
 	"strings"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
+	"github.com/coding-hui/iam/internal/pkg/request"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
@@ -63,8 +63,7 @@ func (b BasicStrategy) AuthFunc() gin.HandlerFunc {
 			return
 		}
 
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserInstanceID, resp.User.InstanceID))
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserType, resp.User.UserType))
+		c.Request = c.Request.WithContext(request.WithUser(c.Request.Context(), *resp.User))
 
 		c.Next()
 	}

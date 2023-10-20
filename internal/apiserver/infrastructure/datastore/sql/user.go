@@ -14,6 +14,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/internal/pkg/request"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 
 	"github.com/coding-hui/common/errors"
@@ -86,7 +87,8 @@ func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 		}
 		return err
 	}
-	if currentUser := ctx.Value(&v1.CtxKeyUserInstanceID); currentUser != "" && currentUser == user.InstanceID {
+	currentUser, ok := request.UserFrom(ctx)
+	if ok && currentUser.InstanceID == user.InstanceID {
 		return errors.WithCode(code.ErrDeleteOneself, "User %s failed to be deleted and cannot delete itself", currentUser)
 	}
 	err = db.Where("instance_id = ?", instanceId).Select(clause.Associations).Delete(&model.User{}).Error

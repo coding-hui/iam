@@ -60,12 +60,12 @@ func (t tokenServiceImpl) IssueTo(request *token.IssueRequest) (string, error) {
 
 func (t tokenServiceImpl) Revoke(token string) error {
 	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (t tokenServiceImpl) RevokeAllUserTokens(username string) error {
 	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (t tokenServiceImpl) Keys() *token.Keys {

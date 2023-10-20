@@ -18,6 +18,7 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
 	"github.com/coding-hui/iam/internal/pkg/middleware/auth"
+	"github.com/coding-hui/iam/internal/pkg/request"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
@@ -51,6 +52,7 @@ func (a *authentication) RegisterApiGroup(g *gin.Engine) {
 	apiv1 := g.Group(versionPrefix)
 	{
 		apiv1.POST("/login", a.authenticate)
+		apiv1.POST("/logout", a.logout)
 		apiv1.GET("/auth/refresh-token", a.refreshToken)
 		apiv1.GET("/auth/user-info", autoAuthCheck.AuthFunc(), a.userInfo)
 	}
@@ -84,18 +86,18 @@ func newJWTAuth(tokenService service.TokenService) middleware.AuthStrategy {
 
 func permissionCheckFunc(r string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userType, ok := c.Request.Context().Value(&v1.CtxKeyUserType).(string)
-		if ok && userType == v1.PlatformAdmin.String() {
-			c.Next()
-			return
-		}
-
-		sub, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceID).(string)
+		user, ok := request.UserFrom(c.Request.Context())
 		if !ok {
 			api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user role"), c)
 			c.Abort()
 			return
 		}
+		if user.UserType == v1.PlatformAdmin.String() {
+			c.Next()
+			return
+		}
+
+		sub := user.InstanceID
 		url := c.Request.URL.Path
 		obj := fmt.Sprintf("%s:%s", r, url)
 		act := strings.ToLower(c.Request.Method)
@@ -215,7 +217,7 @@ func (a *authentication) refreshToken(c *gin.Context) {
 }
 
 func (a *authentication) userInfo(c *gin.Context) {
-	instanceId, ok := c.Request.Context().Value(&v1.CtxKeyUserInstanceID).(string)
+	ctxUser, ok := request.UserFrom(c.Request.Context())
 	if !ok {
 		api.FailWithErrCode(
 			errors.WithCode(code.ErrMissingHeader, "The Authorization header was empty"),
@@ -223,7 +225,7 @@ func (a *authentication) userInfo(c *gin.Context) {
 		)
 		return
 	}
-	user, err := a.UserService.GetUserByInstanceId(c.Request.Context(), instanceId, metav1.GetOptions{})
+	user, err := a.UserService.GetUserByInstanceId(c.Request.Context(), ctxUser.InstanceID, metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -251,4 +253,28 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 	}
 
 	api.OkWithHTML("authorize_callback.html", gin.H{"tokenInfo": tokenInfo, "idp": idp}, c)
+}
+
+//	@Tags			Authentication
+//	@Summary		LogoutSystem
+//	@Description	Logout by token.
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			AccessToken	header		string					true	"access token"
+//	@Success		200		{object}	api.Response	"logout success"
+//	@Router			/api/v1/logout [get]
+//
+// authenticate logout by token.
+func (a *authentication) logout(c *gin.Context) {
+	authenticated, ok := request.UserFrom(c.Request.Context())
+	if !ok {
+		api.FailWithErrCode(errors.WithCode(code.ErrInvalidAuthHeader, ""), c)
+		return
+	}
+	err := a.TokenService.RevokeAllUserTokens(authenticated.InstanceID)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+	api.Ok(c)
 }

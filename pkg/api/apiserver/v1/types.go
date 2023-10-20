@@ -12,20 +12,12 @@ import (
 )
 
 var (
-	// CtxKeyUserInstanceID request context key of username.
-	CtxKeyUserInstanceID = "user_instance_id"
-	// CtxKeyUserType request context key of user type.
-	CtxKeyUserType = "user_type"
 	// CtxKeyRole request context key of role.
 	CtxKeyRole = "role"
 	// CtxKeyPolicy request context key of policy.
 	CtxKeyPolicy = "policy"
 	// CtxKeyResource request context key of resource.
 	CtxKeyResource = "resource"
-	// CtxKeyRoutes initialize context key of routes.
-	CtxKeyRoutes = "routes"
-	// CtxKeyApiPrefix initialize context key of api-prefix.
-	CtxKeyApiPrefix = "api_prefix"
 )
 
 const (

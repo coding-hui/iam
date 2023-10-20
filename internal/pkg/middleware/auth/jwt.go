@@ -5,7 +5,6 @@
 package auth
 
 import (
-	"context"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -15,8 +14,8 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
+	"github.com/coding-hui/iam/internal/pkg/request"
 	"github.com/coding-hui/iam/internal/pkg/token"
-	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
 // AuthzAudience defines the value of jwt audience field.
@@ -65,8 +64,7 @@ func (j JWTStrategy) AuthFunc() gin.HandlerFunc {
 			return
 		}
 
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserInstanceID, t.Subject))
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), &v1.CtxKeyUserType, t.UserType))
+		c.Request = c.Request.WithContext(request.WithUser(c.Request.Context(), t.User))
 
 		c.Next()
 	}

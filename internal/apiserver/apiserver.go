@@ -23,7 +23,6 @@ import (
 	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
-	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
@@ -128,7 +127,7 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error)
 	s.registerAPIRoute()
 
 	// init database
-	if lastErr = service.InitData(s.withRoutesContext(ctx)); lastErr != nil {
+	if lastErr = service.InitData(ctx); lastErr != nil {
 		return fmt.Errorf("failed to init database %w", lastErr)
 	}
 
@@ -200,12 +199,6 @@ func (s *apiServer) registerAPIRoute() {
 
 func (s *apiServer) configSwagger() {
 	s.webServer.Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
-}
-
-func (s *apiServer) withRoutesContext(ctx context.Context) context.Context {
-	ctx = context.WithValue(ctx, &v1.CtxKeyRoutes, s.webServer.Routes())
-	ctx = context.WithValue(ctx, &v1.CtxKeyApiPrefix, apisv1.GetAPIPrefix())
-	return ctx
 }
 
 // startAPIServer start api server.
