@@ -27,11 +27,8 @@ containers:
           - "./_output"
           - ".idea/"
           - ".postman/"
-          - ".githooks/"
           - ".github/"
           - "./docs/"
           - "./test/"
-      env:
-        - name: "IAM_APISERVER_SERVER_STATIC_LOCATIONS"
-          value: "/etc/iam/template/*"
+      env: [ ]
       portForward: [ ]
