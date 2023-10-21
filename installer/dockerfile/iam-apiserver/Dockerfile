@@ -3,8 +3,8 @@
 # license that can be found in the LICENSE file.
 
 FROM golang:1.19.4 AS builder
-WORKDIR /go/src/wecoding/
-ADD . iam
+WORKDIR /go/src/wecoding/iam
+COPY . .
 RUN cd iam && make build BINS="iam-apiserver"
 
 ARG BASE_IMAGE
@@ -32,7 +32,8 @@ RUN apk add --update ca-certificates && \
 COPY --from=builder /go/src/wecoding/iam/_output/bin/iam-apiserver /usr/local/bin/iam-apiserver
 COPY --from=builder /go/src/wecoding/iam/configs/iam-apiserver.yaml /etc/iam/iam-apiserver.yaml
 COPY --from=builder /go/src/wecoding/iam/hack/gen-k8s-secret.sh /gen-k8s-secret.sh
-COPY --from=builder /go/src/wecoding/iam/template/* /etc/iam/template
+COPY --from=builder /go/src/wecoding/iam/template/ /etc/iam/template
+COPY --from=builder /go/src/wecoding/iam/template/ ./
 
 RUN chmod +x /gen-k8s-secret.sh
 
