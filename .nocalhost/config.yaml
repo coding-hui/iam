@@ -25,5 +25,13 @@ containers:
           - .
         ignoreFilePattern:
           - "./_output"
-      env: [ ]
+          - ".idea/"
+          - ".postman/"
+          - ".githooks/"
+          - ".github/"
+          - "./docs/"
+          - "./test/"
+      env:
+        - name: "IAM_APISERVER_SERVER_STATIC_LOCATIONS"
+          value: "/etc/iam/template/*"
       portForward: [ ]

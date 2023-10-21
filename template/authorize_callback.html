@@ -199,21 +199,20 @@
 
     let callbackURL = '{{- if and .Data .Data.idp .Data.idp.CallbackURL }}{{ .Data.idp.CallbackURL }}{{- else -}}""{{- end }}'
 
-    const message = `{
-        "success": {{ .Success }},
-        "code": "{{ .Code }}",
-        "msg": "{{ .Msg }}",
-        "data": {
-        {{- if and .Data .Data.tokenInfo }}
-        {{- with .Data.tokenInfo }}
-            "access_token": "{{ .AccessToken }}",
-            "token_type": "{{ .TokenType }}",
-            "refresh_token": "{{ .RefreshToken }}",
-            "expires_in": {{ .ExpiresIn }}
-        {{- end }}
-        {{- end }}
-        }
-    }`
+    const message = '{'
+        + '"success": {{ .Success }},'
+        + '"code": "{{ .Code }}",'
+        + '"msg": "{{ .Msg }}",'
+        + '"data": {'
+        + '    {{- if and .Data .Data.tokenInfo }}'
+        + '    {{- with .Data.tokenInfo }}'
+        + '    "access_token": "{{ .AccessToken }}",'
+        + '    "token_type": "{{ .TokenType }}",'
+        + '    "refresh_token": "{{ .RefreshToken }}",'
+        + '    "expires_in": {{ .ExpiresIn }}'
+        + '    {{- end }}'
+        + '    {{- end }}'
+        + '}}'
     window.onload = function () {
         try {
             window.opener.postMessage(JSON.parse(message), callbackURL);
