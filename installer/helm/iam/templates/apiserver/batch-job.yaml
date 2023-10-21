@@ -2,6 +2,7 @@
 # Use of this source code is governed by a MIT style
 # license that can be found in the LICENSE file.
 
+{{- if .Values.apiServer.createSecret }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -12,7 +13,7 @@ spec:
   backoffLimit: 3
   template:
     spec:
-      serviceAccountName: {{ include "iam.serviceAccountName" . }}
+      serviceAccountName: {{ include "iam.apiServerFullname" . }}
       priorityClassName: system-cluster-critical
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
@@ -23,5 +24,6 @@ spec:
         - name: main
           image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
-          command: [ "./gen-admission-secret.sh", "--service", "{{ .Release.Name }}-admission-service", "--namespace",
-                     "{{ .Release.Namespace }}", "--secret", "" ]
+          command: [ "/gen-k8s-secret.sh", "--service", "{{ include "iam.apiServerFullname" . }}-service", "--namespace",
+                     "{{ .Release.Namespace }}", "--secret", "{{ include "iam.apiServerFullname" . }}-secret" ]
+{{- end }}

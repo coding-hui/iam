@@ -87,6 +87,7 @@ func NewConfig() *Config {
 		Middlewares:     []string{},
 		EnableProfiling: true,
 		EnableMetrics:   true,
+		StaticLocations: "/etc/iam/template/*",
 		Jwt: &JwtInfo{
 			Realm:      "iam jwt",
 			Timeout:    1 * time.Hour,

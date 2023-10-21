@@ -6,7 +6,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "iam.apiServerFullname" . }}
+  name: {{ include "iam.apiServerFullname" . }}-service
   labels:
     {{- include "iam.apiServerLabels" . | nindent 4 }}
     {{- with .Values.apiServer.service.labels }}

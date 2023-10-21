@@ -1,0 +1,46 @@
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+{{- if .Values.console.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "iam.consoleFullname" . }}-service
+  labels:
+    {{- include "iam.consoleLabels" . | nindent 4 }}
+    {{- with .Values.console.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.console.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.console.service.type }}
+  {{- with .Values.console.service.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- if eq "LoadBalancer" .Values.console.service.type }}
+  {{- with .Values.console.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.console.service.loadBalancerSourceRanges  }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.console.service.port }}
+      targetPort: http
+      {{- if and (eq "NodePort" .Values.console.service.type) .Values.console.service.nodePort }}
+      nodePort: {{ .Values.console.service.nodePort }}
+      {{- end }}
+      protocol: TCP
+      {{- with .Values.console.service.appProtocol }}
+      appProtocol: {{ . }}
+      {{- end }}
+  selector:
+    {{- include "iam.consoleSelectorLabels" . | nindent 4 }}
+{{- end }}

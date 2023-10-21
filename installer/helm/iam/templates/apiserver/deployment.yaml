@@ -35,7 +35,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "iam.serviceAccountName" . }}
+      serviceAccountName: {{ include "iam.apiServerFullname" . }}
       {{- with .Values.apiServer.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -46,27 +46,31 @@ spec:
           imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8000
+              containerPort: {{ .Values.apiServer.service.port }}
               protocol: TCP
-          {{- with .Values.apiServer.extraEnv }}
-          env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.apiServer.extraEnvFrom }}
-          envFrom:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           readinessProbe:
-            {{- toYaml .Values.apiServer.readinessProbe | nindent 12 }}
+            httpGet:
+              path: /healthz
+              port: {{ .Values.apiServer.service.port }}
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
           livenessProbe:
-            {{- toYaml .Values.apiServer.livenessProbe | nindent 12 }}
+            httpGet:
+              path: /healthz
+              port: {{ .Values.apiServer.service.port }}
+            initialDelaySeconds: 30
           securityContext:
             {{- toYaml .Values.apiServer.containerSecurityContext | nindent 12 }}
           resources:
             {{- toYaml .Values.apiServer.resources | nindent 12 }}
           volumeMounts:
+            - name: log
+              mountPath: /var/log/iam
             - name: config
               mountPath: /etc/iam
+            - name: iam-certs
+              mountPath: /var/run/iam/certificates
+              readOnly: true
       {{- with .Values.apiServer.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -79,12 +83,14 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.apiServer.dnsConfig }}
-      dnsConfig:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       volumes:
+        - name: iam-certs
+          secret:
+            defaultMode: 420
+            secretName: {{ include "iam.apiServerFullname" . }}-secret
         - name: config
           configMap:
-            name: {{ include "iam.apiServerFullname" . }}
+            name: {{ include "iam.apiServerFullname" . }}-configmap
+        - name: log
+          emptyDir: {}
 

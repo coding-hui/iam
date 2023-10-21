@@ -1,0 +1,76 @@
+# Copyright (c) 2023 coding-hui. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "iam.consoleFullname" . }}
+  labels:
+    {{- include "iam.consoleLabels" . | nindent 4 }}
+spec:
+  {{- if not .Values.console.autoscaling.enabled }}
+  replicas: {{ .Values.console.replicas }}
+  {{- end }}
+  {{- with .Values.console.deploymentStrategy }}
+  strategy:
+  {{ toYaml . | trim | indent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "iam.consoleSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "iam.consoleSelectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "iam.consoleFullname" . }}
+      containers:
+        - name: console
+          image: "{{ .Values.console.image.repository }}:{{ .Values.console.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.console.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+          resources:
+            {{- toYaml .Values.console.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              subPath: nginx.conf
+              mountPath: /etc/nginx/nginx.conf
+            - name: cache
+              mountPath: /var/cache/nginx
+      {{- with .Values.console.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.console.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.console.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "iam.consoleFullname" . }}-configmap
+        - name: cache
+          emptyDir: {}

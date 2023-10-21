@@ -11,8 +11,8 @@ services:
     hostname: iam-aiserver
     container_name: iam-apiserver
     restart: always
-    #    environment:
-    #      GIN_MODE: release
+    environment:
+      GIN_MODE: release
     #      IAM_APISERVER_GRPC_BIND_ADDRESS: 0.0.0.0
     #      IAM_APISERVER_GRPC_BIND_PORT: 8020
     #      IAM_APISERVER_INSECURE_BIND_ADDRESS: 0.0.0.0
@@ -85,8 +85,8 @@ services:
       retries: 3
 
 volumes:
-  redis_data: {}
-  mysql_data: {}
+  redis_data: { }
+  mysql_data: { }
 
 networks:
   network:

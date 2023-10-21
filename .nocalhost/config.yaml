@@ -1,0 +1,29 @@
+name: "iam-apiserver"
+serviceType: "deployment"
+containers:
+  - name: "apiserver"
+    hub: null
+    dev:
+      gitUrl: ""
+      image: "devops-wecoding-docker.pkg.coding.net/wecoding/public/nocalhost-dev-golang:latest"
+      shell: "zsh"
+      workDir: "/opt/iam"
+      storageClass: ""
+      resources: null
+      persistentVolumeDirs: [ ]
+      command:
+        build: [ "make", "build BINS=iam-apiserver" ]
+        run: [ "make", "build BINS=iam-apiserver", "&&", "./_output/bin/iam-apiserver", "-c", "/etc/iam/iam-apiserver.yaml" ]
+        debug: [ "make", "build BINS=iam-apiserver", "&&", "dlv", "--listen=:2345", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "./_output/bin/iam-apiserver", "--", "-c", "/etc/iam/iam-apiserver.yaml" ]
+      debug:
+        remoteDebugPort: 2345
+        language: "go"
+      hotReload: false
+      sync:
+        type: "send"
+        filePattern:
+          - .
+        ignoreFilePattern:
+          - "./_output"
+      env: [ ]
+      portForward: [ ]
