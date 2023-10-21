@@ -27,13 +27,11 @@ RUN apk add --update ca-certificates && \
     ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     echo "Asia/Shanghai" > /etc/timezone
 
-WORKDIR /etc/iam/
-
-COPY --from=builder /go/src/wecoding/iam/configs/iam-apiserver.yaml ./iam-apiserver.yaml
-COPY --from=builder /go/src/wecoding/iam/template ./template/
-
+COPY --from=builder /go/src/wecoding/iam/configs/iam-apiserver.yaml /etc/iam/iam-apiserver.yaml
+COPY --from=builder /go/src/wecoding/iam/template /etc/iam/template/
 COPY --from=builder /go/src/wecoding/iam/_output/bin/iam-apiserver /usr/local/bin/iam-apiserver
 COPY --from=builder /go/src/wecoding/iam/hack/gen-k8s-secret.sh /gen-k8s-secret.sh
+
 RUN chmod +x /gen-k8s-secret.sh
 
 WORKDIR /opt/iam/

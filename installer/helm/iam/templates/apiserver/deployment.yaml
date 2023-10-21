@@ -67,7 +67,8 @@ spec:
             - name: log
               mountPath: /var/log/iam
             - name: config
-              mountPath: /etc/iam
+              mountPath: /etc/iam/iam-apiserver.yaml
+              subPath: iam-apiserver.yaml
             - name: iam-certs
               mountPath: /var/run/iam/certificates
               readOnly: true
