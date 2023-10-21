@@ -5,7 +5,7 @@
 FROM golang:1.19.4 AS builder
 WORKDIR /go/src/wecoding/iam
 COPY . .
-RUN cd iam && make build BINS="iam-apiserver"
+RUN make build BINS="iam-apiserver"
 
 ARG BASE_IMAGE
 
