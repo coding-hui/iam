@@ -47,14 +47,12 @@ func (p *applicationRepositoryImpl) CreateBatch(ctx context.Context, apps []*mod
 }
 
 func (p *applicationRepositoryImpl) Update(ctx context.Context, app *model.Application, _ metav1.UpdateOptions) error {
-	if len(app.IdentityProviders) > 0 {
-		err := p.cleanIdentityProviders(ctx, app.ID)
-		if err != nil {
-			log.Errorf("failed to clean app [%s] identity providers.", app.Name)
-			return err
-		}
+	err := p.cleanIdentityProviders(ctx, app.ID)
+	if err != nil {
+		log.Errorf("failed to clean app [%s] identity providers.", app.Name)
+		return err
 	}
-	err := p.client.WithCtx(ctx).Model(app).Save(app).Error
+	err = p.client.WithCtx(ctx).Model(app).Save(app).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return datastore.ErrRecordNotExist
