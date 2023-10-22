@@ -30,14 +30,15 @@ func New(ctx context.Context, c config.Config) (factory repository.Factory, last
 
 	var dbIns *gorm.DB
 	options := &db.Options{
-		Host:                  c.MySQLOptions.Host,
-		Username:              c.MySQLOptions.Username,
-		Password:              c.MySQLOptions.Password,
-		Database:              c.MySQLOptions.Database,
-		MaxIdleConnections:    c.MySQLOptions.MaxIdleConnections,
-		MaxOpenConnections:    c.MySQLOptions.MaxOpenConnections,
-		MaxConnectionLifeTime: c.MySQLOptions.MaxConnectionLifeTime,
-		LogLevel:              c.MySQLOptions.LogLevel,
+		Host:                                     c.MySQLOptions.Host,
+		Username:                                 c.MySQLOptions.Username,
+		Password:                                 c.MySQLOptions.Password,
+		Database:                                 c.MySQLOptions.Database,
+		MaxIdleConnections:                       c.MySQLOptions.MaxIdleConnections,
+		MaxOpenConnections:                       c.MySQLOptions.MaxOpenConnections,
+		MaxConnectionLifeTime:                    c.MySQLOptions.MaxConnectionLifeTime,
+		LogLevel:                                 c.MySQLOptions.LogLevel,
+		DisableForeignKeyConstraintWhenMigrating: true,
 	}
 	dbIns, lastErr = db.New(options)
 

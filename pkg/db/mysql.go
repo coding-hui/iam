@@ -24,6 +24,8 @@ type Options struct {
 	MaxConnectionLifeTime time.Duration
 	LogLevel              int
 	Logger                logger.Interface
+
+	DisableForeignKeyConstraintWhenMigrating bool
 }
 
 // New create a new gorm db instance with the given options.
@@ -37,7 +39,8 @@ func New(opts *Options) (*gorm.DB, error) {
 		"Local")
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: opts.Logger,
+		Logger:                                   opts.Logger,
+		DisableForeignKeyConstraintWhenMigrating: opts.DisableForeignKeyConstraintWhenMigrating,
 	})
 	if err != nil {
 		return nil, err
