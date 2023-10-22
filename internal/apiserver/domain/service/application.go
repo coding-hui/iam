@@ -11,9 +11,11 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
+	"github.com/coding-hui/iam/internal/pkg/code"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 
+	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"
 	"github.com/coding-hui/common/util/idutil"
 )
@@ -40,6 +42,26 @@ func NewApplicationService(c config.Config) ApplicationService {
 
 // Init initialize default app data.
 func (a *applicationServiceImpl) Init(ctx context.Context) error {
+	old, err := a.Store.ApplicationRepository().GetByName(ctx, model.DefaultApplication, metav1.GetOptions{})
+	if err != nil && !errors.IsCode(err, code.ErrOrgNotFound) {
+		return err
+	}
+	if old != nil {
+		return nil
+	}
+	createReq := v1.CreateApplicationRequest{
+		Name:        model.DefaultApplication,
+		DisplayName: "Built-in Application",
+		HomepageUrl: "http://iam.wecoding.top",
+		Logo:        "",
+		Description: "System Build-in Application",
+	}
+	err = a.CreateApplication(ctx, createReq)
+	if err != nil {
+		return errors.WithMessagef(err, "Failed to initialize system built-in application")
+	}
+	log.Info("initialize system built-in application done")
+
 	return nil
 }
 
