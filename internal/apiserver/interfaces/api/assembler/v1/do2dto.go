@@ -142,6 +142,10 @@ func ConvertModelToApplicationBase(app *model.Application) *v1.ApplicationBase {
 		Status:            app.Status,
 		Logo:              app.Logo,
 		HomepageUrl:       app.HomepageUrl,
+		AppID:             app.AppID,
+		AppSecret:         app.AppSecret,
+		CallbackURL:       app.CallbackURL,
+		LoginURL:          app.LoginURL,
 		IdentityProviders: identityProviders,
 	}
 }

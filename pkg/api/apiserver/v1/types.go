@@ -651,6 +651,8 @@ type CreateApplicationRequest struct {
 	Description         string   `json:"description"`
 	Logo                string   `json:"logo"`
 	HomepageUrl         string   `json:"homepageUrl"`
+	CallbackURL         string   `json:"callbackURL"`
+	LoginURL            string   `json:"loginURL"`
 	IdentityProviderIds []string `json:"identityProviderIds"`
 }
 
@@ -662,7 +664,10 @@ type UpdateApplicationRequest struct {
 	Description         string   `json:"description"`
 	Logo                string   `json:"logo"`
 	HomepageUrl         string   `json:"homepageUrl"`
+	CallbackURL         string   `json:"callbackURL"`
+	LoginURL            string   `json:"loginURL"`
 	IdentityProviderIds []string `json:"identityProviderIds"`
+	RefreshAppSecret    bool     `json:"refreshAppSecret"`
 }
 
 // ApplicationBase represents a application restful resource.
@@ -674,8 +679,12 @@ type ApplicationBase struct {
 	Owner       string `json:"owner"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
-	Logo        string `json:"icon"`
+	Logo        string `json:"logo"`
 	HomepageUrl string `json:"homepageUrl"`
+	AppID       string `json:"appId"`
+	AppSecret   string `json:"appSecret"`
+	CallbackURL string `json:"callbackURL"`
+	LoginURL    string `json:"loginURL"`
 
 	IdentityProviders []IdentityProviderBase `json:"identityProviders"`
 }
@@ -683,6 +692,15 @@ type ApplicationBase struct {
 // DetailApplicationResponse application detail.
 type DetailApplicationResponse struct {
 	ApplicationBase `json:",inline"`
+}
+
+// ApplicationList is the whole list of all Application which have been stored in stroage.
+type ApplicationList struct {
+	// Standard list metadata.
+	// +optional
+	metav1.ListMeta `json:",inline"`
+
+	Items []*DetailApplicationResponse `json:"items"`
 }
 
 type IdentityProviderConfig struct {

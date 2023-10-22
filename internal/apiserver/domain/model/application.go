@@ -31,6 +31,10 @@ type Application struct {
 	HomepageUrl string `json:"homepageUrl"   gorm:"column:homepage_url;type:varchar(100)" `
 	DisplayName string `json:"displayName"   gorm:"column:display_name;type:varchar(100)"`
 	Description string `json:"description"   gorm:"column:description;type:varchar(100)"`
+	AppID       string `json:"appId" gorm:"column:app_id;type:varchar(64)"`
+	AppSecret   string `json:"appSecret" gorm:"column:app_secret;type:varchar(64)"`
+	CallbackURL string `json:"callbackURL"   gorm:"column:callback_url;type:varchar(200)"`
+	LoginURL    string `json:"loginURL"   gorm:"column:login_url;type:varchar(200)"`
 
 	IdentityProviders []IdentityProvider `json:"identityProviders" gorm:"many2many:iam_application_idp;references:instance_id"`
 }

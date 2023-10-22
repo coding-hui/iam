@@ -15,6 +15,7 @@ import (
 	"github.com/coding-hui/iam/pkg/log"
 
 	metav1 "github.com/coding-hui/common/meta/v1"
+	"github.com/coding-hui/common/util/idutil"
 )
 
 // ApplicationService Application manage api.
@@ -23,6 +24,7 @@ type ApplicationService interface {
 	UpdateApplication(ctx context.Context, app string, req v1.UpdateApplicationRequest) error
 	DeleteApplication(ctx context.Context, app string, opts metav1.DeleteOptions) error
 	GetApplication(ctx context.Context, app string, opts metav1.GetOptions) (*v1.DetailApplicationResponse, error)
+	ListApplications(ctx context.Context, opts metav1.ListOptions) (*v1.ApplicationList, error)
 	Init(ctx context.Context) error
 }
 
@@ -52,6 +54,8 @@ func (a *applicationServiceImpl) CreateApplication(ctx context.Context, req v1.C
 		Description: req.Description,
 		Logo:        req.Logo,
 		HomepageUrl: req.HomepageUrl,
+		AppID:       idutil.NewSecretID(),
+		AppSecret:   idutil.NewSecretKey(),
 	}
 	if len(req.IdentityProviderIds) != 0 {
 		for _, idpId := range req.IdentityProviderIds {
@@ -77,7 +81,13 @@ func (a *applicationServiceImpl) UpdateApplication(ctx context.Context, app stri
 		return nil
 	}
 	newApp := assembler.ConvertUpdateAppReqToModel(req, oldApp)
-	if len(req.IdentityProviderIds) != 0 {
+	if newApp.AppID == "" {
+		newApp.AppID = idutil.NewSecretID()
+	}
+	if newApp.AppSecret == "" || req.RefreshAppSecret {
+		newApp.AppSecret = idutil.NewSecretID()
+	}
+	if len(req.IdentityProviderIds) > 0 {
 		for _, idpId := range req.IdentityProviderIds {
 			idp, err := a.Store.IdentityProviderRepository().GetByInstanceId(ctx, idpId, metav1.GetOptions{})
 			if err != nil {
@@ -87,12 +97,13 @@ func (a *applicationServiceImpl) UpdateApplication(ctx context.Context, app stri
 			newApp.IdentityProviders = append(newApp.IdentityProviders, *idp)
 		}
 	}
-	err = a.Store.ApplicationRepository().Update(ctx, newApp, metav1.UpdateOptions{})
-	if err != nil {
-		return err
-	}
-
-	return err
+	return a.Store.ExecTx(ctx, func(ctx context.Context) error {
+		err = a.Store.ApplicationRepository().Update(ctx, newApp, metav1.UpdateOptions{})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 func (a *applicationServiceImpl) DeleteApplication(ctx context.Context, app string, opts metav1.DeleteOptions) error {
@@ -109,5 +120,31 @@ func (a *applicationServiceImpl) GetApplication(ctx context.Context, idOrName st
 
 	return &v1.DetailApplicationResponse{
 		ApplicationBase: *base,
+	}, nil
+}
+
+func (a *applicationServiceImpl) ListApplications(ctx context.Context, opts metav1.ListOptions) (*v1.ApplicationList, error) {
+	var appList []*v1.DetailApplicationResponse
+	appRepo := a.Store.ApplicationRepository()
+	apps, err := appRepo.List(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range apps {
+		base := assembler.ConvertModelToApplicationBase(&v)
+		appList = append(appList, &v1.DetailApplicationResponse{
+			ApplicationBase: *base,
+		})
+	}
+	count, err := appRepo.Count(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.ApplicationList{
+		Items: appList,
+		ListMeta: metav1.ListMeta{
+			TotalCount: count,
+		},
 	}, nil
 }

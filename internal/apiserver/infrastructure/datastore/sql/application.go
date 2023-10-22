@@ -12,6 +12,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
+	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"
@@ -46,6 +47,13 @@ func (p *applicationRepositoryImpl) CreateBatch(ctx context.Context, apps []*mod
 }
 
 func (p *applicationRepositoryImpl) Update(ctx context.Context, app *model.Application, _ metav1.UpdateOptions) error {
+	if len(app.IdentityProviders) > 0 {
+		err := p.cleanIdentityProviders(ctx, app.ID)
+		if err != nil {
+			log.Errorf("failed to clean app [%s] identity providers.", app.Name)
+			return err
+		}
+	}
 	err := p.client.WithCtx(ctx).Model(app).Save(app).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -147,6 +155,7 @@ func (p *applicationRepositoryImpl) List(ctx context.Context, opts metav1.ListOp
 			makeCondition(opts),
 			paginate(opts),
 		).
+		Preload("IdentityProviders").
 		Order("id desc").
 		Find(&apps).Error
 	if err != nil {
@@ -170,4 +179,17 @@ func (p *applicationRepositoryImpl) Count(ctx context.Context, opts metav1.ListO
 	}
 
 	return totalCount, err
+}
+
+func (p *applicationRepositoryImpl) cleanIdentityProviders(ctx context.Context, appId uint64) error {
+	app := &model.Application{}
+	app.ID = appId
+	err := p.client.WithCtx(ctx).
+		Unscoped().Model(app).
+		Association("IdentityProviders").Unscoped().
+		Clear()
+	if err != nil {
+		return err
+	}
+	return nil
 }

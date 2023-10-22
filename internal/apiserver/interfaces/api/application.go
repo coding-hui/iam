@@ -32,6 +32,7 @@ func (a *application) RegisterApiGroup(g *gin.Engine) {
 		apiv1.PUT("/:idOrName", a.updateApplication)
 		apiv1.DELETE("/:instanceId", a.deleteApplication)
 		apiv1.GET("/:idOrName", a.detailApplication)
+		apiv1.GET("", a.listApplications)
 	}
 
 	publicApi := g.Group(versionPrefix + "/applications/public")
@@ -143,4 +144,30 @@ func (a *application) detailApplication(c *gin.Context) {
 	}
 
 	api.OkWithData(detail, c)
+}
+
+//	@Tags			ListApplications
+//	@Summary		ListApplications
+//	@Description	List Applications
+//	@Param			offset	query		int										false	"query the page number"
+//	@Param			limit	query		int										false	"query the page size number"
+//	@Success		200		{object}	api.Response{data=v1.ApplicationList}	"Applications"
+//	@Router			/api/v1/applications [get]
+//	@Security		BearerTokenAuth
+//
+// listApplications list Application page.
+func (a *application) listApplications(c *gin.Context) {
+	var opts metav1.ListOptions
+	err := c.ShouldBindQuery(&opts)
+	if err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		return
+	}
+	resp, err := a.ApplicationService.ListApplications(c.Request.Context(), opts)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.OkWithPage(resp.Items, resp.TotalCount, c)
 }
