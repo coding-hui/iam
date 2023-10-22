@@ -64,6 +64,7 @@ type CreateUserRequest struct {
 	Avatar           string   `json:"avatar,omitempty"`
 	IdentifyProvider string   `json:"identifyProvider,omitempty"`
 	ExternalUID      string   `json:"externalUID,omitempty"`
+	RoleIds          []string `json:"roleIds,omitempty"`
 	DepartmentIds    []string `json:"departmentIds,omitempty"`
 }
 

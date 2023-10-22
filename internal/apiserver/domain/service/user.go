@@ -99,6 +99,23 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	if err != nil {
 		return nil, err
 	}
+	// user role assign
+	roleIds := req.RoleIds
+	if len(roleIds) == 0 {
+		defaultRole, err := u.Store.RoleRepository().GetByName(ctx, v1.Default.String(), metav1.GetOptions{})
+		if err != nil {
+			log.Errorf("Failed to get the default role [%s]: %v", model.DefaultApplication, err)
+		} else {
+			roleIds = []string{defaultRole.InstanceID}
+		}
+	}
+	err = u.RoleService.BatchAssignRole(ctx, v1.BatchAssignRoleRequest{
+		InstanceIds: roleIds,
+		Targets:     []string{createUser.InstanceID},
+	})
+	if err != nil {
+		log.Errorf("Failed to assign role: [%v] to the user [%s]: %v", roleIds, createUser.Name, err)
+	}
 	// user org association
 	var deptMembers []*model.DepartmentMember
 	if len(req.DepartmentIds) == 0 {
@@ -169,11 +186,11 @@ func (u *userServiceImpl) DeleteUser(ctx context.Context, instanceId string, opt
 		batchRevokeRoleReq.InstanceIds = append(batchRevokeRoleReq.InstanceIds, r.InstanceID)
 	}
 	return u.Store.ExecTx(ctx, func(ctx context.Context) error {
-		if err := u.Store.UserRepository().DeleteByInstanceId(ctx, instanceId, opts); err != nil {
-			return err
-		}
 		if err := u.RoleService.BatchRevokeRole(ctx, batchRevokeRoleReq); err != nil {
 			log.Errorf("failed to delete user [%s] roles: %s", instanceId, err.Error())
+			return err
+		}
+		if err := u.Store.UserRepository().DeleteByInstanceId(ctx, instanceId, opts); err != nil {
 			return err
 		}
 		return nil
