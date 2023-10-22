@@ -190,7 +190,7 @@ type CreateRoleRequest struct {
 
 // UpdateRoleRequest update role request.
 type UpdateRoleRequest struct {
-	DisplayName string `json:"displayName"           validate:"required,min=1,max=30"`
+	DisplayName string `json:"displayName"`
 	Description string `json:"description,omitempty"`
 	Owner       string `json:"owner,omitempty"`
 }
@@ -271,20 +271,20 @@ type RefreshTokenResponse struct {
 // CreateResourceRequest create resource request.
 type CreateResourceRequest struct {
 	Name        string   `json:"name"                validate:"required,name"`
-	Method      string   `json:"method"              validate:"required"`
 	Type        string   `json:"type"                validate:"required"`
 	Api         string   `json:"api"                 validate:"required"`
+	Method      string   `json:"method"`
 	Description string   `json:"description"`
 	IsDefault   bool     `json:"isDefault,omitempty"`
-	Actions     []Action `json:"actions,omitempty"   validate:"required"`
+	Actions     []Action `json:"actions,omitempty"`
 }
 
 // UpdateResourceRequest update resource request.
 type UpdateResourceRequest struct {
 	Name        string   `json:"name"                validate:"required,name"`
-	Method      string   `json:"method"              validate:"required"`
 	Type        string   `json:"type"                validate:"required"`
 	Api         string   `json:"api"                 validate:"required"`
+	Method      string   `json:"method"`
 	Description string   `json:"description"`
 	IsDefault   bool     `json:"isDefault,omitempty"`
 	Actions     []Action `json:"actions,omitempty"   validate:"required"`
@@ -415,10 +415,10 @@ type Statement struct {
 // CreatePolicyRequest create policy request.
 type CreatePolicyRequest struct {
 	Name        string      `json:"name"        validate:"required,name"`
-	Description string      `json:"description" validate:"min=1,max=30"`
 	Type        string      `json:"type"        validate:"required"`
 	Statements  []Statement `json:"statements"  validate:"required"`
 	Subjects    []string    `json:"subjects"    validate:"required"`
+	Description string      `json:"description"`
 	Status      string      `json:"status"`
 	Owner       string      `json:"owner"`
 	Meta        string      `json:"meta"`
@@ -426,9 +426,9 @@ type CreatePolicyRequest struct {
 
 // UpdatePolicyRequest update policy request.
 type UpdatePolicyRequest struct {
-	Description string      `json:"description" validate:"min=1,max=30"`
 	Subjects    []string    `json:"subjects"    validate:"required"`
 	Statements  []Statement `json:"statements"  validate:"required"`
+	Description string      `json:"description"`
 	Type        string      `json:"type"`
 	Status      string      `json:"status"`
 	Owner       string      `json:"owner"`
