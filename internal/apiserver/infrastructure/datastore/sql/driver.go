@@ -157,6 +157,18 @@ func _applyFieldSelector(clauses []clause.Expression, selector fields.Selector) 
 				Column: clause.Column{Name: field},
 				Value:  value,
 			}
+		case selection.In:
+			var values []interface{}
+			var split = strings.Split(value, ",")
+			for _, v := range split {
+				if v != "" {
+					values = append(values, v)
+				}
+			}
+			condition = clause.IN{
+				Column: clause.Column{Name: field},
+				Values: values,
+			}
 		default:
 			// 忽略不支持的操作符
 			log.Warnf("Unsupported field selector operator: %s", operator)
