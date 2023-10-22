@@ -91,6 +91,9 @@ func (i *identityProviderServiceImpl) CreateIdentityProvider(ctx context.Context
 		MappingMethod: req.MappingMethod,
 		CallbackURL:   req.CallbackURL,
 	}
+	if idp.MappingMethod == "" {
+		idp.MappingMethod = v1.MappingMethodAuto
+	}
 	if err := i.applyProviderConfig(idp); err != nil {
 		return err
 	}
