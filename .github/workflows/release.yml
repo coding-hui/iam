@@ -59,22 +59,3 @@ jobs:
 
     - name: Daily Release
       run: make push REGISTRY_PREFIX=${{ vars.REGISTRY_PREFIX }} BUILDX_OUTPUT_TYPE=registry PLATFORMS="linux/amd64" IMAGES="iam-apiserver"
-
-    - name: K8s Deployment
-      uses: steebchen/kubectl@master
-      env:
-        KUBECTL_VERSION: "v1.27.6"
-      with: # defaults to latest kubectl binary version
-        config: ${{ secrets.KUBE_CONFIG }}
-        command: -n iam-system set image --record deployment/iam-apiserver apiserver=${{ vars.REGISTRY_PREFIX }}/iam-apiserver:${{ steps.get_version.outputs.VERSION }}
-
-    - name: Verify Deployment
-      uses: steebchen/kubectl@master
-      env:
-        KUBECTL_VERSION: "v1.27.6"
-      with:
-        config: ${{ secrets.KUBE_CONFIG }}
-        command: -n iam-system rollout status deployment/iam-apiserver
-
-    - name: test
-      run: kubectl get pod -n iam-system
