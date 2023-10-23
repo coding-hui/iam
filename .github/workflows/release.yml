@@ -59,13 +59,23 @@ jobs:
         password: ${{ secrets.DOCKER_PWD }}
 
     - name: Daily Release
-      run: make push REGISTRY_PREFIX=${{ vars.REGISTRY_PREFIX }} BUILDX_OUTPUT_TYPE=registry PLATFORMS="linux/amd64"
+      run: make push REGISTRY_PREFIX=${{ vars.REGISTRY_PREFIX }} BUILDX_OUTPUT_TYPE=registry PLATFORMS="linux/amd64" IMAGES="iam-apiserver"
 
     - name: K8s Deployment
       uses: steebchen/kubectl@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
-        KUBECTL_VERSION: "1.27.6"
-      with:
-        args: make deploy DEPLOYS="iam-apiserver"
+        KUBECTL_VERSION: "v1.27.6"
+      with: # defaults to latest kubectl binary version
+        config: ${{ secrets.KUBE_CONFIG_DATA }}
+        command: -n iam-system set image --record deployment/iam-apiserver apiserver=${{ vars.REGISTRY_PREFIX }}/iam-apiserver:${VERSION}
+      run: kubectl version
 
+    - name: Verify Deployment
+      uses: steebchen/kubectl@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
+        KUBECTL_VERSION: "v1.27.6"
+      with:
+        config: ${{ secrets.KUBE_CONFIG_DATA }}
+        command: -n iam-system rollout status deployment/iam-apiserver
