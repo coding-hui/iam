@@ -30,7 +30,6 @@ jobs:
       run: |
         echo "ROOT_DIR=$(pwd)" >> $GITHUB_ENV
         ls -ls
-        ifconfig
 
     - name: Set up Go
       uses: actions/setup-go@v4
@@ -64,17 +63,18 @@ jobs:
     - name: K8s Deployment
       uses: steebchen/kubectl@master
       env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
         KUBECTL_VERSION: "v1.27.6"
       with: # defaults to latest kubectl binary version
-        config: ${{ secrets.KUBE_CONFIG_DATA }}
+        config: ${{ secrets.KUBE_CONFIG }}
         command: -n iam-system set image --record deployment/iam-apiserver apiserver=${{ vars.REGISTRY_PREFIX }}/iam-apiserver:${VERSION}
 
     - name: Verify Deployment
       uses: steebchen/kubectl@master
       env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
         KUBECTL_VERSION: "v1.27.6"
       with:
-        config: ${{ secrets.KUBE_CONFIG_DATA }}
+        config: ${{ secrets.KUBE_CONFIG }}
         command: -n iam-system rollout status deployment/iam-apiserver
+
+    - name: test
+      run: kubectl get pod -n iam-system
