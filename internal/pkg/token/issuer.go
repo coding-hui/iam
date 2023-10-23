@@ -208,7 +208,7 @@ func (s *issuer) Verify(token string) (*VerifiedResponse, error) {
 	verified := &VerifiedResponse{
 		User: v1.UserBase{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:       claims.Name,
+				Name:       claims.Username,
 				InstanceID: claims.Subject,
 			},
 			UserType: claims.UserType,

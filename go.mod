@@ -57,6 +57,7 @@ require (
 	gorm.io/gorm v1.25.4
 	gotest.tools v2.2.0+incompatible
 	helm.sh/helm/v3 v3.12.3
+	k8s.io/apimachinery v0.27.3
 	k8s.io/klog v1.0.0
 )
 
@@ -165,6 +166,7 @@ require (
 	gorm.io/driver/sqlserver v1.5.1 // indirect
 	gorm.io/plugin/dbresolver v1.4.7 // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
+	k8s.io/utils v0.0.0-20230220204549-a5ecb0141aa5 // indirect
 	modernc.org/libc v1.24.1 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.7.1 // indirect

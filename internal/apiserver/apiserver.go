@@ -17,6 +17,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/internal/apiserver/event"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/cache"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
@@ -60,6 +61,7 @@ type apiServer struct {
 	gRPCAPIServer    *grpcAPIServer
 	beanContainer    *container.Container
 	repositoryFactor repository.Factory
+	cacheClient      cache.Interface
 
 	// entity that issues tokens
 	issuer token.Issuer
@@ -119,7 +121,7 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error)
 	}
 
 	// build the Ioc Container
-	if lastErr = s.buildIoCContainer(); lastErr != nil {
+	if lastErr = s.buildIoCContainer(ctx); lastErr != nil {
 		return fmt.Errorf("failed to build IoCContainer %w", lastErr)
 	}
 
@@ -137,7 +139,7 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error)
 }
 
 // buildIoCContainer build ioc container.
-func (s *apiServer) buildIoCContainer() (err error) {
+func (s *apiServer) buildIoCContainer(ctx context.Context) (err error) {
 	// infrastructure
 	if err = s.beanContainer.ProvideWithName("apiServer", s); err != nil {
 		return fmt.Errorf("fail to provides the apiServer bean to the container: %w", err)
@@ -157,6 +159,15 @@ func (s *apiServer) buildIoCContainer() (err error) {
 		return fmt.Errorf("fail to provides the datastore bean to the container: %w", err)
 	}
 	repository.SetClient(factory)
+
+	// cache
+	var cacheClient cache.Interface
+	if cacheClient, err = cache.New(s.cfg.CacheOptions, ctx.Done()); err != nil {
+		return fmt.Errorf("failed to create cache, error: %v", err)
+	}
+	if err = s.beanContainer.ProvideWithName("cache", cacheClient); err != nil {
+		return fmt.Errorf("fail to provides the cache bean to the container: %w", err)
+	}
 
 	// domain
 	if err = s.beanContainer.Provides(service.InitServiceBean(s.cfg, s.issuer)...); err != nil {
