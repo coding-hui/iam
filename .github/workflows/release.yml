@@ -66,7 +66,7 @@ jobs:
         KUBECTL_VERSION: "v1.27.6"
       with: # defaults to latest kubectl binary version
         config: ${{ secrets.KUBE_CONFIG }}
-        command: -n iam-system set image --record deployment/iam-apiserver apiserver=${{ vars.REGISTRY_PREFIX }}/iam-apiserver:${VERSION}
+        command: -n iam-system set image --record deployment/iam-apiserver apiserver=${{ vars.REGISTRY_PREFIX }}/iam-apiserver:${{ steps.get_version.outputs.VERSION }}
 
     - name: Verify Deployment
       uses: steebchen/kubectl@master
