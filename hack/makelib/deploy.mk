@@ -24,4 +24,4 @@ deploy.run: $(addprefix deploy.run., $(DEPLOYS))
 deploy.run.%:
 	$(eval ARCH := $(word 2,$(subst _, ,$(PLATFORM))))
 	@echo "===========> Deploying $* $(VERSION)-$(ARCH)"
-	echo @$(KUBECTL) -n $(NAMESPACE) --context=$(CONTEXT) set image deployment/$* $*=$(REGISTRY_PREFIX)/$*-$(ARCH):$(VERSION)
+	@${ROOT_DIR}/hack/deploy-iam.sh

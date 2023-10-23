@@ -30,7 +30,8 @@ jobs:
       run: |
         echo "ROOT_DIR=$(pwd)" >> $GITHUB_ENV
         ls -ls
-    
+        ifconfig
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
@@ -59,4 +60,12 @@ jobs:
 
     - name: Daily Release
       run: make push REGISTRY_PREFIX=${{ vars.REGISTRY_PREFIX }} BUILDX_OUTPUT_TYPE=registry PLATFORMS="linux/amd64"
+
+    - name: K8s Deployment
+      uses: steebchen/kubectl@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
+        KUBECTL_VERSION: "1.27.6"
+      with:
+        args: make deploy DEPLOYS="iam-apiserver"
 

@@ -233,7 +233,7 @@ func (s *GenericAPIServer) ping(ctx context.Context) error {
 
 		resp, err := http.DefaultClient.Do(req)
 		if err == nil && resp.StatusCode == http.StatusOK {
-			log.Infof("The router has been deployed successfully.")
+			log.Infof("The server has been deployed successfully.")
 
 			resp.Body.Close()
 
@@ -241,7 +241,7 @@ func (s *GenericAPIServer) ping(ctx context.Context) error {
 		}
 
 		// Sleep for a second to continue the next ping.
-		log.Info("Waiting for the router, retry in 1 second.")
+		log.Info("Waiting for the server, retry in 1 second.")
 		time.Sleep(1 * time.Second)
 
 		select {
