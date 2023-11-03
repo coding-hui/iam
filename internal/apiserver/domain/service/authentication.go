@@ -22,13 +22,14 @@ import (
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+	"github.com/coding-hui/iam/pkg/log"
 )
 
 // AuthenticationService authentication service.
 type AuthenticationService interface {
-	Authenticate(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
-	AuthenticateByProvider(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
-	OauthAuthenticateByProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error)
+	Login(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
+	LoginByProvider(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
+	LoginByOAuthProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*v1.RefreshTokenResponse, error)
 }
 
@@ -69,7 +70,7 @@ func (a *authenticationServiceImpl) newLocalHandler(loginReq v1.AuthenticateRequ
 	}, nil
 }
 
-func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error) {
+func (a *authenticationServiceImpl) Login(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error) {
 	var handler authHandler
 	var err error
 	handler, err = a.newLocalHandler(loginReq)
@@ -111,10 +112,7 @@ func (a *authenticationServiceImpl) Authenticate(ctx context.Context, loginReq v
 	}, nil
 }
 
-func (a *authenticationServiceImpl) AuthenticateByProvider(
-	ctx context.Context,
-	loginReq v1.AuthenticateRequest,
-) (*v1.AuthenticateResponse, error) {
+func (a *authenticationServiceImpl) LoginByProvider(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error) {
 	provider, err := a.Store.IdentityProviderRepository().GetByName(ctx, loginReq.Provider, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
@@ -147,6 +145,13 @@ func (a *authenticationServiceImpl) AuthenticateByProvider(
 		userBase = &createResp.UserBase
 	}
 
+	go func() {
+		err := a.Store.UserRepository().FlushLastLoginTime(ctx, userBase.Name)
+		if err != nil {
+			log.Errorf("Failed to flush user [%s] last login time: %v", userBase.Name, err)
+		}
+	}()
+
 	accessToken, err := a.TokenService.IssueTo(&token.IssueRequest{
 		User:      *userBase,
 		Claims:    token.Claims{TokenType: token.AccessToken},
@@ -175,7 +180,7 @@ func (a *authenticationServiceImpl) AuthenticateByProvider(
 	}, nil
 }
 
-func (a *authenticationServiceImpl) OauthAuthenticateByProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error) {
+func (a *authenticationServiceImpl) LoginByOAuthProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error) {
 	oauthProvider, err := identityprovider.GetOAuthProvider(idp)
 	if err != nil {
 		return nil, err
@@ -212,6 +217,12 @@ func (a *authenticationServiceImpl) OauthAuthenticateByProvider(ctx context.Cont
 			Email:  authenticated.GetEmail(),
 		}
 	}
+	go func() {
+		err := a.Store.UserRepository().FlushLastLoginTime(ctx, userBase.Name)
+		if err != nil {
+			log.Errorf("Failed to flush user [%s] last login time: %v", userBase.Name, err)
+		}
+	}()
 
 	accessToken, err := a.TokenService.IssueTo(&token.IssueRequest{
 		User:      *userBase,
@@ -278,9 +289,12 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1.UserBase, erro
 	if err := user.Compare(l.password); err != nil {
 		return nil, err
 	}
-	if err := l.userService.FlushLastLoginTime(ctx, user); err != nil {
-		return nil, err
-	}
+	go func() {
+		err := l.store.UserRepository().FlushLastLoginTime(ctx, user.Name)
+		if err != nil {
+			log.Errorf("Failed to flush user [%s] last login time: %v", user.Name, err)
+		}
+	}()
 
 	return assembler.ConvertUserModelToBase(user), nil
 }

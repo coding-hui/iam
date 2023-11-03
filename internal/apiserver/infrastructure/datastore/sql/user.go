@@ -6,6 +6,7 @@ package sql
 
 import (
 	"context"
+	"time"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -143,6 +144,35 @@ func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId str
 	}
 
 	return user, nil
+}
+
+// GetByNameOrInstanceId get user by name or instanceId.
+func (u *userRepositoryImpl) GetByNameOrInstanceId(ctx context.Context, nameOrId string, _ metav1.GetOptions) (*model.User, error) {
+	user := &model.User{}
+	err := u.client.WithCtx(ctx).Where("instance_id = ? or name = ?", nameOrId, nameOrId).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+		}
+		return nil, err
+	}
+	departmentIds, _ := u.getUserDepartments(ctx, nameOrId)
+	for _, v := range departmentIds {
+		user.DepartmentIds = append(user.DepartmentIds, v.DepartmentID)
+	}
+
+	return user, nil
+}
+
+func (u *userRepositoryImpl) FlushLastLoginTime(ctx context.Context, nameOrId string) error {
+	err := u.client.WithCtx(ctx).Debug().
+		Model(&model.User{}).
+		Where("instance_id = ? or name = ?", nameOrId, nameOrId).
+		Update("last_login_time", time.Now()).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetByExternalId get user by external identifier.

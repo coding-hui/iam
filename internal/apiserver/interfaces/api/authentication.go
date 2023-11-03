@@ -69,7 +69,7 @@ func newBasicAuth(authentication service.AuthenticationService) middleware.AuthS
 			Username: username,
 			Password: password,
 		}
-		response, err := authentication.Authenticate(context.TODO(), login)
+		response, err := authentication.Login(context.TODO(), login)
 		if err != nil {
 			return nil, err
 		}
@@ -153,7 +153,7 @@ func (a *authentication) authenticate(c *gin.Context) {
 	var resp *v1.AuthenticateResponse
 
 	if login.Username != "" && login.Password != "" {
-		resp, err = a.AuthenticationService.Authenticate(c.Request.Context(), login)
+		resp, err = a.AuthenticationService.Login(c.Request.Context(), login)
 		if err != nil {
 			api.FailWithErrCode(err, c)
 			return
@@ -163,7 +163,7 @@ func (a *authentication) authenticate(c *gin.Context) {
 		return
 	}
 
-	resp, err = a.AuthenticationService.AuthenticateByProvider(c.Request.Context(), login)
+	resp, err = a.AuthenticationService.LoginByProvider(c.Request.Context(), login)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
@@ -246,7 +246,7 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
 		return
 	}
-	tokenInfo, err := a.AuthenticationService.OauthAuthenticateByProvider(c.Request.Context(), idp, c.Request)
+	tokenInfo, err := a.AuthenticationService.LoginByOAuthProvider(c.Request.Context(), idp, c.Request)
 	if err != nil {
 		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
 		return

@@ -21,6 +21,8 @@ type UserRepository interface {
 	BatchDelete(ctx context.Context, usernames []string, opts metav1.DeleteOptions) error
 	GetByName(ctx context.Context, username string, opts metav1.GetOptions) (*model.User, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.User, error)
+	GetByNameOrInstanceId(ctx context.Context, nameOrId string, opts metav1.GetOptions) (*model.User, error)
+	FlushLastLoginTime(ctx context.Context, nameOrId string) error
 	GetByExternalId(ctx context.Context, openId, externalId string, opts metav1.GetOptions) (*model.User, error)
 	List(ctx context.Context, opts v1.ListUserOptions) ([]model.User, error)
 	Count(ctx context.Context, opts v1.ListUserOptions) (int64, error)

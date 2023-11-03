@@ -6,7 +6,6 @@ package service
 
 import (
 	"context"
-	"time"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -40,7 +39,6 @@ type UserService interface {
 	DetailUser(ctx context.Context, user *model.User) (*v1.DetailUserResponse, error)
 	ListUsers(ctx context.Context, opts v1.ListUserOptions) (*v1.UserList, error)
 	ListUserRoles(ctx context.Context, instanceId string, opts metav1.ListOptions) (*v1.RoleList, error)
-	FlushLastLoginTime(ctx context.Context, user *model.User) error
 	DisableUser(ctx context.Context, instanceId string) error
 	EnableUser(ctx context.Context, instanceId string) error
 	Init(ctx context.Context) error
@@ -271,14 +269,6 @@ func (u *userServiceImpl) ListUserRoles(
 	}
 
 	return roles, nil
-}
-
-// FlushLastLoginTime update user login time.
-func (u *userServiceImpl) FlushLastLoginTime(ctx context.Context, user *model.User) error {
-	now := time.Now()
-	user.LastLoginTime = &now
-
-	return u.Store.UserRepository().Update(ctx, user, metav1.UpdateOptions{})
 }
 
 // DisableUser disable user
