@@ -22,8 +22,8 @@ const (
 	// ErrValidation - 400: Validation failed.
 	ErrValidation
 
-	// ErrTokenInvalid - 401: Token invalid.
-	ErrTokenInvalid
+	// ErrParam - 400: Invalid request params.
+	ErrParam
 
 	// ErrPageNotFound - 404: Page not found.
 	ErrPageNotFound
@@ -63,6 +63,9 @@ const (
 const (
 	// ErrEncrypt - 401: Error occurred while encrypting the user password.
 	ErrEncrypt int = iota + 100201
+
+	// ErrTokenInvalid - 401: Token invalid.
+	ErrTokenInvalid
 
 	// ErrSignatureInvalid - 401: Signature is invalid.
 	ErrSignatureInvalid

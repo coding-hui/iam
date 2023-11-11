@@ -43,7 +43,7 @@ func NewApplicationService(c config.Config) ApplicationService {
 // Init initialize default app data.
 func (a *applicationServiceImpl) Init(ctx context.Context) error {
 	old, err := a.Store.ApplicationRepository().GetByName(ctx, model.DefaultApplication, metav1.GetOptions{})
-	if err != nil && !errors.IsCode(err, code.ErrOrgNotFound) {
+	if err != nil && !errors.IsCode(err, code.ErrRecordNotExist) {
 		return err
 	}
 	if old != nil {

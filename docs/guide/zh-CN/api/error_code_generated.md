@@ -60,7 +60,7 @@ IAM 系统支持的错误码列表如下：
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |
 | ErrValidation | 100004 | 400 | Validation failed |
-| ErrTokenInvalid | 100005 | 401 | Token invalid |
+| ErrParam | 100005 | 400 | Invalid request params |
 | ErrPageNotFound | 100006 | 404 | Page not found |
 | ErrInvalidRequest | 100007 | 404 | Invalid request |
 | ErrDatabase | 100101 | 500 | Database error |
@@ -72,19 +72,20 @@ IAM 系统支持的错误码列表如下：
 | ErrEntityInvalid | 100107 | 500 | Entity is invalid |
 | ErrTableNameEmpty | 100108 | 500 | Entity table name is empty |
 | ErrEncrypt | 100201 | 401 | Error occurred while encrypting the user password |
-| ErrSignatureInvalid | 100202 | 401 | Signature is invalid |
-| ErrTokenMalformed | 100203 | 401 | Token is malformed |
-| ErrTokenNotValidYet | 100204 | 401 | Token is not valid yet |
-| ErrExpired | 100205 | 401 | Token expired |
-| ErrTokenIssuedAt | 100206 | 401 | Token used before issued |
-| ErrMissingLoginValues | 100207 | 401 | Missing Username or Password |
-| ErrInvalidAuthHeader | 100208 | 401 | Invalid authorization header |
-| ErrMissingHeader | 100209 | 401 | The `Authorization` header was empty |
-| ErrPasswordIncorrect | 100210 | 401 | Invalid Username or Password |
-| ErrInvalidRefreshToken | 100211 | 401 | Refresh token format is incorrect, please check |
-| ErrUnauthorized | 100212 | 403 | Unauthorized |
-| ErrPermissionDenied | 100213 | 403 | Permission denied |
-| ErrIdentityProviderNotFound | 100214 | 401 | Identity provider not found |
+| ErrTokenInvalid | 100202 | 401 | Token invalid |
+| ErrSignatureInvalid | 100203 | 401 | Signature is invalid |
+| ErrTokenMalformed | 100204 | 401 | Token is malformed |
+| ErrTokenNotValidYet | 100205 | 401 | Token is not valid yet |
+| ErrExpired | 100206 | 401 | Token expired |
+| ErrTokenIssuedAt | 100207 | 401 | Token used before issued |
+| ErrMissingLoginValues | 100208 | 401 | Missing Username or Password |
+| ErrInvalidAuthHeader | 100209 | 401 | Invalid authorization header |
+| ErrMissingHeader | 100210 | 401 | The `Authorization` header was empty |
+| ErrPasswordIncorrect | 100211 | 401 | Invalid Username or Password |
+| ErrInvalidRefreshToken | 100212 | 401 | Refresh token format is incorrect, please check |
+| ErrUnauthorized | 100213 | 403 | Unauthorized |
+| ErrPermissionDenied | 100214 | 403 | Permission denied |
+| ErrIdentityProviderNotFound | 100215 | 401 | Identity provider not found |
 | ErrEncodingFailed | 100301 | 500 | Encoding failed due to an error with the data |
 | ErrDecodingFailed | 100302 | 500 | Decoding failed due to an error with the data |
 | ErrInvalidJSON | 100303 | 500 | Data is not valid JSON |
