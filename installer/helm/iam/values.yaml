@@ -52,7 +52,7 @@ apiServer:
     # -- The ApiServer image repository
     repository: devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-apiserver
     # -- The ApiServer image pull policy
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # -- The ApiServer image tag
     tag: "latest"
   # -- Config file for the ApiServer
@@ -122,7 +122,7 @@ console:
     # -- The ApiServer image repository
     repository: devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-frontend
     # -- The ApiServer image pull policy
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     # -- The ApiServer image tag
     tag: "latest"
   # -- Config file for the ApiServer

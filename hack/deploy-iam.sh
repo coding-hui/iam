@@ -1,54 +1,87 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# Copyright (c) 2023 coding-hui. All rights reserved.
-# Use of this source code is governed by a MIT style
-# license that can be found in the LICENSE file.
-
-set -o errexit
-set -o nounset
-set -o pipefail
-
-# The root of the build/dist directory
+# Define deployment directory
 IAM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
-source "${IAM_ROOT}/hack/lib/init.sh"
 
-TAG="${TAG:-latest}"
-NAMESPACE="${NAMESPACE:-iam-system}" # 设置默认的命名空间
-REGISTRY="${REPO:-devops-wecoding-docker.pkg.coding.net/wecoding/images}"
-DEPLOYS="${DEPLOYS:-iam-apiserver}" # 部署列表，使用逗号分隔
+# Set namespace variables (use default values if not set)
+IAM_DEPEND_NAMESPACE="${IAM_DEPEND_NAMESPACE:-iam-depend}"
+IAM_SYSTEM_NAMESPACE="${IAM_SYSTEM_NAMESPACE:-iam-system}"
 
-function wait_for_installation_finish() {
-  iam::log::info "waiting for IAM pod ready..."
-  kubectl -n "$NAMESPACE" wait --timeout=180s --for=condition=Ready pods -l app.kubernetes.io/instance=iam
+# Set installation flags, read from environment variables or default to false
+INSTALL_MYSQL="${INSTALL_MYSQL:-false}"
+INSTALL_REDIS="${INSTALL_REDIS:-false}"
 
-  start_time=$(date +%s)
-  timeout_seconds=900 # 超时时间，单位为秒
+# Function to wait for service startup
+wait_for_service_start() {
+  local namespace=$1
+  local label_selector=$2
+  local timeout=$3
 
-  iam::log::info "waiting for IAM ready..."
-  while :; do
-    current_time=$(date +%s)
+  local start_time=$(date +%s)
+  local elapsed_time=0
+
+  while true; do
+    local pod_status=$(kubectl get pods -n "$namespace" -l "$label_selector" -o jsonpath='{.items[0].status.phase}' 2>/dev/null)
+    if [ "$pod_status" = "Running" ]; then
+      echo "Service started successfully!"
+      return 0
+    fi
+
+    local current_time=$(date +%s)
     elapsed_time=$((current_time - start_time))
-    if [ "$elapsed_time" -ge "$timeout_seconds" ]; then
-      iam::log::error "Timeout: IAM Pod did not become ready within $timeout_seconds seconds."
-      exit 1
+
+    echo "Waiting for service startup..."
+
+    if [ "$elapsed_time" -gt "$timeout" ]; then
+      echo "Timeout reached, service startup failed!"
+      return 1
     fi
 
-    pod_status=$(kubectl -n "$NAMESPACE" get pod -l app.kubernetes.io/instance=iam -o jsonpath="{.items[0].status.containerStatuses[0].ready}")
-    if [ "$pod_status" == "true" ]; then
-      break
-    fi
-
-    sleep 1
+    sleep 5
   done
-
-  iam::log::info "IAM is ready!"
 }
 
-if [[ "$DEPLOYS" == *iam-apiserver* ]]; then
-  # Update iam-apiserver image
-  kubectl -n "$NAMESPACE" set image deployment/iam-apiserver apiserver="${REGISTRY}/iam-apiserver:${TAG}"
-  # Restart iam-apiserver deployment
-  kubectl -n "$NAMESPACE" rollout restart deployment/iam-apiserver
-fi
+# Install MySQL
+install_mysql() {
+  if [ "$INSTALL_MYSQL" = true ]; then
+    echo "Installing MySQL..."
+    pushd "$IAM_ROOT/installer/helm/mysql" >/dev/null
+    helm install mysql . -n "$IAM_DEPEND_NAMESPACE" --create-namespace
+    popd >/dev/null
 
-wait_for_installation_finish
+    wait_for_service_start "$IAM_DEPEND_NAMESPACE" "app.kubernetes.io/instance=mysql" 300
+  else
+    echo "Skipping MySQL installation"
+  fi
+}
+
+# Install Redis
+install_redis() {
+  if [ "$INSTALL_REDIS" = true ]; then
+    echo "Installing Redis..."
+    pushd "$IAM_ROOT/installer/helm/redis" >/dev/null
+    helm install redis . -n "$IAM_DEPEND_NAMESPACE" --create-namespace
+    popd >/dev/null
+
+    wait_for_service_start "$IAM_DEPEND_NAMESPACE" "app.kubernetes.io/instance=redis" 300
+  else
+    echo "Skipping Redis installation"
+  fi
+}
+
+# Install IAM
+install_iam() {
+  echo "Installing IAM..."
+  pushd "$IAM_ROOT/installer/helm/iam" >/dev/null
+  helm install iam . -n "$IAM_SYSTEM_NAMESPACE" --create-namespace
+  popd >/dev/null
+
+  wait_for_service_start "$IAM_SYSTEM_NAMESPACE" "app.kubernetes.io/instance=iam" 300
+}
+
+# Execute installation steps
+install_mysql
+install_redis
+install_iam
+
+echo "IAM deployment completed!"

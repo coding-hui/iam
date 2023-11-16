@@ -89,7 +89,7 @@ push.multiarch:
 ## deploy: Deploy updated components to development env.
 .PHONY: deploy
 deploy:
-	@$(MAKE) deploy.run
+	@$(MAKE) deploy.k8s
 
 ## clean: Remove all files that are created by building.
 .PHONY: clean
