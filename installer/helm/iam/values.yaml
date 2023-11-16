@@ -50,7 +50,7 @@ apiServer:
   # -- image for ApiServer
   image:
     # -- The ApiServer image repository
-    repository: wecoding/iam-apiserver
+    repository: devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-apiserver
     # -- The ApiServer image pull policy
     pullPolicy: IfNotPresent
     # -- The ApiServer image tag
@@ -120,7 +120,7 @@ console:
   # -- image for ApiServer
   image:
     # -- The ApiServer image repository
-    repository: wecoding/iam-frontend
+    repository: devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-frontend
     # -- The ApiServer image pull policy
     pullPolicy: IfNotPresent
     # -- The ApiServer image tag

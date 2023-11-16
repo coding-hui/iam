@@ -443,7 +443,7 @@ primary:
     ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
     ##   GKE, AWS & OpenStack)
     ##
-    storageClass: "local-path"
+    storageClass: "hostpath"
     ## @param primary.persistence.annotations MySQL primary persistent volume claim annotations
     ##
     annotations: {}

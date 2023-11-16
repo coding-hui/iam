@@ -20,7 +20,7 @@ secure:
     pair-name: tls
 
 mysql:
-  host: iam-db-mysql:3306
+  host: mysql:3306
   username: root
   password: WeCoding@2023
   database: iam_1
@@ -30,7 +30,7 @@ mysql:
   log-level: 4 # GORM log level, 1: silent, 2:error, 3:warn, 4:info
 
 redis:
-  host: iam-redis-master:6379
+  host: redis-master
   port: 6379
   password:
 

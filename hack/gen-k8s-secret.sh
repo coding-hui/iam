@@ -95,12 +95,20 @@ EOF
 }
 
 function createSecret() {
-  # create the secret with CA cert and server cert/key
+  # Check if the secret already exists
+  if kubectl get secret ${SECRET} -n ${NAMESPACE} >/dev/null 2>&1; then
+    echo "Secret ${SECRET} already exists. Skipping creation."
+    return
+  fi
+
+  # Create the secret with CA cert and server cert/key
   kubectl create secret generic ${SECRET} \
       --from-file=tls.key=${CERTDIR}/server.key \
       --from-file=tls.crt=${CERTDIR}/server.crt \
       --from-file=ca.crt=${CERTDIR}/ca.crt \
       -n ${NAMESPACE}
+
+  echo "Secret ${SECRET} created."
 }
 
 createCerts
