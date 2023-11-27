@@ -30,6 +30,8 @@ import (
 // autoAuthCheck authentication strategy which can automatically choose between Basic and Bearer
 var autoAuthCheck middleware.AuthStrategy
 
+const IamTokenName = "IAM_TOKEN"
+
 type authentication struct {
 	UserService             service.UserService             `inject:""`
 	AuthenticationService   service.AuthenticationService   `inject:""`
@@ -154,20 +156,17 @@ func (a *authentication) authenticate(c *gin.Context) {
 
 	if login.Username != "" && login.Password != "" {
 		resp, err = a.AuthenticationService.Login(c.Request.Context(), login)
-		if err != nil {
-			api.FailWithErrCode(err, c)
-			return
-		}
-
-		api.OkWithData(resp, c)
-		return
+	} else {
+		resp, err = a.AuthenticationService.LoginByProvider(c.Request.Context(), login)
 	}
 
-	resp, err = a.AuthenticationService.LoginByProvider(c.Request.Context(), login)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
+
+	// set cookie if need
+	a.setAuthCookie(resp.AccessToken, c)
 
 	api.OkWithData(resp, c)
 }
@@ -213,6 +212,9 @@ func (a *authentication) refreshToken(c *gin.Context) {
 		return
 	}
 
+	// set cookie if need
+	a.setAuthCookie(base.AccessToken, c)
+
 	api.OkWithData(base, c)
 }
 
@@ -252,6 +254,9 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 		return
 	}
 
+	// set cookie if need
+	a.setAuthCookie(tokenInfo.AccessToken, c)
+
 	api.OkWithHTML("authorize_callback.html", gin.H{"tokenInfo": tokenInfo, "idp": idp}, c)
 }
 
@@ -277,4 +282,13 @@ func (a *authentication) logout(c *gin.Context) {
 		return
 	}
 	api.Ok(c)
+}
+
+func (a *authentication) setAuthCookie(token string, c *gin.Context) {
+	opts := a.cfg.AuthenticationOptions
+	oauthOpts := a.cfg.AuthenticationOptions.OAuthOptions
+
+	tokenMaxAge := int(oauthOpts.AccessTokenMaxAge.Seconds())
+
+	c.SetCookie(IamTokenName, token, tokenMaxAge, "/", opts.Domain, false, false)
 }
