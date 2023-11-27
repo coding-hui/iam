@@ -281,6 +281,9 @@ func (a *authentication) logout(c *gin.Context) {
 		api.FailWithErrCode(err, c)
 		return
 	}
+
+	a.cleanCookie(c)
+
 	api.Ok(c)
 }
 
@@ -291,4 +294,9 @@ func (a *authentication) setAuthCookie(token string, c *gin.Context) {
 	tokenMaxAge := int(oauthOpts.AccessTokenMaxAge.Seconds())
 
 	c.SetCookie(IamTokenName, token, tokenMaxAge, "/", opts.Domain, false, false)
+}
+
+func (a *authentication) cleanCookie(c *gin.Context) {
+	opts := a.cfg.AuthenticationOptions
+	c.SetCookie(IamTokenName, "", -1, "/", opts.Domain, false, false)
 }
