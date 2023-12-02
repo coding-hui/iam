@@ -57,7 +57,7 @@ func (b BasicStrategy) AuthFunc() gin.HandlerFunc {
 
 		resp, err := b.authenticate(pair[0], pair[1])
 		if err != nil {
-			api.FailWithErrCode(errors.WithCode(code.ErrSignatureInvalid, "Authorization header format is wrong."), c)
+			api.FailWithErrCode(errors.WithCode(code.ErrPasswordIncorrect, "Authenticate failed: %v", err), c)
 			c.Abort()
 
 			return
