@@ -61,13 +61,13 @@ spec:
       {{- else if eq .Values.sentinel.service.type "ClusterIP" }}
       nodePort: null
       {{- else if eq .Values.sentinel.service.type "NodePort" }}
-      nodePort:  {{ $redisport }}
+      nodePort: {{ $redisport }}
       {{- end }}
     - name: tcp-sentinel
       {{- if and (or (eq .Values.sentinel.service.type "NodePort") (eq .Values.sentinel.service.type "LoadBalancer")) .Values.sentinel.service.nodePorts.sentinel }}
       port: {{ .Values.sentinel.service.nodePorts.sentinel }}
       {{- else if eq .Values.sentinel.service.type "NodePort" }}
-      port:  {{ $sentinelport }}
+      port: {{ $sentinelport }}
       {{- else }}
       port: {{ .Values.sentinel.service.ports.sentinel }}
       {{- end }}
@@ -77,7 +77,7 @@ spec:
       {{- else if eq .Values.sentinel.service.type "ClusterIP" }}
       nodePort: null
       {{- else if eq .Values.sentinel.service.type "NodePort" }}
-      nodePort:  {{ $sentinelport }}
+      nodePort: {{ $sentinelport }}
       {{- end }}
     {{- if eq .Values.sentinel.service.type "NodePort" }}
     - name: sentinel-internal

@@ -19,12 +19,10 @@ iam::log::errexit() {
   set +o xtrace
   local code="${1:-1}"
   # Print out the stack trace described by $function_stack
-  if [ ${#FUNCNAME[@]} -gt 2 ]
-  then
+  if [ ${#FUNCNAME[@]} -gt 2 ]; then
     iam::log::error "Call tree:"
-    for ((i=1;i<${#FUNCNAME[@]}-1;i++))
-    do
-      iam::log::error " ${i}: ${BASH_SOURCE[${i}+1]}:${BASH_LINENO[${i}]} ${FUNCNAME[${i}]}(...)"
+    for ((i = 1; i < ${#FUNCNAME[@]} - 1; i++)); do
+      iam::log::error " ${i}: ${BASH_SOURCE[${i} + 1]}:${BASH_LINENO[${i}]} ${FUNCNAME[${i}]}(...)"
     done
   fi
   iam::log::error_exit "Error in ${BASH_SOURCE[1]}:${BASH_LINENO[0]}. '${BASH_COMMAND}' exited with status ${err}" "${1:-1}" 1
@@ -50,8 +48,7 @@ iam::log::stack() {
   if [[ ${#FUNCNAME[@]} -gt ${stack_skip} ]]; then
     echo "Call stack:" >&2
     local i
-    for ((i=1 ; i <= ${#FUNCNAME[@]} - stack_skip ; i++))
-    do
+    for ((i = 1; i <= ${#FUNCNAME[@]} - stack_skip; i++)); do
       local frame_no=$((i - 1 + stack_skip))
       local source_file=${BASH_SOURCE[${frame_no}]}
       local source_lineno=${BASH_LINENO[$((frame_no - 1))]}

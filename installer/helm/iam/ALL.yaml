@@ -153,28 +153,28 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: iam-apiserver
 rules:
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get", "list", "watch"]
+  - apiGroups: [ "" ]
+    resources: [ "configmaps" ]
+    verbs: [ "get", "list", "watch" ]
   # Rules below is used generate admission service secret
-  - apiGroups: ["certificates.k8s.io"]
-    resources: ["certificatesigningrequests"]
-    verbs: ["get", "list", "create", "delete"]
-  - apiGroups: ["certificates.k8s.io"]
-    resources: ["certificatesigningrequests/approval"]
-    verbs: ["create", "update"]
-  - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["create", "get", "patch"]
-  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
-    resources: ["queues"]
-    verbs: ["get", "list"]
-  - apiGroups: [""]
-    resources: ["services"]
-    verbs: ["get"]
-  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
-    resources: ["podgroups"]
-    verbs: ["get", "list", "watch"]
+  - apiGroups: [ "certificates.k8s.io" ]
+    resources: [ "certificatesigningrequests" ]
+    verbs: [ "get", "list", "create", "delete" ]
+  - apiGroups: [ "certificates.k8s.io" ]
+    resources: [ "certificatesigningrequests/approval" ]
+    verbs: [ "create", "update" ]
+  - apiGroups: [ "" ]
+    resources: [ "secrets" ]
+    verbs: [ "create", "get", "patch" ]
+  - apiGroups: [ "scheduling.incubator.k8s.io", "scheduling.volcano.sh" ]
+    resources: [ "queues" ]
+    verbs: [ "get", "list" ]
+  - apiGroups: [ "" ]
+    resources: [ "services" ]
+    verbs: [ "get" ]
+  - apiGroups: [ "scheduling.incubator.k8s.io", "scheduling.volcano.sh" ]
+    resources: [ "podgroups" ]
+    verbs: [ "get", "list", "watch" ]
 ---
 # Source: iam/templates/apiserver/rbac.yaml
 kind: ClusterRoleBinding
@@ -263,7 +263,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-      type: RollingUpdate
+    type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/name: iam
@@ -299,9 +299,9 @@ spec:
               port: 8000
             initialDelaySeconds: 30
           securityContext:
-            {}
+            { }
           resources:
-            {}
+            { }
           volumeMounts:
             - name: log
               mountPath: /var/log/iam
@@ -320,7 +320,7 @@ spec:
           configMap:
             name: iam-apiserver-configmap
         - name: log
-          emptyDir: {}
+          emptyDir: { }
 ---
 # Source: iam/templates/console/deployment.yaml
 # Copyright (c) 2023 coding-hui. All rights reserved.
@@ -341,7 +341,7 @@ metadata:
 spec:
   replicas: 1
   strategy:
-      type: RollingUpdate
+    type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/name: iam
@@ -377,7 +377,7 @@ spec:
               port: 8080
             initialDelaySeconds: 30
           resources:
-            {}
+            { }
           volumeMounts:
             - name: config
               subPath: nginx.conf
@@ -389,7 +389,7 @@ spec:
           configMap:
             name: iam-console-configmap
         - name: cache
-          emptyDir: {}
+          emptyDir: { }
 ---
 # Source: iam/templates/apiserver/batch-job.yaml
 # Copyright (c) 2023 coding-hui. All rights reserved.

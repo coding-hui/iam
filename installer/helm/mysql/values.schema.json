@@ -7,16 +7,26 @@
       "title": "MySQL architecture",
       "form": true,
       "description": "Allowed values: `standalone` or `replication`",
-      "enum": ["standalone", "replication"]
+      "enum": [
+        "standalone",
+        "replication"
+      ]
     },
     "auth": {
       "type": "object",
       "title": "Authentication configuration",
       "form": true,
-      "required": ["username", "password"],
+      "required": [
+        "username",
+        "password"
+      ],
       "if": {
         "properties": {
-          "createDatabase":  { "enum": [ true ] }
+          "createDatabase": {
+            "enum": [
+              true
+            ]
+          }
         }
       },
       "then": {

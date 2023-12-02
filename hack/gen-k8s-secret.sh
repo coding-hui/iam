@@ -7,7 +7,7 @@
 set -e
 
 usage() {
-    cat <<EOF
+  cat <<EOF
 Generate certificate suitable for use with an iam service.
 This script uses k8s' CertificateSigningRequest API to generate a
 certificate signed by k8s CA suitable for use with iam
@@ -21,45 +21,45 @@ The following flags are required.
        --namespace        Namespace where iam service and secret reside.
        --secret           Secret name for CA certificate and server certificate/key pair.
 EOF
-    exit 0
+  exit 0
 }
 
 while [[ $# -gt 0 ]]; do
-    case ${1} in
-        --service)
-            SERVICE="$2"
-            shift
-            ;;
-        --secret)
-            SECRET="$2"
-            shift
-            ;;
-        --namespace)
-            NAMESPACE="$2"
-            shift
-            ;;
-        *)
-            usage
-            ;;
-    esac
+  case ${1} in
+  --service)
+    SERVICE="$2"
     shift
+    ;;
+  --secret)
+    SECRET="$2"
+    shift
+    ;;
+  --namespace)
+    NAMESPACE="$2"
+    shift
+    ;;
+  *)
+    usage
+    ;;
+  esac
+  shift
 done
 
 if [[ -z ${SERVICE} ]]; then
-    echo "'--service' must be specified"
-    exit 1
+  echo "'--service' must be specified"
+  exit 1
 fi
 
 if [[ -z ${SECRET} ]]; then
-    echo "'--secret' must be specified"
-    exit 1
+  echo "'--secret' must be specified"
+  exit 1
 fi
 
 [[ -z ${NAMESPACE} ]] && NAMESPACE=default
 
 if [[ ! -x "$(command -v openssl)" ]]; then
-    echo "openssl not found"
-    exit 1
+  echo "openssl not found"
+  exit 1
 fi
 
 CERTDIR=/tmp
@@ -67,7 +67,7 @@ CERTDIR=/tmp
 function createCerts() {
   echo "creating certs in dir ${CERTDIR} "
 
-  cat <<EOF > ${CERTDIR}/csr.conf
+  cat <<EOF >${CERTDIR}/csr.conf
 [req]
 req_extensions = v3_req
 distinguished_name = req_distinguished_name
@@ -87,11 +87,11 @@ EOF
   openssl req -x509 -new -nodes -key ${CERTDIR}/ca.key -subj "/CN=${SERVICE}.${NAMESPACE}.svc" -days 3650 -out ${CERTDIR}/ca.crt
 
   openssl genrsa -out ${CERTDIR}/server.key 2048
-  openssl req -new -key ${CERTDIR}/server.key -subj "/CN=${SERVICE}.${NAMESPACE}.svc"  -out ${CERTDIR}/server.csr -config ${CERTDIR}/csr.conf
+  openssl req -new -key ${CERTDIR}/server.key -subj "/CN=${SERVICE}.${NAMESPACE}.svc" -out ${CERTDIR}/server.csr -config ${CERTDIR}/csr.conf
 
-  openssl x509 -req -in  ${CERTDIR}/server.csr -CA  ${CERTDIR}/ca.crt -CAkey  ${CERTDIR}/ca.key \
-  -CAcreateserial -out  ${CERTDIR}/server.crt \
-  -extensions v3_req -extfile  ${CERTDIR}/csr.conf -days 3650
+  openssl x509 -req -in ${CERTDIR}/server.csr -CA ${CERTDIR}/ca.crt -CAkey ${CERTDIR}/ca.key \
+    -CAcreateserial -out ${CERTDIR}/server.crt \
+    -extensions v3_req -extfile ${CERTDIR}/csr.conf -days 3650
 }
 
 function createSecret() {
@@ -103,10 +103,10 @@ function createSecret() {
 
   # Create the secret with CA cert and server cert/key
   kubectl create secret generic ${SECRET} \
-      --from-file=tls.key=${CERTDIR}/server.key \
-      --from-file=tls.crt=${CERTDIR}/server.crt \
-      --from-file=ca.crt=${CERTDIR}/ca.crt \
-      -n ${NAMESPACE}
+    --from-file=tls.key=${CERTDIR}/server.key \
+    --from-file=tls.crt=${CERTDIR}/server.crt \
+    --from-file=ca.crt=${CERTDIR}/ca.crt \
+    -n ${NAMESPACE}
 
   echo "Secret ${SECRET} created."
 }

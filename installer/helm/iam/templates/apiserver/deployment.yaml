@@ -93,5 +93,5 @@ spec:
           configMap:
             name: {{ include "iam.apiServerFullname" . }}-configmap
         - name: log
-          emptyDir: {}
+          emptyDir: { }
 

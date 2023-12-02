@@ -76,22 +76,22 @@ apiServer:
   deploymentStrategy:
     type: RollingUpdate
   # -- The SecurityContext for ApiServer containers
-  podSecurityContext: {}
+  podSecurityContext: { }
   # -- The SecurityContext for ApiServer containers
-  containerSecurityContext: {}
+  containerSecurityContext: { }
   # -- Resource requests and limits for the ApiServer
-  resources: {}
+  resources: { }
   # -- Grace period to allow the ApiServer to shutdown before it is killed
   terminationGracePeriodSeconds: 30
   # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
   # @default -- Hard node and soft zone anti-affinity
-  affinity: {}
+  affinity: { }
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for ApiServer pods
-  nodeSelector: {}
+  nodeSelector: { }
   # -- Tolerations for ApiServer pods
-  tolerations: []
+  tolerations: [ ]
   # ApiServer service configuration
   service:
     # -- Port of the ApiServer service
@@ -105,13 +105,13 @@ apiServer:
     # -- Load balancer IPO address if service type is LoadBalancer
     loadBalancerIP: null
     # -- Load balancer allow traffic from CIDR list if service type is LoadBalancer
-    loadBalancerSourceRanges: []
+    loadBalancerSourceRanges: [ ]
     # -- Set appProtocol for the service
     appProtocol: null
     # -- Annotations for the ApiServer service
-    annotations: {}
+    annotations: { }
     # -- Labels for ApiServer service
-    labels: {}
+    labels: { }
 
 # Configuration for the ApiServer Console
 console:
@@ -158,18 +158,18 @@ console:
         - ALL
     allowPrivilegeEscalation: true
   # -- Resource requests and limits for the ApiServer
-  resources: {}
+  resources: { }
   # -- Grace period to allow the ApiServer to shutdown before it is killed
   terminationGracePeriodSeconds: 30
   # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
   # @default -- Hard node and soft zone anti-affinity
-  affinity: {}
+  affinity: { }
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for ApiServer pods
-  nodeSelector: {}
+  nodeSelector: { }
   # -- Tolerations for ApiServer pods
-  tolerations: []
+  tolerations: [ ]
   # ApiServer service configuration
   service:
     # -- Port of the ApiServer service
@@ -183,10 +183,10 @@ console:
     # -- Load balancer IPO address if service type is LoadBalancer
     loadBalancerIP: null
     # -- Load balancer allow traffic from CIDR list if service type is LoadBalancer
-    loadBalancerSourceRanges: []
+    loadBalancerSourceRanges: [ ]
     # -- Set appProtocol for the service
     appProtocol: null
     # -- Annotations for the ApiServer service
-    annotations: {}
+    annotations: { }
     # -- Labels for ApiServer service
-    labels: {}
+    labels: { }

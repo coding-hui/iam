@@ -345,7 +345,7 @@ spec:
             claimName: {{ tpl .Values.secondary.persistence.existingClaim . }}
   {{- else if not .Values.secondary.persistence.enabled }}
         - name: data
-          emptyDir: {}
+          emptyDir: { }
   {{- else }}
   volumeClaimTemplates:
     - metadata:

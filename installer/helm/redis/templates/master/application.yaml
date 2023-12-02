@@ -148,16 +148,16 @@ spec:
             {{- if .Values.tls.enabled }}
             - name: REDIS_TLS_PORT
               value: {{ .Values.master.containerPorts.redis | quote }}
-            - name:  REDIS_TLS_AUTH_CLIENTS
+            - name: REDIS_TLS_AUTH_CLIENTS
               value: {{ ternary "yes" "no" .Values.tls.authClients | quote }}
-            - name:  REDIS_TLS_CERT_FILE
+            - name: REDIS_TLS_CERT_FILE
               value: {{ template "redis.tlsCert" . }}
-            - name:  REDIS_TLS_KEY_FILE
+            - name: REDIS_TLS_KEY_FILE
               value: {{ template "redis.tlsCertKey" . }}
-            - name:  REDIS_TLS_CA_FILE
+            - name: REDIS_TLS_CA_FILE
               value: {{ template "redis.tlsCACert" . }}
             {{- if .Values.tls.dhParamsFilename }}
-            - name:  REDIS_TLS_DH_PARAMS_FILE
+            - name: REDIS_TLS_DH_PARAMS_FILE
               value: {{ template "redis.tlsDHParams" . }}
             {{- end }}
             {{- else }}
@@ -294,7 +294,8 @@ spec:
             {{- end }}
             {{- if .Values.tls.enabled }}
             - name: REDIS_ADDR
-              value: rediss://{{ .Values.metrics.redisTargetHost }}:{{ .Values.master.containerPorts.redis }}
+              value:
+                rediss://{{ .Values.metrics.redisTargetHost }}:{{ .Values.master.containerPorts.redis }}
               {{- if .Values.tls.authClients }}
             - name: REDIS_EXPORTER_TLS_CLIENT_KEY_FILE
               value: {{ template "redis.tlsCertKey" . }}
@@ -424,8 +425,8 @@ spec:
           secret:
             secretName: {{ template "redis.secretName" . }}
             items:
-            - key: {{ template "redis.secretPasswordKey" . }}
-              path: redis-password
+              - key: {{ template "redis.secretPasswordKey" . }}
+                path: redis-password
         {{- end }}
         - name: config
           configMap:
@@ -445,7 +446,7 @@ spec:
             sizeLimit: {{ .Values.master.persistence.sizeLimit | quote }}
             {{- end }}
           {{- else }}
-          emptyDir: {}
+          emptyDir: { }
           {{- end }}
         - name: tmp
           {{- if or .Values.master.persistence.medium .Values.master.persistence.sizeLimit }}
@@ -457,7 +458,7 @@ spec:
             sizeLimit: {{ .Values.master.persistence.sizeLimit | quote }}
             {{- end }}
           {{- else }}
-          emptyDir: {}
+          emptyDir: { }
           {{- end }}
         {{- if .Values.tls.enabled }}
         - name: redis-certificates
@@ -482,7 +483,7 @@ spec:
             sizeLimit: {{ .Values.master.persistence.sizeLimit | quote }}
             {{- end }}
           {{- else }}
-          emptyDir: {}
+          emptyDir: { }
           {{- end }}
   {{- else if .Values.master.persistence.existingClaim }}
         - name: redis-data

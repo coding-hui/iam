@@ -1,2238 +1,2238 @@
 {
-	"info": {
-		"_postman_id": "7faf1594-d390-4cbf-a343-5ee93742dab1",
-		"name": "IAM API",
-		"description": "IAM ApiService API Doc.\n\nContact Support:\n Name: coding-hui\n Email: wecoding@yeah.net",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_uid": "16894384-7faf1594-d390-4cbf-a343-5ee93742dab1"
-	},
-	"item": [
-		{
-			"name": "api/v1",
-			"item": [
-				{
-					"name": "resources",
-					"item": [
-						{
-							"name": "{name}",
-							"item": [
-								{
-									"name": "get resource detail",
-									"id": "9739779f-d358-4c7a-b8cd-38e31249f8be",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/resources/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"resources",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name",
-													"value": "<string>",
-													"description": "(Required) name of a resource"
-												}
-											]
-										},
-										"description": "get resource detail"
-									},
-									"response": [
-										{
-											"id": "1a50b7a4-2478-49e0-a029-bdbedf91e742",
-											"name": "resource detail",
-											"originalRequest": {
-												"method": "GET",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/resources/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"resources",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name",
-															"value": "<string>",
-															"description": "(Required) name of a resource"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"api\": \"<string>\",\n    \"method\": \"<string>\",\n    \"type\": \"<string>\",\n    \"actions\": [\n      {\n        \"description\": \"<string>\",\n        \"id\": \"<integer>\",\n        \"name\": \"<string>\",\n        \"resourceId\": \"<integer>\"\n      },\n      {\n        \"description\": \"<string>\",\n        \"id\": \"<integer>\",\n        \"name\": \"<string>\",\n        \"resourceId\": \"<integer>\"\n      }\n    ],\n    \"description\": \"<string>\",\n    \"isDefault\": \"<boolean>\",\n    \"metadata\": {\n      \"createdAt\": \"<string>\",\n      \"extend\": {},\n      \"id\": \"<integer>\",\n      \"instanceId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"updatedAt\": \"<string>\"\n    }\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								},
-								{
-									"name": "update resource",
-									"id": "012b171f-0f4f-440a-bc36-c3b072832c6c",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											},
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"actions\": [\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"api\": \"<string>\",\n  \"method\": \"<string>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"isDefault\": \"<boolean>\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/resources/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"resources",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name"
-												}
-											]
-										},
-										"description": "update resource"
-									},
-									"response": [
-										{
-											"id": "1228f099-3919-4dc4-9d70-1e5ce8e4cb76",
-											"name": "update resource info",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n  \"actions\": [\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"api\": \"<string>\",\n  \"method\": \"<string>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"isDefault\": \"<boolean>\"\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/resources/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"resources",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								},
-								{
-									"name": "delete resource",
-									"id": "9e962411-3e6d-453c-9628-b06d064df879",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "DELETE",
-										"header": [
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/resources/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"resources",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name",
-													"value": "<string>",
-													"description": "(Required) name of a resource"
-												}
-											]
-										},
-										"description": "delete resource"
-									},
-									"response": [
-										{
-											"id": "28ac8204-4af2-4dcf-9341-19fa1a92bc1c",
-											"name": "delete resource",
-											"originalRequest": {
-												"method": "DELETE",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/resources/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"resources",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name",
-															"value": "<string>",
-															"description": "(Required) name of a resource"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								}
-							],
-							"id": "ea3736b3-4bb5-41c1-a4a9-86aa452cd2f3"
-						},
-						{
-							"name": "list resource",
-							"id": "72404e0f-8f15-4755-aeac-ddbac559def2",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"auth": {
-									"type": "apikey",
-									"apikey": [
-										{
-											"key": "key",
-											"value": "Authorization",
-											"type": "string"
-										},
-										{
-											"key": "value",
-											"value": "{{apiKey}}",
-											"type": "string"
-										},
-										{
-											"key": "in",
-											"value": "header",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "*/*"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/resources?name=<string>&offset=<integer>&limit=<integer>",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"resources"
-									],
-									"query": [
-										{
-											"key": "name",
-											"value": "<string>",
-											"description": "fuzzy search based on name"
-										},
-										{
-											"key": "offset",
-											"value": "<integer>",
-											"description": "query the page number"
-										},
-										{
-											"key": "limit",
-											"value": "<integer>",
-											"description": "query the page size number"
-										}
-									]
-								},
-								"description": "list resource"
-							},
-							"response": [
-								{
-									"id": "3c12e4cd-ef46-4837-9a72-4031e261489b",
-									"name": "resources",
-									"originalRequest": {
-										"method": "GET",
-										"header": [
-											{
-												"description": "Added as a part of security scheme: apikey",
-												"key": "Authorization",
-												"value": "<API Key>"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/resources?name=<string>&offset=<integer>&limit=<integer>",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"resources"
-											],
-											"query": [
-												{
-													"key": "name",
-													"value": "<string>"
-												},
-												{
-													"key": "offset",
-													"value": "<integer>"
-												},
-												{
-													"key": "limit",
-													"value": "<integer>"
-												}
-											]
-										}
-									},
-									"status": "OK",
-									"code": 200,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"key": "Content-Type",
-											"value": "*/*"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"value\": \"<Error: Could not resolve allOf schema\"\n}"
-								}
-							]
-						},
-						{
-							"name": "create resource",
-							"id": "55a62c7d-e00a-4509-8131-60691821e107",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"auth": {
-									"type": "apikey",
-									"apikey": [
-										{
-											"key": "key",
-											"value": "Authorization",
-											"type": "string"
-										},
-										{
-											"key": "value",
-											"value": "{{apiKey}}",
-											"type": "string"
-										},
-										{
-											"key": "in",
-											"value": "header",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									},
-									{
-										"key": "Accept",
-										"value": "*/*"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"actions\": [\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"api\": \"<string>\",\n  \"method\": \"<string>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"isDefault\": \"<boolean>\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/resources",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"resources"
-									]
-								},
-								"description": "create resource"
-							},
-							"response": [
-								{
-									"id": "9336c278-1ca6-4e32-b9d7-e19d21f26cc6",
-									"name": "create a new resource",
-									"originalRequest": {
-										"method": "POST",
-										"header": [
-											{
-												"description": "Added as a part of security scheme: apikey",
-												"key": "Authorization",
-												"value": "<API Key>"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"actions\": [\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"api\": \"<string>\",\n  \"method\": \"<string>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"isDefault\": \"<boolean>\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/resources",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"resources"
-											]
-										}
-									},
-									"status": "OK",
-									"code": 200,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"key": "Content-Type",
-											"value": "*/*"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-								}
-							]
-						}
-					],
-					"id": "a4cacb12-163e-4a53-a859-c98d6ccec1b2"
-				},
-				{
-					"name": "roles",
-					"item": [
-						{
-							"name": "{instanceId}",
-							"item": [
-								{
-									"name": "assign role",
-									"id": "ff8414ea-a2bf-48c0-b419-4a211a86ad28",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											},
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"instanceId\": \"<string>\",\n  \"targets\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/roles/:instanceId/assign",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"roles",
-												":instanceId",
-												"assign"
-											],
-											"variable": [
-												{
-													"key": "instanceId"
-												}
-											]
-										},
-										"description": "assign role"
-									},
-									"response": [
-										{
-											"id": "5af470ac-2301-4204-9558-4a25845725d3",
-											"name": "assign role",
-											"originalRequest": {
-												"method": "POST",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n  \"instanceId\": \"<string>\",\n  \"targets\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/roles/:instanceId/assign",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"roles",
-														":instanceId",
-														"assign"
-													],
-													"variable": [
-														{
-															"key": "instanceId"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								},
-								{
-									"name": "revoke role",
-									"id": "f78ea0a6-73eb-497c-b918-07d3f2ca4ee7",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											},
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"instanceId\": \"<string>\",\n  \"targets\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/roles/:instanceId/revoke",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"roles",
-												":instanceId",
-												"revoke"
-											],
-											"variable": [
-												{
-													"key": "instanceId"
-												}
-											]
-										},
-										"description": "revoke role"
-									},
-									"response": [
-										{
-											"id": "155c1476-f54e-4abc-a00b-a73435713da0",
-											"name": "revoke role",
-											"originalRequest": {
-												"method": "POST",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n  \"instanceId\": \"<string>\",\n  \"targets\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/roles/:instanceId/revoke",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"roles",
-														":instanceId",
-														"revoke"
-													],
-													"variable": [
-														{
-															"key": "instanceId"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								}
-							],
-							"id": "62f50e75-e326-42f5-a53d-c0bd1b3efe7b"
-						},
-						{
-							"name": "{name}",
-							"item": [
-								{
-									"name": "get role detail",
-									"id": "df46c84c-5d3f-4f44-bf4b-a14e5f68f996",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/roles/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"roles",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name",
-													"value": "<string>",
-													"description": "(Required) name of a role"
-												}
-											]
-										},
-										"description": "get role detail"
-									},
-									"response": [
-										{
-											"id": "67b483bb-ac70-4e8d-96f0-c6c48e48ff78",
-											"name": "role detail",
-											"originalRequest": {
-												"method": "GET",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/roles/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"roles",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name",
-															"value": "<string>",
-															"description": "(Required) name of a role"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"api\": \"<string>\",\n    \"method\": \"<string>\",\n    \"type\": \"<string>\",\n    \"actions\": [\n      {\n        \"description\": \"<string>\",\n        \"id\": \"<integer>\",\n        \"name\": \"<string>\",\n        \"resourceId\": \"<integer>\"\n      },\n      {\n        \"description\": \"<string>\",\n        \"id\": \"<integer>\",\n        \"name\": \"<string>\",\n        \"resourceId\": \"<integer>\"\n      }\n    ],\n    \"description\": \"<string>\",\n    \"isDefault\": \"<boolean>\",\n    \"metadata\": {\n      \"createdAt\": \"<string>\",\n      \"extend\": {},\n      \"id\": \"<integer>\",\n      \"instanceId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"updatedAt\": \"<string>\"\n    }\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								},
-								{
-									"name": "update role",
-									"id": "3e20d4b4-c781-46c1-92d9-e634b593ff61",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											},
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"description\": \"<string>\",\n  \"displayName\": \"<string>\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/roles/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"roles",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name"
-												}
-											]
-										},
-										"description": "update role"
-									},
-									"response": [
-										{
-											"id": "8728879e-d945-4266-8d48-64866aa97e7a",
-											"name": "update role info",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n  \"description\": \"<string>\",\n  \"displayName\": \"<string>\"\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/roles/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"roles",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								},
-								{
-									"name": "delete role",
-									"id": "0e6b25ff-ee57-4179-aa7d-352bb6d9f34c",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "DELETE",
-										"header": [
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/roles/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"roles",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name",
-													"value": "<string>",
-													"description": "(Required) name of a role"
-												}
-											]
-										},
-										"description": "delete role"
-									},
-									"response": [
-										{
-											"id": "3ff42914-2ffd-40d7-aa4c-9496492e2b10",
-											"name": "delete role",
-											"originalRequest": {
-												"method": "DELETE",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/roles/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"roles",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name",
-															"value": "<string>",
-															"description": "(Required) name of a role"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								}
-							],
-							"id": "829f6e37-ad2c-46f8-ac2d-5756a431046b"
-						},
-						{
-							"name": "list role",
-							"id": "36a89fee-7c25-4d15-aed0-f22df6a2e83d",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"auth": {
-									"type": "apikey",
-									"apikey": [
-										{
-											"key": "key",
-											"value": "Authorization",
-											"type": "string"
-										},
-										{
-											"key": "value",
-											"value": "{{apiKey}}",
-											"type": "string"
-										},
-										{
-											"key": "in",
-											"value": "header",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "*/*"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/roles?name=<string>&offset=<integer>&limit=<integer>",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"roles"
-									],
-									"query": [
-										{
-											"key": "name",
-											"value": "<string>",
-											"description": "fuzzy search based on name"
-										},
-										{
-											"key": "offset",
-											"value": "<integer>",
-											"description": "query the page number"
-										},
-										{
-											"key": "limit",
-											"value": "<integer>",
-											"description": "query the page size number"
-										}
-									]
-								},
-								"description": "list role"
-							},
-							"response": [
-								{
-									"id": "b45c4c01-78df-4456-ba51-632707d4859a",
-									"name": "roles",
-									"originalRequest": {
-										"method": "GET",
-										"header": [
-											{
-												"description": "Added as a part of security scheme: apikey",
-												"key": "Authorization",
-												"value": "<API Key>"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/roles?name=<string>&offset=<integer>&limit=<integer>",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"roles"
-											],
-											"query": [
-												{
-													"key": "name",
-													"value": "<string>"
-												},
-												{
-													"key": "offset",
-													"value": "<integer>"
-												},
-												{
-													"key": "limit",
-													"value": "<integer>"
-												}
-											]
-										}
-									},
-									"status": "OK",
-									"code": 200,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"key": "Content-Type",
-											"value": "*/*"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"value\": \"<Error: Could not resolve allOf schema\"\n}"
-								}
-							]
-						},
-						{
-							"name": "create role",
-							"id": "4b3be268-f34a-4987-acf1-f876e9421df3",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"auth": {
-									"type": "apikey",
-									"apikey": [
-										{
-											"key": "key",
-											"value": "Authorization",
-											"type": "string"
-										},
-										{
-											"key": "value",
-											"value": "{{apiKey}}",
-											"type": "string"
-										},
-										{
-											"key": "in",
-											"value": "header",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									},
-									{
-										"key": "Accept",
-										"value": "*/*"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"displayName\": \"<string>\",\n  \"owner\": \"<string>\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/roles",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"roles"
-									]
-								},
-								"description": "create role"
-							},
-							"response": [
-								{
-									"id": "ae8b9b60-ea41-4677-ac58-e41eddbb6cab",
-									"name": "create a new role",
-									"originalRequest": {
-										"method": "POST",
-										"header": [
-											{
-												"description": "Added as a part of security scheme: apikey",
-												"key": "Authorization",
-												"value": "<API Key>"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"displayName\": \"<string>\",\n  \"owner\": \"<string>\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/roles",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"roles"
-											]
-										}
-									},
-									"status": "OK",
-									"code": 200,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"key": "Content-Type",
-											"value": "*/*"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-								}
-							]
-						}
-					],
-					"id": "71eea2a2-cfc1-484f-a049-c5769dd9fa0f"
-				},
-				{
-					"name": "users",
-					"item": [
-						{
-							"name": "{name}",
-							"item": [
-								{
-									"name": "get user detail",
-									"id": "d52002bc-96f0-4f92-a292-9d76171cae51",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/users/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"users",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name",
-													"value": "<string>",
-													"description": "(Required) identifier of a user"
-												}
-											]
-										},
-										"description": "get user detail"
-									},
-									"response": [
-										{
-											"id": "3add47c4-558a-4bfb-8775-dfeed0ad19dd",
-											"name": "user detail",
-											"originalRequest": {
-												"method": "GET",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/users/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"users",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name",
-															"value": "<string>",
-															"description": "(Required) identifier of a user"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"email\": \"<string>\",\n    \"password\": \"<string>\",\n    \"alias\": \"<string>\",\n    \"disabled\": \"<boolean>\",\n    \"lastLoginTime\": \"<string>\",\n    \"metadata\": {\n      \"createdAt\": \"<string>\",\n      \"extend\": {},\n      \"id\": \"<integer>\",\n      \"instanceId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"updatedAt\": \"<string>\"\n    },\n    \"phone\": \"<string>\",\n    \"status\": \"<integer>\",\n    \"tenantId\": \"<integer>\"\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								},
-								{
-									"name": "update user info",
-									"id": "9e3d9376-fa79-4d25-a3f1-ba20fb850e32",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											},
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"email\": \"<string>\",\n  \"alias\": \"<string>\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/users/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"users",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name",
-													"value": "<string>",
-													"description": "(Required) identifier of a user"
-												}
-											]
-										},
-										"description": "update user info"
-									},
-									"response": [
-										{
-											"id": "12059f8e-bbb8-41db-af39-0516d5e7b0bd",
-											"name": "update user info",
-											"originalRequest": {
-												"method": "PUT",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"body": {
-													"mode": "raw",
-													"raw": "{\n  \"email\": \"<string>\",\n  \"alias\": \"<string>\"\n}",
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/users/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"users",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name",
-															"value": "<string>",
-															"description": "(Required) identifier of a user"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								},
-								{
-									"name": "delete user",
-									"id": "e3223a90-89b7-4d7c-bc09-b3ac98b3a4fc",
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "Authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
-										},
-										"method": "DELETE",
-										"header": [
-											{
-												"key": "Accept",
-												"value": "*/*"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/users/:name",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"users",
-												":name"
-											],
-											"variable": [
-												{
-													"key": "name",
-													"value": "<string>",
-													"description": "(Required) identifier of a user"
-												}
-											]
-										},
-										"description": "delete user"
-									},
-									"response": [
-										{
-											"id": "e7d7e42a-1279-4903-85c4-f6dd7b4c151f",
-											"name": "delete user",
-											"originalRequest": {
-												"method": "DELETE",
-												"header": [
-													{
-														"description": "Added as a part of security scheme: apikey",
-														"key": "Authorization",
-														"value": "<API Key>"
-													}
-												],
-												"url": {
-													"raw": "{{baseUrl}}/api/v1/users/:name",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"v1",
-														"users",
-														":name"
-													],
-													"variable": [
-														{
-															"key": "name",
-															"value": "<string>",
-															"description": "(Required) identifier of a user"
-														}
-													]
-												}
-											},
-											"status": "OK",
-											"code": 200,
-											"_postman_previewlanguage": "json",
-											"header": [
-												{
-													"key": "Content-Type",
-													"value": "*/*"
-												}
-											],
-											"cookie": [],
-											"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-										}
-									]
-								}
-							],
-							"id": "4cfd204d-c7ce-4128-a4f6-626badb3c2ad"
-						},
-						{
-							"name": "list users",
-							"id": "5963aeaa-24df-4784-8bf5-dad5d0c1fbef",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{IAM_ACCESS_TOKEN}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "*/*"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/users",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"users"
-									],
-									"query": [
-										{
-											"key": "name",
-											"value": "<string>",
-											"disabled": true
-										},
-										{
-											"key": "alias",
-											"value": "<string>",
-											"disabled": true
-										},
-										{
-											"key": "email",
-											"value": "<string>",
-											"disabled": true
-										},
-										{
-											"key": "offset",
-											"value": "<integer>",
-											"disabled": true
-										},
-										{
-											"key": "limit",
-											"value": "<integer>",
-											"disabled": true
-										}
-									]
-								},
-								"description": "list users"
-							},
-							"response": [
-								{
-									"id": "89b069b3-5be7-4ee3-81bc-ae5a0c9d2985",
-									"name": "users",
-									"originalRequest": {
-										"method": "GET",
-										"header": [
-											{
-												"description": "Added as a part of security scheme: apikey",
-												"key": "Authorization",
-												"value": "<API Key>"
-											}
-										],
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/users?name=<string>&alias=<string>&email=<string>&offset=<integer>&limit=<integer>",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"users"
-											],
-											"query": [
-												{
-													"key": "name",
-													"value": "<string>"
-												},
-												{
-													"key": "alias",
-													"value": "<string>"
-												},
-												{
-													"key": "email",
-													"value": "<string>"
-												},
-												{
-													"key": "offset",
-													"value": "<integer>"
-												},
-												{
-													"key": "limit",
-													"value": "<integer>"
-												}
-											]
-										}
-									},
-									"status": "OK",
-									"code": 200,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"key": "Content-Type",
-											"value": "*/*"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"value\": \"<Error: Could not resolve allOf schema\"\n}"
-								}
-							]
-						},
-						{
-							"name": "create user",
-							"id": "a7badf61-c5f9-4f0e-b742-d0585effa683",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"auth": {
-									"type": "apikey",
-									"apikey": [
-										{
-											"key": "key",
-											"value": "Authorization",
-											"type": "string"
-										},
-										{
-											"key": "value",
-											"value": "{{apiKey}}",
-											"type": "string"
-										},
-										{
-											"key": "in",
-											"value": "header",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									},
-									{
-										"key": "Accept",
-										"value": "*/*"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"email\": \"<string>\",\n  \"name\": \"<string>\",\n  \"password\": \"<string>\",\n  \"alias\": \"<string>\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/users",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"users"
-									]
-								},
-								"description": "create user"
-							},
-							"response": [
-								{
-									"id": "b0ea8056-a93f-4ad6-9ea9-ed0a2b326549",
-									"name": "create a nnw user",
-									"originalRequest": {
-										"method": "POST",
-										"header": [
-											{
-												"description": "Added as a part of security scheme: apikey",
-												"key": "Authorization",
-												"value": "<API Key>"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"email\": \"<string>\",\n  \"name\": \"<string>\",\n  \"password\": \"<string>\",\n  \"alias\": \"<string>\"\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/api/v1/users",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"v1",
-												"users"
-											]
-										}
-									},
-									"status": "OK",
-									"code": 200,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"key": "Content-Type",
-											"value": "*/*"
-										}
-									],
-									"cookie": [],
-									"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-								}
-							]
-						}
-					],
-					"id": "09c0c128-8372-4b65-9b65-44d599bc7e34"
-				},
-				{
-					"name": "refresh token",
-					"id": "f4fa58cc-8ff5-4abd-9a42-27f9ab602a1d",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"description": "(Required) refresh token",
-								"key": "RefreshToken",
-								"value": "<string>"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/v1/auth/refresh-token",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"refresh-token"
-							]
-						},
-						"description": "refresh token"
-					},
-					"response": [
-						{
-							"id": "c68a9433-83e2-483f-8459-6d20c38864bd",
-							"name": "token info",
-							"originalRequest": {
-								"method": "GET",
-								"header": [
-									{
-										"description": "(Required) refresh token",
-										"key": "RefreshToken",
-										"value": "<string>"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/auth/refresh-token",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"auth",
-										"refresh-token"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "*/*"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"access_token\": \"<string>\",\n    \"refresh_token\": \"<string>\"\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-						}
-					]
-				},
-				{
-					"name": "login system",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "91116456-3e0a-4308-bfee-ffbad1785f0d",
-								"exec": [
-									"pm.test(\"Set AccessToken\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    var refresh_token = jsonData.data.refresh_token;\r",
-									"    var access_token = jsonData.data.access_token;\r",
-									"    pm.collectionVariables.set(\"IAM_REFRESH_TOKEN\", refresh_token);\r",
-									"    pm.collectionVariables.set(\"IAM_ACCESS_TOKEN\", access_token);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"id": "be9b9162-574b-4d0d-82e2-3005a6a356f6",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"password\": \"WECODING\",\n  \"username\": \"ADMIN\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/v1/login",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"login"
-							]
-						},
-						"description": "login by user account and password"
-					},
-					"response": [
-						{
-							"id": "64e37d33-a9e3-41be-9a47-7e575a3698ac",
-							"name": "token info",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"password\": \"<string>\",\n  \"username\": \"<string>\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/v1/login",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"login"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "*/*"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"access_token\": \"<string>\",\n    \"expires_in\": \"<integer>\",\n    \"refresh_token\": \"<string>\",\n    \"token_type\": \"<string>\",\n    \"user\": {\n      \"alias\": \"<string>\",\n      \"disabled\": \"<boolean>\",\n      \"email\": \"<string>\",\n      \"lastLoginTime\": \"<string>\",\n      \"metadata\": {\n        \"createdAt\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"extend\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"id\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"instanceId\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"name\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"updatedAt\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      \"password\": \"<string>\",\n      \"phone\": \"<string>\",\n      \"status\": \"<integer>\",\n      \"tenantId\": \"<integer>\"\n    }\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-						}
-					]
-				}
-			],
-			"id": "7b761d2a-55ce-4607-be3d-03750ecf8be4"
-		},
-		{
-			"name": "check service is running",
-			"id": "dc4df88d-9294-4187-bbb6-0f0cb7be03ff",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "*/*"
-					}
-				],
-				"url": {
-					"raw": "{{baseUrl}}/ping",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"ping"
-					]
-				},
-				"description": "check service is running"
-			},
-			"response": [
-				{
-					"id": "686e8cc3-31b2-456b-8420-c633bad77b9a",
-					"name": "pong",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/ping",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"ping"
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "*/*"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
-				}
-			]
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "32009334-151c-4a25-a7e0-04defd70230e",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "679b00b2-82ac-4ea0-8724-17395fc9ea91",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"id": "1d64d5cc-06fe-4d50-a351-ae5226244e86",
-			"key": "baseUrl",
-			"value": "/",
-			"type": "string"
-		},
-		{
-			"id": "81570ec9-08c5-4272-aec8-2437ecb839c5",
-			"key": "IAM_REFRESH_TOKEN",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"id": "3c2277ab-8547-42ba-98d1-c73a5f06260e",
-			"key": "IAM_ACCESS_TOKEN",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"id": "55150b99-8656-49e4-b333-1616d5aa86b2",
-			"key": "variable_key",
-			"value": ""
-		}
-	]
+  "info": {
+    "_postman_id": "7faf1594-d390-4cbf-a343-5ee93742dab1",
+    "name": "IAM API",
+    "description": "IAM ApiService API Doc.\n\nContact Support:\n Name: coding-hui\n Email: wecoding@yeah.net",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_uid": "16894384-7faf1594-d390-4cbf-a343-5ee93742dab1"
+  },
+  "item": [
+    {
+      "name": "api/v1",
+      "item": [
+        {
+          "name": "resources",
+          "item": [
+            {
+              "name": "{name}",
+              "item": [
+                {
+                  "name": "get resource detail",
+                  "id": "9739779f-d358-4c7a-b8cd-38e31249f8be",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/resources/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "resources",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name",
+                          "value": "<string>",
+                          "description": "(Required) name of a resource"
+                        }
+                      ]
+                    },
+                    "description": "get resource detail"
+                  },
+                  "response": [
+                    {
+                      "id": "1a50b7a4-2478-49e0-a029-bdbedf91e742",
+                      "name": "resource detail",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/resources/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "resources",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name",
+                              "value": "<string>",
+                              "description": "(Required) name of a resource"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"api\": \"<string>\",\n    \"method\": \"<string>\",\n    \"type\": \"<string>\",\n    \"actions\": [\n      {\n        \"description\": \"<string>\",\n        \"id\": \"<integer>\",\n        \"name\": \"<string>\",\n        \"resourceId\": \"<integer>\"\n      },\n      {\n        \"description\": \"<string>\",\n        \"id\": \"<integer>\",\n        \"name\": \"<string>\",\n        \"resourceId\": \"<integer>\"\n      }\n    ],\n    \"description\": \"<string>\",\n    \"isDefault\": \"<boolean>\",\n    \"metadata\": {\n      \"createdAt\": \"<string>\",\n      \"extend\": {},\n      \"id\": \"<integer>\",\n      \"instanceId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"updatedAt\": \"<string>\"\n    }\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "update resource",
+                  "id": "012b171f-0f4f-440a-bc36-c3b072832c6c",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"actions\": [\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"api\": \"<string>\",\n  \"method\": \"<string>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"isDefault\": \"<boolean>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/resources/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "resources",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name"
+                        }
+                      ]
+                    },
+                    "description": "update resource"
+                  },
+                  "response": [
+                    {
+                      "id": "1228f099-3919-4dc4-9d70-1e5ce8e4cb76",
+                      "name": "update resource info",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"actions\": [\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"api\": \"<string>\",\n  \"method\": \"<string>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"isDefault\": \"<boolean>\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/resources/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "resources",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "delete resource",
+                  "id": "9e962411-3e6d-453c-9628-b06d064df879",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/resources/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "resources",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name",
+                          "value": "<string>",
+                          "description": "(Required) name of a resource"
+                        }
+                      ]
+                    },
+                    "description": "delete resource"
+                  },
+                  "response": [
+                    {
+                      "id": "28ac8204-4af2-4dcf-9341-19fa1a92bc1c",
+                      "name": "delete resource",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/resources/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "resources",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name",
+                              "value": "<string>",
+                              "description": "(Required) name of a resource"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "ea3736b3-4bb5-41c1-a4a9-86aa452cd2f3"
+            },
+            {
+              "name": "list resource",
+              "id": "72404e0f-8f15-4755-aeac-ddbac559def2",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "Authorization",
+                      "type": "string"
+                    },
+                    {
+                      "key": "value",
+                      "value": "{{apiKey}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/resources?name=<string>&offset=<integer>&limit=<integer>",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "resources"
+                  ],
+                  "query": [
+                    {
+                      "key": "name",
+                      "value": "<string>",
+                      "description": "fuzzy search based on name"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "<integer>",
+                      "description": "query the page number"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "<integer>",
+                      "description": "query the page size number"
+                    }
+                  ]
+                },
+                "description": "list resource"
+              },
+              "response": [
+                {
+                  "id": "3c12e4cd-ef46-4837-9a72-4031e261489b",
+                  "name": "resources",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: apikey",
+                        "key": "Authorization",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/resources?name=<string>&offset=<integer>&limit=<integer>",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "resources"
+                      ],
+                      "query": [
+                        {
+                          "key": "name",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<integer>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<integer>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "*/*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"value\": \"<Error: Could not resolve allOf schema\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "create resource",
+              "id": "55a62c7d-e00a-4509-8131-60691821e107",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "Authorization",
+                      "type": "string"
+                    },
+                    {
+                      "key": "value",
+                      "value": "{{apiKey}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"actions\": [\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"api\": \"<string>\",\n  \"method\": \"<string>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"isDefault\": \"<boolean>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/resources",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "resources"
+                  ]
+                },
+                "description": "create resource"
+              },
+              "response": [
+                {
+                  "id": "9336c278-1ca6-4e32-b9d7-e19d21f26cc6",
+                  "name": "create a new resource",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: apikey",
+                        "key": "Authorization",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"actions\": [\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"description\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"api\": \"<string>\",\n  \"method\": \"<string>\",\n  \"name\": \"<string>\",\n  \"type\": \"<string>\",\n  \"description\": \"<string>\",\n  \"isDefault\": \"<boolean>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/resources",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "resources"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "*/*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "a4cacb12-163e-4a53-a859-c98d6ccec1b2"
+        },
+        {
+          "name": "roles",
+          "item": [
+            {
+              "name": "{instanceId}",
+              "item": [
+                {
+                  "name": "assign role",
+                  "id": "ff8414ea-a2bf-48c0-b419-4a211a86ad28",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"instanceId\": \"<string>\",\n  \"targets\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/roles/:instanceId/assign",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "roles",
+                        ":instanceId",
+                        "assign"
+                      ],
+                      "variable": [
+                        {
+                          "key": "instanceId"
+                        }
+                      ]
+                    },
+                    "description": "assign role"
+                  },
+                  "response": [
+                    {
+                      "id": "5af470ac-2301-4204-9558-4a25845725d3",
+                      "name": "assign role",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"instanceId\": \"<string>\",\n  \"targets\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/roles/:instanceId/assign",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "roles",
+                            ":instanceId",
+                            "assign"
+                          ],
+                          "variable": [
+                            {
+                              "key": "instanceId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "revoke role",
+                  "id": "f78ea0a6-73eb-497c-b918-07d3f2ca4ee7",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"instanceId\": \"<string>\",\n  \"targets\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/roles/:instanceId/revoke",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "roles",
+                        ":instanceId",
+                        "revoke"
+                      ],
+                      "variable": [
+                        {
+                          "key": "instanceId"
+                        }
+                      ]
+                    },
+                    "description": "revoke role"
+                  },
+                  "response": [
+                    {
+                      "id": "155c1476-f54e-4abc-a00b-a73435713da0",
+                      "name": "revoke role",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"instanceId\": \"<string>\",\n  \"targets\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/roles/:instanceId/revoke",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "roles",
+                            ":instanceId",
+                            "revoke"
+                          ],
+                          "variable": [
+                            {
+                              "key": "instanceId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "62f50e75-e326-42f5-a53d-c0bd1b3efe7b"
+            },
+            {
+              "name": "{name}",
+              "item": [
+                {
+                  "name": "get role detail",
+                  "id": "df46c84c-5d3f-4f44-bf4b-a14e5f68f996",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/roles/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "roles",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name",
+                          "value": "<string>",
+                          "description": "(Required) name of a role"
+                        }
+                      ]
+                    },
+                    "description": "get role detail"
+                  },
+                  "response": [
+                    {
+                      "id": "67b483bb-ac70-4e8d-96f0-c6c48e48ff78",
+                      "name": "role detail",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/roles/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "roles",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name",
+                              "value": "<string>",
+                              "description": "(Required) name of a role"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"api\": \"<string>\",\n    \"method\": \"<string>\",\n    \"type\": \"<string>\",\n    \"actions\": [\n      {\n        \"description\": \"<string>\",\n        \"id\": \"<integer>\",\n        \"name\": \"<string>\",\n        \"resourceId\": \"<integer>\"\n      },\n      {\n        \"description\": \"<string>\",\n        \"id\": \"<integer>\",\n        \"name\": \"<string>\",\n        \"resourceId\": \"<integer>\"\n      }\n    ],\n    \"description\": \"<string>\",\n    \"isDefault\": \"<boolean>\",\n    \"metadata\": {\n      \"createdAt\": \"<string>\",\n      \"extend\": {},\n      \"id\": \"<integer>\",\n      \"instanceId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"updatedAt\": \"<string>\"\n    }\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "update role",
+                  "id": "3e20d4b4-c781-46c1-92d9-e634b593ff61",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"description\": \"<string>\",\n  \"displayName\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/roles/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "roles",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name"
+                        }
+                      ]
+                    },
+                    "description": "update role"
+                  },
+                  "response": [
+                    {
+                      "id": "8728879e-d945-4266-8d48-64866aa97e7a",
+                      "name": "update role info",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"description\": \"<string>\",\n  \"displayName\": \"<string>\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/roles/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "roles",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "delete role",
+                  "id": "0e6b25ff-ee57-4179-aa7d-352bb6d9f34c",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/roles/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "roles",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name",
+                          "value": "<string>",
+                          "description": "(Required) name of a role"
+                        }
+                      ]
+                    },
+                    "description": "delete role"
+                  },
+                  "response": [
+                    {
+                      "id": "3ff42914-2ffd-40d7-aa4c-9496492e2b10",
+                      "name": "delete role",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/roles/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "roles",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name",
+                              "value": "<string>",
+                              "description": "(Required) name of a role"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "829f6e37-ad2c-46f8-ac2d-5756a431046b"
+            },
+            {
+              "name": "list role",
+              "id": "36a89fee-7c25-4d15-aed0-f22df6a2e83d",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "Authorization",
+                      "type": "string"
+                    },
+                    {
+                      "key": "value",
+                      "value": "{{apiKey}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/roles?name=<string>&offset=<integer>&limit=<integer>",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "roles"
+                  ],
+                  "query": [
+                    {
+                      "key": "name",
+                      "value": "<string>",
+                      "description": "fuzzy search based on name"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "<integer>",
+                      "description": "query the page number"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "<integer>",
+                      "description": "query the page size number"
+                    }
+                  ]
+                },
+                "description": "list role"
+              },
+              "response": [
+                {
+                  "id": "b45c4c01-78df-4456-ba51-632707d4859a",
+                  "name": "roles",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: apikey",
+                        "key": "Authorization",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/roles?name=<string>&offset=<integer>&limit=<integer>",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "roles"
+                      ],
+                      "query": [
+                        {
+                          "key": "name",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<integer>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<integer>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "*/*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"value\": \"<Error: Could not resolve allOf schema\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "create role",
+              "id": "4b3be268-f34a-4987-acf1-f876e9421df3",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "Authorization",
+                      "type": "string"
+                    },
+                    {
+                      "key": "value",
+                      "value": "{{apiKey}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"displayName\": \"<string>\",\n  \"owner\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/roles",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "roles"
+                  ]
+                },
+                "description": "create role"
+              },
+              "response": [
+                {
+                  "id": "ae8b9b60-ea41-4677-ac58-e41eddbb6cab",
+                  "name": "create a new role",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: apikey",
+                        "key": "Authorization",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"displayName\": \"<string>\",\n  \"owner\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/roles",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "roles"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "*/*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "71eea2a2-cfc1-484f-a049-c5769dd9fa0f"
+        },
+        {
+          "name": "users",
+          "item": [
+            {
+              "name": "{name}",
+              "item": [
+                {
+                  "name": "get user detail",
+                  "id": "d52002bc-96f0-4f92-a292-9d76171cae51",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/users/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name",
+                          "value": "<string>",
+                          "description": "(Required) identifier of a user"
+                        }
+                      ]
+                    },
+                    "description": "get user detail"
+                  },
+                  "response": [
+                    {
+                      "id": "3add47c4-558a-4bfb-8775-dfeed0ad19dd",
+                      "name": "user detail",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/users/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "users",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name",
+                              "value": "<string>",
+                              "description": "(Required) identifier of a user"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"email\": \"<string>\",\n    \"password\": \"<string>\",\n    \"alias\": \"<string>\",\n    \"disabled\": \"<boolean>\",\n    \"lastLoginTime\": \"<string>\",\n    \"metadata\": {\n      \"createdAt\": \"<string>\",\n      \"extend\": {},\n      \"id\": \"<integer>\",\n      \"instanceId\": \"<string>\",\n      \"name\": \"<string>\",\n      \"updatedAt\": \"<string>\"\n    },\n    \"phone\": \"<string>\",\n    \"status\": \"<integer>\",\n    \"tenantId\": \"<integer>\"\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "update user info",
+                  "id": "9e3d9376-fa79-4d25-a3f1-ba20fb850e32",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"<string>\",\n  \"alias\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/users/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name",
+                          "value": "<string>",
+                          "description": "(Required) identifier of a user"
+                        }
+                      ]
+                    },
+                    "description": "update user info"
+                  },
+                  "response": [
+                    {
+                      "id": "12059f8e-bbb8-41db-af39-0516d5e7b0bd",
+                      "name": "update user info",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"email\": \"<string>\",\n  \"alias\": \"<string>\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/users/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "users",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name",
+                              "value": "<string>",
+                              "description": "(Required) identifier of a user"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "delete user",
+                  "id": "e3223a90-89b7-4d7c-bc09-b3ac98b3a4fc",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "apikey",
+                      "apikey": [
+                        {
+                          "key": "key",
+                          "value": "Authorization",
+                          "type": "string"
+                        },
+                        {
+                          "key": "value",
+                          "value": "{{apiKey}}",
+                          "type": "string"
+                        },
+                        {
+                          "key": "in",
+                          "value": "header",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "*/*"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/users/:name",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        ":name"
+                      ],
+                      "variable": [
+                        {
+                          "key": "name",
+                          "value": "<string>",
+                          "description": "(Required) identifier of a user"
+                        }
+                      ]
+                    },
+                    "description": "delete user"
+                  },
+                  "response": [
+                    {
+                      "id": "e7d7e42a-1279-4903-85c4-f6dd7b4c151f",
+                      "name": "delete user",
+                      "originalRequest": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: apikey",
+                            "key": "Authorization",
+                            "value": "<API Key>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/api/v1/users/:name",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "api",
+                            "v1",
+                            "users",
+                            ":name"
+                          ],
+                          "variable": [
+                            {
+                              "key": "name",
+                              "value": "<string>",
+                              "description": "(Required) identifier of a user"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "*/*"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                    }
+                  ]
+                }
+              ],
+              "id": "4cfd204d-c7ce-4128-a4f6-626badb3c2ad"
+            },
+            {
+              "name": "list users",
+              "id": "5963aeaa-24df-4784-8bf5-dad5d0c1fbef",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{IAM_ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "name",
+                      "value": "<string>",
+                      "disabled": true
+                    },
+                    {
+                      "key": "alias",
+                      "value": "<string>",
+                      "disabled": true
+                    },
+                    {
+                      "key": "email",
+                      "value": "<string>",
+                      "disabled": true
+                    },
+                    {
+                      "key": "offset",
+                      "value": "<integer>",
+                      "disabled": true
+                    },
+                    {
+                      "key": "limit",
+                      "value": "<integer>",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "list users"
+              },
+              "response": [
+                {
+                  "id": "89b069b3-5be7-4ee3-81bc-ae5a0c9d2985",
+                  "name": "users",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: apikey",
+                        "key": "Authorization",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/users?name=<string>&alias=<string>&email=<string>&offset=<integer>&limit=<integer>",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "users"
+                      ],
+                      "query": [
+                        {
+                          "key": "name",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "alias",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "email",
+                          "value": "<string>"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "<integer>"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "<integer>"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "*/*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"value\": \"<Error: Could not resolve allOf schema\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "create user",
+              "id": "a7badf61-c5f9-4f0e-b742-d0585effa683",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "apikey",
+                  "apikey": [
+                    {
+                      "key": "key",
+                      "value": "Authorization",
+                      "type": "string"
+                    },
+                    {
+                      "key": "value",
+                      "value": "{{apiKey}}",
+                      "type": "string"
+                    },
+                    {
+                      "key": "in",
+                      "value": "header",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"<string>\",\n  \"name\": \"<string>\",\n  \"password\": \"<string>\",\n  \"alias\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ]
+                },
+                "description": "create user"
+              },
+              "response": [
+                {
+                  "id": "b0ea8056-a93f-4ad6-9ea9-ed0a2b326549",
+                  "name": "create a nnw user",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: apikey",
+                        "key": "Authorization",
+                        "value": "<API Key>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"<string>\",\n  \"name\": \"<string>\",\n  \"password\": \"<string>\",\n  \"alias\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/users",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "users"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "*/*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+                }
+              ]
+            }
+          ],
+          "id": "09c0c128-8372-4b65-9b65-44d599bc7e34"
+        },
+        {
+          "name": "refresh token",
+          "id": "f4fa58cc-8ff5-4abd-9a42-27f9ab602a1d",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "description": "(Required) refresh token",
+                "key": "RefreshToken",
+                "value": "<string>"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh-token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh-token"
+              ]
+            },
+            "description": "refresh token"
+          },
+          "response": [
+            {
+              "id": "c68a9433-83e2-483f-8459-6d20c38864bd",
+              "name": "token info",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "(Required) refresh token",
+                    "key": "RefreshToken",
+                    "value": "<string>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/refresh-token",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "refresh-token"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "*/*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"access_token\": \"<string>\",\n    \"refresh_token\": \"<string>\"\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "login system",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "91116456-3e0a-4308-bfee-ffbad1785f0d",
+                "exec": [
+                  "pm.test(\"Set AccessToken\", function () {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    var refresh_token = jsonData.data.refresh_token;\r",
+                  "    var access_token = jsonData.data.access_token;\r",
+                  "    pm.collectionVariables.set(\"IAM_REFRESH_TOKEN\", refresh_token);\r",
+                  "    pm.collectionVariables.set(\"IAM_ACCESS_TOKEN\", access_token);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "id": "be9b9162-574b-4d0d-82e2-3005a6a356f6",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"WECODING\",\n  \"username\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "login"
+              ]
+            },
+            "description": "login by user account and password"
+          },
+          "response": [
+            {
+              "id": "64e37d33-a9e3-41be-9a47-7e575a3698ac",
+              "name": "token info",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"password\": \"<string>\",\n  \"username\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "*/*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {\n    \"access_token\": \"<string>\",\n    \"expires_in\": \"<integer>\",\n    \"refresh_token\": \"<string>\",\n    \"token_type\": \"<string>\",\n    \"user\": {\n      \"alias\": \"<string>\",\n      \"disabled\": \"<boolean>\",\n      \"email\": \"<string>\",\n      \"lastLoginTime\": \"<string>\",\n      \"metadata\": {\n        \"createdAt\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"extend\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"id\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"instanceId\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"name\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        },\n        \"updatedAt\": {\n          \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n        }\n      },\n      \"password\": \"<string>\",\n      \"phone\": \"<string>\",\n      \"status\": \"<integer>\",\n      \"tenantId\": \"<integer>\"\n    }\n  },\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+            }
+          ]
+        }
+      ],
+      "id": "7b761d2a-55ce-4607-be3d-03750ecf8be4"
+    },
+    {
+      "name": "check service is running",
+      "id": "dc4df88d-9294-4187-bbb6-0f0cb7be03ff",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "*/*"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/ping",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ping"
+          ]
+        },
+        "description": "check service is running"
+      },
+      "response": [
+        {
+          "id": "686e8cc3-31b2-456b-8420-c633bad77b9a",
+          "name": "pong",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ping",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ping"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "*/*"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"code\": \"<integer>\",\n  \"data\": {},\n  \"msg\": \"<string>\",\n  \"reference\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"total\": \"<integer>\"\n}"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "32009334-151c-4a25-a7e0-04defd70230e",
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "679b00b2-82ac-4ea0-8724-17395fc9ea91",
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "id": "1d64d5cc-06fe-4d50-a351-ae5226244e86",
+      "key": "baseUrl",
+      "value": "/",
+      "type": "string"
+    },
+    {
+      "id": "81570ec9-08c5-4272-aec8-2437ecb839c5",
+      "key": "IAM_REFRESH_TOKEN",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "id": "3c2277ab-8547-42ba-98d1-c73a5f06260e",
+      "key": "IAM_ACCESS_TOKEN",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "id": "55150b99-8656-49e4-b333-1616d5aa86b2",
+      "key": "variable_key",
+      "value": ""
+    }
+  ]
 }

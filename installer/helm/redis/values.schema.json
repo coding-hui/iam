@@ -7,7 +7,10 @@
       "title": "Redis architecture",
       "form": true,
       "description": "Allowed values: `standalone` or `replication`",
-      "enum": ["standalone", "replication"]
+      "enum": [
+        "standalone",
+        "replication"
+      ]
     },
     "auth": {
       "type": "object",
@@ -41,7 +44,10 @@
           "title": "Workload Kind",
           "form": true,
           "description": "Allowed values: `Deployment` or `StatefulSet`",
-          "enum": ["Deployment", "StatefulSet"]
+          "enum": [
+            "Deployment",
+            "StatefulSet"
+          ]
         },
         "persistence": {
           "type": "object",

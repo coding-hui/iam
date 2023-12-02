@@ -1,2918 +1,2918 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "description": "IAM ApiService API Doc.",
-        "title": "IAM API",
-        "termsOfService": "http://iam.wecoding.top/",
-        "contact": {
-            "name": "coding-hui",
-            "url": "https://github.com/coding-hui/iam",
-            "email": "wecoding@yeah.net"
-        },
-        "license": {
-            "name": "MIT",
-            "url": "https://en.wikipedia.org/wiki/MIT_License"
-        },
-        "version": "v1"
+  "swagger": "2.0",
+  "info": {
+    "description": "IAM ApiService API Doc.",
+    "title": "IAM API",
+    "termsOfService": "http://iam.wecoding.top/",
+    "contact": {
+      "name": "coding-hui",
+      "url": "https://github.com/coding-hui/iam",
+      "email": "wecoding@yeah.net"
     },
-    "host": "localhost:8000",
-    "paths": {
-        "/api/v1/auth/refresh-token": {
-            "get": {
-                "description": "RefreshToken",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "RefreshToken",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "refresh token",
-                        "name": "RefreshToken",
-                        "in": "header",
-                        "required": true
+    "license": {
+      "name": "MIT",
+      "url": "https://en.wikipedia.org/wiki/MIT_License"
+    },
+    "version": "v1"
+  },
+  "host": "localhost:8000",
+  "paths": {
+    "/api/v1/auth/refresh-token": {
+      "get": {
+        "description": "RefreshToken",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "RefreshToken",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "refresh token",
+            "name": "RefreshToken",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "token info",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.RefreshTokenResponse"
                     }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "token info",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.RefreshTokenResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
+                  }
                 }
+              ]
             }
-        },
-        "/api/v1/departments": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "List departments",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "ListDepartments",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "query the page number",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page size number",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "departments",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.OrganizationList"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Create department",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "CreateDepartment",
-                "parameters": [
-                    {
-                        "description": "department info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.CreateDepartmentRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "create a new department",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/departments/{instanceId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Get department info",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "GetDepartmentInfo",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "department detail",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.OrganizationBase"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Update department info",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "UpdateDepartment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "department info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.UpdateDepartmentRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "update department info",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Delete department",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "DeleteDepartment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "delete department",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/departments/{instanceId}/disable": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Enable a department",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "EnableDepartment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/departments/{instanceId}/enable": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Enable a department",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "EnableDepartment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/departments/{instanceId}/member": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "List department members",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "ListDepartmentMembers",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "query the page number",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page size number",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "departments",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.DepartmentMemberList"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/departments/{instanceId}/member/add": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Add user to the department",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "AddDepartmentMember",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/departments/{instanceId}/member/batch_add": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Batch add user to the department",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "BatchAddDepartmentMember",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/departments/{instanceId}/member/batch_remove": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Batch remove user from the department",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "BatchRemoveDepartmentMember",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/departments/{instanceId}/member/remove": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Remove user from the department",
-                "tags": [
-                    "Departments"
-                ],
-                "summary": "RemoveDepartmentMember",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a department",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/login": {
-            "post": {
-                "description": "Login by user account and password",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "LoginSystem",
-                "parameters": [
-                    {
-                        "description": "login request",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.AuthenticateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "token info",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.AuthenticateResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/organizations": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "List organizations",
-                "tags": [
-                    "Organizations"
-                ],
-                "summary": "ListOrganizations",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "query the page number",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page size number",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "organizations",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.OrganizationList"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Create organization",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Organizations"
-                ],
-                "summary": "CreateOrganization",
-                "parameters": [
-                    {
-                        "description": "organization info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.CreateOrganizationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "create a nnw organization",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/organizations/{instanceId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Get organization info",
-                "tags": [
-                    "Organizations"
-                ],
-                "summary": "GetOrganizationInfo",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a organization",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "organization detail",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.OrganizationBase"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Update organization info",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Organizations"
-                ],
-                "summary": "UpdateOrganization",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a organization",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "organization info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.UpdateOrganizationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "update organization info",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Delete organization",
-                "tags": [
-                    "Organizations"
-                ],
-                "summary": "DeleteOrganization",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a organization",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "delete organization",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/organizations/{instanceId}/disable": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Enable a organization",
-                "tags": [
-                    "Organizations"
-                ],
-                "summary": "EnableOrganization",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a organization",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/organizations/{instanceId}/enable": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Enable a organization",
-                "tags": [
-                    "Organizations"
-                ],
-                "summary": "EnableOrganization",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a organization",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/policies": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "List policies",
-                "tags": [
-                    "Policies"
-                ],
-                "summary": "ListPolicies",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "fuzzy search based on name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page number",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page size number",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "policies",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.PolicyList"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Create a policy",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Policies"
-                ],
-                "summary": "CreatePolicy",
-                "parameters": [
-                    {
-                        "description": "policy rule",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.CreatePolicyRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Create a nnw policy",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/policies/{instanceId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "GetByName a policy by name",
-                "tags": [
-                    "Policies"
-                ],
-                "summary": "GetPolicyInfo",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "name of a policy",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Policy detail",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.DetailPolicyResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Update a Policy",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Policies"
-                ],
-                "summary": "UpdatePolicy",
-                "parameters": [
-                    {
-                        "description": "Policy rule",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.UpdatePolicyRequest"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "identifier of a policy",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Update policy info",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "DeleteByInstanceId policy by instanceId",
-                "tags": [
-                    "Policies"
-                ],
-                "summary": "DeletePolicy",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a policy",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Policy successfully deleted",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/resources": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "List resources",
-                "tags": [
-                    "Resource"
-                ],
-                "summary": "ListResources",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "fuzzy search based on name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page number",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page size number",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "resources",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.ResourceList"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Create resource",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Resource"
-                ],
-                "summary": "CreateResource",
-                "parameters": [
-                    {
-                        "description": "resource info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.CreateResourceRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "create a new resource",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/resources/{instanceId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "GetByName resource info",
-                "tags": [
-                    "Resource"
-                ],
-                "summary": "GetResourceInfo",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "name of a resource",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "resource detail",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.DetailResourceResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Update resource",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Resource"
-                ],
-                "summary": "UpdateResource",
-                "parameters": [
-                    {
-                        "description": "resource info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.UpdateResourceRequest"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "identifier of a resource",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "update resource info",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "DeleteByInstanceId resource",
-                "tags": [
-                    "Resource"
-                ],
-                "summary": "DeleteResource",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a resource",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "delete resource",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/roles": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "List role",
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "ListRoles",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "fuzzy search based on name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page number",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page size number",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "roles",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/v1.RoleBase"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Create role",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "CreateRole",
-                "parameters": [
-                    {
-                        "description": "role info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.CreateRoleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "create a new role",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/roles/batch-assign": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Batch assign role",
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "BatchAssignRole",
-                "parameters": [
-                    {
-                        "description": "batch assign role request",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.BatchAssignRoleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "assign role",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/roles/{instanceId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "GetByName role info",
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "GetRoleInfo",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a role",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "role detail",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.DetailRoleResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Update role",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "UpdateRole",
-                "parameters": [
-                    {
-                        "description": "role info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.UpdateRoleRequest"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "identifier of a role",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "update role info",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "DeleteByInstanceId role",
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "DeleteRole",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a role",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "delete role",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/roles/{instanceId}/assign": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Assign role",
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "AssignRole",
-                "parameters": [
-                    {
-                        "description": "assign role request",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.AssignRoleRequest"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "identifier of a role",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "assign role",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/roles/{instanceId}/revoke": {
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Revoke role",
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "RevokeRole",
-                "parameters": [
-                    {
-                        "description": "revoke role request",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.RevokeRoleRequest"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "identifier of a role",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "revoke role",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "List users",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "ListUsers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "fuzzy search based on name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "fuzzy search based on alias",
-                        "name": "alias",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "fuzzy search based on email",
-                        "name": "email",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page number",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "query the page size number",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "users",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.UserList"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Create user",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "CreateUser",
-                "parameters": [
-                    {
-                        "description": "user info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.CreateUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "create a nnw user",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users/{instanceId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "GetByName user info",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "GetUserInfo",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a user",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "user detail",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.UserBase"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Update user info",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "UpdateUser",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a user",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "user info",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.UpdateUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "update user info",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "DeleteByInstanceId user",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "DeleteUser",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a user",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "delete user",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users/{instanceId}/disable": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Enable a user",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "EnableUser",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a user",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users/{instanceId}/enable": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Enable a user",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "EnableUser",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a user",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users/{instanceId}/roles": {
-            "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
-                "description": "Get user roles",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "GetUserRoles",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "identifier of a user",
-                        "name": "instanceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "user roles",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/v1.RoleList"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/ping": {
-            "get": {
-                "description": "Check service is running",
-                "tags": [
-                    "System"
-                ],
-                "summary": "Ping",
-                "responses": {
-                    "200": {
-                        "description": "pong",
-                        "schema": {
-                            "$ref": "#/definitions/api.Response"
-                        }
-                    }
-                }
-            }
+          }
         }
+      }
     },
-    "definitions": {
-        "api.Response": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "Code defines the business error code.",
-                    "type": "integer"
+    "/api/v1/departments": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "List departments",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "ListDepartments",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "query the page number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page size number",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "departments",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "data": {
-                    "description": "Data return data object"
-                },
-                "msg": {
-                    "description": "Msg contains the detail of this message.\nThis message is suitable to be exposed to external",
-                    "type": "string"
-                },
-                "reference": {
-                    "description": "Reference returns the reference document which maybe useful to solve this error.",
-                    "type": "string"
-                },
-                "success": {
-                    "description": "Success request is successful",
-                    "type": "boolean"
-                }
-            }
-        },
-        "v1.Action": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.AssignRoleRequest": {
-            "type": "object",
-            "required": [
-                "instanceId"
-            ],
-            "properties": {
-                "instanceId": {
-                    "description": "InstanceID role instanceID.",
-                    "type": "string"
-                },
-                "targets": {
-                    "description": "Targets target resource instanceIds.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.OrganizationList"
                     }
+                  }
                 }
+              ]
             }
-        },
-        "v1.AuthenticateRequest": {
-            "type": "object",
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "provider": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                },
-                "wechatMiniAppCodePayload": {
-                    "$ref": "#/definitions/v1.WechatMiniAppCodePayload"
-                }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Create department",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Departments"
+        ],
+        "summary": "CreateDepartment",
+        "parameters": [
+          {
+            "description": "department info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.CreateDepartmentRequest"
             }
-        },
-        "v1.AuthenticateResponse": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "description": "AccessToken is the token that authorizes and authenticates\nthe requests.",
-                    "type": "string"
-                },
-                "expires_in": {
-                    "description": "ExpiresIn is the optional expiration second of the access token.",
-                    "type": "integer"
-                },
-                "refresh_token": {
-                    "description": "RefreshToken is a token that's used by the application\n(as opposed to the user) to refresh the access token\nif it expires.",
-                    "type": "string"
-                },
-                "token_type": {
-                    "description": "TokenType is the type of token.\nThe Type method returns either this or \"Bearer\", the default.",
-                    "type": "string"
-                },
-                "user": {
-                    "description": "User user info",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.UserBase"
-                        }
-                    ]
-                }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "create a new department",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
             }
-        },
-        "v1.BatchAssignRoleRequest": {
-            "type": "object",
-            "required": [
-                "instanceIds"
-            ],
-            "properties": {
-                "instanceIds": {
-                    "description": "InstanceIds role instanceIds.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+          }
+        }
+      }
+    },
+    "/api/v1/departments/{instanceId}": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Get department info",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "GetDepartmentInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "department detail",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.OrganizationBase"
                     }
-                },
-                "targets": {
-                    "description": "Targets target resource instanceIds.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                  }
                 }
+              ]
             }
-        },
-        "v1.CreateDepartmentRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Update department info",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Departments"
+        ],
+        "summary": "UpdateDepartment",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "department info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.UpdateDepartmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "update department info",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Delete department",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "DeleteDepartment",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "delete department",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/departments/{instanceId}/disable": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Enable a department",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "EnableDepartment",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/departments/{instanceId}/enable": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Enable a department",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "EnableDepartment",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/departments/{instanceId}/member": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "List department members",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "ListDepartmentMembers",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "query the page number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page size number",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "departments",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "displayName": {
-                    "type": "string"
-                },
-                "favicon": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "websiteUrl": {
-                    "type": "string"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.DepartmentMemberList"
+                    }
+                  }
                 }
+              ]
             }
-        },
-        "v1.CreateOrganizationRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
+          }
+        }
+      }
+    },
+    "/api/v1/departments/{instanceId}/member/add": {
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Add user to the department",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "AddDepartmentMember",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/departments/{instanceId}/member/batch_add": {
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Batch add user to the department",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "BatchAddDepartmentMember",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/departments/{instanceId}/member/batch_remove": {
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Batch remove user from the department",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "BatchRemoveDepartmentMember",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/departments/{instanceId}/member/remove": {
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Remove user from the department",
+        "tags": [
+          "Departments"
+        ],
+        "summary": "RemoveDepartmentMember",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a department",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/login": {
+      "post": {
+        "description": "Login by user account and password",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "LoginSystem",
+        "parameters": [
+          {
+            "description": "login request",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.AuthenticateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "token info",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "displayName": {
-                    "type": "string"
-                },
-                "favicon": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "websiteUrl": {
-                    "type": "string"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.AuthenticateResponse"
+                    }
+                  }
                 }
+              ]
             }
-        },
-        "v1.CreatePolicyRequest": {
-            "type": "object",
-            "required": [
-                "name",
-                "statements",
-                "subjects",
-                "type"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
+          }
+        }
+      }
+    },
+    "/api/v1/organizations": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "List organizations",
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "ListOrganizations",
+        "parameters": [
+          {
+            "type": "integer",
+            "description": "query the page number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page size number",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "organizations",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "meta": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "string"
-                },
-                "statements": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.Statement"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.OrganizationList"
                     }
-                },
-                "status": {
-                    "type": "string"
-                },
-                "subjects": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "type": {
-                    "type": "string"
+                  }
                 }
+              ]
             }
-        },
-        "v1.CreateResourceRequest": {
-            "type": "object",
-            "required": [
-                "actions",
-                "api",
-                "method",
-                "name",
-                "type"
-            ],
-            "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.Action"
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Create organization",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "CreateOrganization",
+        "parameters": [
+          {
+            "description": "organization info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.CreateOrganizationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "create a nnw organization",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{instanceId}": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Get organization info",
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "GetOrganizationInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a organization",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "organization detail",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.OrganizationBase"
                     }
-                },
-                "api": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "isDefault": {
-                    "type": "boolean"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
+                  }
                 }
+              ]
             }
-        },
-        "v1.CreateRoleRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Update organization info",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "UpdateOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a organization",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "organization info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.UpdateOrganizationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "update organization info",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Delete organization",
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "DeleteOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a organization",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "delete organization",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{instanceId}/disable": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Enable a organization",
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "EnableOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a organization",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/{instanceId}/enable": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Enable a organization",
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "EnableOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a organization",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/policies": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "List policies",
+        "tags": [
+          "Policies"
+        ],
+        "summary": "ListPolicies",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "fuzzy search based on name",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page size number",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "policies",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "displayName": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "string"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.PolicyList"
+                    }
+                  }
                 }
+              ]
             }
-        },
-        "v1.CreateUserRequest": {
-            "type": "object",
-            "required": [
-                "alias",
-                "email",
-                "name",
-                "password"
-            ],
-            "properties": {
-                "alias": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Create a policy",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Policies"
+        ],
+        "summary": "CreatePolicy",
+        "parameters": [
+          {
+            "description": "policy rule",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.CreatePolicyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Create a nnw policy",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/policies/{instanceId}": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "GetByName a policy by name",
+        "tags": [
+          "Policies"
+        ],
+        "summary": "GetPolicyInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "name of a policy",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policy detail",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "avatar": {
-                    "type": "string"
-                },
-                "departmentIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.DetailPolicyResponse"
                     }
-                },
-                "email": {
-                    "type": "string"
-                },
-                "externalUID": {
-                    "type": "string"
-                },
-                "identifyProvider": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "userType": {
-                    "type": "string"
+                  }
                 }
+              ]
             }
-        },
-        "v1.DepartmentMember": {
-            "type": "object",
-            "required": [
-                "memberId"
-            ],
-            "properties": {
-                "memberId": {
-                    "type": "string"
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Update a Policy",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Policies"
+        ],
+        "summary": "UpdatePolicy",
+        "parameters": [
+          {
+            "description": "Policy rule",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.UpdatePolicyRequest"
+            }
+          },
+          {
+            "type": "string",
+            "description": "identifier of a policy",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update policy info",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "DeleteByInstanceId policy by instanceId",
+        "tags": [
+          "Policies"
+        ],
+        "summary": "DeletePolicy",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a policy",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policy successfully deleted",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/resources": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "List resources",
+        "tags": [
+          "Resource"
+        ],
+        "summary": "ListResources",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "fuzzy search based on name",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page size number",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "resources",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "memberType": {
-                    "type": "string"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.ResourceList"
+                    }
+                  }
                 }
+              ]
             }
-        },
-        "v1.DepartmentMemberList": {
-            "type": "object",
-            "properties": {
-                "members": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.DepartmentMember"
-                    }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Create resource",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Resource"
+        ],
+        "summary": "CreateResource",
+        "parameters": [
+          {
+            "description": "resource info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.CreateResourceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "create a new resource",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/resources/{instanceId}": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "GetByName resource info",
+        "tags": [
+          "Resource"
+        ],
+        "summary": "GetResourceInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "name of a resource",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "resource detail",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "total": {
-                    "type": "integer"
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.DetailResourceResponse"
+                    }
+                  }
                 }
+              ]
             }
-        },
-        "v1.DetailPolicyResponse": {
-            "type": "object",
-            "properties": {
-                "adapter": {
-                    "description": "casbin required",
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "model": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "string"
-                },
-                "policyRules": {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "resources": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.ResourceBase"
-                    }
-                },
-                "statements": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.Statement"
-                    }
-                },
-                "status": {
-                    "type": "string"
-                },
-                "subjects": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "type": {
-                    "type": "string"
-                }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Update resource",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Resource"
+        ],
+        "summary": "UpdateResource",
+        "parameters": [
+          {
+            "description": "resource info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.UpdateResourceRequest"
             }
-        },
-        "v1.DetailResourceResponse": {
-            "type": "object",
-            "required": [
-                "actions",
-                "api",
-                "method",
-                "type"
-            ],
-            "properties": {
-                "actions": {
-                    "description": "Actions resource access mode.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.Action"
-                    }
-                },
-                "api": {
-                    "description": "Type unique identification of resource API.",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "Description resource description.",
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "method": {
-                    "description": "Method resource method.",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "Type resource type.",
-                    "type": "string"
-                }
+          },
+          {
+            "type": "string",
+            "description": "identifier of a resource",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "update resource info",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
             }
-        },
-        "v1.DetailRoleResponse": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "owner": {
-                    "type": "string"
-                },
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.UserBase"
-                    }
-                }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "DeleteByInstanceId resource",
+        "tags": [
+          "Resource"
+        ],
+        "summary": "DeleteResource",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a resource",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "delete resource",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
             }
-        },
-        "v1.DetailUserResponse": {
-            "type": "object",
-            "properties": {
-                "alias": {
-                    "type": "string"
+          }
+        }
+      }
+    },
+    "/api/v1/roles": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "List role",
+        "tags": [
+          "Roles"
+        ],
+        "summary": "ListRoles",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "fuzzy search based on name",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page size number",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "roles",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
                 },
-                "avatar": {
-                    "type": "string"
-                },
-                "departmentIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "lastLoginTime": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "password": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "roles": {
-                    "type": "array",
-                    "items": {
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
                         "$ref": "#/definitions/v1.RoleBase"
+                      }
                     }
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "userType": {
-                    "type": "string"
+                  }
                 }
+              ]
             }
-        },
-        "v1.Extend": {
-            "type": "object",
-            "additionalProperties": true
-        },
-        "v1.ObjectMeta": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "description": "CreatedAt is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
-                    "type": "string"
-                },
-                "extend": {
-                    "description": "Extend store the fields that need to be added, but do not want to add a new table column, will not be stored in\ndb.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.Extend"
-                        }
-                    ]
-                },
-                "instanceId": {
-                    "description": "InstanceID defines a string type resource identifier,\nuse prefixed to distinguish resource types, easy to remember, Url-friendly.",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "Required: true\nName must be unique. Is required when creating resources.\nName is primarily intended for creation idempotence and configuration\ndefinition.\nIt will be generated automated only if Name is not specified.\nCannot be updated.",
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "UpdatedAt is a timestamp representing the server time when this object was updated.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.OrganizationBase": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "displayName": {
-                    "type": "string"
-                },
-                "favicon": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "websiteUrl": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.OrganizationList": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.OrganizationBase"
-                    }
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.PolicyBase": {
-            "type": "object",
-            "properties": {
-                "adapter": {
-                    "description": "casbin required",
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "model": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "string"
-                },
-                "policyRules": {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "statements": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.Statement"
-                    }
-                },
-                "status": {
-                    "type": "string"
-                },
-                "subjects": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.PolicyList": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.PolicyBase"
-                    }
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.RefreshTokenResponse": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "refresh_token": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.ResourceBase": {
-            "type": "object",
-            "required": [
-                "actions",
-                "api",
-                "method",
-                "type"
-            ],
-            "properties": {
-                "actions": {
-                    "description": "Actions resource access mode.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.Action"
-                    }
-                },
-                "api": {
-                    "description": "Type unique identification of resource API.",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "Description resource description.",
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "method": {
-                    "description": "Method resource method.",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "Type resource type.",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.ResourceList": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.ResourceBase"
-                    }
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.RevokeRoleRequest": {
-            "type": "object",
-            "required": [
-                "instanceId"
-            ],
-            "properties": {
-                "instanceId": {
-                    "description": "InstanceID role instanceID.",
-                    "type": "string"
-                },
-                "targets": {
-                    "description": "Targets target resource instanceIds.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "v1.RoleBase": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "owner": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.RoleList": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.RoleBase"
-                    }
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.Statement": {
-            "type": "object",
-            "required": [
-                "actions",
-                "effect",
-                "resource",
-                "resourceIdentifier"
-            ],
-            "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "effect": {
-                    "type": "string"
-                },
-                "resource": {
-                    "type": "string"
-                },
-                "resourceIdentifier": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpdateDepartmentRequest": {
-            "type": "object",
-            "required": [
-                "displayName"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "displayName": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
-                },
-                "favicon": {
-                    "type": "string"
-                },
-                "websiteUrl": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpdateOrganizationRequest": {
-            "type": "object",
-            "required": [
-                "displayName"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "displayName": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
-                },
-                "favicon": {
-                    "type": "string"
-                },
-                "websiteUrl": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpdatePolicyRequest": {
-            "type": "object",
-            "required": [
-                "statements",
-                "subjects",
-                "type"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
-                },
-                "meta": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "string"
-                },
-                "statements": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.Statement"
-                    }
-                },
-                "status": {
-                    "type": "string"
-                },
-                "subjects": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpdateResourceRequest": {
-            "type": "object",
-            "required": [
-                "actions",
-                "api",
-                "method",
-                "name",
-                "type"
-            ],
-            "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.Action"
-                    }
-                },
-                "api": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "isDefault": {
-                    "type": "boolean"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpdateRoleRequest": {
-            "type": "object",
-            "required": [
-                "displayName"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "displayName": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
-                },
-                "owner": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpdateUserRequest": {
-            "type": "object",
-            "required": [
-                "alias",
-                "email"
-            ],
-            "properties": {
-                "alias": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 1
-                },
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UserBase": {
-            "type": "object",
-            "properties": {
-                "alias": {
-                    "type": "string"
-                },
-                "avatar": {
-                    "type": "string"
-                },
-                "departmentIds": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "lastLoginTime": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Standard object's metadata.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.ObjectMeta"
-                        }
-                    ]
-                },
-                "password": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "userType": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UserList": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.DetailUserResponse"
-                    }
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.WechatMiniAppCodePayload": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "Code wx.login 接口返回的用户 code",
-                    "type": "string"
-                },
-                "encryptedData": {
-                    "description": "EncryptedData 获取微信开放数据返回的加密数据（encryptedData）",
-                    "type": "string"
-                },
-                "iv": {
-                    "description": "Iv 对称解密算法初始向量，由微信返回",
-                    "type": "string"
-                }
-            }
+          }
         }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Create role",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Roles"
+        ],
+        "summary": "CreateRole",
+        "parameters": [
+          {
+            "description": "role info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.CreateRoleRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "create a new role",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
     },
-    "securityDefinitions": {
-        "BearerTokenAuth": {
-            "description": "Set Bearer token in the request header",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
+    "/api/v1/roles/batch-assign": {
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Batch assign role",
+        "tags": [
+          "Roles"
+        ],
+        "summary": "BatchAssignRole",
+        "parameters": [
+          {
+            "description": "batch assign role request",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.BatchAssignRoleRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "assign role",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
         }
+      }
+    },
+    "/api/v1/roles/{instanceId}": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "GetByName role info",
+        "tags": [
+          "Roles"
+        ],
+        "summary": "GetRoleInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a role",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "role detail",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.DetailRoleResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Update role",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Roles"
+        ],
+        "summary": "UpdateRole",
+        "parameters": [
+          {
+            "description": "role info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.UpdateRoleRequest"
+            }
+          },
+          {
+            "type": "string",
+            "description": "identifier of a role",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "update role info",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "DeleteByInstanceId role",
+        "tags": [
+          "Roles"
+        ],
+        "summary": "DeleteRole",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a role",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "delete role",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roles/{instanceId}/assign": {
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Assign role",
+        "tags": [
+          "Roles"
+        ],
+        "summary": "AssignRole",
+        "parameters": [
+          {
+            "description": "assign role request",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.AssignRoleRequest"
+            }
+          },
+          {
+            "type": "string",
+            "description": "identifier of a role",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "assign role",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/roles/{instanceId}/revoke": {
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Revoke role",
+        "tags": [
+          "Roles"
+        ],
+        "summary": "RevokeRole",
+        "parameters": [
+          {
+            "description": "revoke role request",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.RevokeRoleRequest"
+            }
+          },
+          {
+            "type": "string",
+            "description": "identifier of a role",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "revoke role",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "List users",
+        "tags": [
+          "Users"
+        ],
+        "summary": "ListUsers",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "fuzzy search based on name",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "fuzzy search based on alias",
+            "name": "alias",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "fuzzy search based on email",
+            "name": "email",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "query the page size number",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "users",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.UserList"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Create user",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "CreateUser",
+        "parameters": [
+          {
+            "description": "user info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.CreateUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "create a nnw user",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{instanceId}": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "GetByName user info",
+        "tags": [
+          "Users"
+        ],
+        "summary": "GetUserInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a user",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user detail",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.UserBase"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Update user info",
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "UpdateUser",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a user",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "user info",
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1.UpdateUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "update user info",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "DeleteByInstanceId user",
+        "tags": [
+          "Users"
+        ],
+        "summary": "DeleteUser",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a user",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "delete user",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{instanceId}/disable": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Enable a user",
+        "tags": [
+          "Users"
+        ],
+        "summary": "EnableUser",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a user",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{instanceId}/enable": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Enable a user",
+        "tags": [
+          "Users"
+        ],
+        "summary": "EnableUser",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a user",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{instanceId}/roles": {
+      "get": {
+        "security": [
+          {
+            "BearerTokenAuth": []
+          }
+        ],
+        "description": "Get user roles",
+        "tags": [
+          "Users"
+        ],
+        "summary": "GetUserRoles",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "identifier of a user",
+            "name": "instanceId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user roles",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/api.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/v1.RoleList"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/ping": {
+      "get": {
+        "description": "Check service is running",
+        "tags": [
+          "System"
+        ],
+        "summary": "Ping",
+        "responses": {
+          "200": {
+            "description": "pong",
+            "schema": {
+              "$ref": "#/definitions/api.Response"
+            }
+          }
+        }
+      }
     }
+  },
+  "definitions": {
+    "api.Response": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Code defines the business error code.",
+          "type": "integer"
+        },
+        "data": {
+          "description": "Data return data object"
+        },
+        "msg": {
+          "description": "Msg contains the detail of this message.\nThis message is suitable to be exposed to external",
+          "type": "string"
+        },
+        "reference": {
+          "description": "Reference returns the reference document which maybe useful to solve this error.",
+          "type": "string"
+        },
+        "success": {
+          "description": "Success request is successful",
+          "type": "boolean"
+        }
+      }
+    },
+    "v1.Action": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.AssignRoleRequest": {
+      "type": "object",
+      "required": [
+        "instanceId"
+      ],
+      "properties": {
+        "instanceId": {
+          "description": "InstanceID role instanceID.",
+          "type": "string"
+        },
+        "targets": {
+          "description": "Targets target resource instanceIds.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1.AuthenticateRequest": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "wechatMiniAppCodePayload": {
+          "$ref": "#/definitions/v1.WechatMiniAppCodePayload"
+        }
+      }
+    },
+    "v1.AuthenticateResponse": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "description": "AccessToken is the token that authorizes and authenticates\nthe requests.",
+          "type": "string"
+        },
+        "expires_in": {
+          "description": "ExpiresIn is the optional expiration second of the access token.",
+          "type": "integer"
+        },
+        "refresh_token": {
+          "description": "RefreshToken is a token that's used by the application\n(as opposed to the user) to refresh the access token\nif it expires.",
+          "type": "string"
+        },
+        "token_type": {
+          "description": "TokenType is the type of token.\nThe Type method returns either this or \"Bearer\", the default.",
+          "type": "string"
+        },
+        "user": {
+          "description": "User user info",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.UserBase"
+            }
+          ]
+        }
+      }
+    },
+    "v1.BatchAssignRoleRequest": {
+      "type": "object",
+      "required": [
+        "instanceIds"
+      ],
+      "properties": {
+        "instanceIds": {
+          "description": "InstanceIds role instanceIds.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "targets": {
+          "description": "Targets target resource instanceIds.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1.CreateDepartmentRequest": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "favicon": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "websiteUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.CreateOrganizationRequest": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "favicon": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "websiteUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.CreatePolicyRequest": {
+      "type": "object",
+      "required": [
+        "name",
+        "statements",
+        "subjects",
+        "type"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "maxLength": 30,
+          "minLength": 1
+        },
+        "meta": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.Statement"
+          }
+        },
+        "status": {
+          "type": "string"
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.CreateResourceRequest": {
+      "type": "object",
+      "required": [
+        "actions",
+        "api",
+        "method",
+        "name",
+        "type"
+      ],
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.Action"
+          }
+        },
+        "api": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "method": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.CreateRoleRequest": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.CreateUserRequest": {
+      "type": "object",
+      "required": [
+        "alias",
+        "email",
+        "name",
+        "password"
+      ],
+      "properties": {
+        "alias": {
+          "type": "string",
+          "maxLength": 30,
+          "minLength": 1
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "departmentIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "email": {
+          "type": "string"
+        },
+        "externalUID": {
+          "type": "string"
+        },
+        "identifyProvider": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "userType": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.DepartmentMember": {
+      "type": "object",
+      "required": [
+        "memberId"
+      ],
+      "properties": {
+        "memberId": {
+          "type": "string"
+        },
+        "memberType": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.DepartmentMemberList": {
+      "type": "object",
+      "properties": {
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.DepartmentMember"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "v1.DetailPolicyResponse": {
+      "type": "object",
+      "properties": {
+        "adapter": {
+          "description": "casbin required",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "model": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "policyRules": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.ResourceBase"
+          }
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.Statement"
+          }
+        },
+        "status": {
+          "type": "string"
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.DetailResourceResponse": {
+      "type": "object",
+      "required": [
+        "actions",
+        "api",
+        "method",
+        "type"
+      ],
+      "properties": {
+        "actions": {
+          "description": "Actions resource access mode.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.Action"
+          }
+        },
+        "api": {
+          "description": "Type unique identification of resource API.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description resource description.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "method": {
+          "description": "Method resource method.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type resource type.",
+          "type": "string"
+        }
+      }
+    },
+    "v1.DetailRoleResponse": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "owner": {
+          "type": "string"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.UserBase"
+          }
+        }
+      }
+    },
+    "v1.DetailUserResponse": {
+      "type": "object",
+      "properties": {
+        "alias": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "departmentIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "lastLoginTime": {
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.RoleBase"
+          }
+        },
+        "status": {
+          "type": "integer"
+        },
+        "userType": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.Extend": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "v1.ObjectMeta": {
+      "type": "object",
+      "properties": {
+        "createdAt": {
+          "description": "CreatedAt is a timestamp representing the server time when this object was\ncreated. It is not guaranteed to be set in happens-before order across separate operations.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
+          "type": "string"
+        },
+        "extend": {
+          "description": "Extend store the fields that need to be added, but do not want to add a new table column, will not be stored in\ndb.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.Extend"
+            }
+          ]
+        },
+        "instanceId": {
+          "description": "InstanceID defines a string type resource identifier,\nuse prefixed to distinguish resource types, easy to remember, Url-friendly.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Required: true\nName must be unique. Is required when creating resources.\nName is primarily intended for creation idempotence and configuration\ndefinition.\nIt will be generated automated only if Name is not specified.\nCannot be updated.",
+          "type": "string"
+        },
+        "updatedAt": {
+          "description": "UpdatedAt is a timestamp representing the server time when this object was updated.\nClients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.",
+          "type": "string"
+        }
+      }
+    },
+    "v1.OrganizationBase": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "favicon": {
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "websiteUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.OrganizationList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.OrganizationBase"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "v1.PolicyBase": {
+      "type": "object",
+      "properties": {
+        "adapter": {
+          "description": "casbin required",
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "model": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "policyRules": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.Statement"
+          }
+        },
+        "status": {
+          "type": "string"
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.PolicyList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.PolicyBase"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "v1.RefreshTokenResponse": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        },
+        "refresh_token": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.ResourceBase": {
+      "type": "object",
+      "required": [
+        "actions",
+        "api",
+        "method",
+        "type"
+      ],
+      "properties": {
+        "actions": {
+          "description": "Actions resource access mode.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.Action"
+          }
+        },
+        "api": {
+          "description": "Type unique identification of resource API.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description resource description.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "method": {
+          "description": "Method resource method.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type resource type.",
+          "type": "string"
+        }
+      }
+    },
+    "v1.ResourceList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.ResourceBase"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "v1.RevokeRoleRequest": {
+      "type": "object",
+      "required": [
+        "instanceId"
+      ],
+      "properties": {
+        "instanceId": {
+          "description": "InstanceID role instanceID.",
+          "type": "string"
+        },
+        "targets": {
+          "description": "Targets target resource instanceIds.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1.RoleBase": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.RoleList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.RoleBase"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "v1.Statement": {
+      "type": "object",
+      "required": [
+        "actions",
+        "effect",
+        "resource",
+        "resourceIdentifier"
+      ],
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "effect": {
+          "type": "string"
+        },
+        "resource": {
+          "type": "string"
+        },
+        "resourceIdentifier": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.UpdateDepartmentRequest": {
+      "type": "object",
+      "required": [
+        "displayName"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 30,
+          "minLength": 1
+        },
+        "favicon": {
+          "type": "string"
+        },
+        "websiteUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.UpdateOrganizationRequest": {
+      "type": "object",
+      "required": [
+        "displayName"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 30,
+          "minLength": 1
+        },
+        "favicon": {
+          "type": "string"
+        },
+        "websiteUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.UpdatePolicyRequest": {
+      "type": "object",
+      "required": [
+        "statements",
+        "subjects",
+        "type"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "maxLength": 30,
+          "minLength": 1
+        },
+        "meta": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "statements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.Statement"
+          }
+        },
+        "status": {
+          "type": "string"
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.UpdateResourceRequest": {
+      "type": "object",
+      "required": [
+        "actions",
+        "api",
+        "method",
+        "name",
+        "type"
+      ],
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.Action"
+          }
+        },
+        "api": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "method": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.UpdateRoleRequest": {
+      "type": "object",
+      "required": [
+        "displayName"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 30,
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.UpdateUserRequest": {
+      "type": "object",
+      "required": [
+        "alias",
+        "email"
+      ],
+      "properties": {
+        "alias": {
+          "type": "string",
+          "maxLength": 30,
+          "minLength": 1
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.UserBase": {
+      "type": "object",
+      "properties": {
+        "alias": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "departmentIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "lastLoginTime": {
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Standard object's metadata.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1.ObjectMeta"
+            }
+          ]
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer"
+        },
+        "userType": {
+          "type": "string"
+        }
+      }
+    },
+    "v1.UserList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1.DetailUserResponse"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "v1.WechatMiniAppCodePayload": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Code wx.login 接口返回的用户 code",
+          "type": "string"
+        },
+        "encryptedData": {
+          "description": "EncryptedData 获取微信开放数据返回的加密数据（encryptedData）",
+          "type": "string"
+        },
+        "iv": {
+          "description": "Iv 对称解密算法初始向量，由微信返回",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "BearerTokenAuth": {
+      "description": "Set Bearer token in the request header",
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
 }

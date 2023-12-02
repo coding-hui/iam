@@ -27,7 +27,7 @@ remove the template comments and leave the yaml comments to help debug
 
 {{- /* Sort the list */}}
 {{ $usedports = $usedports | sortAlpha }}
-#usedports {{ $usedports }}
+  #usedports {{ $usedports }}
 
 {{- /* How many nodeports per service do we want to create, except for the main service which is always two */}}
 {{ $numberofPortsPerNodeService := 2 }}
@@ -63,8 +63,8 @@ remove the template comments and leave the yaml comments to help debug
 {{- end }}
 
 {{- /* print the usedports and chosenports for debugging */}}
-#usedports {{ $usedports }}
-#chosenports {{ $chosenports }}}}
+  #usedports {{ $usedports }}
+  #chosenports {{ $chosenports }}}}
 
 ---
 apiVersion: v1

@@ -2,11 +2,13 @@
 
 # MySQL packaged by Bitnami
 
-MySQL is a fast, reliable, scalable, and easy to use open source relational database system. Designed to handle mission-critical, heavy-load production applications.
+MySQL is a fast, reliable, scalable, and easy to use open source relational database system. Designed to handle
+mission-critical, heavy-load production applications.
 
 [Overview of MySQL](http://www.mysql.com)
 
-Trademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned by the respective companies, and use of them does not imply any affiliation or endorsement.
+Trademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned
+by the respective companies, and use of them does not imply any affiliation or endorsement.
 
 ## TL;DR
 
@@ -16,11 +18,14 @@ helm install my-release oci://registry-1.docker.io/bitnamicharts/mysql
 
 ## Introduction
 
-This chart bootstraps a [MySQL](https://github.com/bitnami/containers/tree/main/bitnami/mysql) replication cluster deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+This chart bootstraps a [MySQL](https://github.com/bitnami/containers/tree/main/bitnami/mysql) replication cluster
+deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
-Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in clusters.
+Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in
+clusters.
 
-Looking to use MySQL in production? Try [VMware Application Catalog](https://bitnami.com/enterprise), the enterprise edition of Bitnami Application Catalog.
+Looking to use MySQL in production? Try [VMware Application Catalog](https://bitnami.com/enterprise), the enterprise
+edition of Bitnami Application Catalog.
 
 ## Prerequisites
 
@@ -36,7 +41,8 @@ To install the chart with the release name `my-release`:
 helm install my-release oci://registry-1.docker.io/bitnamicharts/mysql
 ```
 
-These commands deploy MySQL on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
+These commands deploy MySQL on the Kubernetes cluster in the default configuration. The [Parameters](#parameters)
+section lists the parameters that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`
 
@@ -55,7 +61,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### Global parameters
 
 | Name                      | Description                                     | Value |
-| ------------------------- | ----------------------------------------------- | ----- |
+|---------------------------|-------------------------------------------------|-------|
 | `global.imageRegistry`    | Global Docker image registry                    | `""`  |
 | `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`  |
 | `global.storageClass`     | Global StorageClass for Persistent Volume(s)    | `""`  |
@@ -63,7 +69,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### Common parameters
 
 | Name                      | Description                                                                                               | Value           |
-| ------------------------- | --------------------------------------------------------------------------------------------------------- | --------------- |
+|---------------------------|-----------------------------------------------------------------------------------------------------------|-----------------|
 | `kubeVersion`             | Force target Kubernetes version (using Helm capabilities if not set)                                      | `""`            |
 | `nameOverride`            | String to partially override common.names.fullname template (will maintain the release name)              | `""`            |
 | `fullnameOverride`        | String to fully override common.names.fullname template                                                   | `""`            |
@@ -80,7 +86,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### MySQL common parameters
 
 | Name                       | Description                                                                                                                                                                         | Value                  |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
 | `image.registry`           | MySQL image registry                                                                                                                                                                | `docker.io`            |
 | `image.repository`         | MySQL image repository                                                                                                                                                              | `bitnami/mysql`        |
 | `image.tag`                | MySQL image tag (immutable tags are recommended)                                                                                                                                    | `8.0.34-debian-11-r75` |
@@ -107,7 +113,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### MySQL Primary parameters
 
 | Name                                            | Description                                                                                                     | Value               |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------- |
+|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------------------|
 | `primary.name`                                  | Name of the primary database (eg primary, master, leader, ...)                                                  | `primary`           |
 | `primary.command`                               | Override default container command on MySQL Primary container(s) (useful when using custom images)              | `[]`                |
 | `primary.args`                                  | Override default container args on MySQL Primary container(s) (useful when using custom images)                 | `[]`                |
@@ -196,7 +202,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### MySQL Secondary parameters
 
 | Name                                              | Description                                                                                                         | Value               |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------- |
+|---------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|---------------------|
 | `secondary.name`                                  | Name of the secondary database (eg secondary, slave, ...)                                                           | `secondary`         |
 | `secondary.replicaCount`                          | Number of MySQL secondary replicas                                                                                  | `1`                 |
 | `secondary.hostAliases`                           | Deployment pod host aliases                                                                                         | `[]`                |
@@ -286,7 +292,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### RBAC parameters
 
 | Name                                          | Description                                                    | Value   |
-| --------------------------------------------- | -------------------------------------------------------------- | ------- |
+|-----------------------------------------------|----------------------------------------------------------------|---------|
 | `serviceAccount.create`                       | Enable the creation of a ServiceAccount for MySQL pods         | `true`  |
 | `serviceAccount.name`                         | Name of the created ServiceAccount                             | `""`    |
 | `serviceAccount.annotations`                  | Annotations for MySQL Service Account                          | `{}`    |
@@ -297,7 +303,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### Network Policy
 
 | Name                                       | Description                                                                                                     | Value   |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------- |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------|---------|
 | `networkPolicy.enabled`                    | Enable creation of NetworkPolicy resources                                                                      | `false` |
 | `networkPolicy.allowExternal`              | The Policy model to apply.                                                                                      | `true`  |
 | `networkPolicy.explicitNamespacesSelector` | A Kubernetes LabelSelector to explicitly select namespaces from which ingress traffic could be allowed to MySQL | `{}`    |
@@ -305,7 +311,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### Volume Permissions parameters
 
 | Name                                  | Description                                                                                                                       | Value              |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|--------------------|
 | `volumePermissions.enabled`           | Enable init container that changes the owner and group of the persistent volume(s) mountpoint to `runAsUser:fsGroup`              | `false`            |
 | `volumePermissions.image.registry`    | Init container volume-permissions image registry                                                                                  | `docker.io`        |
 | `volumePermissions.image.repository`  | Init container volume-permissions image repository                                                                                | `bitnami/os-shell` |
@@ -318,7 +324,7 @@ The command removes all the Kubernetes components associated with the chart and 
 ### Metrics parameters
 
 | Name                                            | Description                                                                                                                    | Value                     |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+|-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------|
 | `metrics.enabled`                               | Start a side-car prometheus exporter                                                                                           | `false`                   |
 | `metrics.image.registry`                        | Exporter image registry                                                                                                        | `docker.io`               |
 | `metrics.image.repository`                      | Exporter image repository                                                                                                      | `bitnami/mysqld-exporter` |
@@ -365,7 +371,9 @@ The command removes all the Kubernetes components associated with the chart and 
 | `metrics.prometheusRule.additionalLabels`       | Additional labels that can be used so prometheusRule will be discovered by Prometheus                                          | `{}`                      |
 | `metrics.prometheusRule.rules`                  | Prometheus Rule definitions                                                                                                    | `[]`                      |
 
-The above parameters map to the env variables defined in [bitnami/mysql](https://github.com/bitnami/containers/tree/main/bitnami/mysql). For more information please refer to the [bitnami/mysql](https://github.com/bitnami/containers/tree/main/bitnami/mysql) image documentation.
+The above parameters map to the env variables defined
+in [bitnami/mysql](https://github.com/bitnami/containers/tree/main/bitnami/mysql). For more information please refer to
+the [bitnami/mysql](https://github.com/bitnami/containers/tree/main/bitnami/mysql) image documentation.
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -375,11 +383,15 @@ helm install my-release \
     oci://registry-1.docker.io/bitnamicharts/mysql
 ```
 
-The above command sets the MySQL `root` account password to `secretpassword`. Additionally it creates a database named `app_database`.
+The above command sets the MySQL `root` account password to `secretpassword`. Additionally it creates a database
+named `app_database`.
 
-> NOTE: Once this chart is deployed, it is not possible to change the application's access credentials, such as usernames or passwords, using Helm. To change these application credentials after deployment, delete any persistent volumes (PVs) used by the chart and re-deploy it, or use the application's built-in administrative tools if available.
+> NOTE: Once this chart is deployed, it is not possible to change the application's access credentials, such as
+> usernames or passwords, using Helm. To change these application credentials after deployment, delete any persistent
+> volumes (PVs) used by the chart and re-deploy it, or use the application's built-in administrative tools if available.
 
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
+Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For
+example,
 
 ```console
 helm install my-release -f values.yaml oci://registry-1.docker.io/bitnamicharts/mysql
@@ -391,27 +403,39 @@ helm install my-release -f values.yaml oci://registry-1.docker.io/bitnamicharts/
 
 ### [Rolling VS Immutable tags](https://docs.bitnami.com/containers/how-to/understand-rolling-tags-containers/)
 
-It is strongly recommended to use immutable tags in a production environment. This ensures your deployment does not change automatically if the same tag is updated with a different image.
+It is strongly recommended to use immutable tags in a production environment. This ensures your deployment does not
+change automatically if the same tag is updated with a different image.
 
-Bitnami will release a new chart updating its containers if a new version of the main container, significant changes, or critical vulnerabilities exist.
+Bitnami will release a new chart updating its containers if a new version of the main container, significant changes, or
+critical vulnerabilities exist.
 
 ### Use a different MySQL version
 
-To modify the application version used in this chart, specify a different version of the image using the `image.tag` parameter and/or a different repository using the `image.repository` parameter. Refer to the [chart documentation for more information on these parameters and how to use them with images from a private registry](https://docs.bitnami.com/kubernetes/infrastructure/mysql/configuration/change-image-version/).
+To modify the application version used in this chart, specify a different version of the image using the `image.tag`
+parameter and/or a different repository using the `image.repository` parameter. Refer to
+the [chart documentation for more information on these parameters and how to use them with images from a private registry](https://docs.bitnami.com/kubernetes/infrastructure/mysql/configuration/change-image-version/).
 
 ### Customize a new MySQL instance
 
-The [Bitnami MySQL](https://github.com/bitnami/containers/tree/main/bitnami/mysql) image allows you to use your custom scripts to initialize a fresh instance. Custom scripts may be specified using the `initdbScripts` parameter. Alternatively, an external ConfigMap may be created with all the initialization scripts and the ConfigMap passed to the chart via the `initdbScriptsConfigMap` parameter. Note that this will override the `initdbScripts` parameter.
+The [Bitnami MySQL](https://github.com/bitnami/containers/tree/main/bitnami/mysql) image allows you to use your custom
+scripts to initialize a fresh instance. Custom scripts may be specified using the `initdbScripts` parameter.
+Alternatively, an external ConfigMap may be created with all the initialization scripts and the ConfigMap passed to the
+chart via the `initdbScriptsConfigMap` parameter. Note that this will override the `initdbScripts` parameter.
 
 The allowed extensions are `.sh`, `.sql` and `.sql.gz`.
 
-These scripts are treated differently depending on their extension. While `.sh` scripts are executed on all the nodes, `.sql` and `.sql.gz` scripts are only executed on the primary nodes. This is because `.sh` scripts support conditional tests to identify the type of node they are running on, while such tests are not supported in `.sql` or `sql.gz` files.
+These scripts are treated differently depending on their extension. While `.sh` scripts are executed on all the
+nodes, `.sql` and `.sql.gz` scripts are only executed on the primary nodes. This is because `.sh` scripts support
+conditional tests to identify the type of node they are running on, while such tests are not supported in `.sql`
+or `sql.gz` files.
 
-Refer to the [chart documentation for more information and a usage example](http://docs.bitnami.com/kubernetes/infrastructure/mysql/configuration/customize-new-instance/).
+Refer to
+the [chart documentation for more information and a usage example](http://docs.bitnami.com/kubernetes/infrastructure/mysql/configuration/customize-new-instance/).
 
 ### Sidecars and Init Containers
 
-If you have a need for additional containers to run within the same pod as MySQL, you can do so via the `sidecars` config parameter. Simply define your container according to the Kubernetes container spec.
+If you have a need for additional containers to run within the same pod as MySQL, you can do so via the `sidecars`
+config parameter. Simply define your container according to the Kubernetes container spec.
 
 ```yaml
 sidecars:
@@ -437,17 +461,24 @@ initContainers:
 
 ## Persistence
 
-The [Bitnami MySQL](https://github.com/bitnami/containers/tree/main/bitnami/mysql) image stores the MySQL data and configurations at the `/bitnami/mysql` path of the container.
+The [Bitnami MySQL](https://github.com/bitnami/containers/tree/main/bitnami/mysql) image stores the MySQL data and
+configurations at the `/bitnami/mysql` path of the container.
 
-The chart mounts a [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) volume at this location. The volume is created using dynamic volume provisioning by default. An existing PersistentVolumeClaim can also be defined for this purpose.
+The chart mounts a [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) volume at this
+location. The volume is created using dynamic volume provisioning by default. An existing PersistentVolumeClaim can also
+be defined for this purpose.
 
-If you encounter errors when working with persistent volumes, refer to our [troubleshooting guide for persistent volumes](https://docs.bitnami.com/kubernetes/faq/troubleshooting/troubleshooting-persistence-volumes/).
+If you encounter errors when working with persistent volumes, refer to
+our [troubleshooting guide for persistent volumes](https://docs.bitnami.com/kubernetes/faq/troubleshooting/troubleshooting-persistence-volumes/).
 
 ## Network Policy config
 
-To enable network policy for MySQL, install [a networking plugin that implements the Kubernetes NetworkPolicy spec](https://kubernetes.io/docs/tasks/administer-cluster/declare-network-policy#before-you-begin), and set `networkPolicy.enabled` to `true`.
+To enable network policy for MySQL,
+install [a networking plugin that implements the Kubernetes NetworkPolicy spec](https://kubernetes.io/docs/tasks/administer-cluster/declare-network-policy#before-you-begin),
+and set `networkPolicy.enabled` to `true`.
 
-For Kubernetes v1.5 & v1.6, you must also turn on NetworkPolicy by setting the DefaultDeny namespace annotation. Note: this will enforce policy for _all_ pods in the namespace:
+For Kubernetes v1.5 & v1.6, you must also turn on NetworkPolicy by setting the DefaultDeny namespace annotation. Note:
+this will enforce policy for _all_ pods in the namespace:
 
 ```console
 kubectl annotate namespace default "net.beta.kubernetes.io/network-policy={\"ingress\":{\"isolation\":\"DefaultDeny\"}}"
@@ -455,22 +486,31 @@ kubectl annotate namespace default "net.beta.kubernetes.io/network-policy={\"ing
 
 With NetworkPolicy enabled, traffic will be limited to just port 3306.
 
-For more precise policy, set `networkPolicy.allowExternal=false`. This will only allow pods with the generated client label to connect to MySQL.
+For more precise policy, set `networkPolicy.allowExternal=false`. This will only allow pods with the generated client
+label to connect to MySQL.
 This label will be displayed in the output of a successful install.
 
 ## Pod affinity
 
-This chart allows you to set your custom affinity using the `XXX.affinity` parameter(s). Find more information about Pod affinity in the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
+This chart allows you to set your custom affinity using the `XXX.affinity` parameter(s). Find more information about Pod
+affinity in
+the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
 
-As an alternative, you can use the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/main/bitnami/common#affinities) chart. To do so, set the `XXX.podAffinityPreset`, `XXX.podAntiAffinityPreset`, or `XXX.nodeAffinityPreset` parameters.
+As an alternative, you can use the preset configurations for pod affinity, pod anti-affinity, and node affinity
+available at the [bitnami/common](https://github.com/bitnami/charts/tree/main/bitnami/common#affinities) chart. To do
+so, set the `XXX.podAffinityPreset`, `XXX.podAntiAffinityPreset`, or `XXX.nodeAffinityPreset` parameters.
 
 ## Troubleshooting
 
-Find more information about how to deal with common errors related to Bitnami's Helm charts in [this troubleshooting guide](https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues).
+Find more information about how to deal with common errors related to Bitnami's Helm charts
+in [this troubleshooting guide](https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues).
 
 ## Upgrading
 
-It's necessary to set the `auth.rootPassword` parameter when upgrading for readiness/liveness probes to work properly. When you install this chart for the first time, some notes will be displayed providing the credentials you must use under the 'Administrator credentials' section. Please note down the password and run the command below to upgrade your chart:
+It's necessary to set the `auth.rootPassword` parameter when upgrading for readiness/liveness probes to work properly.
+When you install this chart for the first time, some notes will be displayed providing the credentials you must use
+under the 'Administrator credentials' section. Please note down the password and run the command below to upgrade your
+chart:
 
 ```console
 helm upgrade my-release oci://registry-1.docker.io/bitnamicharts/mysql --set auth.rootPassword=[ROOT_PASSWORD]
@@ -480,57 +520,76 @@ helm upgrade my-release oci://registry-1.docker.io/bitnamicharts/mysql --set aut
 
 ### To 9.0.0
 
-This major release renames several values in this chart and adds missing features, in order to be aligned with the rest of the assets in the Bitnami charts repository.
+This major release renames several values in this chart and adds missing features, in order to be aligned with the rest
+of the assets in the Bitnami charts repository.
 
 Affected values:
 
 - `schedulerName` was renamed as `primary.schedulerName` and `secondary.schedulerName`.
-- The way how passwords are handled has been refactored and value `auth.forcePassword` has been removed. Now, the password configuration will have the following priority:
-  1. Search for an already existing 'Secret' resource and reuse previous password.
-  2. Password provided via the values.yaml
-  3. If no secret existed, and no password was provided, the bitnami/mysql chart will set a randomly generated password.
+- The way how passwords are handled has been refactored and value `auth.forcePassword` has been removed. Now, the
+  password configuration will have the following priority:
+    1. Search for an already existing 'Secret' resource and reuse previous password.
+    2. Password provided via the values.yaml
+    3. If no secret existed, and no password was provided, the bitnami/mysql chart will set a randomly generated
+       password.
 - `primary.service.port` was renamed as `primary.service.ports.mysql`.
 - `secondary.service.port` was renamed as `secondary.service.ports.mysql`.
 - `primary.service.nodePort` was renamed as `primary.service.nodePorts.mysql`.
 - `secondary.service.nodePort` was renamed as `secondary.service.nodePorts.mysql`.
 - `primary.updateStrategy` and `secondary.updateStrategy` are now interpreted as an object and not a string.
-- Values `primary.rollingUpdatePartition` and `secondary.rollingUpdatePartition` have been removed. In cases were they are needed, they can be set inside `.*updateStrategy`.
+- Values `primary.rollingUpdatePartition` and `secondary.rollingUpdatePartition` have been removed. In cases were they
+  are needed, they can be set inside `.*updateStrategy`.
 - `primary.pdb.enabled` was renamed as `primary.pdb.create`.
 - `secondary.pdb.enabled` was renamed as `secondary.pdb.create`.
 - `metrics.serviceMonitor.additionalLabels` was renamed as `metrics.serviceMonitor.labels`
-- `metrics.serviceMonitor.relabellings` was removed, previously used to configured `metricRelabelings` field. We introduced two new values: `metrics.serviceMonitor.relabelings` and `metrics.serviceMonitor.metricRelabelings` that can be used to configured the serviceMonitor homonimous field.
+- `metrics.serviceMonitor.relabellings` was removed, previously used to configured `metricRelabelings` field. We
+  introduced two new values: `metrics.serviceMonitor.relabelings` and `metrics.serviceMonitor.metricRelabelings` that
+  can be used to configured the serviceMonitor homonimous field.
 
 ### To 8.0.0
 
 - Several parameters were renamed or disappeared in favor of new ones on this major version:
-  - The terms _master_ and _slave_ have been replaced by the terms _primary_ and _secondary_. Therefore, parameters prefixed with `master` or `slave` are now prefixed with `primary` or `secondary`, respectively.
-  - Credentials parameters are reorganized under the `auth` parameter.
-  - `replication.enabled` parameter is deprecated in favor of `architecture` parameter that accepts two values: `standalone` and `replication`.
-- Chart labels were adapted to follow the [Helm charts standard labels](https://helm.sh/docs/chart_best_practices/labels/#standard-labels).
-- This version also introduces `bitnami/common`, a [library chart](https://helm.sh/docs/topics/library_charts/#helm) as a dependency. More documentation about this new utility could be found [here](https://github.com/bitnami/charts/tree/main/bitnami/common#bitnami-common-library-chart). Please, make sure that you have updated the chart dependencies before executing any upgrade.
+    - The terms _master_ and _slave_ have been replaced by the terms _primary_ and _secondary_. Therefore, parameters
+      prefixed with `master` or `slave` are now prefixed with `primary` or `secondary`, respectively.
+    - Credentials parameters are reorganized under the `auth` parameter.
+    - `replication.enabled` parameter is deprecated in favor of `architecture` parameter that accepts two
+      values: `standalone` and `replication`.
+- Chart labels were adapted to follow
+  the [Helm charts standard labels](https://helm.sh/docs/chart_best_practices/labels/#standard-labels).
+- This version also introduces `bitnami/common`, a [library chart](https://helm.sh/docs/topics/library_charts/#helm) as
+  a dependency. More documentation about this new utility could be
+  found [here](https://github.com/bitnami/charts/tree/main/bitnami/common#bitnami-common-library-chart). Please, make
+  sure that you have updated the chart dependencies before executing any upgrade.
 
 Consequences:
 
-- Backwards compatibility is not guaranteed. To upgrade to `8.0.0`, install a new release of the MySQL chart, and migrate the data from your previous release. You have 2 alternatives to do so:
-  - Create a backup of the database, and restore it on the new release using tools such as [mysqldump](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html).
-  - Reuse the PVC used to hold the master data on your previous release. To do so, use the `primary.persistence.existingClaim` parameter. The following example assumes that the release name is `mysql`:
+- Backwards compatibility is not guaranteed. To upgrade to `8.0.0`, install a new release of the MySQL chart, and
+  migrate the data from your previous release. You have 2 alternatives to do so:
+    - Create a backup of the database, and restore it on the new release using tools such
+      as [mysqldump](https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html).
+    - Reuse the PVC used to hold the master data on your previous release. To do so, use
+      the `primary.persistence.existingClaim` parameter. The following example assumes that the release name is `mysql`:
 
 ```console
 helm install mysql oci://registry-1.docker.io/bitnamicharts/mysql --set auth.rootPassword=[ROOT_PASSWORD] --set primary.persistence.existingClaim=[EXISTING_PVC]
 ```
 
-| Note: you need to substitute the placeholder _[EXISTING_PVC]_ with the name of the PVC used on your previous release, and _[ROOT_PASSWORD]_ with the root password used in your previous release.
+| Note: you need to substitute the placeholder _[EXISTING_PVC]_ with the name of the PVC used on your previous release,
+and _[ROOT_PASSWORD]_ with the root password used in your previous release.
 
 ### To 7.0.0
 
-[On November 13, 2020, Helm v2 support formally ended](https://github.com/helm/charts#status-of-the-project). This major version is the result of the required changes applied to the Helm Chart to be able to incorporate the different features added in Helm v3 and to be consistent with the Helm project itself regarding the Helm v2 EOL.
+[On November 13, 2020, Helm v2 support formally ended](https://github.com/helm/charts#status-of-the-project). This major
+version is the result of the required changes applied to the Helm Chart to be able to incorporate the different features
+added in Helm v3 and to be consistent with the Helm project itself regarding the Helm v2 EOL.
 
 [Learn more about this change and related upgrade considerations](https://docs.bitnami.com/kubernetes/infrastructure/mysql/administration/upgrade-helm3/).
 
 ### To 3.0.0
 
 Backwards compatibility is not guaranteed unless you modify the labels used on the chart's deployments.
-Use the workaround below to upgrade from versions previous to 3.0.0. The following example assumes that the release name is mysql:
+Use the workaround below to upgrade from versions previous to 3.0.0. The following example assumes that the release name
+is mysql:
 
 ```console
 kubectl delete statefulset mysql-master --cascade=false

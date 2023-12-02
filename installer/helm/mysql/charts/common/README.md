@@ -1,6 +1,7 @@
 # Bitnami Common Library Chart
 
-A [Helm Library Chart](https://helm.sh/docs/topics/library_charts/#helm) for grouping common logic between Bitnami charts.
+A [Helm Library Chart](https://helm.sh/docs/topics/library_charts/#helm) for grouping common logic between Bitnami
+charts.
 
 ## TL;DR
 
@@ -26,11 +27,14 @@ data:
 
 ## Introduction
 
-This chart provides a common template helpers which can be used to develop new charts using [Helm](https://helm.sh) package manager.
+This chart provides a common template helpers which can be used to develop new charts using [Helm](https://helm.sh)
+package manager.
 
-Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in clusters.
+Bitnami charts can be used with [Kubeapps](https://kubeapps.dev/) for deployment and management of Helm Charts in
+clusters.
 
-Looking to use our applications in production? Try [VMware Application Catalog](https://bitnami.com/enterprise), the enterprise edition of Bitnami Application Catalog.
+Looking to use our applications in production? Try [VMware Application Catalog](https://bitnami.com/enterprise), the
+enterprise edition of Bitnami Application Catalog.
 
 ## Prerequisites
 
@@ -137,7 +141,8 @@ keyMapping:
 
 #### Example of use
 
-When we store sensitive data for a deployment in a secret, some times we want to give to users the possibility of using theirs existing secrets.
+When we store sensitive data for a deployment in a secret, some times we want to give to users the possibility of using
+theirs existing secrets.
 
 ```yaml
 # templates/secret.yaml
@@ -198,19 +203,28 @@ helm install test mychart --set path.to.value00="",path.to.value01=""
 
 ### To 1.0.0
 
-[On November 13, 2020, Helm v2 support was formally finished](https://github.com/helm/charts#status-of-the-project), this major version is the result of the required changes applied to the Helm Chart to be able to incorporate the different features added in Helm v3 and to be consistent with the Helm project itself regarding the Helm v2 EOL.
+[On November 13, 2020, Helm v2 support was formally finished](https://github.com/helm/charts#status-of-the-project),
+this major version is the result of the required changes applied to the Helm Chart to be able to incorporate the
+different features added in Helm v3 and to be consistent with the Helm project itself regarding the Helm v2 EOL.
 
 #### What changes were introduced in this major version?
 
-- Previous versions of this Helm Chart use `apiVersion: v1` (installable by both Helm 2 and 3), this Helm Chart was updated to `apiVersion: v2` (installable by Helm 3 only). [Here](https://helm.sh/docs/topics/charts/#the-apiversion-field) you can find more information about the `apiVersion` field.
+- Previous versions of this Helm Chart use `apiVersion: v1` (installable by both Helm 2 and 3), this Helm Chart was
+  updated to `apiVersion: v2` (installable by Helm 3
+  only). [Here](https://helm.sh/docs/topics/charts/#the-apiversion-field) you can find more information about
+  the `apiVersion` field.
 - Use `type: library`. [Here](https://v3.helm.sh/docs/faq/#library-chart-support) you can find more information.
-- The different fields present in the *Chart.yaml* file has been ordered alphabetically in a homogeneous way for all the Bitnami Helm Charts
+- The different fields present in the *Chart.yaml* file has been ordered alphabetically in a homogeneous way for all the
+  Bitnami Helm Charts
 
 #### Considerations when upgrading to this version
 
 - If you want to upgrade to this version from a previous one installed with Helm v3, you shouldn't face any issues
-- If you want to upgrade to this version using Helm v2, this scenario is not supported as this version doesn't support Helm v2 anymore
-- If you installed the previous version with Helm v2 and wants to upgrade to this version with Helm v3, please refer to the [official Helm documentation](https://helm.sh/docs/topics/v2_v3_migration/#migration-use-cases) about migrating from Helm v2 to v3
+- If you want to upgrade to this version using Helm v2, this scenario is not supported as this version doesn't support
+  Helm v2 anymore
+- If you installed the previous version with Helm v2 and wants to upgrade to this version with Helm v3, please refer to
+  the [official Helm documentation](https://helm.sh/docs/topics/v2_v3_migration/#migration-use-cases) about migrating
+  from Helm v2 to v3
 
 #### Useful links
 

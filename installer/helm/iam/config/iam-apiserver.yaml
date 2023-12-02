@@ -54,3 +54,6 @@ log:
 feature:
   enable-metrics: true
   profiling: true
+
+authentication:
+  domain: wecoding.local

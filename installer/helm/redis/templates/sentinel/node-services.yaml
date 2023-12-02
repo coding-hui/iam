@@ -30,36 +30,36 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - name: sentinel
+    - name: sentinel
     {{- if $.Values.sentinel.service.nodePorts.sentinel  }}
-    nodePort: {{ (add $.Values.sentinel.service.nodePorts.sentinel $i 1) }}
-    port: {{ (add $.Values.sentinel.service.nodePorts.sentinel $i 1) }}
+      nodePort: {{ (add $.Values.sentinel.service.nodePorts.sentinel $i 1) }}
+      port: {{ (add $.Values.sentinel.service.nodePorts.sentinel $i 1) }}
     {{- else }}
-    nodePort: {{ $sentinelport }}
-    port: {{ $sentinelport }}
+      nodePort: {{ $sentinelport }}
+      port: {{ $sentinelport }}
     {{- end }}
-    protocol: TCP
-    targetPort: {{ $.Values.sentinel.containerPorts.sentinel }}
-  - name: redis
+      protocol: TCP
+      targetPort: {{ $.Values.sentinel.containerPorts.sentinel }}
+    - name: redis
     {{- if $.Values.sentinel.service.nodePorts.redis }}
-    nodePort: {{ (add $.Values.sentinel.service.nodePorts.redis $i 1) }}
-    port: {{ (add $.Values.sentinel.service.nodePorts.redis $i 1) }}
+      nodePort: {{ (add $.Values.sentinel.service.nodePorts.redis $i 1) }}
+      port: {{ (add $.Values.sentinel.service.nodePorts.redis $i 1) }}
     {{- else }}
-    nodePort: {{ $redisport }}
-    port: {{ $redisport }}
+      nodePort: {{ $redisport }}
+      port: {{ $redisport }}
     {{- end }}
-    protocol: TCP
-    targetPort: {{ $.Values.replica.containerPorts.redis }}
-  - name: sentinel-internal
-    nodePort: null
-    port: {{ $.Values.sentinel.containerPorts.sentinel }}
-    protocol: TCP
-    targetPort: {{ $.Values.sentinel.containerPorts.sentinel }}
-  - name: redis-internal
-    nodePort: null
-    port: {{ $.Values.replica.containerPorts.redis }}
-    protocol: TCP
-    targetPort: {{ $.Values.replica.containerPorts.redis }}
+      protocol: TCP
+      targetPort: {{ $.Values.replica.containerPorts.redis }}
+    - name: sentinel-internal
+      nodePort: null
+      port: {{ $.Values.sentinel.containerPorts.sentinel }}
+      protocol: TCP
+      targetPort: {{ $.Values.sentinel.containerPorts.sentinel }}
+    - name: redis-internal
+      nodePort: null
+      port: {{ $.Values.replica.containerPorts.redis }}
+      protocol: TCP
+      targetPort: {{ $.Values.replica.containerPorts.redis }}
   selector:
     statefulset.kubernetes.io/pod-name: {{ template "common.names.fullname" $ }}-node-{{ $i }}
 ---
