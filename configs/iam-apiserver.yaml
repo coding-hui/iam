@@ -14,8 +14,9 @@ server:
 
 # GRPC 服务配置
 grpc:
+  required: false
   bind-address: 0.0.0.0 # grpc 安全模式的 IP 地址，默认 0.0.0.0
-  bind-port: 8081 # grpc 安全模式的端口号，默认 8081
+  bind-port: 0 # grpc 安全模式的端口号，设置为 0 表示不启用 默认 8081
 
 # HTTP 配置
 insecure:

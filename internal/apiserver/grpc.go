@@ -21,6 +21,7 @@ import (
 
 // gRPCConfig defines extra configuration for the iam-apiserver.
 type gRPCConfig struct {
+	Enabled    bool
 	Addr       string
 	MaxMsgSize int
 	ServerCert genericoptions.GeneratableKeyCert
@@ -53,6 +54,7 @@ func (s *grpcAPIServer) Close() {
 
 func buildGRPCConfig(cfg *config.Config) (*gRPCConfig, error) {
 	return &gRPCConfig{
+		Enabled:    cfg.GRPCOptions.BindPort > 0,
 		Addr:       fmt.Sprintf("%s:%d", cfg.GRPCOptions.BindAddress, cfg.GRPCOptions.BindPort),
 		MaxMsgSize: cfg.GRPCOptions.MaxMsgSize,
 		ServerCert: cfg.SecureServing.ServerCert,
@@ -74,6 +76,10 @@ func (c *gRPCConfig) complete() *completedGRPCConfig {
 
 // New create a grpcAPIServer instance.
 func (c *completedGRPCConfig) New() (*grpcAPIServer, error) {
+	if !c.Enabled {
+		log.Infof("GRPC server is not enabled.")
+		return nil, nil
+	}
 	creds, err := credentials.NewServerTLSFromFile(c.ServerCert.CertKey.CertFile, c.ServerCert.CertKey.KeyFile)
 	if err != nil {
 		log.Fatalf("Failed to generate credentials %s", err.Error())

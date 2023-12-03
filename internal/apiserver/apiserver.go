@@ -106,7 +106,9 @@ func New(cfg *config.Config) (a APIServer, err error) {
 func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error) {
 	s.gs.AddShutdownCallback(shutdown.ShutdownFunc(func(string) error {
 		s.webServer.Close()
-		s.gRPCAPIServer.Close()
+		if s.cfg.GRPCOptions.BindPort > 0 {
+			s.gRPCAPIServer.Close()
+		}
 		if s.repositoryFactor != nil {
 			_ = s.repositoryFactor.Close()
 		}
@@ -215,7 +217,9 @@ func (s *apiServer) configSwagger() {
 // startAPIServer start api server.
 func (s *apiServer) startAPIServer() error {
 	// start gRPC server
-	go s.gRPCAPIServer.Run()
+	if s.cfg.GRPCOptions.BindPort > 0 {
+		go s.gRPCAPIServer.Run()
+	}
 
 	// start shutdown managers
 	if err := s.gs.Start(); err != nil {
