@@ -71,7 +71,7 @@ git clone https://github.com/coding-hui/iam-frontend.git
 # 进入 iam 后端项目
 cd ./iam
 
-# 构建后的二进制文件保存在 _output/platforms/linux/amd64/ 目录下。
+# 构建
 make build
 
 # 修改配置 
