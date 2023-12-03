@@ -11,12 +11,12 @@ import (
 )
 
 type Options struct {
-	Type    string                 `json:"type" mapstructure:"type"`
+	Type    string                 `json:"type"    mapstructure:"type"`
 	Options options.DynamicOptions `json:"options" mapstructure:"options"`
 }
 
 // NewCacheOptions returns options points to nowhere,
-// because redis is not required for some components
+// because redis is not required for some components.
 func NewCacheOptions() *Options {
 	return &Options{
 		Type:    TypeInMemoryCache,
@@ -24,7 +24,7 @@ func NewCacheOptions() *Options {
 	}
 }
 
-// Validate check options
+// Validate check options.
 func (r *Options) Validate() []error {
 	errors := make([]error, 0)
 

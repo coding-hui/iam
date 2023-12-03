@@ -132,7 +132,11 @@ func (a *applicationServiceImpl) DeleteApplication(ctx context.Context, app stri
 	return a.Store.ApplicationRepository().Delete(ctx, app, opts)
 }
 
-func (a *applicationServiceImpl) GetApplication(ctx context.Context, idOrName string, opts metav1.GetOptions) (*v1.DetailApplicationResponse, error) {
+func (a *applicationServiceImpl) GetApplication(
+	ctx context.Context,
+	idOrName string,
+	opts metav1.GetOptions,
+) (*v1.DetailApplicationResponse, error) {
 	app, err := a.Store.ApplicationRepository().GetByInstanceIdOrName(ctx, idOrName, opts)
 	if err != nil {
 		log.Errorf("failed to get the app [%s]: %v", idOrName, err)

@@ -34,8 +34,7 @@ type wechatMiniProvider struct {
 	cache       cache.Cache
 }
 
-type wechatMiniProviderFactory struct {
-}
+type wechatMiniProviderFactory struct{}
 
 func (w *wechatMiniProviderFactory) Type() v1.IdentityProviderType {
 	return v1.WeChatMiniProgramIdentityProvider
@@ -56,7 +55,7 @@ func (w *wechatMiniProviderFactory) Create(opts options.DynamicOptions) (identit
 	return &provider, nil
 }
 
-// miniprogramIdentity 用户信息/手机号信息
+// miniprogramIdentity 用户信息/手机号信息.
 type miniprogramIdentity struct {
 	OpenID      string `json:"openId"`
 	UnionID     string `json:"unionId"`

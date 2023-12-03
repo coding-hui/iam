@@ -27,7 +27,7 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
-// autoAuthCheck authentication strategy which can automatically choose between Basic and Bearer
+// autoAuthCheck authentication strategy which can automatically choose between Basic and Bearer.
 var autoAuthCheck middleware.AuthStrategy
 
 const IamTokenName = "IAM_TOKEN"
@@ -265,8 +265,8 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 //	@Description	Logout by token.
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			AccessToken	header		string					true	"access token"
-//	@Success		200		{object}	api.Response	"logout success"
+//	@Param			AccessToken	header		string			true	"access token"
+//	@Success		200			{object}	api.Response	"logout success"
 //	@Router			/api/v1/logout [get]
 //
 // authenticate logout by token.

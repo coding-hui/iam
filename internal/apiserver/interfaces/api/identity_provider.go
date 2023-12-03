@@ -155,8 +155,8 @@ func (i *identityProvider) detailIdentityProvider(c *gin.Context) {
 //	@Tags			IdentityProviders
 //	@Summary		ListIdentityProviders
 //	@Description	List IdentityProviders
-//	@Param			offset	query		int										false	"query the page number"
-//	@Param			limit	query		int										false	"query the page size number"
+//	@Param			offset	query		int											false	"query the page number"
+//	@Param			limit	query		int											false	"query the page size number"
 //	@Success		200		{object}	api.Response{data=v1.IdentityProviderList}	"IdentityProviders"
 //	@Router			/api/v1/identity_providers [get]
 //	@Security		BearerTokenAuth

@@ -107,7 +107,7 @@ func (t *tokenServiceImpl) Keys() *token.Keys {
 	return t.issuer.Keys()
 }
 
-// tokenCacheValidate verify that the token is in the cache
+// tokenCacheValidate verify that the token is in the cache.
 func (t *tokenServiceImpl) tokenCacheValidate(username, token string) error {
 	key := fmt.Sprintf("iam:user:%s:token:%s", username, token)
 	if exist, err := t.Cache.Exists(key); err != nil {
@@ -118,7 +118,7 @@ func (t *tokenServiceImpl) tokenCacheValidate(username, token string) error {
 	return nil
 }
 
-// cacheToken cache the token for a period of time
+// cacheToken cache the token for a period of time.
 func (t *tokenServiceImpl) cacheToken(username, token string, duration time.Duration) error {
 	key := fmt.Sprintf("iam:user:%s:token:%s", username, token)
 	if err := t.Cache.Set(key, token, duration); err != nil {

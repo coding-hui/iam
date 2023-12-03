@@ -48,7 +48,7 @@ type InMemoryCacheOptions struct {
 	CleanupPeriod time.Duration `json:"cleanupPeriod" yaml:"cleanupPeriod" mapstructure:"cleanupperiod"`
 }
 
-// imMemoryCache implements cache.Interface use memory objects, it should be used only for testing
+// imMemoryCache implements cache.Interface use memory objects, it should be used only for testing.
 type inMemoryCache struct {
 	store map[string]simpleObject
 }
@@ -158,8 +158,7 @@ func (s *inMemoryCache) Expire(key string, duration time.Duration) error {
 	return nil
 }
 
-type inMemoryCacheFactory struct {
-}
+type inMemoryCacheFactory struct{}
 
 func (sf *inMemoryCacheFactory) Type() string {
 	return TypeInMemoryCache

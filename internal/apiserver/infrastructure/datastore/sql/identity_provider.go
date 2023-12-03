@@ -37,7 +37,11 @@ func (p *identityProviderRepositoryImpl) Create(ctx context.Context, policy *mod
 	return nil
 }
 
-func (p *identityProviderRepositoryImpl) CreateBatch(ctx context.Context, providers []*model.IdentityProvider, _ metav1.CreateOptions) error {
+func (p *identityProviderRepositoryImpl) CreateBatch(
+	ctx context.Context,
+	providers []*model.IdentityProvider,
+	_ metav1.CreateOptions,
+) error {
 	if err := p.client.WithCtx(ctx).CreateInBatches(&providers, 500).Error; err != nil {
 		return err
 	}
@@ -84,7 +88,11 @@ func (p *identityProviderRepositoryImpl) DeleteCollection(ctx context.Context, n
 	return db.Where("name in (?)", names).Delete(&model.IdentityProvider{}).Error
 }
 
-func (p *identityProviderRepositoryImpl) GetByName(ctx context.Context, name string, _ metav1.GetOptions) (provider *model.IdentityProvider, err error) {
+func (p *identityProviderRepositoryImpl) GetByName(
+	ctx context.Context,
+	name string,
+	_ metav1.GetOptions,
+) (provider *model.IdentityProvider, err error) {
 	err = p.client.WithCtx(ctx).Where("name = ?", name).First(&provider).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

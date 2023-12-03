@@ -42,7 +42,7 @@ const (
 type ResourceType string
 
 const (
-	// API api resource
+	// API api resource.
 	API ResourceType = "API"
 )
 
@@ -102,7 +102,7 @@ type UserBase struct {
 	LastLoginTime     *time.Time `json:"lastLoginTime,omitempty"`
 }
 
-// DetailUserResponse is the response of user detail
+// DetailUserResponse is the response of user detail.
 type DetailUserResponse struct {
 	UserBase
 	Roles []RoleBase `json:"roles"`
@@ -548,17 +548,19 @@ type DepartmentMemberList struct {
 	Members []*DepartmentMember `json:"members"`
 }
 
-type ProviderCategory string
-type GrantHandlerType string
-type MappingMethod string
-type IdentityProviderType string
+type (
+	ProviderCategory     string
+	GrantHandlerType     string
+	MappingMethod        string
+	IdentityProviderType string
+)
 
 const (
-	// GrantHandlerAuto auto-approves client authorization grant requests
+	// GrantHandlerAuto auto-approves client authorization grant requests.
 	GrantHandlerAuto GrantHandlerType = "auto"
-	// GrantHandlerPrompt prompts the user to approve new client authorization grant requests
+	// GrantHandlerPrompt prompts the user to approve new client authorization grant requests.
 	GrantHandlerPrompt GrantHandlerType = "prompt"
-	// GrantHandlerDeny auto-denies client authorization grant requests
+	// GrantHandlerDeny auto-denies client authorization grant requests.
 	GrantHandlerDeny GrantHandlerType = "deny"
 	// MappingMethodAuto  The default value.
 	// The user will automatically create and mapping when login successful.
@@ -583,11 +585,11 @@ const (
 
 // CreateIdentityProviderRequest create IdentityProvider request.
 type CreateIdentityProviderRequest struct {
-	Type          IdentityProviderType `json:"type"          validate:"required"`
+	Type          IdentityProviderType `json:"type"                    validate:"required"`
 	Category      ProviderCategory     `json:"category"`
 	MappingMethod MappingMethod        `json:"mappingMethod,omitempty"`
 
-	Name        string `json:"name"          validate:"required,name"`
+	Name        string `json:"name"        validate:"required,name"`
 	Status      string `json:"status"`
 	Owner       string `json:"owner"`
 	DisplayName string `json:"displayName"`
@@ -644,7 +646,7 @@ type DetailIdentityProviderResponse struct {
 
 // CreateApplicationRequest create app request.
 type CreateApplicationRequest struct {
-	Name                string   `json:"name"          validate:"required,name"`
+	Name                string   `json:"name"                validate:"required,name"`
 	Status              string   `json:"status"`
 	Owner               string   `json:"owner"`
 	DisplayName         string   `json:"displayName"`

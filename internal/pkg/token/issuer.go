@@ -56,7 +56,7 @@ type Keys struct {
 	SigningKeyPub *jose.JSONWebKey
 }
 
-// Issuer issues token to user, tokens are required to perform mutating requests to resources
+// Issuer issues token to user, tokens are required to perform mutating requests to resources.
 type Issuer interface {
 	// IssueTo issues a token a User, return error if issuing process failed
 	IssueTo(request *IssueRequest) (string, error)
@@ -327,7 +327,7 @@ func NewIssuer(options *options.AuthenticationOptions) (Issuer, error) {
 	}, nil
 }
 
-// fnv32a hashes using fnv32a algorithm
+// fnv32a hashes using fnv32a algorithm.
 func fnv32a(data []byte) uint32 {
 	algorithm := fnv.New32a()
 	algorithm.Write(data)

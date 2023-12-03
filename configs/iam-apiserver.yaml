@@ -10,6 +10,7 @@ server:
   healthz: true # 是否开启健康检查，如果开启会安装 /healthz 路由，默认 true
   middlewares: recovery,logger,secure,nocache,cors,dump # 加载的 gin 中间件列表，多个中间件，逗号(,)隔开
   max-ping-count: 3 # http 服务启动后，自检尝试次数，默认 3
+  static-locations: template/*
 
 # GRPC 服务配置
 grpc:
@@ -23,9 +24,9 @@ insecure:
 
 # HTTPS 配置
 secure:
-  required: true
+  required: false
   bind-address: 0.0.0.0 # HTTPS 安全模式的 IP 地址，默认为 0.0.0.0
-  bind-port: 8443 # 使用 HTTPS 安全模式的端口号，设置为 0 表示不启用 HTTPS，默认为 8443
+  bind-port: 0 # 使用 HTTPS 安全模式的端口号，设置为 0 表示不启用 HTTPS，默认为 8443
   tls:
     cert-dir: /var/run/iam # TLS 证书所在的目录，默认值为 /var/run/iam
     #pair-name: iam # TLS 私钥对名称，默认 iam

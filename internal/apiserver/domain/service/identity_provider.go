@@ -34,7 +34,11 @@ type IdentityProviderService interface {
 	UpdateIdentityProvider(ctx context.Context, identifier string, req v1.UpdateIdentityProviderRequest) error
 	DeleteIdentityProvider(ctx context.Context, identifier string, opts metav1.DeleteOptions) error
 	GetIdentityProvider(ctx context.Context, identifier string, opts metav1.GetOptions) (*model.IdentityProvider, error)
-	DetailIdentityProvider(ctx context.Context, idp *model.IdentityProvider, opts metav1.GetOptions) (*v1.DetailIdentityProviderResponse, error)
+	DetailIdentityProvider(
+		ctx context.Context,
+		idp *model.IdentityProvider,
+		opts metav1.GetOptions,
+	) (*v1.DetailIdentityProviderResponse, error)
 	ListIdentityProviders(ctx context.Context, opts metav1.ListOptions) (*v1.IdentityProviderList, error)
 	Init(ctx context.Context) error
 }
@@ -105,7 +109,11 @@ func (i *identityProviderServiceImpl) CreateIdentityProvider(ctx context.Context
 	return err
 }
 
-func (i *identityProviderServiceImpl) UpdateIdentityProvider(ctx context.Context, identifier string, req v1.UpdateIdentityProviderRequest) error {
+func (i *identityProviderServiceImpl) UpdateIdentityProvider(
+	ctx context.Context,
+	identifier string,
+	req v1.UpdateIdentityProviderRequest,
+) error {
 	idp, err := i.getIdentityProviderByNameOrId(ctx, identifier, metav1.GetOptions{})
 	if err != nil {
 		return err
@@ -149,7 +157,11 @@ func (i *identityProviderServiceImpl) DeleteIdentityProvider(ctx context.Context
 	return i.Store.IdentityProviderRepository().Delete(ctx, identifier, opts)
 }
 
-func (i *identityProviderServiceImpl) GetIdentityProvider(ctx context.Context, identifier string, opts metav1.GetOptions) (*model.IdentityProvider, error) {
+func (i *identityProviderServiceImpl) GetIdentityProvider(
+	ctx context.Context,
+	identifier string,
+	opts metav1.GetOptions,
+) (*model.IdentityProvider, error) {
 	idp, err := i.getIdentityProviderByNameOrId(ctx, identifier, opts)
 	if err != nil {
 		return nil, err
@@ -157,14 +169,21 @@ func (i *identityProviderServiceImpl) GetIdentityProvider(ctx context.Context, i
 	return idp, err
 }
 
-func (i *identityProviderServiceImpl) DetailIdentityProvider(_ context.Context, idp *model.IdentityProvider, _ metav1.GetOptions) (*v1.DetailIdentityProviderResponse, error) {
+func (i *identityProviderServiceImpl) DetailIdentityProvider(
+	_ context.Context,
+	idp *model.IdentityProvider,
+	_ metav1.GetOptions,
+) (*v1.DetailIdentityProviderResponse, error) {
 	base := assembler.ConvertModelToIdentityProviderBase(idp)
 	return &v1.DetailIdentityProviderResponse{
 		IdentityProviderBase: *base,
 	}, nil
 }
 
-func (i *identityProviderServiceImpl) ListIdentityProviders(ctx context.Context, opts metav1.ListOptions) (*v1.IdentityProviderList, error) {
+func (i *identityProviderServiceImpl) ListIdentityProviders(
+	ctx context.Context,
+	opts metav1.ListOptions,
+) (*v1.IdentityProviderList, error) {
 	var idpList []*v1.DetailIdentityProviderResponse
 	idpRepo := i.Store.IdentityProviderRepository()
 	identityProviders, err := idpRepo.List(ctx, opts)
@@ -189,7 +208,11 @@ func (i *identityProviderServiceImpl) ListIdentityProviders(ctx context.Context,
 	}, nil
 }
 
-func (i *identityProviderServiceImpl) getIdentityProviderByNameOrId(ctx context.Context, idOrName string, opts metav1.GetOptions) (*model.IdentityProvider, error) {
+func (i *identityProviderServiceImpl) getIdentityProviderByNameOrId(
+	ctx context.Context,
+	idOrName string,
+	opts metav1.GetOptions,
+) (*model.IdentityProvider, error) {
 	idp, err := i.Store.IdentityProviderRepository().GetByInstanceId(ctx, idOrName, opts)
 	if err != nil {
 		log.Warnf("failed to get the identity provider [%s]: %v", idOrName, err)

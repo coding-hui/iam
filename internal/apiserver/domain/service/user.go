@@ -224,7 +224,7 @@ func (u *userServiceImpl) GetUserByInstanceId(ctx context.Context, instanceId st
 	return user, nil
 }
 
-// DetailUser return user detail
+// DetailUser return user detail.
 func (u *userServiceImpl) DetailUser(ctx context.Context, user *model.User) (*v1.DetailUserResponse, error) {
 	base := *assembler.ConvertUserModelToBase(user)
 
@@ -271,7 +271,7 @@ func (u *userServiceImpl) ListUserRoles(
 	return roles, nil
 }
 
-// DisableUser disable user
+// DisableUser disable user.
 func (u *userServiceImpl) DisableUser(ctx context.Context, instanceId string) error {
 	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
@@ -285,7 +285,7 @@ func (u *userServiceImpl) DisableUser(ctx context.Context, instanceId string) er
 	return u.Store.UserRepository().Update(ctx, user, metav1.UpdateOptions{})
 }
 
-// EnableUser disable user
+// EnableUser disable user.
 func (u *userServiceImpl) EnableUser(ctx context.Context, instanceId string) error {
 	user, err := u.GetUserByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {

@@ -12,10 +12,10 @@ import (
 
 // ServerRunOptions contains the options while running a generic api server.
 type ServerRunOptions struct {
-	Mode            string   `json:"mode"        mapstructure:"mode"`
-	Healthz         bool     `json:"healthz"     mapstructure:"healthz"`
-	Middlewares     []string `json:"middlewares" mapstructure:"middlewares"`
-	StaticLocations string   `json:"static-locations"   mapstructure:"static-locations"`
+	Mode            string   `json:"mode"             mapstructure:"mode"`
+	Healthz         bool     `json:"healthz"          mapstructure:"healthz"`
+	Middlewares     []string `json:"middlewares"      mapstructure:"middlewares"`
+	StaticLocations string   `json:"static-locations" mapstructure:"static-locations"`
 }
 
 // NewServerRunOptions creates a new ServerRunOptions object with default parameters.

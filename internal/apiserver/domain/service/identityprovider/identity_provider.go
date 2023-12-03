@@ -23,7 +23,7 @@ var (
 	lock = sync.Mutex{}
 )
 
-// Identity represents the account mapped to iam
+// Identity represents the account mapped to iam.
 type Identity interface {
 	// GetUserID required
 	// Identifier for the End-User at the Issuer.
@@ -37,7 +37,7 @@ type Identity interface {
 	GetAvatar() string
 }
 
-// GetGenericProvider returns GenericProvider with given name
+// GetGenericProvider returns GenericProvider with given name.
 func GetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
 	if provider, ok := genericProviders[idp.Name]; ok {
 		return provider, nil
@@ -49,7 +49,7 @@ func GetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
 	return SetGenericProvider(idp)
 }
 
-// SetGenericProvider update GenericProvider based on the name
+// SetGenericProvider update GenericProvider based on the name.
 func SetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
 	if idp.Extend == nil {
 		err := fmt.Errorf("identity provider %s config is empty", idp.Name)
@@ -69,7 +69,7 @@ func SetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
 	return nil, fmt.Errorf("identity provider %s with type %s is not supported", idp.Name, idp.Type)
 }
 
-// GetOAuthProvider returns OAuthProvider with given name
+// GetOAuthProvider returns OAuthProvider with given name.
 func GetOAuthProvider(idp *model.IdentityProvider) (OAuthProvider, error) {
 	if provider, ok := oauthProviders[idp.Name]; ok {
 		return provider, nil
@@ -81,7 +81,7 @@ func GetOAuthProvider(idp *model.IdentityProvider) (OAuthProvider, error) {
 	return SetOAuthProvider(idp)
 }
 
-// SetOAuthProvider update OAuthProvider based on the name
+// SetOAuthProvider update OAuthProvider based on the name.
 func SetOAuthProvider(idp *model.IdentityProvider) (OAuthProvider, error) {
 	if idp.Extend == nil {
 		err := fmt.Errorf("identity provider %s config is empty", idp.Name)
@@ -101,12 +101,12 @@ func SetOAuthProvider(idp *model.IdentityProvider) (OAuthProvider, error) {
 	return nil, fmt.Errorf("identity provider %s with type %s is not supported", idp.Name, idp.Type)
 }
 
-// RegisterOAuthProvider register OAuthProviderFactory with the specified type
+// RegisterOAuthProvider register OAuthProviderFactory with the specified type.
 func RegisterOAuthProvider(factory OAuthProviderFactory) {
 	oauthProviderFactories[factory.Type()] = factory
 }
 
-// RegisterGenericProvider registers GenericProviderFactory with the specified type
+// RegisterGenericProvider registers GenericProviderFactory with the specified type.
 func RegisterGenericProvider(factory GenericProviderFactory) {
 	genericProviderFactories[factory.Type()] = factory
 }

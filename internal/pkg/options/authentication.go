@@ -24,7 +24,7 @@ type AuthenticationOptions struct {
 	// ClientCA is the certificate bundle for all the signers that you'll recognize for incoming client certificates
 	ClientCA string `json:"client-ca-file"   mapstructure:"client-ca-file"`
 	// Domain is the domain name to set
-	Domain string `json:"domain"                mapstructure:"domain"`
+	Domain string `json:"domain"           mapstructure:"domain"`
 }
 
 func NewAuthenticationOptions() *AuthenticationOptions {

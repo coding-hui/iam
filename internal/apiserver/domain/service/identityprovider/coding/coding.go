@@ -81,8 +81,7 @@ type codingIdentity struct {
 	GlobalKey       string `json:"global_key"`
 }
 
-type codingProviderFactory struct {
-}
+type codingProviderFactory struct{}
 
 func (g *codingProviderFactory) Type() v1.IdentityProviderType {
 	return v1.CodingIdentityProvider

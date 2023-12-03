@@ -11,7 +11,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// DynamicOptions accept dynamic configuration, the type of key MUST be string
+// DynamicOptions accept dynamic configuration, the type of key MUST be string.
 type DynamicOptions map[string]interface{}
 
 func (o DynamicOptions) MarshalJSON() ([]byte, error) {
@@ -27,11 +27,9 @@ func (o DynamicOptions) To(target interface{}) error {
 	return nil
 }
 
-var (
-	sensitiveKeys = [...]string{"password", "secret"}
-)
+var sensitiveKeys = [...]string{"password", "secret"}
 
-// isSensitiveData returns whether the input string contains sensitive information
+// isSensitiveData returns whether the input string contains sensitive information.
 func isSensitiveData(key string) bool {
 	for _, v := range sensitiveKeys {
 		if strings.Contains(strings.ToLower(key), v) {
@@ -41,7 +39,7 @@ func isSensitiveData(key string) bool {
 	return false
 }
 
-// desensitize returns the desensitized data
+// desensitize returns the desensitized data.
 func desensitize(data map[string]interface{}) map[string]interface{} {
 	output := make(map[string]interface{})
 	for k, v := range data {
@@ -58,7 +56,7 @@ func desensitize(data map[string]interface{}) map[string]interface{} {
 	return output
 }
 
-// convert returns formatted data
+// convert returns formatted data.
 func convert(m map[interface{}]interface{}) map[string]interface{} {
 	output := make(map[string]interface{})
 	for k, v := range m {

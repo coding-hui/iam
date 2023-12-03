@@ -44,8 +44,8 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 	o.MySQLOptions.AddFlags(fss.FlagSet("mysql"))
 	o.RedisOptions.AddFlags(fss.FlagSet("redis"))
 	o.FeatureOptions.AddFlags(fss.FlagSet("features"))
-	o.InsecureServing.AddFlags(fss.FlagSet("insecure serving"))
-	o.SecureServing.AddFlags(fss.FlagSet("secure serving"))
+	o.InsecureServing.AddFlags(fss.FlagSet("insecure"))
+	o.SecureServing.AddFlags(fss.FlagSet("secure"))
 	o.LogOptions.AddFlags(fss.FlagSet("log"))
 	o.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"))
 

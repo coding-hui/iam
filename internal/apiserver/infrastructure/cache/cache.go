@@ -11,9 +11,7 @@ import (
 	"github.com/coding-hui/iam/pkg/log"
 )
 
-var (
-	cacheFactories = make(map[string]Factory)
-)
+var cacheFactories = make(map[string]Factory)
 
 var NeverExpire = time.Duration(0)
 

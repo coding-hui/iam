@@ -103,8 +103,7 @@ type githubIdentity struct {
 	Collaborators     int       `json:"collaborators"`
 }
 
-type githubProviderFactory struct {
-}
+type githubProviderFactory struct{}
 
 func (g *githubProviderFactory) Type() v1.IdentityProviderType {
 	return v1.GithubIdentityProvider

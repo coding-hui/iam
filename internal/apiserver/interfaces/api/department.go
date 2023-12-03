@@ -235,7 +235,8 @@ func (d *department) addDepartmentMember(c *gin.Context) {
 	}
 	err = d.OrganizationService.BatchAddDepartmentMembers(c.Request.Context(), c.Param("instanceId"),
 		v1.BatchAddDepartmentMemberRequest{
-			Members: []v1.DepartmentMember{addReq.DepartmentMember}},
+			Members: []v1.DepartmentMember{addReq.DepartmentMember},
+		},
 	)
 	if err != nil {
 		api.FailWithErrCode(err, c)
@@ -296,7 +297,8 @@ func (d *department) removeDepartmentMember(c *gin.Context) {
 	}
 	err = d.OrganizationService.BatchRemoveDepartmentMembers(c.Request.Context(), c.Param("instanceId"),
 		v1.BatchRemoveDepartmentMemberRequest{
-			Members: []v1.DepartmentMember{removeReq.DepartmentMember}},
+			Members: []v1.DepartmentMember{removeReq.DepartmentMember},
+		},
 	)
 	if err != nil {
 		api.FailWithErrCode(err, c)

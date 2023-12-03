@@ -16,7 +16,7 @@ import (
 const (
 	// DefaultOrganization default organization name.
 	DefaultOrganization string = "built-in"
-	// RootOrganizationID root org id
+	// RootOrganizationID root org id.
 	RootOrganizationID string = "root"
 )
 

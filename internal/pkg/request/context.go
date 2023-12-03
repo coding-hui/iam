@@ -10,10 +10,8 @@ import (
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
-var (
-	// ctxKeyUser request context key of user.
-	ctxKeyUser = "user"
-)
+// ctxKeyUser request context key of user.
+var ctxKeyUser = "user"
 
 // NewContext instantiates a base context object for request flows.
 func NewContext() context.Context {

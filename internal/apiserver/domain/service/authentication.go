@@ -112,7 +112,10 @@ func (a *authenticationServiceImpl) Login(ctx context.Context, loginReq v1.Authe
 	}, nil
 }
 
-func (a *authenticationServiceImpl) LoginByProvider(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error) {
+func (a *authenticationServiceImpl) LoginByProvider(
+	ctx context.Context,
+	loginReq v1.AuthenticateRequest,
+) (*v1.AuthenticateResponse, error) {
 	provider, err := a.Store.IdentityProviderRepository().GetByName(ctx, loginReq.Provider, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
@@ -180,7 +183,11 @@ func (a *authenticationServiceImpl) LoginByProvider(ctx context.Context, loginRe
 	}, nil
 }
 
-func (a *authenticationServiceImpl) LoginByOAuthProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error) {
+func (a *authenticationServiceImpl) LoginByOAuthProvider(
+	ctx context.Context,
+	idp *model.IdentityProvider,
+	req *http.Request,
+) (*v1.AuthenticateResponse, error) {
 	oauthProvider, err := identityprovider.GetOAuthProvider(idp)
 	if err != nil {
 		return nil, err

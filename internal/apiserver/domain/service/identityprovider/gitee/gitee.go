@@ -94,8 +94,7 @@ type giteeIdentity struct {
 	Weibo             string `json:"weibo"`
 }
 
-type giteeProviderFactory struct {
-}
+type giteeProviderFactory struct{}
 
 func (g *giteeProviderFactory) Type() v1.IdentityProviderType {
 	return v1.GiteeIdentityProvider

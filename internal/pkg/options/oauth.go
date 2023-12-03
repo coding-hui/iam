@@ -127,10 +127,8 @@ type Client struct {
 	AccessTokenInactivityTimeout *time.Duration `json:"accessTokenInactivityTimeout,omitempty" mapstructure:"accessTokenInactivityTimeout,omitempty"`
 }
 
-var (
-	// AllowAllRedirectURI Allow any redirect URI if the redirectURI is defined in request
-	AllowAllRedirectURI = "*"
-)
+// AllowAllRedirectURI Allow any redirect URI if the redirectURI is defined in request
+var AllowAllRedirectURI = "*"
 
 func (o *OAuthOptions) OAuthClient(name string) (Client, error) {
 	for _, found := range o.Clients {

@@ -26,7 +26,7 @@ import (
 
 type contextTxKey struct{}
 
-// Driver is a unified implementation of SQL driver of datastore
+// Driver is a unified implementation of SQL driver of datastore.
 type Driver struct {
 	Client *Client
 	cfg    config.Config
@@ -127,7 +127,7 @@ func paginate(opts metav1.ListOptions) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-// _toColumnName converts keys of the models to lowercase as the column name are in lowercase in the database
+// _toColumnName converts keys of the models to lowercase as the column name are in lowercase in the database.
 func _toColumnName(columnName string) string {
 	if strings.HasPrefix(columnName, "metadata.") {
 		columnName = columnName[9:]
@@ -159,7 +159,7 @@ func _applyFieldSelector(clauses []clause.Expression, selector fields.Selector) 
 			}
 		case selection.In:
 			var values []interface{}
-			var split = strings.Split(value, ",")
+			split := strings.Split(value, ",")
 			for _, v := range split {
 				if v != "" {
 					values = append(values, v)

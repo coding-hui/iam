@@ -63,7 +63,7 @@ func (p *Policy) AfterCreate(tx *gorm.DB) error {
 	return tx.Save(p).Error
 }
 
-// GetPolicyRules get policy all casbin rules
+// GetPolicyRules get policy all casbin rules.
 func (p *Policy) GetPolicyRules() [][]string {
 	var rules [][]string
 	for _, sub := range p.Subjects {
