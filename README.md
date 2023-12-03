@@ -1,8 +1,17 @@
-# WeCoding IAM
+Language : [us](./README.md) | [🇨🇳](./README.zh-CN.md)
+
+<h1 align="center">WeCoding IAM</h1>
+
+<div align="center">
 
 IAM = **I**dentity and **A**ccess **M**anagement
 
-IAM 是一个基于 Go 语言开发的身份识别与访问管理系统，用于对资源访问进行授权。
+基于 Go 语言开发的身份识别与访问管理系统，用于对资源访问进行授权
+
+</div>
+
+- Preview: http://iam.wecoding.top
+- FAQ: https://github.com/coding-hui/iam/issues
 
 ## ✨ 特性
 
@@ -99,8 +108,18 @@ npm install -g pnpm
 pnpm install
 
 pnpm start
+
 ```
+
+访问: http://localhost:8000 ADMIN/WECODING
 
 ## 使用指南
 
 [IAM Documentation](docs/guide/zh-CN)
+
+## 贡献代码
+
+非常欢迎提 pr:
+
+- Submit [issues](https://github.com/coding-hui/iam/issues) to report bugs or ask questions.
+- Propose [pull requests](https://github.com/coding-hui/iam/pulls) to improve our code.
