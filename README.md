@@ -88,7 +88,7 @@ go run .\cmd\iam-apiserver\main.go -c configs\iam-apiserver.yaml
 
 构建后的二进制文件保存在 `_output/platforms/linux/amd64/` 目录下。
 
-### Console UI 启动
+#### Console UI 启动
 
 ```bash
 # 安装依赖
