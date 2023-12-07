@@ -86,7 +86,7 @@ func (o *orgRepositoryImpl) DeleteByName(ctx context.Context, name string, opts 
 	if opts.Unscoped {
 		db = db.Unscoped()
 	}
-	err := o.client.WithCtx(ctx).Where("name = ?", name).Delete(&model.Organization{}).Error
+	err := db.Where("name = ?", name).Delete(&model.Organization{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrOrgNotFound, err.Error())
@@ -103,7 +103,7 @@ func (o *orgRepositoryImpl) DeleteByInstanceId(ctx context.Context, uid string, 
 	if opts.Unscoped {
 		db = db.Unscoped()
 	}
-	err := o.client.WithCtx(ctx).Where("instance_id = ?", uid).Delete(&model.Organization{}).Error
+	err := db.Where("instance_id = ?", uid).Delete(&model.Organization{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.WithCode(code.ErrOrgNotFound, err.Error())
