@@ -110,7 +110,7 @@ func (i *identityProviderServiceImpl) UpdateIdentityProvider(
 	identifier string,
 	req v1.UpdateIdentityProviderRequest,
 ) error {
-	idp, err := i.getIdentityProviderByNameOrId(ctx, identifier, metav1.GetOptions{})
+	idp, err := i.Store.IdentityProviderRepository().GetByInstanceIdOrName(ctx, identifier, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -158,7 +158,7 @@ func (i *identityProviderServiceImpl) GetIdentityProvider(
 	identifier string,
 	opts metav1.GetOptions,
 ) (*model.IdentityProvider, error) {
-	idp, err := i.getIdentityProviderByNameOrId(ctx, identifier, opts)
+	idp, err := i.Store.IdentityProviderRepository().GetByInstanceIdOrName(ctx, identifier, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -202,21 +202,6 @@ func (i *identityProviderServiceImpl) ListIdentityProviders(
 			TotalCount: count,
 		},
 	}, nil
-}
-
-func (i *identityProviderServiceImpl) getIdentityProviderByNameOrId(
-	ctx context.Context,
-	idOrName string,
-	opts metav1.GetOptions,
-) (*model.IdentityProvider, error) {
-	idp, err := i.Store.IdentityProviderRepository().GetByInstanceId(ctx, idOrName, opts)
-	if err != nil {
-		idp, err = i.Store.IdentityProviderRepository().GetByName(ctx, idOrName, opts)
-		if !errors.IsCode(err, code.ErrRecordNotExist) {
-			return nil, err
-		}
-	}
-	return idp, nil
 }
 
 func (i *identityProviderServiceImpl) applyProviderConfig(idp *model.IdentityProvider) error {
