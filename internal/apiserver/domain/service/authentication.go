@@ -108,7 +108,7 @@ func (a *authenticationServiceImpl) Login(ctx context.Context, loginReq v1.Authe
 		// as specified in OAuth 2.0 Bearer Token Usage [RFC6750]
 		TokenType:    "Bearer",
 		RefreshToken: refreshToken,
-		ExpiresIn:    int(a.cfg.JwtOptions.Timeout.Seconds()),
+		ExpiresIn:    int(a.cfg.AuthenticationOptions.OAuthOptions.AccessTokenMaxAge.Seconds()),
 	}, nil
 }
 
@@ -179,7 +179,7 @@ func (a *authenticationServiceImpl) LoginByProvider(
 		// as specified in OAuth 2.0 Bearer Token Usage [RFC6750]
 		TokenType:    "Bearer",
 		RefreshToken: refreshToken,
-		ExpiresIn:    int(a.cfg.JwtOptions.Timeout.Seconds()),
+		ExpiresIn:    int(a.cfg.AuthenticationOptions.OAuthOptions.AccessTokenMaxAge.Seconds()),
 	}, nil
 }
 
@@ -255,7 +255,7 @@ func (a *authenticationServiceImpl) LoginByOAuthProvider(
 		// as specified in OAuth 2.0 Bearer Token Usage [RFC6750]
 		TokenType:    "Bearer",
 		RefreshToken: refreshToken,
-		ExpiresIn:    int(a.cfg.JwtOptions.Timeout.Seconds()),
+		ExpiresIn:    int(a.cfg.AuthenticationOptions.OAuthOptions.AccessTokenMaxAge.Seconds()),
 	}, nil
 }
 

@@ -5,8 +5,9 @@
 server:
   mode: release # server mode: release, debug, test
   healthz: true # If enabled, the /healthz route is installed. default value is true
-  middlewares: recovery,logger,secure,nocache,cors,dump
+  middlewares: recovery,logger,secure,nocache,cors
   max-ping-count: 3
+  static-locations: template/*
 
 grpc:
   bind-address: 0.0.0.0
@@ -38,11 +39,12 @@ redis:
   port: 6379
   password:
 
-jwt:
-  realm: JWT
-  key: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo
-  timeout: 24h
-  max-refresh: 24h
+cache:
+  type: redis
+  options:
+    host: redis-master
+    port: 6379
+    password:
 
 log:
   name: apiserver
@@ -61,3 +63,5 @@ feature:
 
 authentication:
   domain: wecoding.local
+  jwtSecret: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo
+  signKey: /var/run/iam/certificates/ca.crt

@@ -24,7 +24,6 @@ type Options struct {
 	SecureServing           *genericoptions.SecureServingOptions   `json:"secure"         mapstructure:"secure"`
 	MySQLOptions            *genericoptions.MySQLOptions           `json:"mysql"          mapstructure:"mysql"`
 	RedisOptions            *genericoptions.RedisOptions           `json:"redis"          mapstructure:"redis"`
-	JwtOptions              *genericoptions.JwtOptions             `json:"jwt"            mapstructure:"jwt"`
 	LogOptions              *log.Options                           `json:"log"            mapstructure:"log"`
 	FeatureOptions          *genericoptions.FeatureOptions         `json:"feature"        mapstructure:"feature"`
 	AuthenticationOptions   *genericoptions.AuthenticationOptions  `json:"authentication" mapstructure:"authentication"`
@@ -39,7 +38,6 @@ func (o *Options) ApplyTo(c *server.Config) error {
 // Flags returns flags for a specific APIServer by section name.
 func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 	o.GenericServerRunOptions.AddFlags(fss.FlagSet("generic"))
-	o.JwtOptions.AddFlags(fss.FlagSet("jwt"))
 	o.GRPCOptions.AddFlags(fss.FlagSet("grpc"))
 	o.MySQLOptions.AddFlags(fss.FlagSet("mysql"))
 	o.RedisOptions.AddFlags(fss.FlagSet("redis"))
@@ -64,9 +62,6 @@ func (o *Options) String() string {
 
 // Complete set default Options.
 func (o *Options) Complete() error {
-	if o.JwtOptions.Key == "" {
-		o.JwtOptions.Key = idutil.NewSecretKey()
-	}
 	if o.AuthenticationOptions.JwtSecret == "" {
 		o.AuthenticationOptions.JwtSecret = idutil.NewSecretKey()
 	}
@@ -83,7 +78,6 @@ func NewOptions() *Options {
 		SecureServing:           genericoptions.NewSecureServingOptions(),
 		MySQLOptions:            genericoptions.NewMySQLOptions(),
 		RedisOptions:            genericoptions.NewRedisOptions(),
-		JwtOptions:              genericoptions.NewJwtOptions(),
 		LogOptions:              log.NewOptions(),
 		FeatureOptions:          genericoptions.NewFeatureOptions(),
 		AuthenticationOptions:   genericoptions.NewAuthenticationOptions(),

@@ -62,12 +62,12 @@ redis:
   #use-ssl: # 是否启用 TLS
   #ssl-insecure-skip-verify: # 当连接 redis 时允许使用自签名证书
 
-# JWT 配置
-jwt:
-  realm: JWT # jwt 标识
-  key: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo # 服务端密钥
-  timeout: 24h # token 过期时间(小时)
-  max-refresh: 24h # token 更新时间(小时)
+cache:
+  type: redis
+  options:
+    host: 127.0.0.1 # redis 地址，默认 127.0.0.1:6379
+    port: 6379 # redis 端口，默认 6379
+    password:
 
 log:
   name: apiserver # Logger的名字
@@ -84,11 +84,6 @@ feature:
   enable-metrics: true # 开启 metrics, router:  /metrics
   profiling: true # 开启性能分析, 可以通过 <host>:<port>/debug/pprof/地址查看程序栈、线程等系统信息，默认值为 true
 
-oauthOptions:
-  identityProviders:
-    name: wechat-mini
-    type: WeChatMiniProgramIdentityProvider
-    mappingMethod: auto
-    provider:
-      app-id: xxx
-      app-secret: xxx
+authentication:
+  domain: wecoding.local
+  jwtSecret: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo

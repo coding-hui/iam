@@ -22,6 +22,7 @@ type JwtOptions struct {
 	MaxRefresh time.Duration `json:"max-refresh" mapstructure:"max-refresh"`
 }
 
+// Deprecated: Use OAuthOptions instead.
 // NewJwtOptions creates a JwtOptions object with default parameters.
 func NewJwtOptions() *JwtOptions {
 	defaults := server.NewConfig()
