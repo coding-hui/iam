@@ -21,6 +21,7 @@ type IdentityProviderRepository interface {
 	DeleteCollection(ctx context.Context, names []string, opts metav1.DeleteOptions) error
 	GetByName(ctx context.Context, name string, opts metav1.GetOptions) (*model.IdentityProvider, error)
 	GetByInstanceId(ctx context.Context, instanceId string, opts metav1.GetOptions) (*model.IdentityProvider, error)
+	GetByInstanceIdOrName(ctx context.Context, instanceIdOrName string, opts metav1.GetOptions) (*model.IdentityProvider, error)
 	List(ctx context.Context, opts metav1.ListOptions) ([]model.IdentityProvider, error)
 	Count(ctx context.Context, opts metav1.ListOptions) (int64, error)
 }

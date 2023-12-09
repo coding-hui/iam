@@ -211,15 +211,8 @@ func (i *identityProviderServiceImpl) getIdentityProviderByNameOrId(
 ) (*model.IdentityProvider, error) {
 	idp, err := i.Store.IdentityProviderRepository().GetByInstanceId(ctx, idOrName, opts)
 	if err != nil {
-		log.Warnf("failed to get the identity provider [%s]: %v", idOrName, err)
-		if !errors.IsCode(err, code.ErrRecordNotExist) {
-			return nil, err
-		}
-	}
-	if idp == nil {
 		idp, err = i.Store.IdentityProviderRepository().GetByName(ctx, idOrName, opts)
-		if err != nil {
-			log.Errorf("failed to get the identity provider [%s]: %v", idOrName, err)
+		if !errors.IsCode(err, code.ErrRecordNotExist) {
 			return nil, err
 		}
 	}

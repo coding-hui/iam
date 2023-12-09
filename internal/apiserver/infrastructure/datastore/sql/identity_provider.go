@@ -105,11 +105,7 @@ func (p *identityProviderRepositoryImpl) GetByName(
 	return provider, err
 }
 
-func (p *identityProviderRepositoryImpl) GetByInstanceId(
-	ctx context.Context,
-	instanceId string,
-	_ metav1.GetOptions,
-) (provider *model.IdentityProvider, err error) {
+func (p *identityProviderRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId string, _ metav1.GetOptions) (provider *model.IdentityProvider, err error) {
 	err = p.client.WithCtx(ctx).Where("instance_id = ?", instanceId).First(&provider).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -120,6 +116,21 @@ func (p *identityProviderRepositoryImpl) GetByInstanceId(
 	}
 
 	return provider, err
+}
+
+func (p *identityProviderRepositoryImpl) GetByInstanceIdOrName(ctx context.Context, instanceIdOrName string, opts metav1.GetOptions) (idp *model.IdentityProvider, err error) {
+	err = p.client.WithCtx(ctx).
+		Where("instance_id = ? or name = ?", instanceIdOrName, instanceIdOrName).
+		First(&idp).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, datastore.ErrRecordNotExist
+		}
+
+		return nil, err
+	}
+
+	return idp, err
 }
 
 func (p *identityProviderRepositoryImpl) List(ctx context.Context, opts metav1.ListOptions) ([]model.IdentityProvider, error) {
