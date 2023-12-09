@@ -20,7 +20,6 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/cache"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
-	"github.com/coding-hui/iam/internal/pkg/middleware"
 	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
@@ -195,9 +194,6 @@ func (s *apiServer) buildIoCContainer(ctx context.Context) (err error) {
 
 // registerAPIRoute register the API route.
 func (s *apiServer) registerAPIRoute() {
-	// Init middleware
-	middleware.InitMiddleware(s.webServer.Engine)
-
 	// swagger router
 	s.configSwagger()
 

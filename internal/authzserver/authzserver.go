@@ -14,7 +14,6 @@ import (
 	"github.com/coding-hui/iam/internal/authzserver/config"
 	apisv1 "github.com/coding-hui/iam/internal/authzserver/interfaces/api"
 	"github.com/coding-hui/iam/internal/authzserver/store/apiserver"
-	"github.com/coding-hui/iam/internal/pkg/middleware"
 	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/utils/container"
 	"github.com/coding-hui/iam/pkg/log"
@@ -122,9 +121,6 @@ func (s *authzServer) buildIoCContainer() (err error) {
 
 // registerAPIRoute register the API route.
 func (s *authzServer) registerAPIRoute() {
-	// Init middleware
-	middleware.InitMiddleware(s.webServer.Engine)
-
 	// Register all custom api
 	for _, api := range apisv1.GetRegisteredAPI() {
 		api.RegisterApiGroup(s.webServer.Engine)
