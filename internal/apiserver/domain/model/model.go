@@ -38,7 +38,9 @@ func GetResourceIdentifier(instanceID string) string {
 	if len(instanceID) == 0 {
 		return ""
 	}
-	ri := instanceID[:strings.Index(instanceID, "-")]
-
-	return ri
+	prefixIdx := strings.Index(instanceID, "-")
+	if prefixIdx > -1 {
+		return instanceID[:prefixIdx]
+	}
+	return instanceID
 }

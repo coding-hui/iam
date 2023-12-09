@@ -18,7 +18,8 @@ import (
 // RequestLog write to console.
 func RequestLog() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if (c.Request.Header.Get("Upgrade") == "websocket" && c.Request.Header.Get("Upgrade") == "Upgrade") ||
+		if c.Request.Header.Get("Upgrade") == "websocket" ||
+			c.Request.Header.Get("Upgrade") == "Upgrade" ||
 			c.Request.Method == http.MethodOptions {
 			c.Next()
 		}

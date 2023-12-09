@@ -60,9 +60,8 @@ func desensitize(data map[string]interface{}) map[string]interface{} {
 func convert(m map[interface{}]interface{}) map[string]interface{} {
 	output := make(map[string]interface{})
 	for k, v := range m {
-		switch k := k.(type) {
-		case string:
-			output[k] = v
+		if key, ok := k.(string); ok {
+			output[key] = v
 		}
 	}
 	return output

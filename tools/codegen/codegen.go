@@ -332,7 +332,7 @@ func (v *Value) String() string {
 }
 
 // ParseComment parse comment to http code and error code description.
-func (v *Value) ParseComment() (string, string) {
+func (v *Value) ParseComment() (code string, description string) {
 	reg := regexp.MustCompile(`\w\s*-\s*(\d{3})\s*:\s*([A-Z].*)\s*\.\n*`)
 	if !reg.MatchString(v.comment) {
 		log.Printf(

@@ -34,11 +34,7 @@ type IdentityProviderService interface {
 	UpdateIdentityProvider(ctx context.Context, identifier string, req v1.UpdateIdentityProviderRequest) error
 	DeleteIdentityProvider(ctx context.Context, identifier string, opts metav1.DeleteOptions) error
 	GetIdentityProvider(ctx context.Context, identifier string, opts metav1.GetOptions) (*model.IdentityProvider, error)
-	DetailIdentityProvider(
-		ctx context.Context,
-		idp *model.IdentityProvider,
-		opts metav1.GetOptions,
-	) (*v1.DetailIdentityProviderResponse, error)
+	DetailIdentityProvider(ctx context.Context, idp *model.IdentityProvider, opts metav1.GetOptions) (*v1.DetailIdentityProviderResponse, error)
 	ListIdentityProviders(ctx context.Context, opts metav1.ListOptions) (*v1.IdentityProviderList, error)
 	Init(ctx context.Context) error
 }
@@ -259,7 +255,7 @@ func (i *identityProviderServiceImpl) applyProviderConfig(idp *model.IdentityPro
 			providerConf = string(conf)
 		}
 	}
-	if len(providerConf) <= 0 {
+	if len(providerConf) == 0 {
 		log.Warnf("The IdentityProvider [%s] config is empty", idp.Name)
 		return nil
 	}

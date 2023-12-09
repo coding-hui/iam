@@ -129,9 +129,7 @@ func paginate(opts metav1.ListOptions) func(db *gorm.DB) *gorm.DB {
 
 // _toColumnName converts keys of the models to lowercase as the column name are in lowercase in the database.
 func _toColumnName(columnName string) string {
-	if strings.HasPrefix(columnName, "metadata.") {
-		columnName = columnName[9:]
-	}
+	columnName = strings.TrimPrefix(columnName, "metadata.")
 	return pkgUtils.CamelToUnderscore(columnName)
 }
 

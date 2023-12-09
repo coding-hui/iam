@@ -127,8 +127,8 @@ func (r *resource) deleteResource(c *gin.Context) {
 
 //	@Tags			Resource
 //	@Summary		GetResourceInfo
-//	@Description	GetByName resource info
-//	@Param			instanceId	path		string											true	"name of a resource"
+//	@Description	Get resource info
+//	@Param			instanceId	path		string											true	"identifier of a resource"
 //	@Success		200			{object}	api.Response{data=v1.DetailResourceResponse}	"resource detail"
 //	@Router			/api/v1/resources/{instanceId} [get]
 //	@Security		BearerTokenAuth

@@ -242,7 +242,7 @@ func loadPrivateKey(data []byte) (*rsa.PrivateKey, error) {
 	}
 	key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		return nil, fmt.Errorf("failed to key file: %v", err)
+		return nil, fmt.Errorf("failed to key file: %w", err)
 	}
 	return key, nil
 }
@@ -250,7 +250,7 @@ func loadPrivateKey(data []byte) (*rsa.PrivateKey, error) {
 func generatePrivateKeyData() ([]byte, error) {
 	privateKey, err := rsa.GenerateKey(cryptorand.Reader, 2048)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate private key: %v", err)
+		return nil, fmt.Errorf("failed to generate private key: %w", err)
 	}
 	data := x509.MarshalPKCS1PrivateKey(privateKey)
 	pemData := pem.EncodeToMemory(

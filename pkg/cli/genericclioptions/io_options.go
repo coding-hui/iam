@@ -7,7 +7,6 @@ package genericclioptions
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 )
 
 // IOStreams provides the standard names for iostreams.  This is useful for embedding and for unit testing.
@@ -22,10 +21,10 @@ type IOStreams struct {
 }
 
 // NewTestIOStreams returns a valid IOStreams and in, out, errout buffers for unit tests.
-func NewTestIOStreams() (IOStreams, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer) {
-	in := &bytes.Buffer{}
-	out := &bytes.Buffer{}
-	errOut := &bytes.Buffer{}
+func NewTestIOStreams() (io IOStreams, in *bytes.Buffer, out *bytes.Buffer, errOut *bytes.Buffer) {
+	in = &bytes.Buffer{}
+	out = &bytes.Buffer{}
+	errOut = &bytes.Buffer{}
 
 	return IOStreams{
 		In:     in,
@@ -40,7 +39,7 @@ func NewTestIOStreamsDiscard() IOStreams {
 
 	return IOStreams{
 		In:     in,
-		Out:    ioutil.Discard,
-		ErrOut: ioutil.Discard,
+		Out:    io.Discard,
+		ErrOut: io.Discard,
 	}
 }

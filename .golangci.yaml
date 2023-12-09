@@ -135,7 +135,7 @@ linters-settings:
     # indicates that switch statements are to be considered exhaustive if a
     # 'default' case is present, even if all enum members aren't listed in the
     # switch
-    default-signifies-exhaustive: false
+    default-signifies-exhaustive: true
     # enum members matching the supplied regex do not have to be listed in
     # switch statements to satisfy exhaustiveness
     ignore-enum-members: ""
@@ -201,7 +201,7 @@ linters-settings:
     disabled-checks:
       - regexpMust
       - ifElseChain
-      #- exitAfterDefer
+      - exitAfterDefer
 
     # Enable multiple checks by tags, run `GL_DEBUG=gocritic golangci-lint run` to see all tags and checks.
     # Empty list by default. See https://github.com/go-critic/go-critic#usage -> section "Tags".
@@ -282,8 +282,8 @@ linters-settings:
     simplify: true
 
   gofumpt:
-    # Select the Go version to target. The default is `1.15`.
-    lang-version: "1.15"
+    # Select the Go version to target. The default is `1.19`.
+    lang-version: "1.19"
 
     # Choose whether or not to use the extra rules that are disabled
     # by default
@@ -337,7 +337,7 @@ linters-settings:
       - google.golang.org/grpc
       - github.com/coding-hui/api
       - github.com/coding-hui/common
-      - github.com/coding-hui/iam-sdk-go
+      - github.com/coding-hui/wecoding-sdk-go
 
     # Allow to not explain why the version has been retracted in the `retract` directives. Default is false.
     retract-allow-no-explanation: false
@@ -410,7 +410,7 @@ linters-settings:
 
   govet:
     # report about shadowed variables
-    check-shadowing: true
+    check-shadowing: false
 
     # settings per analyzer
     settings:
@@ -462,8 +462,9 @@ linters-settings:
       # using `cliflag` alias for `k8s.io/component-base/cli/flag` package
       - pkg: k8s.io/component-base/cli/flag
         alias: cliflag
-    # using `metav1` alias for `github.com/coding-hui/common/meta/v1` package
-    metav1: github.com/coding-hui/common/meta/v1
+      # using `metav1` alias for `github.com/coding-hui/common/meta/v1` package
+      - pkg: github.com/coding-hui/common/meta/v1
+        alias: metav1
 
   ireturn:
     # ireturn allows using `allow` and `reject` settings at the same time.
@@ -491,9 +492,9 @@ linters-settings:
   lll:
     # max line length, lines longer will be reported. Default is 120.
     # '\t' is counted as 1 character by default, and can be changed with the tab-width option
-    line-length: 240
+    #    line-length: 240
     # tab width in spaces. Default to 1.
-    tab-width: 4
+    tab-width: 1
   maligned:
     # print struct with more effective memory layout or not, false by default
     suggest-new: true
@@ -585,8 +586,8 @@ linters-settings:
     checks: [ "all" ]
 
   stylecheck:
-    # Select the Go version to target. The default is '1.13'.
-    go: "1.16"
+    # Select the Go version to target. The default is '1.19'.
+    go: "1.19"
 
     # https://staticcheck.io/docs/options#checks
     checks: [ "all", "-ST1000", "-ST1003", "-ST1016", "-ST1020", "-ST1021", "-ST1022" ]
@@ -696,12 +697,12 @@ linters-settings:
     always: false
 
 
-      # The custom section can be used to define linter plugins to be loaded at runtime. See README doc
-      #  for more info.
-      #custom:
-      # Each custom linter should have a unique name.
-      #example:
-      # The path to the plugin *.so. Can be absolute or local. Required for each custom linter
+    # The custom section can be used to define linter plugins to be loaded at runtime. See README doc
+    #  for more info.
+    #custom:
+    # Each custom linter should have a unique name.
+    #example:
+    # The path to the plugin *.so. Can be absolute or local. Required for each custom linter
     #path: /path/to/example.so
     # The description of the linter. Optional, just for documentation purposes.
     #description: This is an example usage of a plugin linter.
@@ -712,86 +713,36 @@ linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
   # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
   # enable-all: true
-  disable-all: true
   enable:
     - typecheck
-    - asciicheck
-    - bodyclose
-    - cyclop
-    - deadcode
-    - depguard
-    - dogsled
-    - dupl
-    - durationcheck
-    - errcheck
-    - errorlint
-    - exhaustive
-    - exportloopref
-    - forbidigo
-    - funlen
-    #- gci
-    #- gochecknoinits
-    - gocognit
-    - goconst
-    - gocyclo
-    - godot
-    - godox
-    - gofmt
-    - gofumpt
-    - goheader
-    - goimports
-    - gomoddirectives
-    - gomodguard
-    - goprintffuncname
-    - gosec
-    - gosimple
+    - megacheck
     - govet
-    - ifshort
-    - importas
-    - ineffassign
-    - lll
-    - makezero
+    - gocyclo
+    - gocritic
+    - goconst
+    - goimports
+    - gofmt
+    - revive
+    - unconvert
     - misspell
     - nakedret
-    - nestif
+    - exportloopref
+  disable:
+    - unparam
+    - noctx
     - nilerr
-    - nolintlint
-    - paralleltest
-    - prealloc
-    - predeclared
-    - promlinter
-    - revive
+    - bodyclose
+    - deadcode
+    - scopelint
+    - structcheck
+    - varcheck
     - rowserrcheck
     - sqlclosecheck
-    - staticcheck
-    - structcheck
-    - stylecheck
-    - thelper
-    - tparallel
-    - unconvert
-    - unparam
-    - unused
-    - varcheck
-    - wastedassign
-    - whitespace
-    - bidichk
-    - wastedassign
-    - execinquery
-    - nosprintfhostport
-    - grouper
-    - decorder
     - errchkjson
-    - maintidx
-      #- containedctx
-      #- tagliatelle
-      #- nonamedreturns
-      #- nilnil
-      #- tenv
-    #- varnamelen
-    #- contextcheck
-    #- errname
-    #- ForceTypeAssert
-    #- nilassign
+    - contextcheck
+  presets:
+    - bugs
+    - unused
   fast: false
 
 issues:

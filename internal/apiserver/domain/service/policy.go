@@ -78,7 +78,7 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 
 // CreatePolicy create a new policy.
 func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1.CreatePolicyRequest) error {
-	if len(req.Statements) < 0 {
+	if len(req.Statements) == 0 {
 		return nil
 	}
 	policy := assembler.ConvertPolicyModel(req)

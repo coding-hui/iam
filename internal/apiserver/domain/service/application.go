@@ -111,17 +111,17 @@ func (a *applicationServiceImpl) UpdateApplication(ctx context.Context, app stri
 	}
 	if len(req.IdentityProviderIds) > 0 {
 		for _, idpId := range req.IdentityProviderIds {
-			idp, err := a.Store.IdentityProviderRepository().GetByInstanceId(ctx, idpId, metav1.GetOptions{})
-			if err != nil {
-				log.Warnf("Failed to get the IdentityProvider [%s]: %v", idpId, err)
+			idp, getIdpErr := a.Store.IdentityProviderRepository().
+				GetByInstanceId(ctx, idpId, metav1.GetOptions{})
+			if getIdpErr != nil {
+				log.Warnf("Failed to get the IdentityProvider [%s]: %v", idpId, getIdpErr)
 				continue
 			}
 			newApp.IdentityProviders = append(newApp.IdentityProviders, *idp)
 		}
 	}
 	return a.Store.ExecTx(ctx, func(ctx context.Context) error {
-		err = a.Store.ApplicationRepository().Update(ctx, newApp, metav1.UpdateOptions{})
-		if err != nil {
+		if err := a.Store.ApplicationRepository().Update(ctx, newApp, metav1.UpdateOptions{}); err != nil {
 			return err
 		}
 		return nil
@@ -150,12 +150,12 @@ func (a *applicationServiceImpl) GetApplication(
 }
 
 func (a *applicationServiceImpl) ListApplications(ctx context.Context, opts metav1.ListOptions) (*v1.ApplicationList, error) {
-	var appList []*v1.DetailApplicationResponse
 	appRepo := a.Store.ApplicationRepository()
 	apps, err := appRepo.List(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
+	appList := make([]*v1.DetailApplicationResponse, 0, len(apps))
 	for _, v := range apps {
 		base := assembler.ConvertModelToApplicationBase(&v)
 		appList = append(appList, &v1.DetailApplicationResponse{

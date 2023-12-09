@@ -88,7 +88,8 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 			IdentifyProvider: req.IdentifyProvider,
 		}
 	}
-	// create user
+
+	// Create user
 	user := assembler.ConvertCreateUserReqToUserModel(req, external)
 	if user.Alias == "" {
 		user.Alias = req.Name
@@ -97,41 +98,61 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	if err != nil {
 		return nil, err
 	}
-	// user role assign
+
+	// User role assignment
 	roleIds := req.RoleIds
 	if len(roleIds) == 0 {
-		defaultRole, err := u.Store.RoleRepository().GetByName(ctx, v1.Default.String(), metav1.GetOptions{})
-		if err != nil {
-			log.Errorf("Failed to get the default role [%s]: %v", model.DefaultApplication, err)
+		defaultRole, getDefaultRoleErr := u.Store.RoleRepository().
+			GetByName(ctx, v1.Default.String(), metav1.GetOptions{})
+		if getDefaultRoleErr != nil {
+			log.Errorf(
+				"Failed to get the default role [%s]: %v",
+				model.DefaultApplication,
+				getDefaultRoleErr,
+			)
 		} else {
 			roleIds = []string{defaultRole.InstanceID}
 		}
 	}
-	err = u.RoleService.BatchAssignRole(ctx, v1.BatchAssignRoleRequest{
+
+	roleAssignmentErr := u.RoleService.BatchAssignRole(ctx, v1.BatchAssignRoleRequest{
 		InstanceIds: roleIds,
 		Targets:     []string{createUser.InstanceID},
 	})
-	if err != nil {
-		log.Errorf("Failed to assign role: [%v] to the user [%s]: %v", roleIds, createUser.Name, err)
+	if roleAssignmentErr != nil {
+		log.Errorf(
+			"Failed to assign role: [%v] to the user [%s]: %v",
+			roleIds,
+			createUser.Name,
+			roleAssignmentErr,
+		)
 	}
-	// user org association
+
+	// User organization association
 	var deptMembers []*model.DepartmentMember
 	if len(req.DepartmentIds) == 0 {
-		defaultOrg, err := u.Store.OrganizationRepository().GetByName(ctx, model.DefaultOrganization, metav1.GetOptions{})
-		if err != nil {
-			log.Errorf("Failed to get the default org [%s]: %w", model.DefaultApplication, err)
+		defaultOrg, getDefaultOrgErr := u.Store.OrganizationRepository().
+			GetByName(ctx, model.DefaultOrganization, metav1.GetOptions{})
+		if getDefaultOrgErr != nil {
+			log.Errorf(
+				"Failed to get the default org [%s]: %w",
+				model.DefaultApplication,
+				getDefaultOrgErr,
+			)
 		}
 		req.DepartmentIds = append(req.DepartmentIds, defaultOrg.GetInstanceID())
 	}
+
 	for _, dept := range req.DepartmentIds {
 		deptMembers = append(deptMembers, &model.DepartmentMember{
 			DepartmentID: dept,
 			MemberID:     user.GetInstanceID(),
 		})
 	}
-	err = u.Store.OrganizationRepository().AddDepartmentMembers(ctx, deptMembers)
-	if err != nil {
-		log.Errorf("Failed to add user to the department: %w", err)
+
+	orgAssociationErr := u.Store.OrganizationRepository().AddDepartmentMembers(ctx, deptMembers)
+	if orgAssociationErr != nil {
+		log.Errorf("Failed to add user to the department: %w", orgAssociationErr)
 	}
 
 	return &v1.CreateUserResponse{

@@ -56,12 +56,13 @@ func (s *GRPCOptions) Validate() []error {
 func (s *GRPCOptions) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&s.BindAddress, "grpc.bind-address", s.BindAddress, ""+
 		"The IP address on which to serve the --grpc.bind-port(set to 0.0.0.0 for all IPv4 interfaces and :: for all IPv6 interfaces).")
-	desc := "The port on which to serve grpc with authentication and authorization."
+	requiredDesc := "The port on which to serve grpc with authentication and authorization."
 	if s.Required {
-		desc += " It cannot be switched off with 0."
+		requiredDesc += " It cannot be switched off with 0."
 	} else {
-		desc += " If 0, don't grpc server at all."
+		requiredDesc += " If 0, don't serve grpc at all."
 	}
+	fs.BoolVar(&s.Required, "grpc.required", s.Required, requiredDesc)
 	fs.IntVar(&s.BindPort, "grpc.bind-port", s.BindPort, ""+
 		"The port on which to serve unsecured, unauthenticated grpc access. It is assumed "+
 		"that firewall rules are set up such that this port is not reachable from outside of "+

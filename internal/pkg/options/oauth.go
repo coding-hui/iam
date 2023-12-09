@@ -171,9 +171,8 @@ func (c Client) ResolveRedirectURL(expectURL string) (*url.URL, error) {
 		// Need to specify at least one RedirectURI
 		if len(redirectAbleURIs) > 0 {
 			return url.Parse(redirectAbleURIs[0])
-		} else {
-			return nil, ErrorRedirectURLNotAllowed
 		}
+		return nil, ErrorRedirectURLNotAllowed
 	}
 	if allowAllRedirectURI || sliceutil.HasString(redirectAbleURIs, expectURL) {
 		return url.Parse(expectURL)

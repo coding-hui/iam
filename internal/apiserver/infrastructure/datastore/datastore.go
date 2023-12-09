@@ -35,5 +35,5 @@ var (
 
 // NewDBError new datastore error.
 func NewDBError(err error, format string, args ...interface{}) error {
-	return errors.WrapC(err, code.ErrDatabase, format, args)
+	return errors.WrapC(err, code.ErrDatabase, format, args...)
 }

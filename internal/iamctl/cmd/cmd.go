@@ -86,7 +86,7 @@ func NewIAMCtlCommand(in io.Reader, out, err io.Writer) *cobra.Command {
 	ioStreams := genericclioptions.IOStreams{In: in, Out: out, ErrOut: err}
 
 	groups := templates.CommandGroups{
-		{
+		templates.CommandGroup{
 			Message: "Basic Commands:",
 			Commands: []*cobra.Command{
 				info.NewCmdInfo(f, ioStreams),
@@ -95,19 +95,19 @@ func NewIAMCtlCommand(in io.Reader, out, err io.Writer) *cobra.Command {
 				jwt.NewCmdJWT(f, ioStreams),
 			},
 		},
-		{
+		templates.CommandGroup{
 			Message: "Identity and Access Management Commands:",
 			Commands: []*cobra.Command{
 				user.NewCmdUser(f, ioStreams),
 			},
 		},
-		{
+		templates.CommandGroup{
 			Message: "Troubleshooting and Debugging Commands:",
 			Commands: []*cobra.Command{
 				validate.NewCmdValidate(f, ioStreams),
 			},
 		},
-		{
+		templates.CommandGroup{
 			Message: "Settings Commands:",
 			Commands: []*cobra.Command{
 				set.NewCmdSet(f, ioStreams),

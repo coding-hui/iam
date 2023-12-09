@@ -517,8 +517,9 @@ func (o *organizationServiceImpl) updateDeptChildren(deptId, newAncestors, oldAn
 	}
 	var needUpdates []*model.Organization
 	for _, child := range children {
-		child.Ancestors = strings.ReplaceAll(child.Ancestors, oldAncestors, newAncestors)
-		needUpdates = append(needUpdates, &child)
+		temp := child
+		temp.Ancestors = strings.ReplaceAll(temp.Ancestors, oldAncestors, newAncestors)
+		needUpdates = append(needUpdates, &temp)
 	}
 	if len(needUpdates) > 0 {
 		return o.Store.OrganizationRepository().BatchUpdate(context.Background(), needUpdates, metav1.UpdateOptions{})

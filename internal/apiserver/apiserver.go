@@ -61,7 +61,6 @@ type apiServer struct {
 	gRPCAPIServer    *grpcAPIServer
 	beanContainer    *container.Container
 	repositoryFactor repository.Factory
-	cacheClient      cache.Interface
 
 	// entity that issues tokens
 	issuer token.Issuer
@@ -119,7 +118,7 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error)
 	// create token issuer
 	s.issuer, lastErr = token.NewIssuer(s.cfg.AuthenticationOptions)
 	if lastErr != nil {
-		return fmt.Errorf("unable to create issuer: %v", lastErr)
+		return fmt.Errorf("unable to create issuer: %w", lastErr)
 	}
 
 	// build the Ioc Container
@@ -165,7 +164,7 @@ func (s *apiServer) buildIoCContainer(ctx context.Context) (err error) {
 	// cache
 	var cacheClient cache.Interface
 	if cacheClient, err = cache.New(s.cfg.CacheOptions, ctx.Done()); err != nil {
-		return fmt.Errorf("failed to create cache, error: %v", err)
+		return fmt.Errorf("failed to create cache, error: %w", err)
 	}
 	if err = s.beanContainer.ProvideWithName("cache", cacheClient); err != nil {
 		return fmt.Errorf("fail to provides the cache bean to the container: %w", err)
