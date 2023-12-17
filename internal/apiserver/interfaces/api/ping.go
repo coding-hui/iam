@@ -7,7 +7,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/coding-hui/iam/internal/pkg/api"
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 type ping struct{}

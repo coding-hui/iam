@@ -12,10 +12,10 @@ import (
 
 	"github.com/coding-hui/common/errors"
 
-	"github.com/coding-hui/iam/internal/pkg/api"
 	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/middleware"
 	"github.com/coding-hui/iam/internal/pkg/request"
+	"github.com/coding-hui/iam/pkg/api"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 )
 
