@@ -11,7 +11,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/spf13/pflag"
 
-	"github.com/coding-hui/iam/internal/pkg/server"
+	"github.com/coding-hui/iam/pkg/server"
 )
 
 // JwtOptions contains configuration items related to API server features.

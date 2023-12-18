@@ -20,10 +20,10 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/cache"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
-	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/internal/pkg/token"
-	"github.com/coding-hui/iam/internal/pkg/utils/container"
+	"github.com/coding-hui/iam/pkg/container"
 	"github.com/coding-hui/iam/pkg/log"
+	genericapiserver "github.com/coding-hui/iam/pkg/server"
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 )

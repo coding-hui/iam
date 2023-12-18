@@ -4,7 +4,9 @@
 
 package cache
 
-import "github.com/coding-hui/iam/internal/pkg/options"
+import (
+	"github.com/coding-hui/iam/pkg/options"
+)
 
 type Factory interface {
 	// Type unique type of the cache

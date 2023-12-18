@@ -12,8 +12,8 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
-	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/pkg/log"
+	genericoptions "github.com/coding-hui/iam/pkg/options"
 )
 
 // mysqlEmptyDsn msyql empty dsn for create databases.

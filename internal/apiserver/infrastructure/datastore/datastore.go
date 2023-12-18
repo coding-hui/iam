@@ -5,7 +5,7 @@
 package datastore
 
 import (
-	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/pkg/code"
 
 	"github.com/coding-hui/common/errors"
 )

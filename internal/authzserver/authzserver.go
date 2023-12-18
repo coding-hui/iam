@@ -14,9 +14,9 @@ import (
 	"github.com/coding-hui/iam/internal/authzserver/config"
 	apisv1 "github.com/coding-hui/iam/internal/authzserver/interfaces/api"
 	"github.com/coding-hui/iam/internal/authzserver/store/apiserver"
-	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
-	"github.com/coding-hui/iam/internal/pkg/utils/container"
+	"github.com/coding-hui/iam/pkg/container"
 	"github.com/coding-hui/iam/pkg/log"
+	genericapiserver "github.com/coding-hui/iam/pkg/server"
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 )

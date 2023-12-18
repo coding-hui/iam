@@ -11,9 +11,9 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
-	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+	"github.com/coding-hui/iam/pkg/code"
 )
 
 type user struct {

@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/coding-hui/iam/internal/pkg/server"
+	"github.com/coding-hui/iam/pkg/server"
 )
 
 // SecureServingOptions contains configuration items related to HTTPS server startup.

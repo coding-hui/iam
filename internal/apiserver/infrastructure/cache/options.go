@@ -7,7 +7,7 @@ package cache
 import (
 	"fmt"
 
-	"github.com/coding-hui/iam/internal/pkg/options"
+	"github.com/coding-hui/iam/pkg/options"
 )
 
 type Options struct {

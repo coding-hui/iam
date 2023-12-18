@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/cache"
-	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
-	"github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/pkg/log"
+	"github.com/coding-hui/iam/pkg/options"
+	"github.com/coding-hui/iam/pkg/server"
 
 	cliflag "github.com/coding-hui/common/cli/flag"
 	"github.com/coding-hui/common/util/idutil"
@@ -18,16 +18,16 @@ import (
 
 // Options runs an iam api server.
 type Options struct {
-	GenericServerRunOptions *genericoptions.ServerRunOptions       `json:"server"         mapstructure:"server"`
-	GRPCOptions             *genericoptions.GRPCOptions            `json:"grpc"           mapstructure:"grpc"`
-	InsecureServing         *genericoptions.InsecureServingOptions `json:"insecure"       mapstructure:"insecure"`
-	SecureServing           *genericoptions.SecureServingOptions   `json:"secure"         mapstructure:"secure"`
-	MySQLOptions            *genericoptions.MySQLOptions           `json:"mysql"          mapstructure:"mysql"`
-	RedisOptions            *genericoptions.RedisOptions           `json:"redis"          mapstructure:"redis"`
-	LogOptions              *log.Options                           `json:"log"            mapstructure:"log"`
-	FeatureOptions          *genericoptions.FeatureOptions         `json:"feature"        mapstructure:"feature"`
-	AuthenticationOptions   *genericoptions.AuthenticationOptions  `json:"authentication" mapstructure:"authentication"`
-	CacheOptions            *cache.Options                         `json:"cache"          mapstructure:"cache"`
+	GenericServerRunOptions *options.ServerRunOptions       `json:"server"         mapstructure:"server"`
+	GRPCOptions             *options.GRPCOptions            `json:"grpc"           mapstructure:"grpc"`
+	InsecureServing         *options.InsecureServingOptions `json:"insecure"       mapstructure:"insecure"`
+	SecureServing           *options.SecureServingOptions   `json:"secure"         mapstructure:"secure"`
+	MySQLOptions            *options.MySQLOptions           `json:"mysql"          mapstructure:"mysql"`
+	RedisOptions            *options.RedisOptions           `json:"redis"          mapstructure:"redis"`
+	LogOptions              *log.Options                    `json:"log"            mapstructure:"log"`
+	FeatureOptions          *options.FeatureOptions         `json:"feature"        mapstructure:"feature"`
+	AuthenticationOptions   *options.AuthenticationOptions  `json:"authentication" mapstructure:"authentication"`
+	CacheOptions            *cache.Options                  `json:"cache"          mapstructure:"cache"`
 }
 
 // ApplyTo applies the run options to the method receiver and returns self.
@@ -72,15 +72,15 @@ func (o *Options) Complete() error {
 // NewOptions creates a new Options object with default parameters.
 func NewOptions() *Options {
 	o := Options{
-		GenericServerRunOptions: genericoptions.NewServerRunOptions(),
-		GRPCOptions:             genericoptions.NewGRPCOptions(),
-		InsecureServing:         genericoptions.NewInsecureServingOptions(),
-		SecureServing:           genericoptions.NewSecureServingOptions(),
-		MySQLOptions:            genericoptions.NewMySQLOptions(),
-		RedisOptions:            genericoptions.NewRedisOptions(),
+		GenericServerRunOptions: options.NewServerRunOptions(),
+		GRPCOptions:             options.NewGRPCOptions(),
+		InsecureServing:         options.NewInsecureServingOptions(),
+		SecureServing:           options.NewSecureServingOptions(),
+		MySQLOptions:            options.NewMySQLOptions(),
+		RedisOptions:            options.NewRedisOptions(),
 		LogOptions:              log.NewOptions(),
-		FeatureOptions:          genericoptions.NewFeatureOptions(),
-		AuthenticationOptions:   genericoptions.NewAuthenticationOptions(),
+		FeatureOptions:          options.NewFeatureOptions(),
+		AuthenticationOptions:   options.NewAuthenticationOptions(),
 		CacheOptions:            cache.NewCacheOptions(),
 	}
 

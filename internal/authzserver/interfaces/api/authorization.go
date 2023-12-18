@@ -9,9 +9,9 @@ import (
 
 	"github.com/coding-hui/iam/internal/authzserver/authorization"
 	"github.com/coding-hui/iam/internal/authzserver/config"
-	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/pkg/api"
 	authzv1 "github.com/coding-hui/iam/pkg/api/authzserver/v1"
+	"github.com/coding-hui/iam/pkg/code"
 
 	"github.com/coding-hui/common/errors"
 )

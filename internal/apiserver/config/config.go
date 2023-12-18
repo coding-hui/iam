@@ -6,7 +6,7 @@ package config
 
 import (
 	"github.com/coding-hui/iam/cmd/iam-apiserver/app/options"
-	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
+	genericapiserver "github.com/coding-hui/iam/pkg/server"
 )
 
 // Config config for iam-apiserver.

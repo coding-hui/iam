@@ -25,8 +25,8 @@ import (
 	"github.com/coding-hui/iam/internal/iamctl/cmd/validate"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/version"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"
-	genericapiserver "github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
+	genericapiserver "github.com/coding-hui/iam/pkg/server"
 
 	cliflag "github.com/coding-hui/common/cli/flag"
 )

@@ -13,9 +13,9 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	"github.com/coding-hui/iam/internal/pkg/code"
 	pkgUtils "github.com/coding-hui/iam/internal/pkg/utils"
 	"github.com/coding-hui/iam/internal/pkg/utils/gormutil"
+	"github.com/coding-hui/iam/pkg/code"
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"

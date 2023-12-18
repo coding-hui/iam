@@ -16,7 +16,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/pkg/channel"
 	"github.com/coding-hui/iam/internal/pkg/mycasbin"
-	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
+	genericoptions "github.com/coding-hui/iam/pkg/options"
 )
 
 type casbinRepositoryImpl struct {

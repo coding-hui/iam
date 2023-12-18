@@ -18,10 +18,10 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"gopkg.in/square/go-jose.v2"
 
-	"github.com/coding-hui/iam/internal/pkg/code"
-	"github.com/coding-hui/iam/internal/pkg/options"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+	"github.com/coding-hui/iam/pkg/code"
 	"github.com/coding-hui/iam/pkg/log"
+	"github.com/coding-hui/iam/pkg/options"
 
 	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"

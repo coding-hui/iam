@@ -9,9 +9,9 @@ import (
 	"sync"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
-	"github.com/coding-hui/iam/internal/pkg/options"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
+	"github.com/coding-hui/iam/pkg/options"
 )
 
 var (

@@ -19,9 +19,9 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
-	"github.com/coding-hui/iam/internal/pkg/code"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+	"github.com/coding-hui/iam/pkg/code"
 	"github.com/coding-hui/iam/pkg/log"
 )
 

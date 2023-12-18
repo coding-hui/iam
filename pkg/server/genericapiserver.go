@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/coding-hui/iam/pkg/middleware"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/coding-hui/iam/internal/pkg/middleware"
 	"github.com/coding-hui/iam/pkg/api"
 	"github.com/coding-hui/iam/pkg/log"
 

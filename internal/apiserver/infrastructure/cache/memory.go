@@ -12,9 +12,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"k8s.io/apimachinery/pkg/util/wait"
 
-	"github.com/coding-hui/iam/internal/pkg/options"
-
 	"github.com/coding-hui/common/errors"
+	"github.com/coding-hui/iam/pkg/options"
 )
 
 var ErrNoSuchKey = errors.New("no such key")

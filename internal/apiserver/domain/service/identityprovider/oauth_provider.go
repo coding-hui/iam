@@ -7,8 +7,8 @@ package identityprovider
 import (
 	"net/http"
 
-	"github.com/coding-hui/iam/internal/pkg/options"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+	"github.com/coding-hui/iam/pkg/options"
 )
 
 type OAuthProvider interface {

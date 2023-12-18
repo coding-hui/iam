@@ -14,8 +14,8 @@ import (
 
 	cmdutil "github.com/coding-hui/iam/internal/iamctl/cmd/util"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"
-	"github.com/coding-hui/iam/internal/pkg/middleware/auth"
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
+	"github.com/coding-hui/iam/pkg/middleware/auth"
 )
 
 const (

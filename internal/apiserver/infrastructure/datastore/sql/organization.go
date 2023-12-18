@@ -17,7 +17,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
-	"github.com/coding-hui/iam/internal/pkg/code"
+	"github.com/coding-hui/iam/pkg/code"
 )
 
 type orgRepositoryImpl struct {

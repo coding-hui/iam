@@ -13,8 +13,8 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
-	"github.com/coding-hui/iam/internal/pkg/code"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
+	"github.com/coding-hui/iam/pkg/code"
 
 	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"

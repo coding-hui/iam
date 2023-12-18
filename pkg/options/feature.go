@@ -7,7 +7,7 @@ package options
 import (
 	"github.com/spf13/pflag"
 
-	"github.com/coding-hui/iam/internal/pkg/server"
+	"github.com/coding-hui/iam/pkg/server"
 )
 
 // FeatureOptions contains configuration items related to API server features.

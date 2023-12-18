@@ -7,23 +7,23 @@ package options
 import (
 	"encoding/json"
 
-	genericoptions "github.com/coding-hui/iam/internal/pkg/options"
-	"github.com/coding-hui/iam/internal/pkg/server"
 	"github.com/coding-hui/iam/pkg/log"
+	"github.com/coding-hui/iam/pkg/options"
+	"github.com/coding-hui/iam/pkg/server"
 
 	cliflag "github.com/coding-hui/common/cli/flag"
 )
 
 // Options runs an iam api server.
 type Options struct {
-	RPCServer               string                                 `json:"rpcserver"      mapstructure:"rpcserver"`
-	ClientCA                string                                 `json:"client-ca-file" mapstructure:"client-ca-file"`
-	GenericServerRunOptions *genericoptions.ServerRunOptions       `json:"server"         mapstructure:"server"`
-	InsecureServing         *genericoptions.InsecureServingOptions `json:"insecure"       mapstructure:"insecure"`
-	SecureServing           *genericoptions.SecureServingOptions   `json:"secure"         mapstructure:"secure"`
-	RedisOptions            *genericoptions.RedisOptions           `json:"redis"          mapstructure:"redis"`
-	LogOptions              *log.Options                           `json:"log"            mapstructure:"log"`
-	FeatureOptions          *genericoptions.FeatureOptions         `json:"feature"        mapstructure:"feature"`
+	RPCServer               string                          `json:"rpcserver"      mapstructure:"rpcserver"`
+	ClientCA                string                          `json:"client-ca-file" mapstructure:"client-ca-file"`
+	GenericServerRunOptions *options.ServerRunOptions       `json:"server"         mapstructure:"server"`
+	InsecureServing         *options.InsecureServingOptions `json:"insecure"       mapstructure:"insecure"`
+	SecureServing           *options.SecureServingOptions   `json:"secure"         mapstructure:"secure"`
+	RedisOptions            *options.RedisOptions           `json:"redis"          mapstructure:"redis"`
+	LogOptions              *log.Options                    `json:"log"            mapstructure:"log"`
+	FeatureOptions          *options.FeatureOptions         `json:"feature"        mapstructure:"feature"`
 }
 
 // ApplyTo applies the run options to the method receiver and returns self.
@@ -72,12 +72,12 @@ func NewOptions() *Options {
 	o := Options{
 		RPCServer:               "127.0.0.1:8081",
 		ClientCA:                "",
-		GenericServerRunOptions: genericoptions.NewServerRunOptions(),
-		InsecureServing:         genericoptions.NewInsecureServingOptions(),
-		SecureServing:           genericoptions.NewSecureServingOptions(),
-		RedisOptions:            genericoptions.NewRedisOptions(),
+		GenericServerRunOptions: options.NewServerRunOptions(),
+		InsecureServing:         options.NewInsecureServingOptions(),
+		SecureServing:           options.NewSecureServingOptions(),
+		RedisOptions:            options.NewRedisOptions(),
 		LogOptions:              log.NewOptions(),
-		FeatureOptions:          genericoptions.NewFeatureOptions(),
+		FeatureOptions:          options.NewFeatureOptions(),
 	}
 
 	return &o

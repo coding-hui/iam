@@ -12,8 +12,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/coding-hui/iam/internal/pkg/options"
 	"github.com/coding-hui/iam/pkg/log"
+	"github.com/coding-hui/iam/pkg/options"
 
 	"github.com/coding-hui/common/errors"
 )
