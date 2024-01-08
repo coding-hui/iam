@@ -32,7 +32,7 @@ require (
 	github.com/onsi/gomega v1.27.10
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/pkg/errors v0.9.1
-	github.com/redis/go-redis/v9 v9.1.0
+	github.com/redis/go-redis/v9 v9.4.0
 	github.com/russross/blackfriday v1.6.0
 	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	github.com/shirou/gopsutil/v3 v3.23.8
