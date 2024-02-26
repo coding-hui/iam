@@ -20,7 +20,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-ldap/ldap v3.0.3+incompatible
 	github.com/golang-jwt/jwt/v4 v4.5.0
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/lib/pq v1.10.9
 	github.com/mitchellh/go-wordwrap v1.0.1
@@ -48,12 +48,12 @@ require (
 	github.com/tpkeeper/gin-dump v1.0.1
 	github.com/zsais/go-gin-prometheus v0.1.0
 	go.uber.org/zap v1.25.0
-	golang.org/x/oauth2 v0.11.0
-	golang.org/x/sync v0.3.0
-	golang.org/x/text v0.13.0
+	golang.org/x/oauth2 v0.16.0
+	golang.org/x/sync v0.6.0
+	golang.org/x/text v0.14.0
 	golang.org/x/tools v0.12.0
-	google.golang.org/grpc v1.57.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/grpc v1.62.0
+	google.golang.org/protobuf v1.32.0
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/gorm v1.25.4
@@ -99,7 +99,7 @@ require (
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/uuid v1.3.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/gosuri/uitable v0.0.4 // indirect
 	github.com/h2non/filetype v1.1.3 // indirect
@@ -152,12 +152,12 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.5.0 // indirect
-	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.16.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
+	golang.org/x/net v0.20.0 // indirect
+	golang.org/x/sys v0.16.0 // indirect
+	google.golang.org/appengine v1.6.8 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240123012728-ef4313101c80 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
