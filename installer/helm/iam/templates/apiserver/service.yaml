@@ -1,12 +1,8 @@
-# Copyright (c) 2023 coding-hui. All rights reserved.
-# Use of this source code is governed by a MIT style
-# license that can be found in the LICENSE file.
-
 {{- if .Values.apiServer.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "iam.apiServerFullname" . }}-service
+  name: {{ include "iam.apiServerFullname" . }}
   labels:
     {{- include "iam.apiServerLabels" . | nindent 4 }}
     {{- with .Values.apiServer.service.labels }}

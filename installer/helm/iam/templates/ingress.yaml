@@ -1,7 +1,4 @@
-# Copyright (c) 2023 coding-hui. All rights reserved.
-# Use of this source code is governed by a MIT style
-# license that can be found in the LICENSE file.
-{{ if .Values.ingress.enabled }}
+{{- if .Values.ingress.enabled }}
 {{- $ingressApiIsStable := eq (include "iam.ingress.isStable" .) "true" -}}
 {{- $ingressSupportsIngressClassName := eq (include "iam.ingress.supportsIngressClassName" .) "true" -}}
 {{- $ingressSupportsPathType := eq (include "iam.ingress.supportsPathType" .) "true" -}}
@@ -48,10 +45,10 @@ spec:
               service:
                 name: {{ include "iam.fullname" $ }}-{{ $svcName }}
                 port:
-                  number: 3100
+                  number: http
               {{- else }}
               serviceName: {{ include "iam.fullname" $ }}-{{ $svcName }}
-              servicePort: 3100
+              servicePort: http
               {{- end }}
               {{- end }}
            {{- end }}

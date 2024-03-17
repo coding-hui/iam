@@ -1,0 +1,14 @@
+***********************************************************************
+ Welcome to WeCoding IAM
+ CHART NAME: {{ .Chart.Name }}
+ Chart version: {{ .Chart.Version }}
+ IAM version: {{ .Chart.AppVersion }}
+***********************************************************************
+
+Installed components:
+{{- if .Values.apiServer.enabled }}
+* apiserver
+{{- end }}
+{{- if .Values.console.enabled }}
+* console
+{{- else -}}
