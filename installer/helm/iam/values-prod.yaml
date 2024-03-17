@@ -23,8 +23,8 @@ fullnameOverride: ""
 # If you enable this, make sure to disable the gateway.
 # You'll need to supply authn configuration for your ingress controller.
 ingress:
-  enabled: false
-  #  ingressClassName: nginx
+  enabled: true
+  ingressClAssName: traefik
   annotations: { }
   #    nginx.ingress.kubernetes.io/auth-type: basic
   #    nginx.ingress.kubernetes.io/auth-secret: loki-distributed-basic-auth
@@ -35,13 +35,13 @@ ingress:
     apiserver:
       - /api/v1
     frontend:
-      - /iam
+      - /console
   hosts:
-    - iam.example.com
-  # tls:
-  #   - secretName: loki-distributed-tls
-  #     hosts:
-  #       - loki.example.com
+    - iam.wecoding.top
+#  tls:
+#    - secretName: iam-tls
+#      hosts:
+#        - iam.wecoding.top
 
 # Configuration for the ApiServer
 apiServer:
