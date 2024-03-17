@@ -45,7 +45,7 @@ spec:
               service:
                 name: {{ include "iam.fullname" $ }}-{{ $svcName }}
                 port:
-                  number: http
+                  name: http
               {{- else }}
               serviceName: {{ include "iam.fullname" $ }}-{{ $svcName }}
               servicePort: http
