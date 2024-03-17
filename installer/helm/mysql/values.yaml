@@ -331,18 +331,12 @@ primary:
   ## @param primary.resources.requests The requested resources for MySQL primary containers
   ##
   resources:
-    ## Example:
-    ## limits:
-    ##    cpu: 250m
-    ##    memory: 256Mi
-    ##
-    limits: { }
-    ## Examples:
-    ## requests:
-    ##    cpu: 250m
-    ##    memory: 256Mi
-    ##
-    requests: { }
+   limits:
+      cpu: 500m
+      memory: 512Mi
+   requests:
+      cpu: 500m
+      memory: 512Mi
   ## Configure extra options for liveness probe
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param primary.livenessProbe.enabled Enable livenessProbe
