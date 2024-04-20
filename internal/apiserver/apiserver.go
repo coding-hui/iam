@@ -60,6 +60,7 @@ type apiServer struct {
 	gRPCAPIServer    *grpcAPIServer
 	beanContainer    *container.Container
 	repositoryFactor repository.Factory
+	eventBus         *event.Bus
 
 	// entity that issues tokens
 	issuer token.Issuer
@@ -110,6 +111,9 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error)
 		if s.repositoryFactor != nil {
 			_ = s.repositoryFactor.Close()
 		}
+		if s.eventBus != nil {
+			_ = (*s.eventBus).CloseWait()
+		}
 
 		return nil
 	}))
@@ -132,8 +136,6 @@ func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error)
 	if lastErr = service.InitData(ctx); lastErr != nil {
 		return fmt.Errorf("failed to init database %w", lastErr)
 	}
-
-	go event.StartEventWorker(ctx, errChan)
 
 	return s.startAPIServer()
 }
@@ -180,9 +182,14 @@ func (s *apiServer) buildIoCContainer(ctx context.Context) (err error) {
 	}
 
 	// event
-	if err = s.beanContainer.Provides(event.InitEvent(s.cfg)...); err != nil {
-		return fmt.Errorf("fail to provides the event bean to the container: %w", err)
+	eventBus, listeners := event.InitEvent(s.cfg)
+	if err = s.beanContainer.ProvideWithName("eventBus", eventBus); err != nil {
+		return fmt.Errorf("fail to provides the event bus bean to the container: %w", err)
 	}
+	if err = s.beanContainer.Provides(listeners...); err != nil {
+		return fmt.Errorf("fail to provides the event listener bean to the container: %w", err)
+	}
+	s.eventBus = &eventBus
 
 	if err = s.beanContainer.Populate(); err != nil {
 		return fmt.Errorf("fail to populate the bean container: %w", err)

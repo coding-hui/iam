@@ -18,6 +18,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
+	"github.com/coding-hui/iam/internal/apiserver/event"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
@@ -31,6 +32,7 @@ type AuthenticationService interface {
 	LoginByProvider(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
 	LoginByOAuthProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*v1.RefreshTokenResponse, error)
+	Init(ctx context.Context) error
 }
 
 type authenticationServiceImpl struct {
@@ -39,6 +41,7 @@ type authenticationServiceImpl struct {
 	UserService     UserService             `inject:""`
 	TokenService    TokenService            `inject:""`
 	ProviderService IdentityProviderService `inject:""`
+	EventBus        event.Bus               `inject:"eventBus"`
 }
 
 // NewAuthenticationService new authentication service.
@@ -55,6 +58,7 @@ type localHandlerImpl struct {
 	userService UserService
 	username    string
 	password    string
+	eventBus    event.Bus
 }
 
 func (a *authenticationServiceImpl) newLocalHandler(loginReq v1.AuthenticateRequest) (*localHandlerImpl, error) {
@@ -67,7 +71,12 @@ func (a *authenticationServiceImpl) newLocalHandler(loginReq v1.AuthenticateRequ
 		userService: a.UserService,
 		username:    loginReq.Username,
 		password:    loginReq.Password,
+		eventBus:    a.EventBus,
 	}, nil
+}
+
+func (a *authenticationServiceImpl) Init(ctx context.Context) error {
+	return nil
 }
 
 func (a *authenticationServiceImpl) Login(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error) {
@@ -296,12 +305,12 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1.UserBase, erro
 	if err := user.Compare(l.password); err != nil {
 		return nil, err
 	}
-	go func() {
-		err := l.store.UserRepository().FlushLastLoginTime(ctx, user.Name)
-		if err != nil {
-			log.Errorf("Failed to flush user [%s] last login time: %v", user.Name, err)
-		}
-	}()
+
+	l.eventBus.AsyncPublish(&event.AuthenticationEvent{
+		Success:        true,
+		Username:       user.Name,
+		UserInstanceID: user.InstanceID,
+	})
 
 	return assembler.ConvertUserModelToBase(user), nil
 }

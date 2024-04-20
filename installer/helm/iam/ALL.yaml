@@ -294,7 +294,12 @@ spec:
           securityContext:
             {}
           resources:
-            {}
+            limits:
+              cpu: 256m
+              memory: 512Mi
+            requests:
+              cpu: 256m
+              memory: 512Mi
           volumeMounts:
             - name: log
               mountPath: /var/log/iam
@@ -366,7 +371,12 @@ spec:
               port: 8080
             initialDelaySeconds: 30
           resources:
-            {}
+            limits:
+              cpu: 256m
+              memory: 512Mi
+            requests:
+              cpu: 256m
+              memory: 512Mi
           volumeMounts:
             - name: config
               subPath: nginx.conf
@@ -407,3 +417,35 @@ spec:
           imagePullPolicy: Always
           command: [ "/gen-k8s-secret.sh", "--service", "iam-apiserver", "--namespace",
                      "iam-system", "--secret", "iam-apiserver" ]
+---
+# Source: iam/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: iam
+  namespace: iam-system
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  rules:
+    - host: "iam.wecoding.top"
+      http:
+        paths:
+          - path: /api/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: iam-apiserver
+                port:
+                  number: "http"
+          - path: /console
+            pathType: Prefix
+            backend:
+              service:
+                name: iam-frontend
+                port:
+                  number: http

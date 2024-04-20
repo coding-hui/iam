@@ -29,7 +29,7 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 
 	needInitData = []DataInit{
 		organizationService, userService, roleService, resourceService,
-		policyService, providerService, appService,
+		policyService, providerService, appService, authenticationService,
 	}
 
 	return []interface{}{
