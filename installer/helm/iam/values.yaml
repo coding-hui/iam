@@ -28,10 +28,8 @@ ingress:
   #    nginx.ingress.kubernetes.io/configuration-snippet: |
   #    proxy_set_header X-Scope-OrgID $remote_user;
   paths:
-    apiserver:
-      - /api/v1
-    frontend:
-      - /console
+    console:
+      - /
   hosts:
     - iam.wecoding.top
   # tls:
