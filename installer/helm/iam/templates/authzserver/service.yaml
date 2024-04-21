@@ -1,0 +1,42 @@
+{{- if .Values.authzServer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "iam.authzServerFullname" . }}
+  labels:
+    {{- include "iam.authzServerLabels" . | nindent 4 }}
+    {{- with .Values.authzServer.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.authzServer.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.authzServer.service.type }}
+  {{- with .Values.authzServer.service.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- if eq "LoadBalancer" .Values.authzServer.service.type }}
+  {{- with .Values.authzServer.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.authzServer.service.loadBalancerSourceRanges  }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.authzServer.service.port }}
+      targetPort: http
+      {{- if and (eq "NodePort" .Values.authzServer.service.type) .Values.authzServer.service.nodePort }}
+      nodePort: {{ .Values.authzServer.service.nodePort }}
+      {{- end }}
+      protocol: TCP
+      {{- with .Values.authzServer.service.appProtocol }}
+      appProtocol: {{ . }}
+      {{- end }}
+  selector:
+    {{- include "iam.authzServerSelectorLabels" . | nindent 4 }}
+{{- end }}

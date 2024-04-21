@@ -1,0 +1,25 @@
+{{- if .Values.authzServer.createSecret }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "iam.authzServerFullname" . }}-init
+  labels:
+    {{- include "iam.authzServerLabels" . | nindent 4 }}
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: {{ include "iam.authzServerFullname" . }}
+      priorityClassName: system-cluster-critical
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      containers:
+        - name: main
+          image: "{{ .Values.authzServer.image.repository }}:{{ .Values.authzServer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.authzServer.image.pullPolicy }}
+          command: [ "/gen-k8s-secret.sh", "--service", "{{ include "iam.authzServerFullname" . }}", "--namespace",
+                     "{{ .Release.Namespace }}", "--secret", "{{ include "iam.authzServerFullname" . }}" ]
+{{- end }}

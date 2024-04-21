@@ -1,0 +1,41 @@
+{{ if .Values.authzServer.autoscaling.enabled }}
+{{- $apiVersion := include "iam.hpa.apiVersion" . -}}
+apiVersion: {{ $apiVersion }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "iam.authzServerFullname" . }}
+  labels:
+    {{- include "iam.authzServerLabels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "iam.authzServerFullname" . }}
+  minReplicas: {{ .Values.authzServer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.authzServer.autoscaling.maxReplicas }}
+  metrics:
+  {{- with .Values.authzServer.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        {{- if (eq $apiVersion "autoscaling/v2") }}
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+        {{- else }}
+        targetAverageUtilization: {{ . }}
+        {{- end }}
+  {{- end }}
+  {{- with .Values.authzServer.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        {{- if (eq $apiVersion "autoscaling/v2") }}
+        target:
+          type: Utilization
+          averageUtilization: {{ . }}
+        {{- else }}
+        targetAverageUtilization: {{ . }}
+        {{- end }}
+  {{- end }}
+{{- end }}

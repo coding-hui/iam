@@ -109,6 +109,76 @@ apiServer:
     # -- Labels for ApiServer service
     labels: { }
 
+# Configuration for the AuthzServer
+authzServer:
+  # -- Specifies whether the AuthServer should be enabled
+  enabled: true
+  # -- image for AuthzServer
+  image:
+    # -- The AuthzServer image repository
+    repository: devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-authzserver
+    # -- The AuthzServer image pull policy
+    pullPolicy: Always
+    # -- The AuthzServer image tag
+    tag: "latest"
+  # -- Config file for the AuthzServer
+  configFile: config/iam-authzserver.yaml
+  createSecret: true
+  # -- Number of replicas for the AuthzServer
+  replicas: 1
+  autoscaling:
+    # -- Enable autoscaling for the AuthzServer
+    enabled: false
+    # -- Minimum autoscaling replicas for the AuthzServer
+    minReplicas: 1
+    # -- Maximum autoscaling replicas for the AuthzServer
+    maxReplicas: 3
+    # -- Target CPU utilisation percentage for the AuthzServer
+    targetCPUUtilizationPercentage: 60
+    # -- Target memory utilisation percentage for the AuthzServer
+    targetMemoryUtilizationPercentage:
+  # -- See `kubectl explain deployment.spec.strategy` for more,
+  # ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  deploymentStrategy:
+    type: RollingUpdate
+  # -- The SecurityContext for AuthzServer containers
+  podSecurityContext: { }
+  # -- The SecurityContext for AuthzServer containers
+  containerSecurityContext: { }
+  # -- Resource requests and limits for the AuthzServer
+  resources: { }
+  # -- Grace period to allow the AuthzServer to shutdown before it is killed
+  terminationGracePeriodSeconds: 30
+  # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
+  # @default -- Hard node and soft zone anti-affinity
+  affinity: { }
+  # -- Pod Disruption Budget maxUnavailable
+  maxUnavailable: null
+  # -- Node selector for AuthzServer pods
+  nodeSelector: { }
+  # -- Tolerations for AuthzServer pods
+  tolerations: [ ]
+  # AuthzServer service configuration
+  service:
+    # -- Port of the AuthzServer service
+    port: 8010
+    # -- Type of the AuthzServer service
+    type: NodePort
+    # -- ClusterIP of the AuthzServer service
+    clusterIP: null
+    # -- Node port if service type is NodePort
+    nodePort: null
+    # -- Load balancer IPO address if service type is LoadBalancer
+    loadBalancerIP: null
+    # -- Load balancer allow traffic from CIDR list if service type is LoadBalancer
+    loadBalancerSourceRanges: [ ]
+    # -- Set appProtocol for the service
+    appProtocol: null
+    # -- Annotations for the AuthzServer service
+    annotations: { }
+    # -- Labels for AuthzServer service
+    labels: { }
+
 # Configuration for the ApiServer Console
 console:
   # -- Specifies whether the ApiServer should be enabled

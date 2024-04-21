@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "iam.authzServerFullname" . }}
+  labels:
+    {{- include "iam.authzServerLabels" . | nindent 4 }}
+spec:
+  {{- if not .Values.authzServer.autoscaling.enabled }}
+  replicas: {{ .Values.authzServer.replicas }}
+  {{- end }}
+  {{- with .Values.authzServer.deploymentStrategy }}
+  strategy:
+  {{ toYaml . | trim | indent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "iam.authzServerSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.authzServer.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "iam.authzServerSelectorLabels" . | nindent 8 }}
+        {{- with .Values.authzServer.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "iam.authzServerFullname" . }}
+      {{- with .Values.authzServer.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{ end }}
+      containers:
+        - name: apiserver
+          image: "{{ .Values.authzServer.image.repository }}:{{ .Values.authzServer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.authzServer.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.authzServer.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.authzServer.service.port }}
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.authzServer.service.port }}
+            initialDelaySeconds: 30
+          securityContext:
+            {{- toYaml .Values.authzServer.containerSecurityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.authzServer.resources | nindent 12 }}
+          volumeMounts:
+            - name: log
+              mountPath: /var/log/iam
+            - name: config
+              mountPath: /etc/iam/iam-authzserver.yaml
+              subPath: iam-authzserver.yaml
+            - name: iam-certs
+              mountPath: /var/run/iam/certificates
+              readOnly: true
+      {{- with .Values.authzServer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.authzServer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.authzServer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: iam-certs
+          secret:
+            defaultMode: 420
+            secretName: {{ include "iam.authzServerFullname" . }}
+        - name: config
+          configMap:
+            name: {{ include "iam.authzServerFullname" . }}
+        - name: log
+          emptyDir: {}
+
