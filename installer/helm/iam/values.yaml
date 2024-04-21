@@ -30,6 +30,10 @@ ingress:
   paths:
     console:
       - /
+    apiserver:
+      - /api/v1
+    authzserver:
+      - //api/v1/authz
   hosts:
     - iam.wecoding.top
   # tls:
