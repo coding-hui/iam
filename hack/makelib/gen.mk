@@ -7,7 +7,7 @@
 #
 
 PROTOC_INC_PATH=$(dir $(shell which protoc 2>/dev/null))/../include
-API_DEPS=pkg/api/proto/apiserver/v1alpha1/cache.proto
+API_DEPS=pkg/api/proto/apiserver/v1/cache.proto
 API_DEPSRCS=$(API_DEPS:.proto=.pb.go)
 
 .PHONY: gen.run
@@ -20,13 +20,13 @@ gen.errcode: gen.errcode.code gen.errcode.doc
 .PHONY: gen.errcode.code
 gen.errcode.code: tools.verify.codegen
 	@echo "===========> Generating iam error code go source files"
-	@codegen -type=int ${ROOT_DIR}/internal/pkg/code
+	@codegen -type=int ${ROOT_DIR}/pkg/code
 
 .PHONY: gen.errcode.doc
 gen.errcode.doc: tools.verify.codegen
 	@echo "===========> Generating error code markdown documentation"
 	@codegen -type=int -doc \
-		-output ${ROOT_DIR}/docs/guide/zh-CN/api/error_code_generated.md ${ROOT_DIR}/internal/pkg/code
+		-output ${ROOT_DIR}/docs/guide/zh-CN/api/error_code_generated.md ${ROOT_DIR}/pkg/code
 
 .PHONY: gen.ca.%
 gen.ca.%:

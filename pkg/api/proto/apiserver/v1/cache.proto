@@ -4,9 +4,9 @@
 
 syntax = "proto3";
 
-package proto.apiserver.v1alpha1;
+package proto.apiserver.v1;
 
-option go_package = "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1;v1alpha1";
+option go_package = "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1;v1";
 
 //go:generate protoc --go_out=. *.proto
 //go:generate protoc --go-grpc_out=. *.proto

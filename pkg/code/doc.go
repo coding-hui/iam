@@ -11,4 +11,4 @@
 // StatusInternalServerError          = 500 // RFC 7231, 6.6.1
 
 // Package code defines error codes for iam platform.
-package code // import "github.com/coding-hui/iam/internal/pkg/code"
+package code // import "github.com/coding-hui/iam/pkg/code"

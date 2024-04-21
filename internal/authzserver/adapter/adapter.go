@@ -12,7 +12,7 @@ import (
 	"github.com/casbin/casbin/v2/persist"
 
 	"github.com/coding-hui/iam/internal/authzserver/store"
-	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 )
 

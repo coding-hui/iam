@@ -7,7 +7,7 @@ package store
 import (
 	"context"
 
-	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1"
 )
 
 // PolicyStore defines the policy storage interface.

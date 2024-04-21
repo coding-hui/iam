@@ -14,7 +14,7 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
-	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
 	genericoptions "github.com/coding-hui/iam/pkg/options"
 )

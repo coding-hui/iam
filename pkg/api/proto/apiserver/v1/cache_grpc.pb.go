@@ -6,13 +6,12 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.22.5
-// source: pkg/api/proto/apiserver/v1alpha1/cache.proto
+// source: pkg/api/proto/apiserver/v1/cache.proto
 
-package v1alpha1
+package v1
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -24,9 +23,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Cache_DetailPolicy_FullMethodName    = "/proto.apiserver.v1alpha1.Cache/DetailPolicy"
-	Cache_ListPolicies_FullMethodName    = "/proto.apiserver.v1alpha1.Cache/ListPolicies"
-	Cache_ListPolicyRules_FullMethodName = "/proto.apiserver.v1alpha1.Cache/ListPolicyRules"
+	Cache_DetailPolicy_FullMethodName    = "/proto.apiserver.v1.Cache/DetailPolicy"
+	Cache_ListPolicies_FullMethodName    = "/proto.apiserver.v1.Cache/ListPolicies"
+	Cache_ListPolicyRules_FullMethodName = "/proto.apiserver.v1.Cache/ListPolicyRules"
 )
 
 // CacheClient is the client API for Cache service.
@@ -167,7 +166,7 @@ func _Cache_ListPolicyRules_Handler(srv interface{}, ctx context.Context, dec fu
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Cache_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.apiserver.v1alpha1.Cache",
+	ServiceName: "proto.apiserver.v1.Cache",
 	HandlerType: (*CacheServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -184,5 +183,5 @@ var Cache_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pkg/api/proto/apiserver/v1alpha1/cache.proto",
+	Metadata: "pkg/api/proto/apiserver/v1/cache.proto",
 }

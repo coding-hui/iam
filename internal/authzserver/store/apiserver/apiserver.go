@@ -13,7 +13,7 @@ import (
 	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/iam/internal/authzserver/store"
-	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1"
 )
 
 type datastore struct {

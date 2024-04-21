@@ -14,7 +14,7 @@ import (
 
 	"github.com/coding-hui/common/errors"
 
-	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1"
 )
 
 type policies struct {

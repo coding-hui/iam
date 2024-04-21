@@ -7,7 +7,7 @@ package v1
 import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
-	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1alpha1"
+	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1"
 
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
