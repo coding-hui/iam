@@ -3,9 +3,9 @@
 # license that can be found in the LICENSE file.
 
 FROM golang:1.19.4 AS builder
-WORKDIR /go/src/wecoding/
-ADD . iam
-RUN cd iam && make build BINS="iam-authzserver"
+WORKDIR /go/src/wecoding/iam
+ADD . .
+RUN make build BINS="iam-authzserver"
 
 ARG BASE_IMAGE
 
@@ -15,16 +15,25 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE:-alpine:latest}
 LABEL maintainer="wecoding@yeah.net"
 
-WORKDIR /opt/iam/
+ARG KUBE_VERSION="1.25.0"
+ARG TARGETARCH
+RUN apk add --update ca-certificates && \
+    apk add --update openssl bash expat && \
+    apk add --update -t deps curl && \
+    curl -L https://storage.googleapis.com/kubernetes-release/release/v$KUBE_VERSION/bin/linux/$TARGETARCH/kubectl -o /usr/local/bin/kubectl && \
+    chmod +x /usr/local/bin/kubectl && \
+    apk del --purge deps && \
+    rm /var/cache/apk/* && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo "Asia/Shanghai" > /etc/timezone
 
-# This is required by daemon connecting with cri
-# RUN apk add --no-cache ca-certificates bash expat
-
-RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-      echo "Asia/Shanghai" > /etc/timezone
-
-COPY --from=builder /go/src/wecoding/iam/_output/bin/iam-authzserver /usr/local/bin/iam-authzserver
 COPY --from=builder /go/src/wecoding/iam/configs/iam-authzserver.yaml /etc/iam/iam-authzserver.yaml
+COPY --from=builder /go/src/wecoding/iam/_output/bin/iam-authzserver /usr/local/bin/iam-authzserver
+COPY --from=builder /go/src/wecoding/iam/hack/gen-k8s-secret.sh /gen-k8s-secret.sh
+
+RUN chmod +x /gen-k8s-secret.sh
+
+WORKDIR /opt/iam/
 
 EXPOSE 8010
 
