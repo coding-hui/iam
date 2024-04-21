@@ -9,7 +9,7 @@ spec:
   backoffLimit: 3
   template:
     spec:
-      serviceAccountName: {{ include "iam.fullname" . }}
+      serviceAccountName: {{ include "iam.apiServerFullname" . }}
       priorityClassName: system-cluster-critical
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
@@ -20,6 +20,6 @@ spec:
         - name: main
           image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
-          command: [ "/gen-k8s-secret.sh", "--service", "{{ include "iam.fullname" . }}", "--namespace",
+          command: [ "/gen-k8s-secret.sh", "--service", "{{ include "iam.apiServerFullname" . }}", "--namespace",
                      "{{ .Release.Namespace }}", "--secret", "{{ include "iam.fullname" . }}" ]
 {{- end }}
