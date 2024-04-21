@@ -33,7 +33,7 @@ ingress:
     apiserver:
       - /api/v1
     authzserver:
-      - //api/v1/authz
+      - /api/v1/authz
   hosts:
     - iam.wecoding.top
   # tls:
