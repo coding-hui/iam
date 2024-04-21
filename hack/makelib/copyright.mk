@@ -9,8 +9,8 @@
 .PHONY: copyright.verify
 copyright.verify: tools.verify.addlicense
 	@echo "===========> Verifying the boilerplate headers for all files"
-	@addlicense --check -f $(ROOT_DIR)/hack/boilerplate.txt -ignore installer/** -ignore $(ROOT_DIR)/_output/** $(ROOT_DIR)
+	@addlicense --check -f $(ROOT_DIR)/hack/boilerplate.txt --skip-dirs "api/*" --skip-dirs "installer/*" --skip-dirs "_output/*" $(ROOT_DIR)
 
 .PHONY: copyright.add
 copyright.add: tools.verify.addlicense
-	@addlicense -v -f $(ROOT_DIR)/hack/boilerplate.txt -ignore $(ROOT_DIR)/installer/** -ignore $(ROOT_DIR)/_output/** $(ROOT_DIR)
+	@addlicense -v -f $(ROOT_DIR)/hack/boilerplate.txt --skip-dirs "api/*" --skip-dirs "installer/*" --skip-dirs "_output/*" $(ROOT_DIR)
