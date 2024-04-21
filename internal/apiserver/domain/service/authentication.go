@@ -233,12 +233,11 @@ func (a *authenticationServiceImpl) LoginByOAuthProvider(
 			Email:  authenticated.GetEmail(),
 		}
 	}
-	go func() {
-		err := a.Store.UserRepository().FlushLastLoginTime(ctx, userBase.Name)
-		if err != nil {
-			log.Errorf("Failed to flush user [%s] last login time: %v", userBase.Name, err)
-		}
-	}()
+	a.EventBus.AsyncPublish(&event.AuthenticationEvent{
+		Success:        true,
+		Username:       userBase.Name,
+		UserInstanceID: userBase.InstanceID,
+	})
 
 	accessToken, err := a.TokenService.IssueTo(&token.IssueRequest{
 		User:      *userBase,

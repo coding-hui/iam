@@ -9,7 +9,7 @@ client-ca-file: /var/run/iam/certificates/ca.crt
 server:
   mode: release
   healthz: true
-  middlewares: recovery,logger,secure,nocache,cors,dump
+  middlewares: recovery,logger,secure,nocache,cors
 
 insecure:
   bind-address: 0.0.0.0
