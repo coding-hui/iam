@@ -19,8 +19,8 @@ fullnameOverride: ""
 # If you enable this, make sure to disable the gateway.
 # You'll need to supply authn configuration for your ingress controller.
 ingress:
-  enabled: false
-  #  ingressClassName: nginx
+  enabled: true
+  ingressClAssName: traefik
   annotations: { }
   #    nginx.ingress.kubernetes.io/auth-type: basic
   #    nginx.ingress.kubernetes.io/auth-secret: loki-distributed-basic-auth
@@ -31,9 +31,9 @@ ingress:
     apiserver:
       - /api/v1
     frontend:
-      - /iam
+      - /console
   hosts:
-    - iam.example.com
+    - iam.wecoding.top
   # tls:
   #   - secretName: loki-distributed-tls
   #     hosts:
@@ -76,7 +76,13 @@ apiServer:
   # -- The SecurityContext for ApiServer containers
   containerSecurityContext: { }
   # -- Resource requests and limits for the ApiServer
-  resources: { }
+  resources:
+    limits:
+      cpu: 256m
+      memory: 512Mi
+    requests:
+      cpu: 256m
+      memory: 512Mi
   # -- Grace period to allow the ApiServer to shutdown before it is killed
   terminationGracePeriodSeconds: 30
   # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
@@ -144,7 +150,13 @@ authzServer:
   # -- The SecurityContext for AuthzServer containers
   containerSecurityContext: { }
   # -- Resource requests and limits for the AuthzServer
-  resources: { }
+  resources:
+    limits:
+      cpu: 256m
+      memory: 512Mi
+    requests:
+      cpu: 256m
+      memory: 512Mi
   # -- Grace period to allow the AuthzServer to shutdown before it is killed
   terminationGracePeriodSeconds: 30
   # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
@@ -218,7 +230,13 @@ console:
         - ALL
     allowPrivilegeEscalation: true
   # -- Resource requests and limits for the ApiServer
-  resources: { }
+  resources:
+    limits:
+      cpu: 256m
+      memory: 512Mi
+    requests:
+      cpu: 256m
+      memory: 512Mi
   # -- Grace period to allow the ApiServer to shutdown before it is killed
   terminationGracePeriodSeconds: 30
   # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
