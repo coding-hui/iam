@@ -42,18 +42,21 @@ spec:
           imagePullPolicy: {{ .Values.authzServer.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.authzServer.service.port }}
+              containerPort: {{ .Values.authzServer.service.ports.http }}
+              protocol: TCP
+            - name: https
+              containerPort: {{ .Values.authzServer.service.ports.https }}
               protocol: TCP
           readinessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.authzServer.service.port }}
+              port: {{ .Values.authzServer.service.ports.http }}
             initialDelaySeconds: 15
             timeoutSeconds: 1
           livenessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.authzServer.service.port }}
+              port: {{ .Values.authzServer.service.ports.http }}
             initialDelaySeconds: 30
           securityContext:
             {{- toYaml .Values.authzServer.containerSecurityContext | nindent 12 }}
@@ -84,7 +87,7 @@ spec:
         - name: iam-certs
           secret:
             defaultMode: 420
-            secretName: {{ include "iam.authzServerFullname" . }}
+            secretName: {{ include "iam.fullname" . }}
         - name: config
           configMap:
             name: {{ include "iam.authzServerFullname" . }}

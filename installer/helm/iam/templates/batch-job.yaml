@@ -2,14 +2,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "iam.apiServerFullname" . }}-init
+  name: {{ include "iam.fullname" . }}-init
   labels:
-    {{- include "iam.apiServerLabels" . | nindent 4 }}
+    {{- include "iam.labels" . | nindent 4 }}
 spec:
   backoffLimit: 3
   template:
     spec:
-      serviceAccountName: {{ include "iam.apiServerFullname" . }}
+      serviceAccountName: {{ include "iam.fullname" . }}
       priorityClassName: system-cluster-critical
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
@@ -20,6 +20,6 @@ spec:
         - name: main
           image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
-          command: [ "/gen-k8s-secret.sh", "--service", "{{ include "iam.apiServerFullname" . }}", "--namespace",
-                     "{{ .Release.Namespace }}", "--secret", "{{ include "iam.apiServerFullname" . }}" ]
+          command: [ "/gen-k8s-secret.sh", "--service", "{{ include "iam.fullname" . }}", "--namespace",
+                     "{{ .Release.Namespace }}", "--secret", "{{ include "iam.fullname" . }}" ]
 {{- end }}

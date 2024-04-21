@@ -42,18 +42,24 @@ spec:
           imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.apiServer.service.port }}
+              containerPort: {{ .Values.apiServer.service.ports.http }}
+              protocol: TCP
+            - name: https
+              containerPort: {{ .Values.apiServer.service.ports.https }}
+              protocol: TCP
+            - name: grpc
+              containerPort: {{ .Values.apiServer.service.ports.grpc }}
               protocol: TCP
           readinessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.apiServer.service.port }}
+              port: {{ .Values.apiServer.service.ports.http }}
             initialDelaySeconds: 15
             timeoutSeconds: 1
           livenessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.apiServer.service.port }}
+              port: {{ .Values.apiServer.service.ports.http }}
             initialDelaySeconds: 30
           securityContext:
             {{- toYaml .Values.apiServer.containerSecurityContext | nindent 12 }}
@@ -84,7 +90,7 @@ spec:
         - name: iam-certs
           secret:
             defaultMode: 420
-            secretName: {{ include "iam.apiServerFullname" . }}
+            secretName: {{ include "iam.fullname" . }}
         - name: config
           configMap:
             name: {{ include "iam.apiServerFullname" . }}

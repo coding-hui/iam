@@ -28,15 +28,19 @@ spec:
   {{- end }}
   ports:
     - name: http
-      port: {{ .Values.authzServer.service.port }}
+      port: {{ .Values.authzServer.service.ports.http }}
       targetPort: http
-      {{- if and (eq "NodePort" .Values.authzServer.service.type) .Values.authzServer.service.nodePort }}
-      nodePort: {{ .Values.authzServer.service.nodePort }}
+      {{- if (and (or (eq .Values.authzServer.service.type "NodePort") (eq .Values.authzServer.service.type "LoadBalancer")) (not (empty .Values.authzServer.service.nodePorts.http))) }}
+      nodePort: {{ .Values.authzServer.service.nodePorts.http }}
       {{- end }}
       protocol: TCP
-      {{- with .Values.authzServer.service.appProtocol }}
-      appProtocol: {{ . }}
+    - name: https
+      port: {{ .Values.authzServer.service.ports.https }}
+      targetPort: https
+      {{- if (and (or (eq .Values.authzServer.service.type "NodePort") (eq .Values.authzServer.service.type "LoadBalancer")) (not (empty .Values.authzServer.service.nodePorts.https))) }}
+      nodePort: {{ .Values.authzServer.service.nodePorts.https }}
       {{- end }}
+      protocol: TCP
   selector:
     {{- include "iam.authzServerSelectorLabels" . | nindent 4 }}
 {{- end }}

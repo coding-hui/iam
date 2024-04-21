@@ -88,26 +88,24 @@ apiServer:
   nodeSelector: { }
   # -- Tolerations for ApiServer pods
   tolerations: [ ]
+
   # ApiServer service configuration
   service:
-    # -- Port of the ApiServer service
-    port: 8000
-    # -- Type of the ApiServer service
-    type: NodePort
-    # -- ClusterIP of the ApiServer service
+    ports:
+      http: 8000
+      https: 8443
+      grpc: 8001
+    nodePorts:
+      http: ""
+      https: ""
+      grpc: ""
+    type: ClusterIP
     clusterIP: null
-    # -- Node port if service type is NodePort
     nodePort: null
-    # -- Load balancer IPO address if service type is LoadBalancer
     loadBalancerIP: null
-    # -- Load balancer allow traffic from CIDR list if service type is LoadBalancer
-    loadBalancerSourceRanges: [ ]
-    # -- Set appProtocol for the service
-    appProtocol: null
-    # -- Annotations for the ApiServer service
-    annotations: { }
-    # -- Labels for ApiServer service
-    labels: { }
+    loadBalancerSourceRanges: []
+    annotations: {}
+    labels: {}
 
 # Configuration for the AuthzServer
 authzServer:
@@ -158,26 +156,22 @@ authzServer:
   nodeSelector: { }
   # -- Tolerations for AuthzServer pods
   tolerations: [ ]
+
   # AuthzServer service configuration
   service:
-    # -- Port of the AuthzServer service
-    port: 8010
-    # -- Type of the AuthzServer service
-    type: NodePort
-    # -- ClusterIP of the AuthzServer service
+    ports:
+      http: 8010
+      https: 9443
+    nodePorts:
+      http: ""
+      https: ""
+    type: ClusterIP
     clusterIP: null
-    # -- Node port if service type is NodePort
     nodePort: null
-    # -- Load balancer IPO address if service type is LoadBalancer
     loadBalancerIP: null
-    # -- Load balancer allow traffic from CIDR list if service type is LoadBalancer
-    loadBalancerSourceRanges: [ ]
-    # -- Set appProtocol for the service
-    appProtocol: null
-    # -- Annotations for the AuthzServer service
-    annotations: { }
-    # -- Labels for AuthzServer service
-    labels: { }
+    loadBalancerSourceRanges: []
+    annotations: {}
+    labels: {}
 
 # Configuration for the ApiServer Console
 console:

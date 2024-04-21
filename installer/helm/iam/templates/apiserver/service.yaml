@@ -28,15 +28,26 @@ spec:
   {{- end }}
   ports:
     - name: http
-      port: {{ .Values.apiServer.service.port }}
+      port: {{ .Values.apiServer.service.ports.http }}
       targetPort: http
-      {{- if and (eq "NodePort" .Values.apiServer.service.type) .Values.apiServer.service.nodePort }}
-      nodePort: {{ .Values.apiServer.service.nodePort }}
+      {{- if (and (or (eq .Values.apiServer.service.type "NodePort") (eq .Values.apiServer.service.type "LoadBalancer")) (not (empty .Values.apiServer.service.nodePorts.http))) }}
+      nodePort: {{ .Values.apiServer.service.nodePorts.http }}
       {{- end }}
       protocol: TCP
-      {{- with .Values.apiServer.service.appProtocol }}
-      appProtocol: {{ . }}
+    - name: https
+      port: {{ .Values.apiServer.service.ports.https }}
+      targetPort: https
+      {{- if (and (or (eq .Values.apiServer.service.type "NodePort") (eq .Values.apiServer.service.type "LoadBalancer")) (not (empty .Values.apiServer.service.nodePorts.https))) }}
+      nodePort: {{ .Values.apiServer.service.nodePorts.https }}
       {{- end }}
+      protocol: TCP
+    - name: grpc
+      port: {{ .Values.apiServer.service.ports.grpc }}
+      targetPort: https
+      {{- if (and (or (eq .Values.apiServer.service.type "NodePort") (eq .Values.apiServer.service.type "LoadBalancer")) (not (empty .Values.apiServer.service.nodePorts.grpc))) }}
+      nodePort: {{ .Values.apiServer.service.nodePorts.grpc }}
+      {{- end }}
+      protocol: TCP
   selector:
     {{- include "iam.apiServerSelectorLabels" . | nindent 4 }}
 {{- end }}
