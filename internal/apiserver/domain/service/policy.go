@@ -242,13 +242,19 @@ func (p *policyServiceImpl) ListPolicyRules(ctx context.Context, opts metav1.Lis
 
 	var rules []model.PolicyRule
 
-	pRules := e.GetPolicy()
+	pRules, err := e.GetPolicy()
+	if err != nil {
+		return nil, err
+	}
 	for _, v := range pRules {
 		line := savePolicyLine("p", v)
 		rules = append(rules, line)
 	}
 
-	gRules := e.GetGroupingPolicy()
+	gRules, err := e.GetGroupingPolicy()
+	if err != nil {
+		return nil, err
+	}
 	for _, v := range gRules {
 		line := savePolicyLine("g", v)
 		rules = append(rules, line)
