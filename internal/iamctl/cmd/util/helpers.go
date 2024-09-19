@@ -21,7 +21,7 @@ import (
 
 	"github.com/coding-hui/common/errors"
 	restclient "github.com/coding-hui/wecoding-sdk-go/rest"
-	"github.com/coding-hui/wecoding-sdk-go/wecoding"
+	"github.com/coding-hui/wecoding-sdk-go/services"
 
 	"github.com/coding-hui/iam/pkg/log"
 )
@@ -355,7 +355,7 @@ func CombineRequestErr(resp gorequest.Response, body string, errs []error) error
 	return nil
 }
 
-func NewForConfigOrDie() *wecoding.Clientset {
+func NewForConfigOrDie() *services.Clientset {
 	clientConfig := &restclient.Config{
 		Host:          viper.GetString("server.address"),
 		BearerToken:   viper.GetString("user.token"),
@@ -368,7 +368,7 @@ func NewForConfigOrDie() *wecoding.Clientset {
 		RetryInterval: viper.GetDuration("server.retry-interval"),
 	}
 
-	return wecoding.NewForConfigOrDie(clientConfig)
+	return services.NewForConfigOrDie(clientConfig)
 }
 
 func TableWriterDefaultConfig(table *tablewriter.Table) *tablewriter.Table {

@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 
 	metav1 "github.com/coding-hui/common/meta/v1"
-	"github.com/coding-hui/wecoding-sdk-go/wecoding/iam"
+	"github.com/coding-hui/wecoding-sdk-go/services/iam"
 
 	cmdutil "github.com/coding-hui/iam/internal/iamctl/cmd/util"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"

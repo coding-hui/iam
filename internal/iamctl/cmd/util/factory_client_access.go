@@ -8,8 +8,8 @@ package util
 
 import (
 	restclient "github.com/coding-hui/wecoding-sdk-go/rest"
+	"github.com/coding-hui/wecoding-sdk-go/services/iam"
 	"github.com/coding-hui/wecoding-sdk-go/tools/clientcmd"
-	"github.com/coding-hui/wecoding-sdk-go/wecoding/iam"
 
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
 )

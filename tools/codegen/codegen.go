@@ -206,7 +206,7 @@ type Package struct {
 func (g *Generator) parsePackage(patterns []string, tags []string) {
 	cfg := &packages.Config{
 		// nolint: staticcheck
-		Mode: packages.LoadSyntax,
+		Mode: packages.NeedName | packages.NeedTypesInfo | packages.NeedSyntax | packages.NeedTypes | packages.NeedDeps,
 		// TODO: Need to think about constants in test files. Maybe write type_string_test.go
 		// in a separate pass? For later.
 		Tests:      false,

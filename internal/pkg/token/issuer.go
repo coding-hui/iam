@@ -15,8 +15,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-jose/go-jose/v4"
 	"github.com/golang-jwt/jwt/v4"
-	"gopkg.in/square/go-jose.v2"
 
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/code"

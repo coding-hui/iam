@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	metav1 "github.com/coding-hui/common/meta/v1"
-	apiclientv1 "github.com/coding-hui/wecoding-sdk-go/wecoding/iam/apiserver/v1"
+	apiv1 "github.com/coding-hui/wecoding-sdk-go/services/iam/apiserver/v1"
 
 	cmdutil "github.com/coding-hui/iam/internal/iamctl/cmd/util"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"
@@ -30,7 +30,7 @@ type CreateOptions struct {
 
 	User *v1.CreateUserRequest
 
-	Client apiclientv1.APIV1Interface
+	Client apiv1.APIV1Interface
 	genericclioptions.IOStreams
 }
 
@@ -108,7 +108,7 @@ func (o *CreateOptions) Complete(f cmdutil.Factory, cmd *cobra.Command, args []s
 	if err != nil {
 		return err
 	}
-	o.Client, err = apiclientv1.NewForConfig(clientConfig)
+	o.Client, err = apiv1.NewForConfig(clientConfig)
 	if err != nil {
 		return err
 	}

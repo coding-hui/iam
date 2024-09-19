@@ -6,8 +6,7 @@ package service
 
 import (
 	"context"
-
-	"gopkg.in/square/go-jose.v2/json"
+	"encoding/json"
 
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/coding"
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/gitee"

@@ -13,7 +13,7 @@ import (
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 
 	"github.com/coding-hui/common/errors"
-	"github.com/coding-hui/common/util/sliceutil"
+	"github.com/coding-hui/common/util/slices"
 )
 
 const (
@@ -164,7 +164,7 @@ func (c Client) ResolveRedirectURL(expectURL string) (*url.URL, error) {
 	if len(c.RedirectURIs) == 0 {
 		return nil, ErrorRedirectURLNotAllowed
 	}
-	allowAllRedirectURI := sliceutil.HasString(c.RedirectURIs, AllowAllRedirectURI)
+	allowAllRedirectURI := slices.HasString(c.RedirectURIs, AllowAllRedirectURI)
 	redirectAbleURIs := c.anyRedirectAbleURI()
 
 	if expectURL == "" {
@@ -174,7 +174,7 @@ func (c Client) ResolveRedirectURL(expectURL string) (*url.URL, error) {
 		}
 		return nil, ErrorRedirectURLNotAllowed
 	}
-	if allowAllRedirectURI || sliceutil.HasString(redirectAbleURIs, expectURL) {
+	if allowAllRedirectURI || slices.HasString(redirectAbleURIs, expectURL) {
 		return url.Parse(expectURL)
 	}
 

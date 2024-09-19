@@ -6,7 +6,7 @@
 .DEFAULT_GOAL := all
 
 .PHONY: all
-all: tidy gen.errcode add-copyright format lint build
+all: tidy gen add-copyright format lint build
 
 # ==============================================================================
 # Build options
