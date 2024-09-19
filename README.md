@@ -1,4 +1,4 @@
-Language : [us](./README.md) | [🇨🇳](./README.zh-CN.md)
+Language : [us](./README.md) | [🇨🇳](./README_zh.md)
 
 <h1 align="center">WeCoding IAM</h1>
 
@@ -6,101 +6,101 @@ Language : [us](./README.md) | [🇨🇳](./README.zh-CN.md)
 
 IAM = **I**dentity and **A**ccess **M**anagement
 
-基于 Go 语言开发的身份识别与访问管理系统，用于对资源访问进行授权
+An identity and access management system developed in Go, used for authorizing resource access.
 
 </div>
 
-- Preview: http://iam.wecoding.top
+- Preview: http://iam.wecoding.top (Default login: ADMIN/WECODING)
 - FAQ: https://github.com/coding-hui/iam/issues
 
-## ✨ 特性
+## ✨ Features
 
-- 基于Casbin的 RBAC 访问控制模型，提供精细到按钮的权限控制
+- RBAC access control model based on Casbin, providing fine-grained permission control down to buttons.
 
-- 多种认证方式 JWT、Basic、SecretKey
+- Multiple authentication methods: JWT, Basic, SecretKey.
 
-- 基于 GIN WEB API 框架，提供了丰富的中间件支持（用户认证、跨域、访问日志、追踪ID等）
+- Built on the GIN WEB API framework, providing rich middleware support (user authentication, CORS, access logs, trace ID, etc.).
 
-- 遵循 RESTful API 设计规范
+- Follows RESTful API design specifications.
 
-- 支持 Swagger 文档(基于swaggo)
+- Supports Swagger documentation (based on swaggo).
 
-- 基于 GORM 的数据库存储，可扩展多种类型数据库
+- Database storage based on GORM, extensible to multiple types of databases.
 
-- 支持动态加载多种配置文件
+- Supports dynamically loading multiple configuration files.
 
-- 多指令模式，提供 iamctl 命令行工具
+- Multi-command mode, providing the iamctl command-line tool.
 
-- TODO: 多租户的支持
+- TODO: Support for multi-tenancy.
 
-- TODO: 单元测试
+- TODO: Unit tests.
 
-## 🎁 内置
+## 🎁 Built-in
 
-- 用户管理：用户是系统操作者，该功能主要完成系统用户配置。
+- User Management: Users are system operators, this function mainly completes system user configuration.
 
-- 组织管理：配置系统组织机构（公司、部门、小组）。
+- Organization Management: Configures system organization (company, department, group).
 
-- 资源管理：资源是业务系统中具体资源的标识符，可以是一个实体，如用户，也可以是一个菜单、按钮、API。
+- Resource Management: Resources are identifiers of specific resources in the business system, which can be an entity, such as a user, or a menu, button, API.
 
-- 权限策略 权限策略将多个资源、操作、授权作用组合在一起，为应用程序提供灵活的访问权限管理和控制功能。
+- Permission Policy: Permission policies combine multiple resources, operations, and authorization effects to provide flexible access permission management and control functions for applications.
 
-- 角色管理：角色是一组权限资源的集合，可以为角色授权某些资源与操作权限。当角色授予给用户之后，该用户将会继承这个角色中的所有权限。
+- Role Management: A role is a collection of permission resources, which can authorize certain resources and operation permissions to the role. When a role is granted to a user, the user will inherit all permissions of this role.
 
-## 📦 本地开发
+## 📦 Local Development
 
-### 环境要求
+### Environment Requirements
 
 - go 1.19
 - node v16.19.1
 - pnpm 8.5.1
 
-### 开发目录创建
+### Development Directory Creation
 
 ```bash
 mkdir wecoding
 cd wecoding
 ```
 
-### 获取代码
+### Get Code
 
 ```bash
-# 获取后端代码
+# Get backend code
 git clone https://github.com/coding-hui/iam.git
 
-# 获取前端代码
+# Get frontend code
 git clone https://github.com/coding-hui/iam-frontend.git
 ```
 
-### 启动说明
+### Start Instructions
 
-#### 服务端启动
+#### Server Start
 
 ```bash
-# 进入 iam 后端项目
+# Enter iam backend project
 cd ./iam
 
-# 构建
+# Build
 make build
 
-# 修改配置 
-# 文件路径  iam/configs/iam-apiserver.yaml
+# Modify configuration
+# File path iam/configs/iam-apiserver.yaml
 vi ./configs/iam-apiserver.yaml
 
-# 启动服务
-# macOS or linux 下使用
+# Start service
+# macOS or linux
 go run ./cmd/iam-apiserver/main.go -c configs/iam-apiserver.yaml
 
-# windows 下使用
+# windows
 go run .\cmd\iam-apiserver\main.go -c configs\iam-apiserver.yaml
 ```
 
-构建后的二进制文件保存在 `_output/platforms/linux/amd64/` 目录下。
+The built binary file is saved in the `_output/platforms/linux/amd64/` directory.
 
-#### Console UI 启动
+#### Console UI Start
 
 ```bash
-# 安装依赖
+# Install dependencies
 cd iam-frontend
 
 npm install -g pnpm
@@ -111,15 +111,15 @@ pnpm start
 
 ```
 
-访问: http://localhost:8000 ADMIN/WECODING
+Visit: http://localhost:8000 ADMIN/WECODING
 
-## 使用指南
+## User Guide
 
-[IAM Documentation](docs/guide/zh-CN)
+[IAM Documentation](docs/guide/en)
 
-## 贡献代码
+## Contributing
 
-非常欢迎提 pr:
+We welcome contributions:
 
 - Submit [issues](https://github.com/coding-hui/iam/issues) to report bugs or ask questions.
 - Propose [pull requests](https://github.com/coding-hui/iam/pulls) to improve our code.
