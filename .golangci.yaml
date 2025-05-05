@@ -143,9 +143,19 @@ linters:
         - OPTIMIZE
         - HACK
     goheader:
+      # Supports two types 'const` and `regexp`.
+      # Values can be used recursively.
+      # Default: {}
       values:
-        const: {}
-        regexp: {}
+        const:
+          # Define here const type values in format k:v.
+          # For example:
+          COMPANY: WECODING
+        regexp:
+          # Define here regexp type values.
+          # for example:
+          AUTHOR: .*wecoding@\.yeah\.net
+      template-path: hack/boilerplate.txt
     gomoddirectives:
       replace-allow-list:
         - google.golang.org/grpc
