@@ -2,7 +2,7 @@
 # Use of this source code is governed by a MIT style
 # license that can be found in the LICENSE file.
 
-FROM golang:1.22.5 AS builder
+FROM golang:1.24 AS builder
 WORKDIR /go/src/wecoding/iam
 COPY . .
 RUN make build BINS="iam-apiserver"
