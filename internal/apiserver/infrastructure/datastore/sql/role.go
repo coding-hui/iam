@@ -48,7 +48,7 @@ func (u *roleRepositoryImpl) Create(ctx context.Context, role *model.Role, _ met
 func (u *roleRepositoryImpl) Update(ctx context.Context, role *model.Role, _ metav1.UpdateOptions) error {
 	if err := u.client.WithCtx(ctx).Save(role).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrRoleNotFound, err.Error())
+			return errors.WithCode(code.ErrRoleNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -66,7 +66,7 @@ func (u *roleRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 	err := db.Where("instance_id = ?", instanceId).Delete(&model.Role{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrRoleNotFound, err.Error())
+			return errors.WithCode(code.ErrRoleNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -94,7 +94,7 @@ func (u *roleRepositoryImpl) GetByName(ctx context.Context, name string, _ metav
 	err := u.client.WithCtx(ctx).Preload("Users").Where("name = ?", name).First(&role).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrRoleNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrRoleNotFound, "%s", err.Error())
 		}
 
 		return nil, err
@@ -109,7 +109,7 @@ func (u *roleRepositoryImpl) GetByInstanceID(ctx context.Context, instanceID str
 	err := u.client.WithCtx(ctx).Preload("Users").Where("instance_id = ?", instanceID).First(&role).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrRoleNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrRoleNotFound, "%s", err.Error())
 		}
 
 		return nil, err
@@ -164,11 +164,11 @@ func (u *roleRepositoryImpl) ListByUserInstanceId(
 func (u *roleRepositoryImpl) AssignUserRoles(ctx context.Context, role *model.Role, userInstanceIds []string) (int64, error) {
 	err := u.client.WithCtx(ctx).Model(&model.User{}).Where("instance_id in ?", userInstanceIds).Find(&role.Users).Error
 	if err != nil {
-		return 0, errors.WithCode(code.ErrAssignRoleFailed, err.Error())
+		return 0, errors.WithCode(code.ErrAssignRoleFailed, "%s", err.Error())
 	}
 	res := u.client.WithCtx(ctx).Model(&role).Save(role)
 	if res.Error != nil {
-		return 0, errors.WithCode(code.ErrAssignRoleFailed, res.Error.Error())
+		return 0, errors.WithCode(code.ErrAssignRoleFailed, "%s", res.Error.Error())
 	}
 
 	return int64(len(role.Users)), nil
@@ -178,11 +178,11 @@ func (u *roleRepositoryImpl) AssignUserRoles(ctx context.Context, role *model.Ro
 func (u *roleRepositoryImpl) RevokeUserRoles(ctx context.Context, role *model.Role, userInstanceIds []string) (int64, error) {
 	err := u.client.WithCtx(ctx).Model(&role).Where("instance_id in ?", userInstanceIds).Association("Users").Find(&role.Users)
 	if err != nil {
-		return 0, errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
+		return 0, errors.WithCode(code.ErrRevokeRoleFailed, "%s", err.Error())
 	}
 	err = u.client.WithCtx(ctx).Model(&role).Association("Users").Delete(&role.Users)
 	if err != nil {
-		return 0, errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
+		return 0, errors.WithCode(code.ErrRevokeRoleFailed, "%s", err.Error())
 	}
 
 	return int64(len(userInstanceIds)), nil

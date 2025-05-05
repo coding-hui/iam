@@ -90,7 +90,7 @@ func NewCmdUpdate(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cob
 func (o *UpdateOptions) Complete(f cmdutil.Factory, cmd *cobra.Command, args []string) error {
 	var err error
 	if len(args) == 0 {
-		return cmdutil.UsageErrorf(cmd, updateUsageErrStr)
+		return cmdutil.UsageErrorf(cmd, "%s", updateUsageErrStr)
 	}
 
 	o.ID = args[0]

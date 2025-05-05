@@ -225,7 +225,7 @@ func (r *roleServiceImpl) AssignRole(ctx context.Context, assignReq v1.AssignRol
 	}
 	handlers, err := r.determineRoleHandlerByInstanceId(role, assignReq.Targets)
 	if err != nil {
-		return errors.WithCode(code.ErrAssignRoleFailed, err.Error())
+		return errors.WithCode(code.ErrAssignRoleFailed, "%s", err.Error())
 	}
 
 	for h := range handlers {
@@ -264,7 +264,7 @@ func (r *roleServiceImpl) RevokeRole(ctx context.Context, revokeReq v1.RevokeRol
 	}
 	handlers, err := r.determineRoleHandlerByInstanceId(role, revokeReq.Targets)
 	if err != nil {
-		return errors.WithCode(code.ErrRevokeRoleFailed, err.Error())
+		return errors.WithCode(code.ErrRevokeRoleFailed, "%s", err.Error())
 	}
 
 	for h := range handlers {
@@ -299,7 +299,7 @@ func (r *roleServiceImpl) BatchRevokeRole(ctx context.Context, batchRevokeReq v1
 func (r *roleServiceImpl) AuthorizeRoleResources(ctx context.Context, role *model.Role, authorizeReq v1.AuthorizeResources) error {
 	handlers, err := r.determineRoleHandlerByInstanceId(role, authorizeReq.Resources)
 	if err != nil {
-		return errors.WithCode(code.ErrAssignRoleFailed, err.Error())
+		return errors.WithCode(code.ErrAssignRoleFailed, "%s", err.Error())
 	}
 
 	for h := range handlers {

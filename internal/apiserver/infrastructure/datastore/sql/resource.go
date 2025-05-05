@@ -42,7 +42,7 @@ func (r *resourceRepositoryImpl) BatchCreate(ctx context.Context, resources []*m
 func (r *resourceRepositoryImpl) Create(ctx context.Context, resource *model.Resource, opts metav1.CreateOptions) error {
 	if err := r.client.WithCtx(ctx).Create(&resource).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return errors.WithCode(code.ErrResourceAlreadyExist, err.Error())
+			return errors.WithCode(code.ErrResourceAlreadyExist, "%s", err.Error())
 		}
 		return err
 	}
@@ -73,14 +73,14 @@ func (r *resourceRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanc
 	}
 	resource, err := r.GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return errors.WithCode(code.ErrResourceNotFound, err.Error())
+		return errors.WithCode(code.ErrResourceNotFound, "%s", err.Error())
 	}
 	err = db.Select("Actions").
 		Where("id = ?", resource.ID).
 		Delete(&model.Resource{}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrResourceNotFound, err.Error())
+			return errors.WithCode(code.ErrResourceNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -111,7 +111,7 @@ func (r *resourceRepositoryImpl) GetByName(ctx context.Context, name string, _ m
 	err := r.client.WithCtx(ctx).Preload("Actions").Where("name = ?", name).First(&resource).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrResourceNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrResourceNotFound, "%s", err.Error())
 		}
 
 		return nil, err
@@ -133,7 +133,7 @@ func (r *resourceRepositoryImpl) GetByInstanceId(
 	err := r.client.WithCtx(ctx).Preload("Actions").Where("instance_id = ?", instanceId).First(&resource).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrResourceNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrResourceNotFound, "%s", err.Error())
 		}
 
 		return nil, err

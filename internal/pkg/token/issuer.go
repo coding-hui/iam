@@ -179,13 +179,13 @@ func (s *issuer) Verify(token string) (*VerifiedResponse, error) {
 		if jwtErr := errors.As(err, &ve); jwtErr {
 			switch ve.Errors {
 			case jwt.ValidationErrorExpired:
-				return nil, errors.WithCode(code.ErrExpired, err.Error())
+				return nil, errors.WithCode(code.ErrExpired, "%s", err.Error())
 			case jwt.ValidationErrorNotValidYet:
-				return nil, errors.WithCode(code.ErrTokenNotValidYet, err.Error())
+				return nil, errors.WithCode(code.ErrTokenNotValidYet, "%s", err.Error())
 			case jwt.ValidationErrorMalformed:
-				return nil, errors.WithCode(code.ErrTokenMalformed, err.Error())
+				return nil, errors.WithCode(code.ErrTokenMalformed, "%s", err.Error())
 			default:
-				return nil, errors.WithCode(code.ErrTokenInvalid, err.Error())
+				return nil, errors.WithCode(code.ErrTokenInvalid, "%s", err.Error())
 			}
 		}
 		return nil, err

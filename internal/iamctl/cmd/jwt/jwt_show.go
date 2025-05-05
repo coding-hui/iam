@@ -65,7 +65,7 @@ func NewCmdShow(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobra
 		SuggestFor: []string{},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
-				return cmdutil.UsageErrorf(cmd, showUsageErrStr)
+				return cmdutil.UsageErrorf(cmd, "%s", showUsageErrStr)
 			}
 
 			return nil

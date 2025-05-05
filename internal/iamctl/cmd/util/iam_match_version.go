@@ -47,7 +47,7 @@ func (f *MatchVersionFlags) checkMatchingServerVersion() error {
 			return
 		}
 
-		setIAMDefaults(clientConfig)
+		_ = setIAMDefaults(clientConfig)
 		restClient, err := rest.RESTClientFor(clientConfig)
 		if err != nil {
 			f.matchesServerVersionErr = err
@@ -89,7 +89,9 @@ func (f *MatchVersionFlags) ToRESTConfig() (*rest.Config, error) {
 		return nil, err
 	}
 	// TODO we should not have to do this.  It smacks of something going wrong.
-	setIAMDefaults(clientConfig)
+	if err = setIAMDefaults(clientConfig); err != nil {
+		return nil, err
+	}
 	return clientConfig, nil
 }
 

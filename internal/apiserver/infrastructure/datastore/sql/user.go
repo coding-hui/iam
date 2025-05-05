@@ -38,7 +38,7 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts 
 	}
 	if err := u.client.WithCtx(ctx).Create(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, errors.WithCode(code.ErrUserAlreadyExist, err.Error())
+			return nil, errors.WithCode(code.ErrUserAlreadyExist, "%s", err.Error())
 		}
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (u *userRepositoryImpl) Create(ctx context.Context, user *model.User, opts 
 func (u *userRepositoryImpl) Update(ctx context.Context, user *model.User, opts metav1.UpdateOptions) error {
 	if err := u.client.WithCtx(ctx).Save(user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrUserNotFound, err.Error())
+			return errors.WithCode(code.ErrUserNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -84,7 +84,7 @@ func (u *userRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 	user, err := u.GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrUserNotFound, err.Error())
+			return errors.WithCode(code.ErrUserNotFound, "%s", err.Error())
 		}
 		return err
 	}
@@ -119,7 +119,7 @@ func (u *userRepositoryImpl) GetByName(ctx context.Context, username string, _ m
 	err := u.client.WithCtx(ctx).Where("name = ?", username).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrUserNotFound, "%s", err.Error())
 		}
 
 		return nil, err
@@ -134,7 +134,7 @@ func (u *userRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId str
 	err := u.client.WithCtx(ctx).Where("instance_id = ?", instanceId).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrUserNotFound, "%s", err.Error())
 		}
 		return nil, err
 	}
@@ -152,7 +152,7 @@ func (u *userRepositoryImpl) GetByNameOrInstanceId(ctx context.Context, nameOrId
 	err := u.client.WithCtx(ctx).Where("instance_id = ? or name = ?", nameOrId, nameOrId).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrUserNotFound, "%s", err.Error())
 		}
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func (u *userRepositoryImpl) GetByExternalId(
 		First(&externalUser).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrUserNotFound, "%s", err.Error())
 		}
 
 		return nil, err
@@ -196,7 +196,7 @@ func (u *userRepositoryImpl) GetByExternalId(
 	user, err := u.GetByInstanceId(ctx, externalUser.UserID, opts)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrUserNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrUserNotFound, "%s", err.Error())
 		}
 
 		return nil, err

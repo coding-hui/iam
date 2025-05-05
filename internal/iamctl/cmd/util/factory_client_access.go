@@ -51,6 +51,6 @@ func (f *factoryImpl) RESTClient() (*restclient.RESTClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	setIAMDefaults(clientConfig)
+	_ = setIAMDefaults(clientConfig)
 	return restclient.RESTClientFor(clientConfig)
 }

@@ -89,7 +89,7 @@ func (s *GenericAPIServer) Setup() {
 		log.Infof("%-6s %-s --> %s (%d handlers)", httpMethod, absolutePath, handlerName, nuHandlers)
 	}
 	if s.staticLocations != "" {
-		s.Engine.LoadHTMLGlob(s.staticLocations)
+		s.LoadHTMLGlob(s.staticLocations)
 	}
 }
 

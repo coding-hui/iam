@@ -58,11 +58,11 @@ func (d *department) createDepartment(c *gin.Context) {
 	createReq := v1.CreateDepartmentRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := createReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = d.OrganizationService.CreateDepartment(c.Request.Context(), createReq, metav1.CreateOptions{})
@@ -90,11 +90,11 @@ func (d *department) updateDepartment(c *gin.Context) {
 	updateReq := v1.UpdateDepartmentRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := updateReq.ValidateUpdate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = d.OrganizationService.UpdateDepartment(c.Request.Context(), c.Param("instanceId"), updateReq, metav1.UpdateOptions{})
@@ -163,7 +163,7 @@ func (d *department) listDepartment(c *gin.Context) {
 	var opts metav1.ListOptions
 	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	resp, err := d.OrganizationService.ListDepartments(c.Request.Context(), opts)
@@ -226,11 +226,11 @@ func (d *department) addDepartmentMember(c *gin.Context) {
 	addReq := v1.AddDepartmentMemberRequest{}
 	err := c.ShouldBindJSON(&addReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := addReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = d.OrganizationService.BatchAddDepartmentMembers(c.Request.Context(), c.Param("instanceId"),
@@ -259,11 +259,11 @@ func (d *department) batchAddDepartmentMember(c *gin.Context) {
 	addReq := v1.BatchAddDepartmentMemberRequest{}
 	err := c.ShouldBindJSON(&addReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := addReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = d.OrganizationService.BatchAddDepartmentMembers(c.Request.Context(), c.Param("instanceId"), addReq)
@@ -288,11 +288,11 @@ func (d *department) removeDepartmentMember(c *gin.Context) {
 	removeReq := v1.RemoveDepartmentMemberRequest{}
 	err := c.ShouldBindJSON(&removeReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := removeReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = d.OrganizationService.BatchRemoveDepartmentMembers(c.Request.Context(), c.Param("instanceId"),
@@ -321,11 +321,11 @@ func (d *department) batchRemoveDepartmentMember(c *gin.Context) {
 	removeReq := v1.BatchRemoveDepartmentMemberRequest{}
 	err := c.ShouldBindJSON(&removeReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := removeReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = d.OrganizationService.BatchRemoveDepartmentMembers(c.Request.Context(), c.Param("instanceId"), removeReq)
@@ -352,7 +352,7 @@ func (d *department) listDepartmentMembers(c *gin.Context) {
 	var opts metav1.ListOptions
 	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	resp, err := d.OrganizationService.ListDepartmentMembers(c.Request.Context(), c.Param("instanceId"), opts)

@@ -93,7 +93,7 @@ func (m *Driver) ApplicationRepository() repository.ApplicationRepository {
 func (m *Driver) Close() error {
 	db, err := m.Client.db.DB()
 	if err != nil {
-		return errors.WithCode(code.ErrDatabase, err.Error())
+		return errors.WithCode(code.ErrDatabase, "%s", err.Error())
 	}
 
 	return db.Close()

@@ -23,6 +23,7 @@ import (
 
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/coding-hui/iam/pkg/log"
 )
@@ -56,7 +57,6 @@ func Test_Option(t *testing.T) {
 
 	args := []string{"--log.level=debug"}
 	err := fs.Parse(args)
-	assert.Nil(t, err)
-
+	require.NoError(t, err)
 	assert.Equal(t, "debug", opt.Level)
 }

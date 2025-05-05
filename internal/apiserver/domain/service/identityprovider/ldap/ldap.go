@@ -35,37 +35,37 @@ func init() {
 type ldapProvider struct {
 	// Host and optional port of the LDAP server in the form "host:port".
 	// If the port is not supplied, 389 for insecure or StartTLS connections, 636
-	Host string `json:"host,omitempty"                 yaml:"host"`
+	Host string `json:"host,omitempty"                 mapstructure:"host"`
 	// Timeout duration when reading data from remote server. Default to 15s.
-	ReadTimeout int `json:"readTimeout"                    yaml:"readTimeout"`
+	ReadTimeout int `json:"readTimeout"                    mapstructure:"readTimeout"`
 	// If specified, connections will use the ldaps:// protocol
-	StartTLS bool `json:"startTLS,omitempty"             yaml:"startTLS"`
+	StartTLS bool `json:"startTLS,omitempty"             mapstructure:"startTLS"`
 	// Used to turn off TLS certificate checks
-	InsecureSkipVerify bool `json:"insecureSkipVerify"             yaml:"insecureSkipVerify"`
+	InsecureSkipVerify bool `json:"insecureSkipVerify"             mapstructure:"insecureSkipVerify"`
 	// Path to a trusted root certificate file. Default: use the host's root CA.
-	RootCA string `json:"rootCA,omitempty"               yaml:"rootCA"`
+	RootCA string `json:"rootCA,omitempty"               mapstructure:"rootCA"`
 	// A raw certificate file can also be provided inline. Base64 encoded PEM file
-	RootCAData string `json:"rootCAData,omitempty"           yaml:"rootCAData"`
+	RootCAData string `json:"rootCAData,omitempty"           mapstructure:"rootCAData"`
 	// Username (DN) of the "manager" user identity.
-	ManagerDN string `json:"managerDN,omitempty"            yaml:"managerDN"`
+	ManagerDN string `json:"managerDN,omitempty"            mapstructure:"managerDN"`
 	// The password for the manager DN.
-	ManagerPassword string `json:"managerPassword,omitempty"      yaml:"managerPassword"`
+	ManagerPassword string `json:"managerPassword,omitempty"      mapstructure:"managerPassword"`
 	// User search scope.
-	UserSearchBase string `json:"userSearchBase,omitempty"       yaml:"userSearchBase"`
+	UserSearchBase string `json:"userSearchBase,omitempty"       mapstructure:"userSearchBase"`
 	// LDAP filter used to identify objects of type user. e.g. (objectClass=person)
-	UserSearchFilter string `json:"userSearchFilter,omitempty"     yaml:"userSearchFilter"`
+	UserSearchFilter string `json:"userSearchFilter,omitempty"     mapstructure:"userSearchFilter"`
 	// Group search scope.
-	GroupSearchBase string `json:"groupSearchBase,omitempty"      yaml:"groupSearchBase"`
+	GroupSearchBase string `json:"groupSearchBase,omitempty"      mapstructure:"groupSearchBase"`
 	// LDAP filter used to identify objects of type group. e.g. (objectclass=group)
-	GroupSearchFilter string `json:"groupSearchFilter,omitempty"    yaml:"groupSearchFilter"`
+	GroupSearchFilter string `json:"groupSearchFilter,omitempty"    mapstructure:"groupSearchFilter"`
 	// Attribute on a user object storing the groups the user is a member of.
-	UserMemberAttribute string `json:"userMemberAttribute,omitempty"  yaml:"userMemberAttribute"`
+	UserMemberAttribute string `json:"userMemberAttribute,omitempty"  mapstructure:"userMemberAttribute"`
 	// Attribute on a group object storing the information for primary group membership.
-	GroupMemberAttribute string `json:"groupMemberAttribute,omitempty" yaml:"groupMemberAttribute"`
+	GroupMemberAttribute string `json:"groupMemberAttribute,omitempty" mapstructure:"groupMemberAttribute"`
 	// The following three fields are direct mappings of attributes on the user entry.
 	// login attribute used for comparing user entries.
-	LoginAttribute string `json:"loginAttribute"                 yaml:"loginAttribute"`
-	MailAttribute  string `json:"mailAttribute"                  yaml:"mailAttribute"`
+	LoginAttribute string `json:"loginAttribute"                 mapstructure:"loginAttribute"`
+	MailAttribute  string `json:"mailAttribute"                  mapstructure:"mailAttribute"`
 }
 
 type ldapProviderFactory struct{}

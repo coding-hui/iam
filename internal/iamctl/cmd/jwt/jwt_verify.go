@@ -69,7 +69,7 @@ func NewCmdVerify(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cob
 		SuggestFor: []string{},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 2 {
-				return cmdutil.UsageErrorf(cmd, verifyUsageErrStr)
+				return cmdutil.UsageErrorf(cmd, "%s", verifyUsageErrStr)
 			}
 
 			return nil

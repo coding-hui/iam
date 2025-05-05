@@ -43,7 +43,7 @@ func GetAPIServerFactoryOrDie(address string, clientCA string) store.Factory {
 			log.Fatalf("credentials.NewClientTLSFromFile err: %v", err)
 		}
 
-		conn, err = grpc.Dial(address, grpc.WithBlock(), grpc.WithTransportCredentials(creds))
+		conn, err = grpc.NewClient(address, grpc.WithTransportCredentials(creds))
 		if err != nil {
 			log.Fatalf("Connect to grpc server failed, error: %s", err.Error())
 		}

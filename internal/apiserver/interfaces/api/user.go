@@ -54,11 +54,11 @@ func (u *user) createUser(c *gin.Context) {
 	createReq := v1.CreateUserRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := createReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	user, err := u.UserService.CreateUser(c.Request.Context(), createReq)
@@ -86,11 +86,11 @@ func (u *user) updateUser(c *gin.Context) {
 	updateReq := v1.UpdateUserRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := updateReq.ValidateUpdate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	user, err := u.UserService.UpdateUser(c.Request.Context(), c.Param("instanceId"), updateReq)
@@ -162,7 +162,7 @@ func (u *user) listUser(c *gin.Context) {
 	var opts v1.ListUserOptions
 	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	resp, err := u.UserService.ListUsers(c.Request.Context(), opts)

@@ -56,7 +56,7 @@ func (t *tokenServiceImpl) Verify(tokenStr string) (*token.VerifiedResponse, err
 		return response, nil
 	}
 	if err := t.tokenCacheValidate(response.User.GetName(), tokenStr); err != nil {
-		return nil, errors.WithCode(code.ErrTokenInvalid, err.Error())
+		return nil, errors.WithCode(code.ErrTokenInvalid, "%s", err.Error())
 	}
 	return response, nil
 }

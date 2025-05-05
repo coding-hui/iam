@@ -213,7 +213,7 @@ func (s *apiServer) registerAPIRoute() {
 }
 
 func (s *apiServer) configSwagger() {
-	s.webServer.Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
+	s.webServer.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
 }
 
 // startAPIServer start api server.

@@ -71,7 +71,7 @@ func (p *policies) ListPolicies(ctx context.Context) (*pb.ListPoliciesResponse, 
 		return nil, errors.Wrap(err, "failed to list policies")
 	}
 
-	log.Infof("Policies found (%d total)", len(resp.Items))
+	log.Infof("Policies found (%d total)", len(resp.GetItems()))
 
 	return resp, nil
 }
@@ -99,7 +99,7 @@ func (p *policies) ListPolicyRules(ctx context.Context) (*pb.ListPolicyRulesResp
 		return nil, errors.Wrap(err, "failed to list policy rules")
 	}
 
-	log.Infof("PolicyRules found (%d total)", len(resp.Items))
+	log.Infof("PolicyRules found (%d total)", len(resp.GetItems()))
 
 	return resp, nil
 }

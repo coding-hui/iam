@@ -547,7 +547,7 @@ func NewCmdNew(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobra.
 // Complete completes all the required options.
 func (o *NewOptions) Complete(cmd *cobra.Command, args []string) error {
 	if len(args) < 1 {
-		return cmdutil.UsageErrorf(cmd, newUsageErrStr)
+		return cmdutil.UsageErrorf(cmd, "%s", newUsageErrStr)
 	}
 
 	o.CommandName = strings.ToLower(args[0])

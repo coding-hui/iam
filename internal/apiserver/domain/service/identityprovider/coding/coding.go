@@ -33,39 +33,39 @@ func init() {
 
 type coding struct {
 	// ClientID is the application's ID.
-	ClientID string `json:"clientID" yaml:"clientID"`
+	ClientID string `json:"clientID" mapstructure:"clientID"`
 
 	// ClientSecret is the application's secret.
-	ClientSecret string `json:"clientSecret" yaml:"clientSecret"`
+	ClientSecret string `json:"clientSecret" mapstructure:"clientSecret"`
 
 	// Endpoint contains the resource server's token endpoint
 	// URLs. These are constants specific to each server and are
 	// often available via site-specific packages, such as
 	// google.Endpoint or github.endpoint.
-	Endpoint endpoint `json:"endpoint" yaml:"endpoint"`
+	Endpoint endpoint `json:"endpoint" mapstructure:"endpoint"`
 
 	// RedirectURL is the URL to redirect users going through
 	// the OAuth flow, after the resource owner's URLs.
-	RedirectURL string `json:"redirectURL" yaml:"redirectURL"`
+	RedirectURL string `json:"redirectURL" mapstructure:"redirectURL"`
 
 	// Used to turn off TLS certificate checks
-	InsecureSkipVerify bool `json:"insecureSkipVerify" yaml:"insecureSkipVerify"`
+	InsecureSkipVerify bool `json:"insecureSkipVerify" mapstructure:"insecureSkipVerify"`
 
 	// Scope specifies optional requested permissions.
-	Scopes []string `json:"scopes" yaml:"scopes"`
+	Scopes []string `json:"scopes" mapstructure:"scopes"`
 
 	// Team team domain prefix.
-	Team string `json:"team" yaml:"team"`
+	Team string `json:"team" mapstructure:"team"`
 
-	Config *oauth2.Config `json:"-" yaml:"-"`
+	Config *oauth2.Config `json:"-" mapstructure:"-"`
 }
 
 // endpoint represents an OAuth 2.0 provider's authorization and token
 // endpoint URLs.
 type endpoint struct {
-	AuthURL     string `json:"authURL"     yaml:"authURL"`
-	TokenURL    string `json:"tokenURL"    yaml:"tokenURL"`
-	UserInfoURL string `json:"userInfoURL" yaml:"userInfoURL"`
+	AuthURL     string `json:"authURL"     mapstructure:"authURL"`
+	TokenURL    string `json:"tokenURL"    mapstructure:"tokenURL"`
+	UserInfoURL string `json:"userInfoURL" mapstructure:"userInfoURL"`
 }
 
 type codingIdentity struct {

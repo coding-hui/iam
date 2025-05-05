@@ -95,7 +95,10 @@ func TestStartGetsCalled(t *testing.T) {
 		}))
 	}
 
-	gs.Start()
+	err := gs.Start()
+	if err != nil {
+		return
+	}
 
 	if len(c) != 15 {
 		t.Error("Expected 15 Start to be called, got ", len(c))

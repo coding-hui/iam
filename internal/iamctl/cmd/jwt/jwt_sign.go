@@ -86,7 +86,7 @@ func NewCmdSign(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobra
 		SuggestFor: []string{},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 2 {
-				return cmdutil.UsageErrorf(cmd, signUsageErrStr)
+				return cmdutil.UsageErrorf(cmd, "%s", signUsageErrStr)
 			}
 
 			return nil
@@ -169,7 +169,7 @@ func (o *SignOptions) Run(args []string) error {
 		return err
 	}
 
-	fmt.Fprintf(o.Out, tokenString+"\n")
+	fmt.Fprintf(o.Out, "%s", tokenString+"\n")
 
 	return nil
 }

@@ -99,8 +99,8 @@ func checkErr(err error, handleErr func(string, int)) {
 		return
 	}
 
-	switch {
-	case err == ErrExit:
+	switch err {
+	case ErrExit:
 		handleErr("", DefaultErrorExitCode)
 	default:
 		switch err := err.(type) {
@@ -297,9 +297,9 @@ func IsSiblingCommandExists(cmd *cobra.Command, targetCmdName string) bool {
 // arguments (sub-commands) are provided, or a usage error otherwise.
 func DefaultSubCommandRun(out io.Writer) func(c *cobra.Command, args []string) {
 	return func(c *cobra.Command, args []string) {
-		c.SetOutput(out)
+		c.SetOut(out)
 		RequireNoArguments(c, args)
-		c.Help()
+		c.Help() // nolint:errcheck
 		CheckErr(ErrExit)
 	}
 }

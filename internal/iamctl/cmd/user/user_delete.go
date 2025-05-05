@@ -75,7 +75,7 @@ func NewCmdDelete(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cob
 func (o *DeleteOptions) Complete(f cmdutil.Factory, cmd *cobra.Command, args []string) error {
 	var err error
 	if len(args) == 0 {
-		return cmdutil.UsageErrorf(cmd, deleteUsageErrStr)
+		return cmdutil.UsageErrorf(cmd, "%s", deleteUsageErrStr)
 	}
 
 	o.ID = args[0]

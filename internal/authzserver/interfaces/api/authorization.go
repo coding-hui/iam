@@ -37,7 +37,7 @@ func (a *auth) authorize(c *gin.Context) {
 	req := &authzv1.Request{}
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	resp := a.Authorizer.Authorize(req)

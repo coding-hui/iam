@@ -35,7 +35,7 @@ func (o *orgRepositoryImpl) Create(ctx context.Context, org *model.Organization,
 	}
 	if err := o.client.WithCtx(ctx).Create(&org).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return errors.WithCode(code.ErrOrgAlreadyExist, err.Error())
+			return errors.WithCode(code.ErrOrgAlreadyExist, "%s", err.Error())
 		}
 		return err
 	}
@@ -47,7 +47,7 @@ func (o *orgRepositoryImpl) Update(ctx context.Context, org *model.Organization,
 	err := o.client.WithCtx(ctx).Save(org).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrOrgNotFound, err.Error())
+			return errors.WithCode(code.ErrOrgNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -89,7 +89,7 @@ func (o *orgRepositoryImpl) DeleteByName(ctx context.Context, name string, opts 
 	err := db.Where("name = ?", name).Delete(&model.Organization{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrOrgNotFound, err.Error())
+			return errors.WithCode(code.ErrOrgNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -106,7 +106,7 @@ func (o *orgRepositoryImpl) DeleteByInstanceId(ctx context.Context, uid string, 
 	err := db.Where("instance_id = ?", uid).Delete(&model.Organization{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrOrgNotFound, err.Error())
+			return errors.WithCode(code.ErrOrgNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -120,7 +120,7 @@ func (o *orgRepositoryImpl) GetByName(ctx context.Context, name string, opts met
 	err := o.client.WithCtx(ctx).Where("name = ?", name).First(&org).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrOrgNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrOrgNotFound, "%s", err.Error())
 		}
 
 		return nil, err
@@ -134,7 +134,7 @@ func (o *orgRepositoryImpl) GetByInstanceId(ctx context.Context, instanceId stri
 	err := o.client.WithCtx(ctx).Where("instance_id = ?", instanceId).First(&org).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrOrgNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrOrgNotFound, "%s", err.Error())
 		}
 
 		return nil, err
@@ -193,7 +193,7 @@ func (o *orgRepositoryImpl) AddDepartmentMembers(ctx context.Context, members []
 	err := db.CreateInBatches(members, 500).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) || strings.Contains(err.Error(), "Duplicate entry") {
-			return errors.WithCode(code.ErrMemberAlreadyInDepartment, err.Error())
+			return errors.WithCode(code.ErrMemberAlreadyInDepartment, "%s", err.Error())
 		}
 		return datastore.NewDBError(err, "failed to add department members")
 	}

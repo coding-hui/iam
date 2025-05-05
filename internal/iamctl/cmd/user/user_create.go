@@ -89,7 +89,7 @@ func NewCmdCreate(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cob
 func (o *CreateOptions) Complete(f cmdutil.Factory, cmd *cobra.Command, args []string) error {
 	var err error
 	if len(args) < 3 {
-		return cmdutil.UsageErrorf(cmd, createUsageErrStr)
+		return cmdutil.UsageErrorf(cmd, "%s", createUsageErrStr)
 	}
 
 	if o.Alias == "" {

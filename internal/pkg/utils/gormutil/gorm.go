@@ -17,7 +17,7 @@ type LimitAndOffset struct {
 // Unpointer fill LimitAndOffset with default values if offset/limit is nil
 // or it will be filled with the passed value.
 func Unpointer(offset *int64, limit *int64) *LimitAndOffset {
-	var o, l int = 0, DefaultLimit
+	var o, l = 0, DefaultLimit
 
 	if offset != nil {
 		o = int(*offset)

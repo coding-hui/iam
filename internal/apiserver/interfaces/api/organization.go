@@ -53,11 +53,11 @@ func (o *organization) createOrganization(c *gin.Context) {
 	createReq := v1.CreateOrganizationRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := createReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = o.OrganizationService.CreateOrganization(c.Request.Context(), createReq, metav1.CreateOptions{})
@@ -85,11 +85,11 @@ func (o *organization) updateOrganization(c *gin.Context) {
 	updateReq := v1.UpdateOrganizationRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := updateReq.ValidateUpdate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = o.OrganizationService.UpdateOrganization(c.Request.Context(), c.Param("instanceId"), updateReq, metav1.UpdateOptions{})
@@ -158,7 +158,7 @@ func (o *organization) listOrganization(c *gin.Context) {
 	var opts metav1.ListOptions
 	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	resp, err := o.OrganizationService.ListOrganizations(c.Request.Context(), opts)

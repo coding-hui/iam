@@ -57,11 +57,11 @@ func (r *role) createRole(c *gin.Context) {
 	createReq := v1.CreateRoleRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := createReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = r.RoleService.CreateRole(c.Request.Context(), createReq)
@@ -89,11 +89,11 @@ func (r *role) updateRole(c *gin.Context) {
 	updateReq := v1.UpdateRoleRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := updateReq.ValidateUpdate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = r.RoleService.UpdateRole(c.Request.Context(), c.Param("instanceId"), updateReq)
@@ -159,7 +159,7 @@ func (r *role) listRole(c *gin.Context) {
 	var opts metav1.ListOptions
 	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	resp, err := r.RoleService.ListRoles(c.Request.Context(), opts)
@@ -185,7 +185,7 @@ func (r *role) assignRole(c *gin.Context) {
 	assignReq := v1.AssignRoleRequest{}
 	err := c.ShouldBindJSON(&assignReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	assignReq.InstanceID = c.Param("instanceId")
@@ -211,7 +211,7 @@ func (r *role) batchAssignRole(c *gin.Context) {
 	batchAssignReq := v1.BatchAssignRoleRequest{}
 	err := c.ShouldBindJSON(&batchAssignReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	err = r.RoleService.BatchAssignRole(c.Request.Context(), batchAssignReq)
@@ -237,7 +237,7 @@ func (r *role) revokeRole(c *gin.Context) {
 	revokeReq := v1.RevokeRoleRequest{}
 	err := c.ShouldBindJSON(&revokeReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	revokeReq.InstanceID = c.Param("instanceId")

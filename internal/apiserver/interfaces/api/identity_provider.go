@@ -57,11 +57,11 @@ func (i *identityProvider) createIdentityProvider(c *gin.Context) {
 	createReq := v1.CreateIdentityProviderRequest{}
 	err := c.ShouldBindJSON(&createReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := createReq.Validate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = i.IdentityProviderService.CreateIdentityProvider(c.Request.Context(), createReq)
@@ -89,11 +89,11 @@ func (i *identityProvider) updateIdentityProvider(c *gin.Context) {
 	updateReq := v1.UpdateIdentityProviderRequest{}
 	err := c.ShouldBindJSON(&updateReq)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	if errs := updateReq.ValidateUpdate(); errs != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrValidation, errs.ToAggregate().Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", errs.ToAggregate().Error()), c)
 		return
 	}
 	err = i.IdentityProviderService.UpdateIdentityProvider(c.Request.Context(), c.Param("identifier"), updateReq)
@@ -166,7 +166,7 @@ func (i *identityProvider) listIdentityProviders(c *gin.Context) {
 	var opts metav1.ListOptions
 	err := c.ShouldBindQuery(&opts)
 	if err != nil {
-		api.FailWithErrCode(errors.WithCode(code.ErrBind, err.Error()), c)
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
 	resp, err := i.IdentityProviderService.ListIdentityProviders(c.Request.Context(), opts)

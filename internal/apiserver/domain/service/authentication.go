@@ -271,7 +271,7 @@ func (a *authenticationServiceImpl) RefreshToken(_ context.Context, refreshToken
 	claim, err := a.TokenService.Verify(refreshToken)
 	if err != nil {
 		if errors.IsCode(err, code.ErrExpired) {
-			return nil, errors.WithCode(code.ErrExpired, jwt.ErrTokenExpired.Error())
+			return nil, errors.WithCode(code.ErrExpired, "%s", jwt.ErrTokenExpired.Error())
 		}
 		return nil, err
 	}
@@ -297,7 +297,7 @@ func (l *localHandlerImpl) authenticate(ctx context.Context) (*v1.UserBase, erro
 	user, err := l.userService.GetUser(ctx, l.username, metav1.GetOptions{})
 	if err != nil {
 		if errors.IsCode(err, code.ErrUserNotFound) {
-			return nil, errors.WithCode(code.ErrPasswordIncorrect, err.Error())
+			return nil, errors.WithCode(code.ErrPasswordIncorrect, "%s", err.Error())
 		}
 		return nil, err
 	}

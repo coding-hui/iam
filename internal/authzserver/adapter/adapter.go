@@ -36,26 +36,26 @@ func NewAdapter(cli store.Factory) (*Adapter, error) {
 
 func toStringPolicyRule(c *pb.PolicyRuleInfo) []string {
 	policy := make([]string, 0)
-	if c.PType != "" {
-		policy = append(policy, c.PType)
+	if c.GetPType() != "" {
+		policy = append(policy, c.GetPType())
 	}
-	if c.V0 != "" {
-		policy = append(policy, c.V0)
+	if c.GetV0() != "" {
+		policy = append(policy, c.GetV0())
 	}
-	if c.V1 != "" {
-		policy = append(policy, c.V1)
+	if c.GetV1() != "" {
+		policy = append(policy, c.GetV1())
 	}
-	if c.V2 != "" {
-		policy = append(policy, c.V2)
+	if c.GetV2() != "" {
+		policy = append(policy, c.GetV2())
 	}
-	if c.V3 != "" {
-		policy = append(policy, c.V3)
+	if c.GetV3() != "" {
+		policy = append(policy, c.GetV3())
 	}
-	if c.V4 != "" {
-		policy = append(policy, c.V4)
+	if c.GetV4() != "" {
+		policy = append(policy, c.GetV4())
 	}
-	if c.V5 != "" {
-		policy = append(policy, c.V5)
+	if c.GetV5() != "" {
+		policy = append(policy, c.GetV5())
 	}
 
 	return policy

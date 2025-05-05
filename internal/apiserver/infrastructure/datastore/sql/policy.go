@@ -36,7 +36,7 @@ func (p *policyRepositoryImpl) Create(ctx context.Context, policy *model.Policy,
 	}
 	if err := p.client.WithCtx(ctx).Create(&policy).Error; err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return errors.WithCode(code.ErrPolicyAlreadyExist, err.Error())
+			return errors.WithCode(code.ErrPolicyAlreadyExist, "%s", err.Error())
 		}
 		return err
 	}
@@ -62,7 +62,7 @@ func (p *policyRepositoryImpl) Update(ctx context.Context, policy *model.Policy,
 	err = p.client.WithCtx(ctx).Model(policy).Save(policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrPolicyNotFound, err.Error())
+			return errors.WithCode(code.ErrPolicyNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -80,7 +80,7 @@ func (p *policyRepositoryImpl) Delete(ctx context.Context, name string, opts met
 	err := db.Where("name = ?", name).Delete(&model.Policy{}).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrPolicyNotFound, err.Error())
+			return errors.WithCode(code.ErrPolicyNotFound, "%s", err.Error())
 		}
 
 		return err
@@ -104,7 +104,7 @@ func (p *policyRepositoryImpl) GetByName(ctx context.Context, name string, _ met
 	err = p.client.WithCtx(ctx).Preload("Statements").Where("name = ?", name).First(&policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrPolicyNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrPolicyNotFound, "%s", err.Error())
 		}
 
 		return nil, err
@@ -122,7 +122,7 @@ func (p *policyRepositoryImpl) GetByInstanceId(
 	err = p.client.WithCtx(ctx).Debug().Preload("Statements").Where("instance_id = ?", instanceId).First(&policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.WithCode(code.ErrPolicyNotFound, err.Error())
+			return nil, errors.WithCode(code.ErrPolicyNotFound, "%s", err.Error())
 		}
 
 		return nil, err

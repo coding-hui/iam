@@ -73,7 +73,7 @@ func NewCmdGet(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobra.
 func (o *GetOptions) Complete(f cmdutil.Factory, cmd *cobra.Command, args []string) error {
 	var err error
 	if len(args) == 0 {
-		return cmdutil.UsageErrorf(cmd, getUsageErrStr)
+		return cmdutil.UsageErrorf(cmd, "%s", getUsageErrStr)
 	}
 
 	o.ID = args[0]
