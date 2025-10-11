@@ -71,20 +71,10 @@ build.multiarch:
 image:
 	@$(MAKE) image.build
 
-## image.multiarch: Build docker images for multiple platforms. See option PLATFORMS.
-.PHONY: image.multiarch
-image.multiarch:
-	@$(MAKE) image.build.multiarch
-
 ## push: Build docker images for host arch and push images to registry.
 .PHONY: push
 push:
-	@$(MAKE) image.push
-
-## push.multiarch: Build docker images for multiple platforms and push images to registry.
-.PHONY: push.multiarch
-push.multiarch:
-	@$(MAKE) image.push.multiarch
+	@$(MAKE) image.build BUILDX_OUTPUT_TYPE=registry
 
 ## deploy: Deploy updated components to development env.
 .PHONY: deploy

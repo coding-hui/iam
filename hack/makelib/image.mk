@@ -56,9 +56,6 @@ image.daemon.verify:
 .PHONY: image.build
 image.build: image.verify go.build.verify $(addprefix image.build., $(addprefix $(IMAGE_PLAT)., $(IMAGES)))
 
-.PHONY: image.build.multiarch
-image.build.multiarch: image.verify go.build.verify $(foreach p,$(PLATFORMS),$(addprefix image.build., $(addprefix $(p)., $(IMAGES))))
-
 .PHONY: image.build.%
 image.build.%:
 	$(eval IMAGE := $(word 2,$(subst ., ,$*)))
@@ -75,14 +72,3 @@ image.build.%:
 	        --platform ${PLATFORMS} \
 	        $(BUILD_SUFFIX) ; \
 	fi
-
-.PHONY: image.push
-image.push: image.verify go.build.verify $(addprefix image.push., $(addprefix $(IMAGE_PLAT)., $(IMAGES)))
-
-.PHONY: image.push.multiarch
-image.push.multiarch: image.verify go.build.verify $(foreach p,$(PLATFORMS),$(addprefix image.push., $(addprefix $(p)., $(IMAGES))))
-
-.PHONY: image.push.%
-image.push.%: image.build.%
-	@echo "===========> Pushing image $(IMAGE) $(VERSION) to $(REGISTRY_PREFIX)"
-	$(DOCKER) push $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION)
