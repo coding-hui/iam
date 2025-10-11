@@ -62,6 +62,6 @@ feature:
   profiling: true
 
 authentication:
-  domain: iam.micromoving.cn
+  #domain: iam.micromoving.cn
   jwtSecret: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo
   signKey: /var/run/iam/certificates/ca.crt
