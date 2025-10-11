@@ -11,6 +11,7 @@ import (
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/coding"
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/gitee"
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/github"
+	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/google"
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/ldap"
 	_ "github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider/wechatmini"
 

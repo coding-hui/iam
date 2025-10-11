@@ -581,6 +581,7 @@ const (
 	GiteeIdentityProvider             IdentityProviderType = "Gitee"
 	LDAPIdentityProvider              IdentityProviderType = "LDAP"
 	WeChatMiniProgramIdentityProvider IdentityProviderType = "WeChatMiniProgram"
+	GoogleIdentityProvider            IdentityProviderType = "Google"
 )
 
 // CreateIdentityProviderRequest create IdentityProvider request.

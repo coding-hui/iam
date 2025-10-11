@@ -35,7 +35,7 @@ ingress:
     authzserver:
       - /api/v1/authz
   hosts:
-    - iam.micromoving.net
+    - iam.micromoving.cn
   # tls:
   #   - secretName: loki-distributed-tls
   #     hosts:
