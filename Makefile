@@ -46,7 +46,7 @@ Options:
                    Example: make push REGISTRY_PREFIX=devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo VERSION=v1.6.2
   PLATFORMS        The multiple platforms to build. Default is linux_amd64 and linux_arm64.
                    This option is available when using: make build.multiarch/image.multiarch/push.multiarch
-                   Example: make image.multiarch IMAGES="iam-apiserver iam-pump" PLATFORMS="linux_amd64 linux_arm64"
+                   Example: make image.multiarch IMAGES="iam-apiserver iam-pump" PLATFORMS="linux/amd64,linux/arm64"
   VERSION          The version information compiled into binaries.
                    The default is obtained from gsemver or git.
   V                Set to 1 enable verbose build. Default is 0.
