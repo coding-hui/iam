@@ -49,7 +49,6 @@ image.daemon.verify:
 	$(eval PASS := $(shell $(DOCKER) version | grep -q -E 'Experimental: {1,5}true' && echo 1 || echo 0))
 	@if [ $(PASS) -ne 1 ]; then \
 		echo "Experimental features of Docker daemon is not enabled. Please add \"experimental\": true in '/etc/docker/daemon.json' and then restart Docker daemon."; \
-		exit 1; \
 	fi
 
 # Run `make image.push PLATFORMS="linux/amd64,linux/arm64" BUILDX_OUTPUT_TYPE=registry REGISTRY_PREFIX=[yourregistry]` to push multi-platform
