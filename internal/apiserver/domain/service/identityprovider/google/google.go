@@ -8,6 +8,8 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -96,6 +98,10 @@ func (g *googleProviderFactory) Create(opts options.DynamicOptions) (identitypro
 	if google.Endpoint.UserInfoURL == "" {
 		google.Endpoint.UserInfoURL = userInfoURL
 	}
+	// Set default scopes if none provided
+	if len(google.Scopes) == 0 {
+		google.Scopes = []string{"profile", "email"}
+	}
 	// fixed options
 	opts["endpoint"] = options.DynamicOptions{
 		"authURL":     google.Endpoint.AuthURL,
@@ -135,35 +141,62 @@ func (g *google) IdentityExchangeCallback(req *http.Request) (identityprovider.I
 	// OAuth2 callback, see also https://tools.ietf.org/html/rfc6749#section-4.1.2
 	code := req.URL.Query().Get("code")
 	ctx := req.Context()
+	
+	// Create HTTP client with TLS configuration if needed
+	var httpClient *http.Client
 	if g.InsecureSkipVerify {
-		client := &http.Client{
+		httpClient = &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
 					InsecureSkipVerify: true,
 				},
 			},
 		}
-		ctx = context.WithValue(ctx, oauth2.HTTPClient, client)
+		ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
+	} else {
+		httpClient = http.DefaultClient
 	}
+	
+	// Exchange the authorization code for an access token
 	token, err := g.Config.Exchange(ctx, code)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := oauth2.NewClient(ctx, oauth2.StaticTokenSource(token)).Get(g.Endpoint.UserInfoURL)
+	
+	// Create request to get user info
+	userInfoReq, err := http.NewRequest("GET", g.Endpoint.UserInfoURL, nil)
 	if err != nil {
 		return nil, err
 	}
-
-	data, err := io.ReadAll(resp.Body)
+	userInfoReq.Header.Set("Authorization", "Bearer "+token.AccessToken)
+	
+	// Make the request using the same HTTP client
+	resp, err := httpClient.Do(userInfoReq)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
+	// Check for successful response
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to get user info: status %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
 	var googleIdentity googleIdentity
 	err = json.Unmarshal(data, &googleIdentity)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to unmarshal user info: %w", err)
+	}
+
+	// Validate that we have at least an ID
+	if googleIdentity.ID == "" {
+		return nil, errors.New("invalid user info: missing user ID")
 	}
 
 	return googleIdentity, nil
