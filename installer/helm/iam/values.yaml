@@ -48,7 +48,7 @@ apiServer:
   # -- image for ApiServer
   image:
     # -- The ApiServer image repository
-    repository: devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-apiserver
+    repository: docker.cnb.cool/micromoving/iam/iam-apiserver
     # -- The ApiServer image pull policy
     pullPolicy: Always
     # -- The ApiServer image tag
@@ -122,7 +122,7 @@ authzServer:
   # -- image for AuthzServer
   image:
     # -- The AuthzServer image repository
-    repository: devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-authzserver
+    repository: docker.cnb.cool/micromoving/iam/iam-authzserver
     # -- The AuthzServer image pull policy
     pullPolicy: Always
     # -- The AuthzServer image tag
@@ -194,7 +194,7 @@ console:
   # -- image for ApiServer
   image:
     # -- The ApiServer image repository
-    repository: devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-frontend
+    repository: docker.cnb.cool/micromoving/iam/iam-frontend
     # -- The ApiServer image pull policy
     pullPolicy: Always
     # -- The ApiServer image tag

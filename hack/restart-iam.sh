@@ -14,7 +14,7 @@ source "${IAM_ROOT}/hack/lib/init.sh"
 
 TAG="${TAG:-latest}"
 NAMESPACE="${NAMESPACE:-iam-system}" # 设置默认的命名空间
-REGISTRY="${REPO:-devops-wecoding-docker.pkg.coding.net/wecoding/images}"
+REGISTRY="${REPO:-docker.cnb.cool/micromoving/iam}"
 DEPLOYS="${DEPLOYS:-iam-apiserver}" # 部署列表，使用逗号分隔
 
 function wait_for_installation_finish() {

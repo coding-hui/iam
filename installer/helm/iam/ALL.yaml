@@ -396,7 +396,7 @@ spec:
       serviceAccountName: iam-apiserver
       containers:
         - name: apiserver
-          image: "devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-apiserver:latest"
+          image: "docker.cnb.cool/micromoving/iam/iam-apiserver:latest"
           imagePullPolicy: Always
           ports:
             - name: http
@@ -470,7 +470,7 @@ spec:
       serviceAccountName: iam-authzserver
       containers:
         - name: apiserver
-          image: "devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-authzserver:latest"
+          image: "docker.cnb.cool/micromoving/iam/iam-authzserver:latest"
           imagePullPolicy: Always
           ports:
             - name: http
@@ -544,7 +544,7 @@ spec:
       serviceAccountName: iam-console
       containers:
         - name: console
-          image: "devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-frontend:latest"
+          image: "docker.cnb.cool/micromoving/iam/iam-frontend:latest"
           imagePullPolicy: Always
           ports:
             - name: http
@@ -599,7 +599,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: main
-          image: "devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-apiserver:latest"
+          image: "docker.cnb.cool/micromoving/iam/iam-apiserver:latest"
           imagePullPolicy: Always
           command: [ "/gen-k8s-secret.sh", "--service", "iam-apiserver", "--namespace",
                      "iam-system", "--secret", "iam-apiserver" ]
@@ -627,7 +627,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: main
-          image: "devops-wecoding-docker.pkg.coding.net/wecoding/images/iam-authzserver:latest"
+          image: "docker.cnb.cool/micromoving/iam/iam-authzserver:latest"
           imagePullPolicy: Always
           command: [ "/gen-k8s-secret.sh", "--service", "iam-authzserver", "--namespace",
                      "iam-system", "--secret", "iam-authzserver" ]
