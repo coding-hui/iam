@@ -66,4 +66,15 @@ image.build.%:
 	$(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) \
 		--output=type=${BUILDX_OUTPUT_TYPE} $(ROOT_DIR)/ \
 		--platform ${PLATFORMS} \
-		$(BUILD_SUFFIX) ;
+		$(BUILD_SUFFIX)
+
+.PHONY: image.push
+image.push: image.verify go.build.verify $(addprefix image.push., $(addprefix $(IMAGE_PLAT)., $(IMAGES)))
+
+.PHONY: image.push.multiarch
+image.push.multiarch: image.verify go.build.verify $(foreach p,$(PLATFORMS),$(addprefix image.push., $(addprefix $(p)., $(IMAGES))))
+
+.PHONY: image.push.%
+image.push.%: image.build.%
+	@echo "===========> Pushing image $(IMAGE) $(VERSION) to $(REGISTRY_PREFIX)"
+	$(DOCKER) push $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION)
