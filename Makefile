@@ -91,6 +91,11 @@ push.multiarch:
 deploy:
 	@$(MAKE) deploy.k8s
 
+## undeploy: Undeploy components.
+.PHONY: undeploy
+undeploy:
+	@helm uninstall iam -n iam-system
+
 ## clean: Remove all files that are created by building.
 .PHONY: clean
 clean:

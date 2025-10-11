@@ -332,11 +332,11 @@ primary:
   ##
   resources:
    limits:
-      cpu: 500m
-      memory: 512Mi
+     cpu: 500m
+     memory: 512Mi
    requests:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 128m
+      memory: 256Mi
   ## Configure extra options for liveness probe
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param primary.livenessProbe.enabled Enable livenessProbe
@@ -447,7 +447,7 @@ primary:
       - ReadWriteOnce
     ## @param primary.persistence.size MySQL primary persistent volume size
     ##
-    size: 8Gi
+    size: 5Gi
     ## @param primary.persistence.selector Selector to match an existing Persistent Volume
     ## selector:
     ##   matchLabels:

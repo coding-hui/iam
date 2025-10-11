@@ -35,7 +35,7 @@ ingress:
     authzserver:
       - /api/v1/authz
   hosts:
-    - iam.wecoding.top
+    - iam.micromoving.net
   # tls:
   #   - secretName: loki-distributed-tls
   #     hosts:
@@ -79,10 +79,10 @@ apiServer:
   containerSecurityContext: { }
   # -- Resource requests and limits for the ApiServer
   resources:
-    limits:
-      cpu: 256m
-      memory: 512Mi
     requests:
+      cpu: 128m
+      memory: 256Mi
+    limits:
       cpu: 256m
       memory: 512Mi
   # -- Grace period to allow the ApiServer to shutdown before it is killed
@@ -153,10 +153,10 @@ authzServer:
   containerSecurityContext: { }
   # -- Resource requests and limits for the AuthzServer
   resources:
-    limits:
-      cpu: 256m
-      memory: 512Mi
     requests:
+      cpu: 128m
+      memory: 256Mi
+    limits:
       cpu: 256m
       memory: 512Mi
   # -- Grace period to allow the AuthzServer to shutdown before it is killed
@@ -233,10 +233,10 @@ console:
     allowPrivilegeEscalation: true
   # -- Resource requests and limits for the ApiServer
   resources:
-    limits:
-      cpu: 256m
-      memory: 512Mi
     requests:
+      cpu: 128m
+      memory: 256Mi
+    limits:
       cpu: 256m
       memory: 512Mi
   # -- Grace period to allow the ApiServer to shutdown before it is killed
