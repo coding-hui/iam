@@ -61,7 +61,7 @@ image.build.%:
 	@echo "===========> Building docker image $(IMAGE) $(VERSION) for $(PLATFORMS)"
 	$(eval BUILD_SUFFIX := -f $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile $(_DOCKER_BUILD_EXTRA_ARGS))
 	$(MAKE) image.daemon.verify ;\
-	$(DOCKER) buildx create --use ;\
+	$(DOCKER) buildx create --use --platform ${PLATFORMS} ;\
 	$(DOCKER) buildx build -t $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION) \
 		--output=type=${BUILDX_OUTPUT_TYPE} $(ROOT_DIR)/ \
 		--platform ${PLATFORMS} \
