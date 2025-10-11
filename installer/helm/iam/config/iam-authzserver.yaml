@@ -24,7 +24,7 @@ secure:
     pair-name: tls
 
 redis:
-  host: redis-master
+  host: redis-master.infra
   port: 6379
   password:
 

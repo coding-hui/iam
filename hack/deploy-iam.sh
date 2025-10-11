@@ -8,7 +8,7 @@
 IAM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
 # Set namespace variables (use default values if not set)
-IAM_DEPEND_NAMESPACE="${IAM_DEPEND_NAMESPACE:-iam-depend}"
+IAM_DEPEND_NAMESPACE="${IAM_DEPEND_NAMESPACE:-infra}"
 IAM_SYSTEM_NAMESPACE="${IAM_SYSTEM_NAMESPACE:-iam-system}"
 
 # Set installation flags, read from environment variables or default to false
