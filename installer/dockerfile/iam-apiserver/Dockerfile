@@ -5,6 +5,12 @@
 ARG BUILD_IMAGE
 FROM ${BUILD_IMAGE:-golang:1.24} AS builder
 
+ARG GOPROXY=""
+RUN if [ -n "$GOPROXY" ]; then \
+    go env -w GO111MODULE=on && \
+    go env -w GOPROXY=$GOPROXY; \
+fi
+
 WORKDIR /go/src/wecoding/iam
 COPY . .
 RUN make build BINS="iam-apiserver"
