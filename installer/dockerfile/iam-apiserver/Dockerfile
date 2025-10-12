@@ -3,7 +3,7 @@
 # license that can be found in the LICENSE file.
 
 ARG BUILD_IMAGE
-FROM ${BASE_IMAGE:-golang:1.24} AS builder
+FROM ${BUILD_IMAGE:-golang:1.24} AS builder
 
 WORKDIR /go/src/wecoding/iam
 COPY . .
