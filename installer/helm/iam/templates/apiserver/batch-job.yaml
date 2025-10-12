@@ -18,7 +18,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: main
-          image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag | default .Chart.AppVersion }}"
+          image: {{ include "iam.apiServerImage" . }}
           imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
           command: [ "/gen-k8s-secret.sh", "--service", "{{ include "iam.apiServerFullname" . }}", "--namespace",
                      "{{ .Release.Namespace }}", "--secret", "{{ include "iam.fullname" . }}" ]
