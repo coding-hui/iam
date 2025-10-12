@@ -38,7 +38,7 @@ spec:
       {{ end }}
       containers:
         - name: apiserver
-          image: "{{ .Values.apiServer.image.repository }}:{{ .Values.apiServer.image.tag | default .Chart.AppVersion }}"
+          image: {{ include "iam.apiServerImage" . }}
           imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
           ports:
             - name: http

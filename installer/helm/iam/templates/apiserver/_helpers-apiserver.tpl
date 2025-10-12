@@ -20,3 +20,10 @@ apiserver selector labels
 {{ include "iam.selectorLabels" . }}
 app.kubernetes.io/component: apiserver
 {{- end }}
+
+{{/*
+Return the proper image name (for the init container apiserver image)
+*/}}
+{{- define "iam.apiServerImage" -}}
+{{- include "iam.images.image" (dict "imageRoot" .Values.apiServer.image "global" .Values.global) }}
+{{- end -}}

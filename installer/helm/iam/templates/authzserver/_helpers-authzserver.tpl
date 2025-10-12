@@ -20,3 +20,10 @@ authzserver selector labels
 {{ include "iam.selectorLabels" . }}
 app.kubernetes.io/component: authzserver
 {{- end }}
+
+{{/*
+Return the proper image name (for the init container image)
+*/}}
+{{- define "iam.authzServerImage" -}}
+{{- include "iam.images.image" (dict "imageRoot" .Values.authzServer.image "global" .Values.global) }}
+{{- end -}}

@@ -61,7 +61,7 @@ data:
         pair-name: tls
     
     mysql:
-      host: mysql:3306
+      host: mysql.infra:3306
       username: root
       password: WeCoding@2023
       database: iam_1
@@ -71,14 +71,14 @@ data:
       log-level: 4 # GORM log level, 1: silent, 2:error, 3:warn, 4:info
     
     redis:
-      host: redis-master
+      host: redis-master.infra
       port: 6379
       password:
     
     cache:
       type: redis
       options:
-        host: redis-master
+        host: redis-master.infra
         port: 6379
         password:
     
@@ -98,7 +98,7 @@ data:
       profiling: true
     
     authentication:
-      domain: wecoding.local
+      #domain: iam.micromoving.cn
       jwtSecret: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo
       signKey: /var/run/iam/certificates/ca.crt
 ---
@@ -127,7 +127,7 @@ data:
     server:
       mode: release
       healthz: true
-      middlewares: recovery,logger,secure,nocache,cors,dump
+      middlewares: recovery,logger,secure,nocache,cors
     
     insecure:
       bind-address: 0.0.0.0
@@ -142,7 +142,7 @@ data:
         pair-name: tls
     
     redis:
-      host: redis-master
+      host: redis-master.infra
       port: 6379
       password:
     
@@ -234,35 +234,6 @@ rules:
     resources: [ "podgroups" ]
     verbs: [ "get", "list", "watch" ]
 ---
-# Source: iam/templates/authzserver/rbac.yaml
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: iam-authzserver
-rules:
-  - apiGroups: [ "" ]
-    resources: [ "configmaps" ]
-    verbs: [ "get", "list", "watch" ]
-  # Rules below is used generate admission service secret
-  - apiGroups: [ "certificates.k8s.io" ]
-    resources: [ "certificatesigningrequests" ]
-    verbs: [ "get", "list", "create", "delete" ]
-  - apiGroups: [ "certificates.k8s.io" ]
-    resources: [ "certificatesigningrequests/approval" ]
-    verbs: [ "create", "update" ]
-  - apiGroups: [ "" ]
-    resources: [ "secrets" ]
-    verbs: [ "create", "get", "patch" ]
-  - apiGroups: [ "scheduling.incubator.k8s.io", "scheduling.volcano.sh" ]
-    resources: [ "queues" ]
-    verbs: [ "get", "list" ]
-  - apiGroups: [ "" ]
-    resources: [ "services" ]
-    verbs: [ "get" ]
-  - apiGroups: [ "scheduling.incubator.k8s.io", "scheduling.volcano.sh" ]
-    resources: [ "podgroups" ]
-    verbs: [ "get", "list", "watch" ]
----
 # Source: iam/templates/apiserver/rbac.yaml
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -275,20 +246,6 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: iam-apiserver
-  apiGroup: rbac.authorization.k8s.io
----
-# Source: iam/templates/authzserver/rbac.yaml
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: iam-authzserver-role
-subjects:
-  - kind: ServiceAccount
-    name: iam-authzserver
-    namespace: iam-system
-roleRef:
-  kind: ClusterRole
-  name: iam-authzserver
   apiGroup: rbac.authorization.k8s.io
 ---
 # Source: iam/templates/apiserver/service.yaml
@@ -304,11 +261,19 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: apiserver
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: http
       port: 8000
       targetPort: http
+      protocol: TCP
+    - name: https
+      port: 8443
+      targetPort: https
+      protocol: TCP
+    - name: grpc
+      port: 8001
+      targetPort: grpc
       protocol: TCP
   selector:
     app.kubernetes.io/name: iam
@@ -328,11 +293,15 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: authzserver
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: http
       port: 8010
       targetPort: http
+      protocol: TCP
+    - name: https
+      port: 9443
+      targetPort: https
       protocol: TCP
   selector:
     app.kubernetes.io/name: iam
@@ -396,11 +365,17 @@ spec:
       serviceAccountName: iam-apiserver
       containers:
         - name: apiserver
-          image: "docker.cnb.cool/micromoving/iam/iam-apiserver:latest"
+          image: docker.cnb.cool/micromoving/iam/iam-apiserver:latest
           imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8000
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            - name: grpc
+              containerPort: 8001
               protocol: TCP
           readinessProbe:
             httpGet:
@@ -416,7 +391,12 @@ spec:
           securityContext:
             {}
           resources:
-            {}
+            limits:
+              cpu: 256m
+              memory: 512Mi
+            requests:
+              cpu: 128m
+              memory: 256Mi
           volumeMounts:
             - name: log
               mountPath: /var/log/iam
@@ -430,7 +410,7 @@ spec:
         - name: iam-certs
           secret:
             defaultMode: 420
-            secretName: iam-apiserver
+            secretName: iam
         - name: config
           configMap:
             name: iam-apiserver
@@ -470,11 +450,14 @@ spec:
       serviceAccountName: iam-authzserver
       containers:
         - name: apiserver
-          image: "docker.cnb.cool/micromoving/iam/iam-authzserver:latest"
+          image: docker.cnb.cool/micromoving/iam/iam-authzserver:latest
           imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8010
+              protocol: TCP
+            - name: https
+              containerPort: 9443
               protocol: TCP
           readinessProbe:
             httpGet:
@@ -490,7 +473,12 @@ spec:
           securityContext:
             {}
           resources:
-            {}
+            limits:
+              cpu: 256m
+              memory: 512Mi
+            requests:
+              cpu: 128m
+              memory: 256Mi
           volumeMounts:
             - name: log
               mountPath: /var/log/iam
@@ -504,7 +492,7 @@ spec:
         - name: iam-certs
           secret:
             defaultMode: 420
-            secretName: iam-authzserver
+            secretName: iam
         - name: config
           configMap:
             name: iam-authzserver
@@ -544,7 +532,7 @@ spec:
       serviceAccountName: iam-console
       containers:
         - name: console
-          image: "docker.cnb.cool/micromoving/iam/iam-frontend:latest"
+          image: docker.cnb.cool/micromoving/iam/iam-frontend:latest
           imagePullPolicy: Always
           ports:
             - name: http
@@ -562,7 +550,12 @@ spec:
               port: 8080
             initialDelaySeconds: 30
           resources:
-            {}
+            limits:
+              cpu: 256m
+              memory: 512Mi
+            requests:
+              cpu: 128m
+              memory: 256Mi
           volumeMounts:
             - name: config
               subPath: nginx.conf
@@ -580,14 +573,13 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: iam-apiserver-init
+  name: iam-init
   labels:
     helm.sh/chart: iam-0.1.0
     app.kubernetes.io/name: iam
     app.kubernetes.io/instance: iam
     app.kubernetes.io/version: "0.9.0"
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: apiserver
 spec:
   backoffLimit: 3
   template:
@@ -602,32 +594,43 @@ spec:
           image: "docker.cnb.cool/micromoving/iam/iam-apiserver:latest"
           imagePullPolicy: Always
           command: [ "/gen-k8s-secret.sh", "--service", "iam-apiserver", "--namespace",
-                     "iam-system", "--secret", "iam-apiserver" ]
+                     "iam-system", "--secret", "iam" ]
 ---
-# Source: iam/templates/authzserver/batch-job.yaml
-apiVersion: batch/v1
-kind: Job
+# Source: iam/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: iam-authzserver-init
+  name: iam
+  namespace: iam-system
   labels:
     helm.sh/chart: iam-0.1.0
     app.kubernetes.io/name: iam
     app.kubernetes.io/instance: iam
     app.kubernetes.io/version: "0.9.0"
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: authzserver
 spec:
-  backoffLimit: 3
-  template:
-    spec:
-      serviceAccountName: iam-authzserver
-      priorityClassName: system-cluster-critical
-      imagePullSecrets:
-        - name: coding-registry
-      restartPolicy: Never
-      containers:
-        - name: main
-          image: "docker.cnb.cool/micromoving/iam/iam-authzserver:latest"
-          imagePullPolicy: Always
-          command: [ "/gen-k8s-secret.sh", "--service", "iam-authzserver", "--namespace",
-                     "iam-system", "--secret", "iam-authzserver" ]
+  rules:
+    - host: "iam.micromoving.cn"
+      http:
+        paths:
+          - path: /api/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: iam-apiserver
+                port:
+                  name: http
+          - path: /api/v1/authz
+            pathType: Prefix
+            backend:
+              service:
+                name: iam-authzserver
+                port:
+                  name: http
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: iam-console
+                port:
+                  name: http

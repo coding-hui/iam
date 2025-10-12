@@ -105,3 +105,29 @@ Return if ingress supports pathType.
 {{- define "iam.ingress.supportsPathType" -}}
   {{- or (eq (include "iam.ingress.isStable" .) "true") (and (eq (include "iam.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18-0" .Capabilities.KubeVersion.Version)) -}}
 {{- end -}}
+
+{{/* vim: set filetype=mustache: */}}
+{{/*
+Return the proper image name
+{{ include "iam.images.image" ( dict "imageRoot" .Values.path.to.the.image "global" .Values.global ) }}
+*/}}
+{{- define "iam.images.image" -}}
+{{- $registryName := .imageRoot.registry -}}
+{{- $repositoryName := .imageRoot.repository -}}
+{{- $separator := ":" -}}
+{{- $termination := .imageRoot.tag | toString -}}
+{{- if .global }}
+    {{- if .global.imageRegistry }}
+     {{- $registryName = .global.imageRegistry -}}
+    {{- end -}}
+{{- end -}}
+{{- if .imageRoot.digest }}
+    {{- $separator = "@" -}}
+    {{- $termination = .imageRoot.digest | toString -}}
+{{- end -}}
+{{- if $registryName }}
+    {{- printf "%s/%s%s%s" $registryName $repositoryName $separator $termination -}}
+{{- else -}}
+    {{- printf "%s%s%s"  $repositoryName $separator $termination -}}
+{{- end -}}
+{{- end -}}

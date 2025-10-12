@@ -20,3 +20,10 @@ console selector labels
 {{ include "iam.selectorLabels" . }}
 app.kubernetes.io/component: console
 {{- end }}
+
+{{/*
+Return the proper image name (for the init container image)
+*/}}
+{{- define "iam.consoleImage" -}}
+{{- include "iam.images.image" (dict "imageRoot" .Values.console.image "global" .Values.global) }}
+{{- end -}}
