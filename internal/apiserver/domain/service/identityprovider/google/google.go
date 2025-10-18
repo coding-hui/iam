@@ -160,14 +160,13 @@ func (g *google) IdentityExchangeCallback(req *http.Request) (identityprovider.I
 
 	// Configure proxy - always use environment variables by default
 	// If ProxyURL is configured, it takes precedence over environment variables
+	transport.Proxy = http.ProxyFromEnvironment
 	if g.ProxyURL != "" {
 		parsedProxyURL, err := url.Parse(g.ProxyURL)
 		if err != nil {
 			return nil, fmt.Errorf("invalid proxy URL: %w", err)
 		}
 		transport.Proxy = http.ProxyURL(parsedProxyURL)
-	} else {
-		transport.Proxy = http.ProxyFromEnvironment
 	}
 
 	httpClient := &http.Client{
