@@ -145,7 +145,7 @@ func (g *google) IdentityExchangeCallback(req *http.Request) (identityprovider.I
 	// OAuth2 callback, see also https://tools.ietf.org/html/rfc6749#section-4.1.2
 	code := req.URL.Query().Get("code")
 	ctx := req.Context()
-	
+
 	// Create HTTP client with TLS configuration and proxy if needed
 	var transport *http.Transport
 	if g.InsecureSkipVerify {
@@ -157,37 +157,36 @@ func (g *google) IdentityExchangeCallback(req *http.Request) (identityprovider.I
 	} else {
 		transport = &http.Transport{}
 	}
-	
+
 	// Configure proxy
 	// Priority: 1. ProxyURL from config, 2. Environment variables (via ProxyFromEnvironment)
+	transport.Proxy = http.ProxyFromEnvironment
 	if g.ProxyURL != "" {
 		parsedProxyURL, err := url.Parse(g.ProxyURL)
 		if err != nil {
 			return nil, fmt.Errorf("invalid proxy URL: %w", err)
 		}
 		transport.Proxy = http.ProxyURL(parsedProxyURL)
-	} else {
-		transport.Proxy = http.ProxyFromEnvironment
 	}
-	
+
 	httpClient := &http.Client{
 		Transport: transport,
 	}
 	ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
-	
+
 	// Exchange the authorization code for an access token
 	token, err := g.Config.Exchange(ctx, code)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Create request to get user info
 	userInfoReq, err := http.NewRequest("GET", g.Endpoint.UserInfoURL, nil)
 	if err != nil {
 		return nil, err
 	}
 	userInfoReq.Header.Set("Authorization", "Bearer "+token.AccessToken)
-	
+
 	// Make the request using the same HTTP client
 	resp, err := httpClient.Do(userInfoReq)
 	if err != nil {
