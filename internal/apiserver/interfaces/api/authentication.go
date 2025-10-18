@@ -264,14 +264,16 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 			callbackURL,
 			tokenInfo.AccessToken,
 			tokenInfo.TokenType,
-			tokenInfo.ExpiresIn)
-		
+			tokenInfo.ExpiresIn,
+		)
+
 		// Add refresh_token only if present
 		if tokenInfo.RefreshToken != "" {
 			redirectURL += fmt.Sprintf("&refresh_token=%s", tokenInfo.RefreshToken)
 		}
-		
+
 		c.Redirect(302, redirectURL)
+
 		return
 	}
 
