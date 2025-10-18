@@ -281,7 +281,7 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 				"access_denied",
 				"Authentication failed",
 			)
-			log.Infof("Redirecting to error URL: %s", errorRedirectURL)
+			log.Debugf("Redirecting to error URL: %s", errorRedirectURL)
 			c.Redirect(302, errorRedirectURL)
 			return
 		}
