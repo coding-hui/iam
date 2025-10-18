@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/oauth2"
@@ -50,6 +51,9 @@ type google struct {
 
 	// Used to turn off TLS certificate checks
 	InsecureSkipVerify bool `json:"insecureSkipVerify" mapstructure:"insecureSkipVerify"`
+
+	// HTTP proxy to use for requests
+	ProxyURL string `json:"proxyURL" mapstructure:"proxyURL"`
 
 	// Scope specifies optional requested permissions.
 	Scopes []string `json:"scopes" mapstructure:"scopes"`
@@ -142,20 +146,31 @@ func (g *google) IdentityExchangeCallback(req *http.Request) (identityprovider.I
 	code := req.URL.Query().Get("code")
 	ctx := req.Context()
 	
-	// Create HTTP client with TLS configuration if needed
-	var httpClient *http.Client
+	// Create HTTP client with TLS configuration and proxy if needed
+	var transport *http.Transport
 	if g.InsecureSkipVerify {
-		httpClient = &http.Client{
-			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{
-					InsecureSkipVerify: true,
-				},
+		transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
 			},
 		}
-		ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
 	} else {
-		httpClient = http.DefaultClient
+		transport = &http.Transport{}
 	}
+	
+	// Configure proxy if provided
+	if g.ProxyURL != "" {
+		proxyURL, err := url.Parse(g.ProxyURL)
+		if err != nil {
+			return nil, fmt.Errorf("invalid proxy URL: %w", err)
+		}
+		transport.Proxy = http.ProxyURL(proxyURL)
+	}
+	
+	httpClient := &http.Client{
+		Transport: transport,
+	}
+	ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
 	
 	// Exchange the authorization code for an access token
 	token, err := g.Config.Exchange(ctx, code)
