@@ -13,7 +13,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/oauth2"
@@ -80,16 +79,6 @@ type googleIdentity struct {
 	Picture       string `json:"picture"`
 	Locale        string `json:"locale"`
 	HD            string `json:"hd"`
-}
-
-// getEnvAny returns the first non-empty value from the given environment variable names
-func getEnvAny(names ...string) string {
-	for _, name := range names {
-		if value := os.Getenv(name); value != "" {
-			return value
-		}
-	}
-	return ""
 }
 
 type googleProviderFactory struct{}
@@ -169,24 +158,16 @@ func (g *google) IdentityExchangeCallback(req *http.Request) (identityprovider.I
 		transport = &http.Transport{}
 	}
 	
-	// Configure proxy if provided
-	// Priority: 1. ProxyURL from config, 2. HTTP_PROXY environment variable, 3. HTTPS_PROXY environment variable
-	proxyURL := g.ProxyURL
-	if proxyURL == "" {
-		// Try to get from environment variables
-		if httpProxy := getEnvAny("HTTP_PROXY", "http_proxy"); httpProxy != "" {
-			proxyURL = httpProxy
-		} else if httpsProxy := getEnvAny("HTTPS_PROXY", "https_proxy"); httpsProxy != "" {
-			proxyURL = httpsProxy
-		}
-	}
-	
-	if proxyURL != "" {
-		parsedProxyURL, err := url.Parse(proxyURL)
+	// Configure proxy
+	// Priority: 1. ProxyURL from config, 2. Environment variables (via ProxyFromEnvironment)
+	if g.ProxyURL != "" {
+		parsedProxyURL, err := url.Parse(g.ProxyURL)
 		if err != nil {
 			return nil, fmt.Errorf("invalid proxy URL: %w", err)
 		}
 		transport.Proxy = http.ProxyURL(parsedProxyURL)
+	} else {
+		transport.Proxy = http.ProxyFromEnvironment
 	}
 	
 	httpClient := &http.Client{
