@@ -246,15 +246,15 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 	redirectURI := c.Query("redirect_uri")
 
 	// Log debug information
-	log.Infof("OAuth callback request - Path: %s, Method: %s", c.Request.URL.Path, c.Request.Method)
-	log.Infof("OAuth callback parameters - callback: %s, redirect_uri: %s", callback, redirectURI)
-	log.Infof("Full request URL: %s", c.Request.URL.String())
-	log.Infof("Request headers: %+v", c.Request.Header)
-	log.Infof("Query parameters: %+v", c.Request.URL.Query())
+	log.Debugf("OAuth callback request - Path: %s, Method: %s", c.Request.URL.Path, c.Request.Method)
+	log.Debugf("OAuth callback parameters - callback: %s, redirect_uri: %s", callback, redirectURI)
+	log.Debugf("Full request URL: %s", c.Request.URL.String())
+	log.Debugf("Request headers: %+v", c.Request.Header)
+	log.Debugf("Query parameters: %+v", c.Request.URL.Query())
 
 	idp, err := a.IdentityProviderService.GetIdentityProvider(c.Request.Context(), callback, metav1.GetOptions{})
 	if err != nil {
-		log.Infof("Failed to get identity provider: %v", err)
+		log.Debugf("Failed to get identity provider: %v", err)
 		if redirectURI != "" {
 			// Redirect with error in fragment
 			errorRedirectURL := fmt.Sprintf("%s#error=%s&error_description=%s",
@@ -262,18 +262,18 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 				"server_error",
 				"Failed to get identity provider",
 			)
-			log.Infof("Redirecting to error URL: %s", errorRedirectURL)
+			log.Debugf("Redirecting to error URL: %s", errorRedirectURL)
 			c.Redirect(302, errorRedirectURL)
 			return
 		}
 		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
 		return
 	}
-	log.Infof("Successfully retrieved identity provider: %s", idp.Name)
+	log.Debugf("Successfully retrieved identity provider: %s", idp.Name)
 
 	tokenInfo, err := a.AuthenticationService.LoginByOAuthProvider(c.Request.Context(), idp, c.Request)
 	if err != nil {
-		log.Infof("Login by OAuth provider failed: %v", err)
+		log.Debugf("Login by OAuth provider failed: %v", err)
 		if redirectURI != "" {
 			// Redirect with error in fragment
 			errorRedirectURL := fmt.Sprintf("%s#error=%s&error_description=%s",
@@ -288,12 +288,12 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
 		return
 	}
-	log.Infof("Successfully obtained token info - AccessToken present: %v, TokenType: %s, ExpiresIn: %d, RefreshToken present: %v",
+	log.Debugf("Successfully obtained token info - AccessToken present: %v, TokenType: %s, ExpiresIn: %d, RefreshToken present: %v", 
 		tokenInfo.AccessToken != "", tokenInfo.TokenType, tokenInfo.ExpiresIn, tokenInfo.RefreshToken != "")
 
 	// set cookie if need
 	a.setAuthCookie(tokenInfo.AccessToken, c)
-	log.Infof("Set auth cookie for token")
+	log.Debugf("Set auth cookie for token")
 
 	// Check if redirect_uri is provided in query parameters
 	if redirectURI != "" {
@@ -311,13 +311,13 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 			redirectURL += fmt.Sprintf("&refresh_token=%s", tokenInfo.RefreshToken)
 		}
 
-		log.Infof("Redirecting to URL: %s (with tokens in fragment)", redirectURL)
+		log.Debugf("Redirecting to URL: %s (with tokens in fragment)", redirectURL)
 		// Use 302 Found for redirect
 		c.Redirect(302, redirectURL)
 		return
 	}
 
-	log.Infof("Rendering authorize_callback.html template")
+	log.Debugf("Rendering authorize_callback.html template")
 	api.OkWithHTML("authorize_callback.html", gin.H{"tokenInfo": tokenInfo, "idp": idp}, c)
 }
 
