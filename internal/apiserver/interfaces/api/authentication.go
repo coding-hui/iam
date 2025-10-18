@@ -254,6 +254,10 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 		return
 	}
 
+	if callbackURL := idp.CallbackURL; callbackURL != "" {
+		// redirect to fe
+	}
+
 	// set cookie if need
 	a.setAuthCookie(tokenInfo.AccessToken, c)
 
