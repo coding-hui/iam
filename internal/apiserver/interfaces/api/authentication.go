@@ -244,7 +244,7 @@ func (a *authentication) userInfo(c *gin.Context) {
 func (a *authentication) oauthCallback(c *gin.Context) {
 	callback := c.Param("callback")
 	redirectURI := c.Query("redirect_uri")
-
+	
 	idp, err := a.IdentityProviderService.GetIdentityProvider(c.Request.Context(), callback, metav1.GetOptions{})
 	if err != nil {
 		if redirectURI != "" {
@@ -252,8 +252,7 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 			errorRedirectURL := fmt.Sprintf("%s#error=%s&error_description=%s",
 				redirectURI,
 				"server_error",
-				"Failed to get identity provider",
-			)
+				"Failed to get identity provider")
 			c.Redirect(302, errorRedirectURL)
 			return
 		}
@@ -267,8 +266,7 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 			errorRedirectURL := fmt.Sprintf("%s#error=%s&error_description=%s",
 				redirectURI,
 				"access_denied",
-				"Authentication failed",
-			)
+				"Authentication failed")
 			c.Redirect(302, errorRedirectURL)
 			return
 		}
@@ -287,14 +285,13 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 			redirectURI,
 			tokenInfo.AccessToken,
 			tokenInfo.TokenType,
-			tokenInfo.ExpiresIn,
-		)
-
+			tokenInfo.ExpiresIn)
+		
 		// Add refresh_token only if present
 		if tokenInfo.RefreshToken != "" {
 			redirectURL += fmt.Sprintf("&refresh_token=%s", tokenInfo.RefreshToken)
 		}
-
+		
 		// Use 302 Found for redirect
 		c.Redirect(302, redirectURL)
 		return
