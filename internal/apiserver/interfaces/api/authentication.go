@@ -243,13 +243,33 @@ func (a *authentication) userInfo(c *gin.Context) {
 
 func (a *authentication) oauthCallback(c *gin.Context) {
 	callback := c.Param("callback")
+	redirectURI := c.Query("redirect_uri")
+	
 	idp, err := a.IdentityProviderService.GetIdentityProvider(c.Request.Context(), callback, metav1.GetOptions{})
 	if err != nil {
+		if redirectURI != "" {
+			// Redirect with error in fragment
+			errorRedirectURL := fmt.Sprintf("%s#error=%s&error_description=%s",
+				redirectURI,
+				"server_error",
+				"Failed to get identity provider")
+			c.Redirect(302, errorRedirectURL)
+			return
+		}
 		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
 		return
 	}
 	tokenInfo, err := a.AuthenticationService.LoginByOAuthProvider(c.Request.Context(), idp, c.Request)
 	if err != nil {
+		if redirectURI != "" {
+			// Redirect with error in fragment
+			errorRedirectURL := fmt.Sprintf("%s#error=%s&error_description=%s",
+				redirectURI,
+				"access_denied",
+				"Authentication failed")
+			c.Redirect(302, errorRedirectURL)
+			return
+		}
 		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
 		return
 	}
@@ -258,10 +278,22 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 	a.setAuthCookie(tokenInfo.AccessToken, c)
 
 	// Check if redirect_uri is provided in query parameters
-	redirectURI := c.Query("redirect_uri")
 	if redirectURI != "" {
-		// Redirect to the provided URI with token information
-		c.Redirect(302, redirectURI+"?access_token="+tokenInfo.AccessToken+"&token_type="+tokenInfo.TokenType+"&refresh_token="+tokenInfo.RefreshToken+"&expires_in="+fmt.Sprintf("%d", tokenInfo.ExpiresIn))
+		// Use URL fragment for implicit flow to avoid tokens in server logs
+		// Build the redirect URL with fragment
+		redirectURL := fmt.Sprintf("%s#access_token=%s&token_type=%s&expires_in=%d",
+			redirectURI,
+			tokenInfo.AccessToken,
+			tokenInfo.TokenType,
+			tokenInfo.ExpiresIn)
+		
+		// Add refresh_token only if present
+		if tokenInfo.RefreshToken != "" {
+			redirectURL += fmt.Sprintf("&refresh_token=%s", tokenInfo.RefreshToken)
+		}
+		
+		// Use 302 Found for redirect
+		c.Redirect(302, redirectURL)
 		return
 	}
 
