@@ -257,14 +257,6 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 	// set cookie if need
 	a.setAuthCookie(tokenInfo.AccessToken, c)
 
-	// Check if redirect_uri is provided in query parameters
-	redirectURI := c.Query("redirect_uri")
-	if redirectURI != "" {
-		// Redirect to the provided URI with token information
-		c.Redirect(302, redirectURI+"?access_token="+tokenInfo.AccessToken+"&token_type="+tokenInfo.TokenType+"&refresh_token="+tokenInfo.RefreshToken+"&expires_in="+fmt.Sprintf("%d", tokenInfo.ExpiresIn))
-		return
-	}
-
 	api.OkWithHTML("authorize_callback.html", gin.H{"tokenInfo": tokenInfo, "idp": idp}, c)
 }
 
