@@ -254,12 +254,26 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 		return
 	}
 
-	if callbackURL := idp.CallbackURL; callbackURL != "" {
-		// redirect to fe
-	}
-
 	// set cookie if need
 	a.setAuthCookie(tokenInfo.AccessToken, c)
+
+	// If CallbackURL is not empty, redirect to frontend
+	if callbackURL := idp.CallbackURL; callbackURL != "" {
+		// Build the redirect URL with token information in URL fragment
+		redirectURL := fmt.Sprintf("%s#access_token=%s&token_type=%s&expires_in=%d",
+			callbackURL,
+			tokenInfo.AccessToken,
+			tokenInfo.TokenType,
+			tokenInfo.ExpiresIn)
+		
+		// Add refresh_token only if present
+		if tokenInfo.RefreshToken != "" {
+			redirectURL += fmt.Sprintf("&refresh_token=%s", tokenInfo.RefreshToken)
+		}
+		
+		c.Redirect(302, redirectURL)
+		return
+	}
 
 	api.OkWithHTML("authorize_callback.html", gin.H{"tokenInfo": tokenInfo, "idp": idp}, c)
 }
