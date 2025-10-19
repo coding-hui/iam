@@ -46,9 +46,8 @@ func (a AutoStrategy) AuthFunc() gin.HandlerFunc {
 
 		// Check for API Key authentication first (via headers)
 		apiKey := c.Request.Header.Get(apiKeyHeader)
-		apiSecret := c.Request.Header.Get("X-API-Secret")
 
-		if apiKey != "" && apiSecret != "" {
+		if apiKey != "" {
 			operator.SetStrategy(a.apiKey)
 			operator.AuthFunc()(c)
 			c.Next()

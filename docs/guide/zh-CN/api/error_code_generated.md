@@ -22,30 +22,30 @@ IAM 系统支持的错误码列表如下：
 | Identifier | Code | HTTP Code | Description |
 | ---------- | ---- | --------- | ----------- |
 | ErrUserNotFound | 110001 | 404 | User not found |
-| ErrUserAlreadyExist | 110002 | 400 | User already exist |
-| ErrUserNameIsEmpty | 110003 | 400 | Username is empty |
-| ErrDeleteOneself | 110004 | 400 | Unable to delete yourself |
+| ErrUserAlreadyExist | 110002 | 400 | User already exists |
+| ErrUserNameIsEmpty | 110003 | 400 | Username cannot be empty |
+| ErrDeleteOneself | 110004 | 400 | You cannot delete your own account |
 | ErrUserAlreadyDisabled | 110005 | 400 | The user is already disabled |
 | ErrUserAlreadyEnabled | 110006 | 400 | The user is already enabled |
-| ErrUserHasDisabled | 110007 | 401 | The account has been disabled |
+| ErrUserHasDisabled | 110007 | 401 | Your account has been disabled. Please contact the administrator |
 | ErrReachMaxCount | 110101 | 400 | Secret reach the max count |
 | ErrSecretNotFound | 110102 | 404 | Secret not found |
 | ErrPolicyNotFound | 110201 | 404 | Policy not found |
-| ErrPolicyAlreadyExist | 110202 | 400 | Policy already exist |
-| ErrPolicyNameIsEmpty | 110203 | 400 | Policy name is empty |
+| ErrPolicyAlreadyExist | 110202 | 400 | Policy already exists |
+| ErrPolicyNameIsEmpty | 110203 | 400 | Policy name cannot be empty |
 | ErrResourceNotFound | 110301 | 404 | Resource not found |
-| ErrResourceAlreadyExist | 110302 | 400 | Resource already exist |
-| ErrResourceNameIsEmpty | 110303 | 400 | Resource name is empty |
-| ErrResourceInstanceIdIsEmpty | 110304 | 400 | Resource instanceId is empty |
-| ErrResourceHasAssignedPolicy | 110305 | 400 | The resource has been assigned permission policies |
+| ErrResourceAlreadyExist | 110302 | 400 | Resource already exists |
+| ErrResourceNameIsEmpty | 110303 | 400 | Resource name cannot be empty |
+| ErrResourceInstanceIdIsEmpty | 110304 | 400 | Resource instance ID cannot be empty |
+| ErrResourceHasAssignedPolicy | 110305 | 400 | The resource has been assigned permission policies and cannot be deleted |
 | ErrRoleNotFound | 110401 | 404 | Role not found |
-| ErrRoleAlreadyExist | 110402 | 400 | Role already exist |
-| ErrRoleNameIsEmpty | 110403 | 400 | Role name is empty |
-| ErrRoleHasAssignedUser | 110404 | 400 | The role has been assigned to a user |
-| ErrAssignRoleFailed | 110405 | 400 | User role assignment fails. Please check the role status or contact the administrator |
-| ErrUnsupportedAssignTarget | 110406 | 400 | The assignment target is not supported. Only user or department are supported |
-| ErrRevokeRoleFailed | 110407 | 400 | User role revoke fails. Please check the role status or contact the administrator |
-| ErrUnsupportedRevokeTarget | 110408 | 400 | The revoke target is not supported. Only user or department are supported |
+| ErrRoleAlreadyExist | 110402 | 400 | Role already exists |
+| ErrRoleNameIsEmpty | 110403 | 400 | Role name cannot be empty |
+| ErrRoleHasAssignedUser | 110404 | 400 | The role has been assigned to users and cannot be deleted |
+| ErrAssignRoleFailed | 110405 | 400 | Failed to assign role. Please check the role status or contact the administrator |
+| ErrUnsupportedAssignTarget | 110406 | 400 | Unsupported assignment target. Only users or departments are supported |
+| ErrRevokeRoleFailed | 110407 | 400 | Failed to revoke role. Please check the role status or contact the administrator |
+| ErrUnsupportedRevokeTarget | 110408 | 400 | Unsupported revoke target. Only users or departments are supported |
 | ErrOrgNotFound | 110501 | 404 | Organization not found |
 | ErrOrgAlreadyExist | 110502 | 400 | Organization already exist |
 | ErrOrgAlreadyDisabled | 110503 | 400 | The organization is already disabled |
@@ -60,13 +60,13 @@ IAM 系统支持的错误码列表如下：
 | ErrUnbindExternalAccount | 110702 | 400 | Failed to unbind external account |
 | ErrExternalAccountAlreadyBound | 110703 | 400 | External account already bound to another user |
 | ErrApiKeyNotFound | 110801 | 404 | API Key not found |
-| ErrApiKeyAlreadyExist | 110802 | 400 | API Key already exist |
-| ErrApiKeyInvalid | 110803 | 401 | Invalid API Key or Secret |
-| ErrApiKeyInactive | 110804 | 401 | API Key is not active |
-| ErrApiKeyExpired | 110805 | 401 | API Key has expired |
+| ErrApiKeyAlreadyExist | 110802 | 400 | API Key already exists |
+| ErrApiKeyInvalid | 110803 | 401 | Invalid API Key. Please check the key format and ensure it starts with 'sk-' |
+| ErrApiKeyInactive | 110804 | 401 | API Key is not active. Please enable the API Key to use it |
+| ErrApiKeyExpired | 110805 | 401 | API Key has expired. Please regenerate a new API Key |
 | ErrApiKeyAlreadyEnabled | 110806 | 400 | API Key is already enabled |
 | ErrApiKeyAlreadyDisabled | 110807 | 400 | API Key is already disabled |
-| ErrApiKeyGenerationFailed | 110808 | 500 | Failed to generate unique API Key |
+| ErrApiKeyGenerationFailed | 110808 | 500 | Failed to generate unique API Key after multiple attempts. Please try again |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |

@@ -11,13 +11,13 @@ const (
 	// ErrUserNotFound - 404: User not found.
 	ErrUserNotFound int = iota + 110001
 
-	// ErrUserAlreadyExist - 400: User already exist.
+	// ErrUserAlreadyExist - 400: User already exists.
 	ErrUserAlreadyExist
 
-	// ErrUserNameIsEmpty - 400: Username is empty.
+	// ErrUserNameIsEmpty - 400: Username cannot be empty.
 	ErrUserNameIsEmpty
 
-	// ErrDeleteOneself - 400: Unable to delete yourself.
+	// ErrDeleteOneself - 400: You cannot delete your own account.
 	ErrDeleteOneself
 
 	// ErrUserAlreadyDisabled - 400: The user is already disabled.
@@ -26,7 +26,7 @@ const (
 	// ErrUserAlreadyEnabled - 400: The user is already enabled.
 	ErrUserAlreadyEnabled
 
-	// ErrUserHasDisabled - 401: The account has been disabled.
+	// ErrUserHasDisabled - 401: Your account has been disabled. Please contact the administrator.
 	ErrUserHasDisabled
 )
 
@@ -44,10 +44,10 @@ const (
 	// ErrPolicyNotFound - 404: Policy not found.
 	ErrPolicyNotFound int = iota + 110201
 
-	// ErrPolicyAlreadyExist - 400: Policy already exist.
+	// ErrPolicyAlreadyExist - 400: Policy already exists.
 	ErrPolicyAlreadyExist
 
-	// ErrPolicyNameIsEmpty - 400: Policy name is empty.
+	// ErrPolicyNameIsEmpty - 400: Policy name cannot be empty.
 	ErrPolicyNameIsEmpty
 )
 
@@ -56,16 +56,16 @@ const (
 	// ErrResourceNotFound - 404: Resource not found.
 	ErrResourceNotFound int = iota + 110301
 
-	// ErrResourceAlreadyExist - 400: Resource already exist.
+	// ErrResourceAlreadyExist - 400: Resource already exists.
 	ErrResourceAlreadyExist
 
-	// ErrResourceNameIsEmpty - 400: Resource name is empty.
+	// ErrResourceNameIsEmpty - 400: Resource name cannot be empty.
 	ErrResourceNameIsEmpty
 
-	// ErrResourceInstanceIdIsEmpty - 400: Resource instanceId is empty.
+	// ErrResourceInstanceIdIsEmpty - 400: Resource instance ID cannot be empty.
 	ErrResourceInstanceIdIsEmpty
 
-	// ErrResourceHasAssignedPolicy - 400: The resource has been assigned permission policies.
+	// ErrResourceHasAssignedPolicy - 400: The resource has been assigned permission policies and cannot be deleted.
 	ErrResourceHasAssignedPolicy
 )
 
@@ -74,25 +74,25 @@ const (
 	// ErrRoleNotFound - 404: Role not found.
 	ErrRoleNotFound int = iota + 110401
 
-	// ErrRoleAlreadyExist - 400: Role already exist.
+	// ErrRoleAlreadyExist - 400: Role already exists.
 	ErrRoleAlreadyExist
 
-	// ErrRoleNameIsEmpty - 400: Role name is empty.
+	// ErrRoleNameIsEmpty - 400: Role name cannot be empty.
 	ErrRoleNameIsEmpty
 
-	// ErrRoleHasAssignedUser - 400: The role has been assigned to a user.
+	// ErrRoleHasAssignedUser - 400: The role has been assigned to users and cannot be deleted.
 	ErrRoleHasAssignedUser
 
-	// ErrAssignRoleFailed - 400: User role assignment fails. Please check the role status or contact the administrator.
+	// ErrAssignRoleFailed - 400: Failed to assign role. Please check the role status or contact the administrator.
 	ErrAssignRoleFailed
 
-	// ErrUnsupportedAssignTarget - 400: The assignment target is not supported. Only user or department are supported.
+	// ErrUnsupportedAssignTarget - 400: Unsupported assignment target. Only users or departments are supported.
 	ErrUnsupportedAssignTarget
 
-	// ErrRevokeRoleFailed - 400: User role revoke fails. Please check the role status or contact the administrator.
+	// ErrRevokeRoleFailed - 400: Failed to revoke role. Please check the role status or contact the administrator.
 	ErrRevokeRoleFailed
 
-	// ErrUnsupportedRevokeTarget - 400: The revoke target is not supported. Only user or department are supported.
+	// ErrUnsupportedRevokeTarget - 400: Unsupported revoke target. Only users or departments are supported.
 	ErrUnsupportedRevokeTarget
 )
 
@@ -149,16 +149,16 @@ const (
 	// ErrApiKeyNotFound - 404: API Key not found.
 	ErrApiKeyNotFound int = iota + 110801
 
-	// ErrApiKeyAlreadyExist - 400: API Key already exist.
+	// ErrApiKeyAlreadyExist - 400: API Key already exists.
 	ErrApiKeyAlreadyExist
 
-	// ErrApiKeyInvalid - 401: Invalid API Key or Secret.
+	// ErrApiKeyInvalid - 401: Invalid API Key. Please check the key format and ensure it starts with 'sk-'.
 	ErrApiKeyInvalid
 
-	// ErrApiKeyInactive - 401: API Key is not active.
+	// ErrApiKeyInactive - 401: API Key is not active. Please enable the API Key to use it.
 	ErrApiKeyInactive
 
-	// ErrApiKeyExpired - 401: API Key has expired.
+	// ErrApiKeyExpired - 401: API Key has expired. Please regenerate a new API Key.
 	ErrApiKeyExpired
 
 	// ErrApiKeyAlreadyEnabled - 400: API Key is already enabled.
@@ -167,6 +167,6 @@ const (
 	// ErrApiKeyAlreadyDisabled - 400: API Key is already disabled.
 	ErrApiKeyAlreadyDisabled
 
-	// ErrApiKeyGenerationFailed - 500: Failed to generate unique API Key.
+	// ErrApiKeyGenerationFailed - 500: Failed to generate unique API Key after multiple attempts. Please try again.
 	ErrApiKeyGenerationFailed
 )
