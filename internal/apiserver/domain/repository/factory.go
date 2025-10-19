@@ -17,6 +17,7 @@ type Factory interface {
 	OrganizationRepository() OrganizationRepository
 	IdentityProviderRepository() IdentityProviderRepository
 	ApplicationRepository() ApplicationRepository
+	ApiKeyRepository() ApiKeyRepository
 	Close() error
 }
 

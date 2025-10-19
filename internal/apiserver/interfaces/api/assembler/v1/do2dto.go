@@ -172,3 +172,48 @@ func ConvertModelToIdentityProviderBase(idp *model.IdentityProvider) *v1.Identit
 		Config:        config,
 	}
 }
+
+// ConvertApiKeyModelToBase assemble the ApiKey model to DTO.
+func ConvertApiKeyModelToBase(apiKey *model.ApiKey) *v1.ApiKeyBase {
+	base := &v1.ApiKeyBase{
+		ObjectMeta:  apiKey.ObjectMeta,
+		Name:        apiKey.Name,
+		Key:         apiKey.Key,
+		UserID:      apiKey.UserID,
+		ExpiresAt:   apiKey.ExpiresAt,
+		Status:      int(apiKey.Status),
+		LastUsedAt:  apiKey.LastUsedAt,
+		UsageCount:  apiKey.UsageCount,
+		Description: apiKey.Description,
+	}
+
+	// Convert permissions
+	if apiKey.Permissions != nil {
+		base.Permissions = &v1.ApiKeyPermissionSpec{
+			Roles:   apiKey.Permissions.Roles,
+			Actions: apiKey.Permissions.Actions,
+			Scopes:  apiKey.Permissions.Scopes,
+		}
+
+		if apiKey.Permissions.Resources != nil {
+			base.Permissions.Resources = make([]v1.ApiKeyResourcePermission, len(apiKey.Permissions.Resources))
+			for i, res := range apiKey.Permissions.Resources {
+				base.Permissions.Resources[i] = v1.ApiKeyResourcePermission{
+					ResourceType: res.ResourceType,
+					ResourceIDs:  res.ResourceIDs,
+					Actions:      res.Actions,
+				}
+			}
+		}
+	}
+
+	// Convert allowed IPs
+	if apiKey.AllowedIPs != nil {
+		base.AllowedIPs = &v1.ApiKeyAllowedIPs{
+			IPs:   apiKey.AllowedIPs.IPs,
+			CIDRs: apiKey.AllowedIPs.CIDRs,
+		}
+	}
+
+	return base
+}

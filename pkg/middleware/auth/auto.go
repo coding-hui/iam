@@ -16,22 +16,26 @@ import (
 	"github.com/coding-hui/iam/pkg/middleware"
 )
 
-const authHeaderCount = 2
+const (
+	apiKeyHeader = "X-API-Key"
+)
 
-// AutoStrategy defines authentication strategy which can automatically choose between Basic and Bearer
-// according `Authorization` header.
+// AutoStrategy defines authentication strategy which can automatically choose between Basic, Bearer, and API Key
+// according `Authorization` header or API Key headers.
 type AutoStrategy struct {
-	basic middleware.AuthStrategy
-	jwt   middleware.AuthStrategy
+	basic  middleware.AuthStrategy
+	jwt    middleware.AuthStrategy
+	apiKey middleware.AuthStrategy
 }
 
 var _ middleware.AuthStrategy = &AutoStrategy{}
 
 // NewAutoStrategy create auto strategy with basic strategy and jwt strategy.
-func NewAutoStrategy(basic, jwt middleware.AuthStrategy) AutoStrategy {
+func NewAutoStrategy(basic, jwt, apiKey middleware.AuthStrategy) AutoStrategy {
 	return AutoStrategy{
-		basic: basic,
-		jwt:   jwt,
+		basic:  basic,
+		jwt:    jwt,
+		apiKey: apiKey,
 	}
 }
 
@@ -39,6 +43,19 @@ func NewAutoStrategy(basic, jwt middleware.AuthStrategy) AutoStrategy {
 func (a AutoStrategy) AuthFunc() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		operator := middleware.AuthOperator{}
+
+		// Check for API Key authentication first (via headers)
+		apiKey := c.Request.Header.Get(apiKeyHeader)
+		apiSecret := c.Request.Header.Get("X-API-Secret")
+
+		if apiKey != "" && apiSecret != "" {
+			operator.SetStrategy(a.apiKey)
+			operator.AuthFunc()(c)
+			c.Next()
+			return
+		}
+
+		// Check for Authorization header
 		authHeader := strings.SplitN(c.Request.Header.Get("Authorization"), " ", 2)
 
 		if len(authHeader) != authHeaderCount {
@@ -51,8 +68,25 @@ func (a AutoStrategy) AuthFunc() gin.HandlerFunc {
 		switch authHeader[0] {
 		case "Basic":
 			operator.SetStrategy(a.basic)
-		case "Bearer":
-			operator.SetStrategy(a.jwt)
+		case authHeaderBearer:
+			// Check if Bearer token is an API Key or JWT
+			token := authHeader[1]
+
+			// API Key format: sk-{32 hex chars} or any string with colon separator
+			if strings.HasPrefix(token, "sk-") || strings.Contains(token, ":") {
+				// This is likely an API Key authentication
+				operator.SetStrategy(a.apiKey)
+			} else {
+				// Check if it's a valid JWT (3 parts separated by dots)
+				jwtParts := strings.Split(token, ".")
+				if len(jwtParts) == 3 {
+					// This is a JWT token
+					operator.SetStrategy(a.jwt)
+				} else {
+					// Try API Key strategy as fallback
+					operator.SetStrategy(a.apiKey)
+				}
+			}
 		default:
 			api.FailWithErrCode(errors.WithCode(code.ErrSignatureInvalid, "unrecognized Authorization header."), c)
 			c.Abort()

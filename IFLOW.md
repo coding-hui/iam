@@ -10,17 +10,18 @@ WeCoding IAM 是一个基于 Go 语言开发的身份识别与访问管理系统
 - **多种认证方式**：支持 JWT、Basic、SecretKey、OAuth、LDAP、微信小程序认证
 - **多协议支持**：RESTful API + gRPC 支持
 - **RESTful API 设计**：基于 Gin Web API 框架，提供丰富的中间件支持
-- **多数据库支持**：基于 GORM 支持 MySQL 等多种数据库
+- **多数据库支持**：基于 GORM 支持 MySQL、PostgreSQL、SQL Server、SQLite 等多种数据库
 - **Swagger 文档**：自动生成 API 文档
 - **多组件架构**：包含 API Server、Authz Server 和命令行工具
 - **事件驱动架构**：内置事件总线系统
 - **依赖注入容器**：基于 IoC 容器的组件管理
+- **邮件服务**：支持邮件发送功能
 
 ### 技术栈
 
-- **编程语言**: Go 1.24.0
+- **编程语言**: Go 1.24.0 (支持 1.13-1.24 版本)
 - **Web 框架**: Gin
-- **数据库**: MySQL (GORM)
+- **数据库**: MySQL/PostgreSQL/SQL Server/SQLite (GORM)
 - **缓存**: Redis
 - **权限控制**: Casbin v2.105.0
 - **API 文档**: Swagger (swaggo)
@@ -34,6 +35,8 @@ WeCoding IAM 是一个基于 Go 语言开发的身份识别与访问管理系统
 - **测试框架**: Ginkgo + Gomega
 - **构建工具**: Make + Docker
 - **容器编排**: Docker Compose + Kubernetes + Helm
+- **监控指标**: Prometheus metrics
+- **性能分析**: pprof
 
 ## 项目结构
 
@@ -166,7 +169,7 @@ make cover
 make swag
 
 # 启动 Swagger UI
-make serve-swagger
+make swagger.serve
 
 # 生成错误码文件
 make gen
@@ -182,6 +185,9 @@ make check-updates
 
 # 安装开发工具
 make tools
+
+# 安装依赖
+make dependencies
 
 # Go mod tidy
 make tidy
@@ -219,16 +225,47 @@ make push.multiarch
 make ca
 ```
 
+## 依赖和工具
+
+### 核心依赖
+
+项目使用以下主要依赖库：
+- **Gin**: Web 框架
+- **GORM**: 数据库 ORM
+- **Casbin**: 权限控制
+- **Viper**: 配置管理
+- **Redis**: 缓存和会话存储
+- **JWT**: 身份认证
+- **Swagger**: API 文档生成
+
+### 开发工具
+
+构建系统中集成了以下工具：
+- **golangci-lint**: Go 代码检查
+- **go-junit-report**: 测试报告生成
+- **go-mod-outdated**: 依赖更新检查
+- **golines**: 代码格式化
+- **goimports**: 导入格式化
+- **swag**: Swagger 文档生成
+
+### 支持的数据库
+
+项目支持多种数据库后端：
+- MySQL
+- PostgreSQL  
+- SQL Server
+- SQLite
+
 ## 配置说明
 
-### 主要配置文件
+#### 主要配置文件
 
 - `configs/iam-apiserver.yaml` - API 服务器配置
 - `configs/iam-apiserver-docker.yaml` - Docker 环境的 API 服务器配置
 - `configs/iam-authzserver.yaml` - 授权服务器配置  
 - `configs/iamctl.yaml` - 命令行工具配置
 
-### 关键配置项
+#### 关键配置项
 
 - **服务器配置**: HTTP/HTTPS/gRPC 服务端口和模式
 - **数据库连接**: MySQL 主机、端口、用户名、密码
@@ -238,6 +275,26 @@ make ca
 - **中间件**: 启用的中间件列表
 - **监控配置**: 性能分析、metrics 指标
 - **特性开关**: 是否启用特定功能
+- **邮件配置**: SMTP 服务器、邮箱认证、邮件模板
+
+#### 配置示例
+
+**API 服务器配置 (iam-apiserver.yaml)**
+- 默认端口: 8000 (HTTP)
+- 数据库: MySQL
+- Redis: 缓存和会话存储
+- JWT 密钥配置
+- 邮件服务配置（可选）
+
+**授权服务器配置 (iam-authzserver.yaml)**
+- 默认端口: 8010 (HTTP), 9443 (HTTPS)
+- 连接 API 服务器 gRPC 服务
+- Redis: 策略缓存
+
+**命令行工具配置 (iamctl.yaml)**
+- 服务器地址配置
+- 用户认证信息
+- TLS 证书配置
 
 ## 新功能特性
 
@@ -351,20 +408,35 @@ make cover
    - 验证配置文件中的连接信息
    - 确保数据库已创建且可访问
 
-2. **权限验证失败**
+2. **Redis 连接失败**
+   - 检查 Redis 服务状态
+   - 验证 Redis 配置信息
+   - 确认网络连接正常
+
+3. **权限验证失败**
    - 检查 JWT 密钥配置
    - 验证用户权限设置
    - 确认 RBAC 策略配置正确
 
-3. **构建失败**
+4. **构建失败**
    - 确保 Go 版本符合要求 (1.13-1.24)
    - 运行 `make tidy` 更新依赖
    - 检查 `GOPATH` 和 `GOBIN` 环境变量
 
-4. **代码检查失败**
+5. **代码检查失败**
    - 运行 `make format` 格式化代码
    - 使用 `make lint` 检查代码规范
    - 查看 `.golangci.yaml` 配置
+
+6. **Swagger 文档生成失败**
+   - 确保 API 注释格式正确
+   - 运行 `make swag` 重新生成文档
+   - 检查 swaggo 依赖是否正常
+
+7. **邮件服务配置问题**
+   - 检查 SMTP 服务器配置
+   - 验证邮箱认证信息
+   - 确认网络连接和端口开放
 
 ### 日志查看
 
@@ -372,6 +444,14 @@ make cover
 - API Server: `/var/log/iam/iam-apiserver.log`
 - 错误日志: `/var/log/iam/iam-apiserver.error.log`
 - 容器日志: `docker logs iam-apiserver` (Docker 环境)
+
+### 调试技巧
+
+- 使用 `make test` 运行单元测试
+- 使用 `make cover` 查看测试覆盖率
+- 启用调试模式: 设置 `server.mode: debug`
+- 查看性能分析: 访问 `/debug/pprof/`
+- 查看监控指标: 访问 `/metrics`
 
 ## 贡献指南
 
@@ -431,11 +511,30 @@ make cover
 │   └── shutdown/        # 优雅停机
 ├── configs/             # 配置文件
 ├── hack/                # 构建和部署脚本
-├── installer/           # 部署配置（Docker, Kubernetes, Helm）
+│   ├── install/         # 安装脚本
+│   ├── lib/             # 脚本库
+│   └── makelib/         # Makefile 库
+├── installer/           # 部署配置
+│   ├── docker-compose/  # Docker Compose 配置
+│   ├── dockerfile/      # Dockerfile
+│   ├── helm/           # Helm Charts
+│   └── kubernetes/     # Kubernetes 配置
 ├── api/                 # API 文档和测试
+│   ├── collections/     # Postman 集合
+│   └── swagger/         # Swagger 文档
 ├── template/            # 模板文件
 └── tools/               # 开发工具
 ```
+
+### 关键目录说明
+
+- **cmd/**: 应用入口点，每个子目录对应一个可执行程序
+- **internal/**: 私有包，不对外暴露的代码
+- **pkg/**: 可复用的公共包
+- **configs/**: 配置文件，支持 YAML 格式
+- **hack/**: 构建和部署工具脚本
+- **installer/**: 容器化和编排配置
+- **api/**: API 文档和测试文件
 
 ---
 

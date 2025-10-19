@@ -706,6 +706,100 @@ type ApplicationList struct {
 	Items []*DetailApplicationResponse `json:"items"`
 }
 
+// ListApiKeyOptions list API Key options.
+type ListApiKeyOptions struct {
+	metav1.ListOptions `       json:",inline"`
+	UserID             string `json:"userId,omitempty" form:"userId"`
+	Status             int    `json:"status,omitempty" form:"status"`
+}
+
+// CreateApiKeyRequest create API Key request.
+type CreateApiKeyRequest struct {
+	Name        string                `json:"name"                  validate:"required,name"`
+	Description string                `json:"description,omitempty"`
+	ExpiresAt   *time.Time            `json:"expiresAt,omitempty"`
+	Permissions *ApiKeyPermissionSpec `json:"permissions,omitempty"`
+	AllowedIPs  *ApiKeyAllowedIPs     `json:"allowedIps,omitempty"`
+}
+
+// CreateApiKeyResponse create API Key response.
+type CreateApiKeyResponse struct {
+	ApiKeyBase `       json:",inline"`
+	Secret     string `json:"secret"`
+}
+
+// UpdateApiKeyRequest update API Key request.
+type UpdateApiKeyRequest struct {
+	Name        string                `json:"name"                  validate:"required,name"`
+	Description string                `json:"description,omitempty"`
+	ExpiresAt   *time.Time            `json:"expiresAt,omitempty"`
+	Permissions *ApiKeyPermissionSpec `json:"permissions,omitempty"`
+	AllowedIPs  *ApiKeyAllowedIPs     `json:"allowedIps,omitempty"`
+	Status      int                   `json:"status,omitempty"`
+}
+
+// ApiKeyBase represents an API Key restful resource.
+type ApiKeyBase struct {
+	// Standard object's metadata.
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Name        string                `json:"name"`
+	Key         string                `json:"key"`
+	UserID      string                `json:"userId"`
+	ExpiresAt   *time.Time            `json:"expiresAt,omitempty"`
+	Status      int                   `json:"status"`
+	Permissions *ApiKeyPermissionSpec `json:"permissions,omitempty"`
+	AllowedIPs  *ApiKeyAllowedIPs     `json:"allowedIps,omitempty"`
+	LastUsedAt  *time.Time            `json:"lastUsedAt,omitempty"`
+	UsageCount  int64                 `json:"usageCount"`
+	Description string                `json:"description,omitempty"`
+}
+
+// ApiKeyPermissionSpec defines the permission scope for an API Key.
+type ApiKeyPermissionSpec struct {
+	// Roles contains the role names that this API Key can assume.
+	Roles []string `json:"roles,omitempty"`
+
+	// Resources defines the resources this API Key can access.
+	Resources []ApiKeyResourcePermission `json:"resources,omitempty"`
+
+	// Actions defines the actions this API Key can perform.
+	Actions []string `json:"actions,omitempty"`
+
+	// Scopes defines OAuth2-like scopes for the API Key.
+	Scopes []string `json:"scopes,omitempty"`
+}
+
+// ApiKeyResourcePermission defines permission for a specific resource.
+type ApiKeyResourcePermission struct {
+	// ResourceType is the type of resource (e.g., "user", "policy").
+	ResourceType string `json:"resourceType"`
+
+	// ResourceIDs are the specific resource IDs, empty means all resources.
+	ResourceIDs []string `json:"resourceIds,omitempty"`
+
+	// Actions are the allowed actions on the resource.
+	Actions []string `json:"actions"`
+}
+
+// ApiKeyAllowedIPs defines IP address restrictions for an API Key.
+type ApiKeyAllowedIPs struct {
+	// IPs contains the allowed IP addresses in CIDR notation.
+	IPs []string `json:"ips,omitempty"`
+
+	// CIDRs contains the allowed CIDR blocks.
+	CIDRs []string `json:"cidrs,omitempty"`
+}
+
+// ApiKeyList is the whole list of all API Keys which have been stored in storage.
+type ApiKeyList struct {
+	// Standard list metadata.
+	// +optional
+	metav1.ListMeta `json:",inline"`
+
+	Items []*ApiKeyBase `json:"items"`
+}
+
 type IdentityProviderConfig struct {
 	OAuthConfig `yaml:",inline" json:",inline"`
 }

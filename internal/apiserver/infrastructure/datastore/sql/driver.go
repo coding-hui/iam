@@ -90,6 +90,10 @@ func (m *Driver) ApplicationRepository() repository.ApplicationRepository {
 	return newApplicationRepository(m.Client)
 }
 
+func (m *Driver) ApiKeyRepository() repository.ApiKeyRepository {
+	return newApiKeyRepository(m.Client)
+}
+
 func (m *Driver) Close() error {
 	db, err := m.Client.db.DB()
 	if err != nil {

@@ -59,6 +59,13 @@ IAM 系统支持的错误码列表如下：
 | ErrBindExternalAccount | 110701 | 400 | Failed to bind external account |
 | ErrUnbindExternalAccount | 110702 | 400 | Failed to unbind external account |
 | ErrExternalAccountAlreadyBound | 110703 | 400 | External account already bound to another user |
+| ErrApiKeyNotFound | 110801 | 404 | API Key not found |
+| ErrApiKeyAlreadyExist | 110802 | 400 | API Key already exist |
+| ErrApiKeyInvalid | 110803 | 401 | Invalid API Key or Secret |
+| ErrApiKeyInactive | 110804 | 401 | API Key is not active |
+| ErrApiKeyExpired | 110805 | 401 | API Key has expired |
+| ErrApiKeyAlreadyEnabled | 110806 | 400 | API Key is already enabled |
+| ErrApiKeyAlreadyDisabled | 110807 | 400 | API Key is already disabled |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |

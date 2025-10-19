@@ -49,6 +49,9 @@ func InitAPIBean(c config.Config) []interface{} {
 	RegisterAPI(NewOrganization())
 	RegisterAPI(NewDepartment())
 
+	// API Keys
+	RegisterAPI(NewApiKey())
+
 	// policies
 	RegisterAPI(NewPolicy())
 

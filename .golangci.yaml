@@ -108,29 +108,6 @@ linters:
         - performance
       disabled-tags:
         - experimental
-      settings:
-        captLocal:
-          paramsOnly: true
-        elseif:
-          skipBalanced: true
-        hugeParam:
-          sizeThreshold: 80
-        nestingReduce:
-          bodyWidth: 5
-        rangeExprCopy:
-          sizeThreshold: 512
-          skipTestFuncs: true
-        rangeValCopy:
-          sizeThreshold: 32
-          skipTestFuncs: true
-        ruleguard:
-          rules: ""
-        truncateCmp:
-          skipArchDependent: true
-        underef:
-          skipRecvDeref: true
-        unnamedResult:
-          checkExported: true
     gocyclo:
       min-complexity: 30
     godot:
@@ -395,7 +372,6 @@ linters:
       force-err-cuddling: false
   exclusions:
     generated: lax
-    warn-unused: true
     presets:
       - comments
       - common-false-positives
@@ -435,9 +411,8 @@ linters:
       - path: internal/iamctl/util/templates/templates.go
         linters:
           - gosec
-      - path: tools/
+      - path: tools/codegen/codegen.go
         linters:
-          - goconst
           - gosmopolitan
 issues:
   max-issues-per-linter: 0
@@ -464,7 +439,3 @@ formatters:
         - github.com/coding-hui/iam
   exclusions:
     generated: lax
-    paths:
-      - third_party$
-      - builtin$
-      - examples$

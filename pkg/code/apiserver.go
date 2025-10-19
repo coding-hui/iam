@@ -143,3 +143,27 @@ const (
 	// ErrExternalAccountAlreadyBound - 400: External account already bound to another user.
 	ErrExternalAccountAlreadyBound
 )
+
+// iam-apiserver: api key errors.
+const (
+	// ErrApiKeyNotFound - 404: API Key not found.
+	ErrApiKeyNotFound int = iota + 110801
+
+	// ErrApiKeyAlreadyExist - 400: API Key already exist.
+	ErrApiKeyAlreadyExist
+
+	// ErrApiKeyInvalid - 401: Invalid API Key or Secret.
+	ErrApiKeyInvalid
+
+	// ErrApiKeyInactive - 401: API Key is not active.
+	ErrApiKeyInactive
+
+	// ErrApiKeyExpired - 401: API Key has expired.
+	ErrApiKeyExpired
+
+	// ErrApiKeyAlreadyEnabled - 400: API Key is already enabled.
+	ErrApiKeyAlreadyEnabled
+
+	// ErrApiKeyAlreadyDisabled - 400: API Key is already disabled.
+	ErrApiKeyAlreadyDisabled
+)

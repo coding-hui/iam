@@ -27,6 +27,7 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 	organizationService := NewOrganizationService(c)
 	providerService := NewIdentityProviderService(c)
 	appService := NewApplicationService(c)
+	apiKeyService := NewApiKeyService()
 	mailService := mail.NewServiceWithConfig(c)
 	mailTemplateService := mail.NewTemplateService()
 
@@ -39,7 +40,7 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 		organizationService, userService, authenticationService,
 		resourceService, roleService, policyService,
 		tokenService, providerService, appService,
-		mailService, mailTemplateService,
+		apiKeyService, mailService, mailTemplateService,
 	}
 }
 

@@ -37,6 +37,7 @@ type authentication struct {
 	AuthenticationService   service.AuthenticationService   `inject:""`
 	TokenService            service.TokenService            `inject:""`
 	IdentityProviderService service.IdentityProviderService `inject:""`
+	ApiKeyService           service.ApiKeyService           `inject:""`
 
 	cfg config.Config
 }
@@ -48,8 +49,9 @@ func NewAuthentication(c config.Config) Interface {
 
 func (a *authentication) RegisterApiGroup(g *gin.Engine) {
 	autoAuthCheck = auth.NewAutoStrategy(
-		newBasicAuth(a.AuthenticationService).(auth.BasicStrategy),
-		newJWTAuth(a.TokenService).(auth.JWTStrategy),
+		newBasicAuth(a.AuthenticationService),
+		newJWTAuth(a.TokenService),
+		a.newApiKeyAuth(),
 	)
 	apiv1 := g.Group(versionPrefix)
 	{
@@ -86,6 +88,10 @@ func newJWTAuth(tokenService service.TokenService) middleware.AuthStrategy {
 	return auth.NewJWTStrategy(func(tokenStr string) (*token.VerifiedResponse, error) {
 		return tokenService.Verify(tokenStr)
 	})
+}
+
+func (a *authentication) newApiKeyAuth() middleware.AuthStrategy {
+	return auth.NewApiKeyStrategy(a.ApiKeyService)
 }
 
 func permissionCheckFunc(r string) gin.HandlerFunc {
