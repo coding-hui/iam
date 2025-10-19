@@ -20,7 +20,7 @@ func TestApiKeyService_CreateApiKey(t *testing.T) {
 	req := v1.CreateApiKeyRequest{
 		Name:        "Test API Key",
 		Description: "Test description",
-		ExpiresAt:   &expiresAt,
+		ExpiresAt:   expiresAt,
 		Permissions: &v1.ApiKeyPermissionSpec{
 			Roles:   []string{"admin"},
 			Actions: []string{"read", "write"},

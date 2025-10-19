@@ -180,11 +180,18 @@ func ConvertApiKeyModelToBase(apiKey *model.ApiKey) *v1.ApiKeyBase {
 		Name:        apiKey.Name,
 		Key:         apiKey.Key,
 		UserID:      apiKey.UserID,
-		ExpiresAt:   apiKey.ExpiresAt,
 		Status:      int(apiKey.Status),
-		LastUsedAt:  apiKey.LastUsedAt,
 		UsageCount:  apiKey.UsageCount,
 		Description: apiKey.Description,
+	}
+
+	// Convert *time.Time to time.Time
+	if apiKey.ExpiresAt != nil {
+		base.ExpiresAt = *apiKey.ExpiresAt
+	}
+
+	if apiKey.LastUsedAt != nil {
+		base.LastUsedAt = *apiKey.LastUsedAt
 	}
 
 	// Convert permissions

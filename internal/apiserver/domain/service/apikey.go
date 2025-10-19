@@ -112,7 +112,7 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 		Key:         key,
 		Secret:      encryptedSecret,
 		UserID:      user.GetInstanceID(),
-		ExpiresAt:   req.ExpiresAt,
+		ExpiresAt:   &req.ExpiresAt,
 		Status:      model.ApiKeyStatusActive,
 		Description: req.Description,
 	}
@@ -163,7 +163,7 @@ func (s *apiKeyServiceImpl) UpdateApiKey(ctx context.Context, instanceId string,
 	// Update fields
 	apiKey.Name = req.Name
 	apiKey.Description = req.Description
-	apiKey.ExpiresAt = req.ExpiresAt
+	apiKey.ExpiresAt = &req.ExpiresAt
 
 	if req.Permissions != nil {
 		apiKey.Permissions = s.convertPermissions(req.Permissions)

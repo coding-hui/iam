@@ -717,7 +717,7 @@ type ListApiKeyOptions struct {
 type CreateApiKeyRequest struct {
 	Name        string                `json:"name"                  validate:"required,name"`
 	Description string                `json:"description,omitempty"`
-	ExpiresAt   *time.Time            `json:"expiresAt,omitempty"`
+	ExpiresAt   time.Time             `json:"expiresAt,omitempty"`
 	Permissions *ApiKeyPermissionSpec `json:"permissions,omitempty"`
 	AllowedIPs  *ApiKeyAllowedIPs     `json:"allowedIps,omitempty"`
 }
@@ -732,7 +732,7 @@ type CreateApiKeyResponse struct {
 type UpdateApiKeyRequest struct {
 	Name        string                `json:"name"                  validate:"required,name"`
 	Description string                `json:"description,omitempty"`
-	ExpiresAt   *time.Time            `json:"expiresAt,omitempty"`
+	ExpiresAt   time.Time             `json:"expiresAt,omitempty"`
 	Permissions *ApiKeyPermissionSpec `json:"permissions,omitempty"`
 	AllowedIPs  *ApiKeyAllowedIPs     `json:"allowedIps,omitempty"`
 	Status      int                   `json:"status,omitempty"`
@@ -746,11 +746,11 @@ type ApiKeyBase struct {
 	Name        string                `json:"name"`
 	Key         string                `json:"key"`
 	UserID      string                `json:"userId"`
-	ExpiresAt   *time.Time            `json:"expiresAt,omitempty"`
+	ExpiresAt   time.Time             `json:"expiresAt,omitempty"`
 	Status      int                   `json:"status"`
 	Permissions *ApiKeyPermissionSpec `json:"permissions,omitempty"`
 	AllowedIPs  *ApiKeyAllowedIPs     `json:"allowedIps,omitempty"`
-	LastUsedAt  *time.Time            `json:"lastUsedAt,omitempty"`
+	LastUsedAt  time.Time             `json:"lastUsedAt,omitempty"`
 	UsageCount  int64                 `json:"usageCount"`
 	Description string                `json:"description,omitempty"`
 }
