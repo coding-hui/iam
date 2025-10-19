@@ -91,7 +91,8 @@ func CheckDiffErr(err error) {
 // func with that string and an iamctl exit code.
 func checkErr(err error, handleErr func(string, int)) {
 	// unwrap aggregates of 1
-	if agg, ok := err.(errors.Aggregate); ok && len(agg.Errors()) == 1 {
+	var agg errors.Aggregate
+	if errors.As(err, &agg) {
 		err = agg.Errors()[0]
 	}
 
@@ -99,14 +100,14 @@ func checkErr(err error, handleErr func(string, int)) {
 		return
 	}
 
-	switch err {
-	case ErrExit:
+	switch {
+	case errors.Is(err, ErrExit):
 		handleErr("", DefaultErrorExitCode)
 	default:
-		switch err := err.(type) {
-		case errors.Aggregate:
-			handleErr(MultipleErrors(``, err.Errors()), DefaultErrorExitCode)
-		default: // for any other error type
+		var agg errors.Aggregate
+		if errors.As(err, &agg) {
+			handleErr(MultipleErrors(``, agg.Errors()), DefaultErrorExitCode)
+		} else {
 			msg, ok := StandardErrorMessage(err)
 			if !ok {
 				msg = err.Error()
@@ -128,7 +129,8 @@ func StandardErrorMessage(err error) (string, bool) {
 	if debugErr, ok := err.(debugError); ok {
 		log.Infof(debugErr.DebugError())
 	}
-	if t, ok := err.(*url.Error); ok {
+	t := &url.Error{}
+	if errors.As(err, &t) {
 		log.Infof("Connection error: %s %s: %v", t.Op, t.URL, t.Err)
 		if strings.Contains(t.Err.Error(), "connection refused") {
 			host := t.URL
@@ -149,7 +151,8 @@ func StandardErrorMessage(err error) (string, bool) {
 // MultilineError returns a string representing an error that splits sub errors into their own
 // lines. The returned string will end with a newline.
 func MultilineError(prefix string, err error) string {
-	if agg, ok := err.(errors.Aggregate); ok {
+	var agg errors.Aggregate
+	if errors.As(err, &agg) {
 		errs := errors.Flatten(agg).Errors()
 		buf := &bytes.Buffer{}
 		switch len(errs) {
