@@ -21,21 +21,10 @@ func TestApiKeyService_CreateApiKey(t *testing.T) {
 		Name:        "Test API Key",
 		Description: "Test description",
 		ExpiresAt:   expiresAt,
-		Permissions: &v1.ApiKeyPermissionSpec{
-			Roles:   []string{"admin"},
-			Actions: []string{"read", "write"},
-			Scopes:  []string{"api"},
-		},
-		AllowedIPs: &v1.ApiKeyAllowedIPs{
-			IPs:   []string{"192.168.1.1"},
-			CIDRs: []string{"10.0.0.0/8"},
-		},
 	}
 
 	// Test the request structure
 	assert.Equal(t, req.Name, "Test API Key")
-	assert.Equal(t, len(req.Permissions.Roles), 1)
-	assert.Equal(t, len(req.Permissions.Actions), 2)
 }
 
 func TestApiKeyService_GenerateKeyAndSecret(t *testing.T) {
@@ -53,53 +42,6 @@ func TestApiKeyService_GenerateKeyAndSecret(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, len(secret), 64) // 64 hex chars
 	assert.Check(t, len(secret) > 0)
-}
-
-func TestApiKeyService_ConvertPermissions(t *testing.T) {
-	s := &apiKeyServiceImpl{}
-
-	// Test nil permissions
-	result := s.convertPermissions(nil)
-	assert.Equal(t, result, (*model.PermissionSpec)(nil))
-
-	// Test with permissions
-	apiPerms := &v1.ApiKeyPermissionSpec{
-		Roles:   []string{"admin", "user"},
-		Actions: []string{"read", "write"},
-		Scopes:  []string{"api"},
-		Resources: []v1.ApiKeyResourcePermission{
-			{
-				ResourceType: "user",
-				ResourceIDs:  []string{"user-1", "user-2"},
-				Actions:      []string{"read"},
-			},
-		},
-	}
-
-	result = s.convertPermissions(apiPerms)
-	assert.Equal(t, len(result.Roles), 2)
-	assert.Equal(t, len(result.Actions), 2)
-	assert.Equal(t, len(result.Scopes), 1)
-	assert.Equal(t, len(result.Resources), 1)
-	assert.Equal(t, result.Resources[0].ResourceType, "user")
-}
-
-func TestApiKeyService_ConvertAllowedIPs(t *testing.T) {
-	s := &apiKeyServiceImpl{}
-
-	// Test nil allowed IPs
-	result := s.convertAllowedIPs(nil)
-	assert.Equal(t, result, (*model.AllowedIPs)(nil))
-
-	// Test with allowed IPs
-	apiIPs := &v1.ApiKeyAllowedIPs{
-		IPs:   []string{"192.168.1.1", "10.0.0.1"},
-		CIDRs: []string{"10.0.0.0/8", "172.16.0.0/12"},
-	}
-
-	result = s.convertAllowedIPs(apiIPs)
-	assert.Equal(t, len(result.IPs), 2)
-	assert.Equal(t, len(result.CIDRs), 2)
 }
 
 func TestApiKey_IsActive(t *testing.T) {

@@ -85,17 +85,9 @@ func (a ApiKeyStrategy) AuthFunc() gin.HandlerFunc {
 		}
 
 		// Validate API Key
-		user, apiKeyObj, err := a.apiKeyService.ValidateApiKey(c.Request.Context(), apiKey, apiSecret)
+		user, _, err := a.apiKeyService.ValidateApiKey(c.Request.Context(), apiKey, apiSecret)
 		if err != nil {
 			api.FailWithErrCode(err, c)
-			c.Abort()
-			return
-		}
-
-		// Validate client IP address
-		clientIP := c.ClientIP()
-		if !apiKeyObj.ValidateIP(clientIP) {
-			api.FailWithErrCode(errors.WithCode(code.ErrApiKeyInvalid, "IP address %s is not allowed", clientIP), c)
 			c.Abort()
 			return
 		}
@@ -111,7 +103,5 @@ func (a ApiKeyStrategy) AuthFunc() gin.HandlerFunc {
 			UserType:   user.UserType,
 			Disabled:   user.Disabled,
 		}))
-
-		c.Next()
 	}
 }

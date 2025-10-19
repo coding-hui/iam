@@ -117,16 +117,6 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 		Description: req.Description,
 	}
 
-	// Convert permissions if provided
-	if req.Permissions != nil {
-		apiKey.Permissions = s.convertPermissions(req.Permissions)
-	}
-
-	// Convert allowed IPs if provided
-	if req.AllowedIPs != nil {
-		apiKey.AllowedIPs = s.convertAllowedIPs(req.AllowedIPs)
-	}
-
 	// Save to database
 	createdApiKey, err := s.Store.ApiKeyRepository().Create(ctx, apiKey, metav1.CreateOptions{})
 	if err != nil {
@@ -164,14 +154,6 @@ func (s *apiKeyServiceImpl) UpdateApiKey(ctx context.Context, instanceId string,
 	apiKey.Name = req.Name
 	apiKey.Description = req.Description
 	apiKey.ExpiresAt = &req.ExpiresAt
-
-	if req.Permissions != nil {
-		apiKey.Permissions = s.convertPermissions(req.Permissions)
-	}
-
-	if req.AllowedIPs != nil {
-		apiKey.AllowedIPs = s.convertAllowedIPs(req.AllowedIPs)
-	}
 
 	if req.Status != 0 {
 		apiKey.Status = model.ApiKeyStatus(req.Status)
@@ -441,40 +423,4 @@ func (s *apiKeyServiceImpl) getCurrentUser(ctx context.Context) (*model.User, er
 	}
 
 	return user, nil
-}
-
-func (s *apiKeyServiceImpl) convertPermissions(apiPerms *v1.ApiKeyPermissionSpec) *model.PermissionSpec {
-	if apiPerms == nil {
-		return nil
-	}
-
-	perms := &model.PermissionSpec{
-		Roles:   apiPerms.Roles,
-		Actions: apiPerms.Actions,
-		Scopes:  apiPerms.Scopes,
-	}
-
-	if apiPerms.Resources != nil {
-		perms.Resources = make([]model.ResourcePermission, len(apiPerms.Resources))
-		for i, res := range apiPerms.Resources {
-			perms.Resources[i] = model.ResourcePermission{
-				ResourceType: res.ResourceType,
-				ResourceIDs:  res.ResourceIDs,
-				Actions:      res.Actions,
-			}
-		}
-	}
-
-	return perms
-}
-
-func (s *apiKeyServiceImpl) convertAllowedIPs(apiIPs *v1.ApiKeyAllowedIPs) *model.AllowedIPs {
-	if apiIPs == nil {
-		return nil
-	}
-
-	return &model.AllowedIPs{
-		IPs:   apiIPs.IPs,
-		CIDRs: apiIPs.CIDRs,
-	}
 }
