@@ -131,7 +131,6 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 
 	return &v1.CreateApiKeyResponse{
 		ApiKeyBase: *base,
-		Secret:     secret, // Return plain text secret only once
 	}, nil
 }
 
@@ -289,7 +288,6 @@ func (s *apiKeyServiceImpl) RegenerateSecret(ctx context.Context, instanceId str
 
 	return &v1.CreateApiKeyResponse{
 		ApiKeyBase: *base,
-		Secret:     secret, // Return plain text secret only once
 	}, nil
 }
 

@@ -721,8 +721,7 @@ type CreateApiKeyRequest struct {
 
 // CreateApiKeyResponse create API Key response.
 type CreateApiKeyResponse struct {
-	ApiKeyBase `       json:",inline"`
-	Secret     string `json:"secret"`
+	ApiKeyBase `json:",inline"`
 }
 
 // UpdateApiKeyRequest update API Key request.
