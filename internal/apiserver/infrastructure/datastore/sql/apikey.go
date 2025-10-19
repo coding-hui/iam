@@ -79,7 +79,7 @@ func (r *apiKeyRepository) GetByInstanceId(ctx context.Context, instanceId strin
 // GetByKey retrieves an API Key by key value.
 func (r *apiKeyRepository) GetByKey(ctx context.Context, key string, opts metav1.GetOptions) (*model.ApiKey, error) {
 	var apiKey model.ApiKey
-	if err := r.client.WithCtx(ctx).Where("key = ?", key).First(&apiKey).Error; err != nil {
+	if err := r.client.WithCtx(ctx).Where("`key` = ?", key).First(&apiKey).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrApiKeyNotFound, "API Key not found")
 		}

@@ -32,12 +32,22 @@ func TestApiKeyService_GenerateKey(t *testing.T) {
 	// Test key generation
 	key, err := s.generateKey()
 	assert.NilError(t, err)
-	assert.Equal(t, len(key), 30) // sk_ + 27 base62 chars
+	assert.Equal(t, len(key), 35) // sk- + 32 hex chars
 	assert.Check(t, len(key) > 0)
-	assert.Check(t, key[:3] == "sk_")
-	// Verify Base62 characters only
+	assert.Check(t, key[:3] == "sk-")
+	// Verify hex characters only (lowercase)
 	for _, ch := range key[3:] {
-		assert.Check(t, (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))
+		assert.Check(t, (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f'))
+	}
+
+	// Test secret generation
+	secret, err := s.generateSecret()
+	assert.NilError(t, err)
+	assert.Equal(t, len(secret), 64) // 64 hex chars for 256-bit secret
+	assert.Check(t, len(secret) > 0)
+	// Verify hex characters only (lowercase)
+	for _, ch := range secret {
+		assert.Check(t, (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f'))
 	}
 }
 

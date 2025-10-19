@@ -7,7 +7,7 @@ package service
 import (
 	"context"
 	"crypto/rand"
-	"math/big"
+	"fmt"
 	"strings"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
@@ -86,11 +86,11 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 	}
 
 	// Validate generated key format
-	if !strings.HasPrefix(key, "sk_") || len(key) != 30 { // sk_ + 27 base62 chars = 30 chars
+	if !strings.HasPrefix(key, "sk-") || len(key) != 35 { // sk- + 32 hex chars = 35 chars
 		return nil, errors.WithCode(code.ErrUnknown, "Generated API Key format is invalid")
 	}
 
-	if len(secret) != 43 { // 43 base62 characters for 256-bit secret
+	if len(secret) != 64 { // 64 hex characters for 256-bit secret
 		return nil, errors.WithCode(code.ErrUnknown, "Generated API Secret format is invalid")
 	}
 
@@ -410,52 +410,18 @@ func (s *apiKeyServiceImpl) generateSecret() (string, error) {
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
 	}
-	// Format: Base62 encoded 32 bytes (43 characters)
-	return encodeBase62(bytes), nil
+	// Format: 64 hex characters (lowercase)
+	return fmt.Sprintf("%064x", bytes), nil
 }
 
 func (s *apiKeyServiceImpl) generateKey() (string, error) {
-	// Generate 20 bytes (160 bits) for better security and Base62 encoding
-	bytes := make([]byte, 20)
+	// Generate 16 bytes (128 bits) for hex encoding
+	bytes := make([]byte, 16)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
 	}
-	// Format: sk_ + Base62 encoded 20 bytes (27 characters)
-	// Base62 provides better character density than hex (62 vs 16)
-	return "sk_" + encodeBase62(bytes), nil
-}
-
-// encodeBase62 encodes bytes to Base62 string
-// Base62 character set: 0-9, A-Z, a-z (62 characters total)
-const base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-
-func encodeBase62(data []byte) string {
-	if len(data) == 0 {
-		return ""
-	}
-
-	var result []byte
-	n := newIntFromBytes(data)
-
-	zero := big.NewInt(0)
-	base := big.NewInt(62)
-
-	for n.Cmp(zero) > 0 {
-		mod := new(big.Int)
-		n.DivMod(n, base, mod)
-		result = append([]byte{base62Chars[mod.Int64()]}, result...)
-	}
-
-	// Handle the case where input is all zeros
-	if len(result) == 0 {
-		result = []byte{base62Chars[0]}
-	}
-
-	return string(result)
-}
-
-func newIntFromBytes(buf []byte) *big.Int {
-	return new(big.Int).SetBytes(buf)
+	// Format: sk- + 32 hex characters (e.g., sk-716273ec41584ab7ab09ca112367c1e5)
+	return "sk-" + fmt.Sprintf("%032x", bytes), nil
 }
 
 func (s *apiKeyServiceImpl) getCurrentUser(ctx context.Context) (*model.User, error) {
