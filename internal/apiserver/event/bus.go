@@ -59,7 +59,7 @@ func InitEvent(c config.Config) (bus Bus, listeners []interface{}) {
 
 	// User created event listener (will be injected with mail service)
 	// userCreatedListenerSubscriber := &{}
-	//listeners = append(listeners, userCreatedListenerSubscriber)
+	// listeners = append(listeners, userCreatedListenerSubscriber)
 
 	return
 }
