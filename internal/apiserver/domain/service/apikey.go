@@ -379,7 +379,10 @@ func (s *apiKeyServiceImpl) ValidateApiKey(ctx context.Context, key string) (*mo
 		return nil, nil, errors.WithCode(code.ErrApiKeyInvalid, "Invalid API Key")
 	}
 
-	// Check if API Key is active
+	if apiKey.IsExpired() {
+		return nil, nil, errors.WithCode(code.ErrApiKeyExpired, "API Key is expired")
+	}
+
 	if !apiKey.IsActive() {
 		return nil, nil, errors.WithCode(code.ErrApiKeyInactive, "API Key is not active")
 	}

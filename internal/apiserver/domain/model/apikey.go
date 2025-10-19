@@ -73,11 +73,16 @@ func (a *ApiKey) IsActive() bool {
 		return false
 	}
 
-	if a.ExpiresAt != nil && a.ExpiresAt.Before(time.Now()) {
+	if a.IsExpired() {
 		return false
 	}
 
 	return true
+}
+
+// IsExpired return true if the API Key isi expired
+func (a *ApiKey) IsExpired() bool {
+	return a.ExpiresAt != nil && a.ExpiresAt.Before(time.Now())
 }
 
 // MarkUsed updates the usage statistics.
