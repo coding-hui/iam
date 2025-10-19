@@ -20,6 +20,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/domain/service/identityprovider"
 	"github.com/coding-hui/iam/internal/apiserver/event"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
+	"github.com/coding-hui/iam/internal/pkg/request"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/code"
@@ -32,6 +33,8 @@ type AuthenticationService interface {
 	LoginByProvider(ctx context.Context, loginReq v1.AuthenticateRequest) (*v1.AuthenticateResponse, error)
 	LoginByOAuthProvider(ctx context.Context, idp *model.IdentityProvider, req *http.Request) (*v1.AuthenticateResponse, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*v1.RefreshTokenResponse, error)
+	BindExternalAccount(ctx context.Context, req v1.BindExternalAccountRequest) (*v1.BindExternalAccountResponse, error)
+	UnbindExternalAccount(ctx context.Context, req v1.UnbindExternalAccountRequest) (*v1.BindExternalAccountResponse, error)
 	Init(ctx context.Context) error
 }
 
@@ -330,4 +333,80 @@ func mappedUser(idp string, identity identityprovider.Identity) v1.CreateUserReq
 		ExternalUID:      identity.GetUserID(),
 		IdentifyProvider: idp,
 	}
+}
+
+// BindExternalAccount 绑定第三方账号到现有用户
+func (a *authenticationServiceImpl) BindExternalAccount(ctx context.Context, req v1.BindExternalAccountRequest) (*v1.BindExternalAccountResponse, error) {
+	// 验证用户凭证
+	loginReq := v1.AuthenticateRequest{
+		Username: req.Username,
+		Password: req.Password,
+	}
+	handler, err := a.newLocalHandler(loginReq)
+	if err != nil {
+		return nil, err
+	}
+
+	userBase, err := handler.authenticate(ctx)
+	if err != nil {
+		return nil, errors.WithCode(code.ErrPasswordIncorrect, "Invalid username or password")
+	}
+
+	// 检查该第三方账号是否已被绑定到其他用户
+	existingUser, err := a.Store.UserRepository().GetByExternalId(ctx, req.ExternalUID, req.Provider, metav1.GetOptions{})
+	if err == nil && existingUser != nil && existingUser.InstanceID != userBase.InstanceID {
+		return nil, errors.WithCode(code.ErrExternalAccountAlreadyBound, "External account already bound to another user")
+	}
+
+	// 如果该第三方账号已经绑定到当前用户，直接返回成功
+	if existingUser != nil && existingUser.InstanceID == userBase.InstanceID {
+		return &v1.BindExternalAccountResponse{
+			Success: true,
+			Message: "External account already bound",
+		}, nil
+	}
+
+	// 获取用户完整信息
+	user, err := a.UserService.GetUserByInstanceId(ctx, userBase.InstanceID, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	// 创建外部账号关联
+	externalUser := &model.UserExternal{
+		UserID:           user.InstanceID,
+		ExternalUID:      req.ExternalUID,
+		IdentifyProvider: req.Provider,
+	}
+
+	// 保存外部账号关联
+	err = a.Store.UserRepository().CreateExternalUser(ctx, externalUser)
+	if err != nil {
+		return nil, errors.WithCode(code.ErrBindExternalAccount, "Failed to bind external account: %v", err)
+	}
+
+	return &v1.BindExternalAccountResponse{
+		Success: true,
+		Message: "External account bound successfully",
+	}, nil
+}
+
+// UnbindExternalAccount 解绑第三方账号
+func (a *authenticationServiceImpl) UnbindExternalAccount(ctx context.Context, req v1.UnbindExternalAccountRequest) (*v1.BindExternalAccountResponse, error) {
+	// 获取当前用户
+	currentUser, ok := request.UserFrom(ctx)
+	if !ok {
+		return nil, errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user")
+	}
+
+	// 删除外部账号关联
+	err := a.Store.UserRepository().DeleteExternalUserByProvider(ctx, currentUser.InstanceID, req.Provider)
+	if err != nil {
+		return nil, errors.WithCode(code.ErrUnbindExternalAccount, "Failed to unbind external account: %v", err)
+	}
+
+	return &v1.BindExternalAccountResponse{
+		Success: true,
+		Message: "External account unbound successfully",
+	}, nil
 }

@@ -1,0 +1,636 @@
+---
+# Source: iam/templates/apiserver/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: iam-apiserver
+  namespace: iam-system
+---
+# Source: iam/templates/authzserver/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: iam-authzserver
+  namespace: iam-system
+---
+# Source: iam/templates/console/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: iam-console
+  namespace: iam-system
+---
+# Source: iam/templates/apiserver/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iam-apiserver
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: apiserver
+data:
+  iam-apiserver.yaml: |
+    # Copyright (c) 2023 coding-hui. All rights reserved.
+    # Use of this source code is governed by a MIT style
+    # license that can be found in the LICENSE file.
+    
+    server:
+      mode: release # server mode: release, debug, test
+      healthz: true # If enabled, the /healthz route is installed. default value is true
+      middlewares: recovery,logger,secure,nocache,cors
+      max-ping-count: 3
+      static-locations: /etc/iam/template/*
+    
+    grpc:
+      bind-address: 0.0.0.0
+      bind-port: 8001
+    
+    insecure:
+      bind-address: 0.0.0.0
+      bind-port: 8000
+    
+    secure:
+      bind-address: 0.0.0.0
+      bind-port: 8443
+      tls:
+        cert-dir: /var/run/iam/certificates
+        pair-name: tls
+    
+    mysql:
+      host: mysql.infra:3306
+      username: root
+      password: WeCoding@2023
+      database: iam_1
+      max-idle-connections: 100
+      max-open-connections: 100
+      max-connection-life-time: 10s
+      log-level: 4 # GORM log level, 1: silent, 2:error, 3:warn, 4:info
+    
+    redis:
+      host: redis-master.infra
+      port: 6379
+      password:
+    
+    cache:
+      type: redis
+      options:
+        host: redis-master.infra
+        port: 6379
+        password:
+    
+    log:
+      name: apiserver
+      development: false
+      level: info
+      format: console
+      enable-color: true
+      disable-caller: false
+      disable-stacktrace: false
+      output-paths: /var/log/iam/iam-apiserver.log,stdout
+      error-output-paths: /var/log/iam/iam-apiserver.error.log
+    
+    feature:
+      enable-metrics: true
+      profiling: true
+    
+    authentication:
+      #domain: iam.micromoving.cn
+      jwtSecret: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo
+      signKey: /var/run/iam/certificates/ca.crt
+---
+# Source: iam/templates/authzserver/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iam-authzserver
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: authzserver
+data:
+  iam-authzserver.yaml: |
+    # Copyright (c) 2023 coding-hui. All rights reserved.
+    # Use of this source code is governed by a MIT style
+    # license that can be found in the LICENSE file.
+    
+    rpcserver: iam-apiserver.iam-system:8001 # iam-apiserver grpc 服务器地址和端口
+    
+    client-ca-file: /var/run/iam/certificates/ca.crt
+    
+    server:
+      mode: release
+      healthz: true
+      middlewares: recovery,logger,secure,nocache,cors
+    
+    insecure:
+      bind-address: 0.0.0.0
+      bind-port: 8010
+    
+    secure:
+      required: true
+      bind-address: 0.0.0.0
+      bind-port: 9443
+      tls:
+        cert-dir: /var/run/iam/certificates
+        pair-name: tls
+    
+    redis:
+      host: redis-master.infra
+      port: 6379
+      password:
+    
+    feature:
+      enable-metrics: true
+      profiling: true
+---
+# Source: iam/templates/console/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iam-console
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: console
+data:
+  nginx.conf: |
+    #user  nobody;
+    worker_processes 1;
+    
+    #error_log  logs/error.log;
+    #error_log  logs/error.log  notice;
+    #error_log  logs/error.log  info;
+    
+    #pid        logs/nginx.pid;
+    events {
+        worker_connections 1024;
+    }
+    
+    http {
+        include mime.types;
+        default_type application/octet-stream;
+        server {
+            listen 8080;
+            charset utf-8;
+    
+            location / {
+                root /usr/share/nginx/html;
+                try_files $uri $uri/ /index.html;
+                index index.html index.htm;
+            }
+    
+            location /api/ {
+                rewrite ^/(.*)$ /$1 break;
+                proxy_set_header Host $http_host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header REMOTE-HOST $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_pass http://iam-apiserver:8000/;
+            }
+    
+            error_page   500 502 503 504  /50x.html;
+                location = /50x.html {
+                    root   html;
+            }
+        }
+    }
+---
+# Source: iam/templates/apiserver/rbac.yaml
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: iam-apiserver
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "configmaps" ]
+    verbs: [ "get", "list", "watch" ]
+  # Rules below is used generate admission service secret
+  - apiGroups: [ "certificates.k8s.io" ]
+    resources: [ "certificatesigningrequests" ]
+    verbs: [ "get", "list", "create", "delete" ]
+  - apiGroups: [ "certificates.k8s.io" ]
+    resources: [ "certificatesigningrequests/approval" ]
+    verbs: [ "create", "update" ]
+  - apiGroups: [ "" ]
+    resources: [ "secrets" ]
+    verbs: [ "create", "get", "patch" ]
+  - apiGroups: [ "scheduling.incubator.k8s.io", "scheduling.volcano.sh" ]
+    resources: [ "queues" ]
+    verbs: [ "get", "list" ]
+  - apiGroups: [ "" ]
+    resources: [ "services" ]
+    verbs: [ "get" ]
+  - apiGroups: [ "scheduling.incubator.k8s.io", "scheduling.volcano.sh" ]
+    resources: [ "podgroups" ]
+    verbs: [ "get", "list", "watch" ]
+---
+# Source: iam/templates/apiserver/rbac.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: iam-apiserver-role
+subjects:
+  - kind: ServiceAccount
+    name: iam-apiserver
+    namespace: iam-system
+roleRef:
+  kind: ClusterRole
+  name: iam-apiserver
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: iam/templates/apiserver/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: iam-apiserver
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: apiserver
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: 8443
+      targetPort: https
+      protocol: TCP
+    - name: grpc
+      port: 8001
+      targetPort: grpc
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/component: apiserver
+---
+# Source: iam/templates/authzserver/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: iam-authzserver
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: authzserver
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8010
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: 9443
+      targetPort: https
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/component: authzserver
+---
+# Source: iam/templates/console/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: iam-console
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: console
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/component: console
+---
+# Source: iam/templates/apiserver/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iam-apiserver
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: apiserver
+spec:
+  replicas: 1
+  strategy:
+      type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iam
+      app.kubernetes.io/instance: iam
+      app.kubernetes.io/component: apiserver
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iam
+        app.kubernetes.io/instance: iam
+        app.kubernetes.io/component: apiserver
+    spec:
+      imagePullSecrets:
+        - name: coding-registry
+      serviceAccountName: iam-apiserver
+      containers:
+        - name: apiserver
+          image: docker.cnb.cool/micromoving/iam/iam-apiserver:v0.9.0
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            - name: grpc
+              containerPort: 8001
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 30
+          securityContext:
+            {}
+          resources:
+            limits:
+              cpu: 256m
+              memory: 512Mi
+            requests:
+              cpu: 128m
+              memory: 256Mi
+          volumeMounts:
+            - name: log
+              mountPath: /var/log/iam
+            - name: config
+              mountPath: /etc/iam/iam-apiserver.yaml
+              subPath: iam-apiserver.yaml
+            - name: iam-certs
+              mountPath: /var/run/iam/certificates
+              readOnly: true
+      volumes:
+        - name: iam-certs
+          secret:
+            defaultMode: 420
+            secretName: iam
+        - name: config
+          configMap:
+            name: iam-apiserver
+        - name: log
+          emptyDir: { }
+---
+# Source: iam/templates/authzserver/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iam-authzserver
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: authzserver
+spec:
+  replicas: 1
+  strategy:
+      type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iam
+      app.kubernetes.io/instance: iam
+      app.kubernetes.io/component: authzserver
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iam
+        app.kubernetes.io/instance: iam
+        app.kubernetes.io/component: authzserver
+    spec:
+      imagePullSecrets:
+        - name: coding-registry
+      serviceAccountName: iam-authzserver
+      containers:
+        - name: apiserver
+          image: docker.cnb.cool/micromoving/iam/iam-authzserver:v0.9.0
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8010
+              protocol: TCP
+            - name: https
+              containerPort: 9443
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8010
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8010
+            initialDelaySeconds: 30
+          securityContext:
+            {}
+          resources:
+            limits:
+              cpu: 256m
+              memory: 512Mi
+            requests:
+              cpu: 128m
+              memory: 256Mi
+          volumeMounts:
+            - name: log
+              mountPath: /var/log/iam
+            - name: config
+              mountPath: /etc/iam/iam-authzserver.yaml
+              subPath: iam-authzserver.yaml
+            - name: iam-certs
+              mountPath: /var/run/iam/certificates
+              readOnly: true
+      volumes:
+        - name: iam-certs
+          secret:
+            defaultMode: 420
+            secretName: iam
+        - name: config
+          configMap:
+            name: iam-authzserver
+        - name: log
+          emptyDir: {}
+---
+# Source: iam/templates/console/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iam-console
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: console
+spec:
+  replicas: 1
+  strategy:
+      type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iam
+      app.kubernetes.io/instance: iam
+      app.kubernetes.io/component: console
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iam
+        app.kubernetes.io/instance: iam
+        app.kubernetes.io/component: console
+    spec:
+      imagePullSecrets:
+        - name: coding-registry
+      serviceAccountName: iam-console
+      containers:
+        - name: console
+          image: docker.cnb.cool/micromoving/iam/iam-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+          resources:
+            limits:
+              cpu: 256m
+              memory: 512Mi
+            requests:
+              cpu: 128m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              subPath: nginx.conf
+              mountPath: /etc/nginx/nginx.conf
+            - name: cache
+              mountPath: /var/cache/nginx
+      volumes:
+        - name: config
+          configMap:
+            name: iam-console
+        - name: cache
+          emptyDir: { }
+---
+# Source: iam/templates/apiserver/batch-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: iam-init
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: iam-apiserver
+      priorityClassName: system-cluster-critical
+      imagePullSecrets:
+        - name: coding-registry
+      restartPolicy: Never
+      containers:
+        - name: main
+          image: docker.cnb.cool/micromoving/iam/iam-apiserver:v0.9.0
+          imagePullPolicy: Always
+          command: [ "/gen-k8s-secret.sh", "--service", "iam-apiserver", "--namespace",
+                     "iam-system", "--secret", "iam" ]
+---
+# Source: iam/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: iam
+  namespace: iam-system
+  labels:
+    helm.sh/chart: iam-0.1.0
+    app.kubernetes.io/name: iam
+    app.kubernetes.io/instance: iam
+    app.kubernetes.io/version: "0.9.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  rules:
+    - host: "iam.micromoving.cn"
+      http:
+        paths:
+          - path: /api/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: iam-apiserver
+                port:
+                  name: http
+          - path: /api/v1/authz
+            pathType: Prefix
+            backend:
+              service:
+                name: iam-authzserver
+                port:
+                  name: http
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: iam-console
+                port:
+                  name: http

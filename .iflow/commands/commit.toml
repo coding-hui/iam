@@ -1,0 +1,11 @@
+# Command: commit
+# Description: Analyze your changes and create a meaningful commit message
+# Category: utility
+# Version: 1
+# Author: 10169
+
+description = "Analyze your changes and create a meaningful commit message"
+
+prompt = """
+I'll analyze your changes and create a meaningful commit message. Before committing, I'll verify: Build passes (if build command exists), Tests pass (if test command exists), Linter passes (if lint command exists), No obvious errors in changed files. I'll analyze the changes to determine what files were modified, the nature of changes (feature, fix, refactor, etc.), and the scope/component affected. Based on the analysis, I'll create a conventional commit message with Type (feat|fix|docs|style|refactor|test|chore), Scope (component or area affected), Subject (clear description in present tense), and Body (why the change was made if needed).
+"""

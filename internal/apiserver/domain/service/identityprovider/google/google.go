@@ -64,8 +64,8 @@ type google struct {
 // endpoint represents an OAuth 2.0 provider's authorization and token
 // endpoint URLs.
 type endpoint struct {
-	AuthURL     string `json:"authURL" mapstructure:"authURL"`
-	TokenURL    string `json:"tokenURL" mapstructure:"tokenURL"`
+	AuthURL     string `json:"authURL"     mapstructure:"authURL"`
+	TokenURL    string `json:"tokenURL"    mapstructure:"tokenURL"`
 	UserInfoURL string `json:"userInfoURL" mapstructure:"userInfoURL"`
 }
 

@@ -276,3 +276,28 @@ func joinDepartments(opts v1.ListUserOptions) func(db *gorm.DB) *gorm.DB {
 		return db
 	}
 }
+
+// CreateExternalUser 创建外部用户关联
+func (u *userRepositoryImpl) CreateExternalUser(ctx context.Context, externalUser *model.UserExternal) error {
+	// 先删除可能存在的重复关联
+	err := u.deleteExternalUser(ctx, externalUser.UserID, externalUser.ExternalUID, externalUser.IdentifyProvider)
+	if err != nil {
+		return err
+	}
+
+	// 创建新的关联
+	return u.client.WithCtx(ctx).Create(externalUser).Error
+}
+
+// DeleteExternalUser 删除外部用户关联
+func (u *userRepositoryImpl) DeleteExternalUser(ctx context.Context, userId, externalUid, idp string) error {
+	return u.deleteExternalUser(ctx, userId, externalUid, idp)
+}
+
+// DeleteExternalUserByProvider 根据提供商删除外部用户关联
+func (u *userRepositoryImpl) DeleteExternalUserByProvider(ctx context.Context, userId, provider string) error {
+	return u.client.WithCtx(ctx).
+		Where("user_id = ?", userId).
+		Where("idp = ?", provider).
+		Delete(&model.UserExternal{}).Error
+}

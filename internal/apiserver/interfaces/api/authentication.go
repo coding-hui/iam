@@ -57,6 +57,8 @@ func (a *authentication) RegisterApiGroup(g *gin.Engine) {
 		apiv1.GET("/logout", autoAuthCheck.AuthFunc(), a.logout)
 		apiv1.GET("/auth/refresh-token", a.refreshToken)
 		apiv1.GET("/auth/user-info", autoAuthCheck.AuthFunc(), a.userInfo)
+		apiv1.POST("/auth/bind-external", autoAuthCheck.AuthFunc(), a.bindExternalAccount)
+		apiv1.POST("/auth/unbind-external", autoAuthCheck.AuthFunc(), a.unbindExternalAccount)
 	}
 
 	oauth := g.Group(versionPrefix + "/oauth")
@@ -278,6 +280,58 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 	}
 
 	api.OkWithHTML("authorize_callback.html", gin.H{"tokenInfo": tokenInfo, "idp": idp}, c)
+}
+
+// @Tags			Authentication
+// @Summary		BindExternalAccount
+// @Description	Bind external account to current user
+// @Accept			application/json
+// @Product		application/json
+// @Param			AccessToken	header		string							true	"access token"
+// @Param			data		body		v1.BindExternalAccountRequest	true	"bind external account info"
+// @Success		200			{object}	v1.BindExternalAccountResponse	"bind success"
+// @Router			/api/v1/auth/bind-external [post]
+// @Security		BearerTokenAuth
+func (a *authentication) bindExternalAccount(c *gin.Context) {
+	bindReq := v1.BindExternalAccountRequest{}
+	if err := c.ShouldBindJSON(&bindReq); err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "Error occurred while binding the request body to the struct"), c)
+		return
+	}
+
+	resp, err := a.AuthenticationService.BindExternalAccount(c.Request.Context(), bindReq)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.OkWithData(resp, c)
+}
+
+// @Tags			Authentication
+// @Summary		UnbindExternalAccount
+// @Description	Unbind external account from current user
+// @Accept			application/json
+// @Product		application/json
+// @Param			AccessToken	header		string							true	"access token"
+// @Param			data		body		v1.UnbindExternalAccountRequest	true	"unbind external account info"
+// @Success		200			{object}	v1.BindExternalAccountResponse	"unbind success"
+// @Router			/api/v1/auth/unbind-external [post]
+// @Security		BearerTokenAuth
+func (a *authentication) unbindExternalAccount(c *gin.Context) {
+	unbindReq := v1.UnbindExternalAccountRequest{}
+	if err := c.ShouldBindJSON(&unbindReq); err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "Error occurred while binding the request body to the struct"), c)
+		return
+	}
+
+	resp, err := a.AuthenticationService.UnbindExternalAccount(c.Request.Context(), unbindReq)
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.OkWithData(resp, c)
 }
 
 //	@Tags			Authentication

@@ -24,6 +24,9 @@ type UserRepository interface {
 	GetByNameOrInstanceId(ctx context.Context, nameOrId string, opts metav1.GetOptions) (*model.User, error)
 	FlushLastLoginTime(ctx context.Context, nameOrId string) error
 	GetByExternalId(ctx context.Context, openId, externalId string, opts metav1.GetOptions) (*model.User, error)
+	CreateExternalUser(ctx context.Context, externalUser *model.UserExternal) error
+	DeleteExternalUser(ctx context.Context, userId, externalUid, idp string) error
+	DeleteExternalUserByProvider(ctx context.Context, userId, provider string) error
 	List(ctx context.Context, opts v1.ListUserOptions) ([]model.User, error)
 	Count(ctx context.Context, opts v1.ListUserOptions) (int64, error)
 }

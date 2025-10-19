@@ -56,6 +56,9 @@ IAM 系统支持的错误码列表如下：
 | ErrMaxDepartmentsReached | 110508 | 400 | The number of departments has reached its limit |
 | ErrMemberAlreadyInDepartment | 110601 | 400 | Member is already in department |
 | ErrSubDepartmentsExist | 110602 | 400 | Sub departments exist and cannot be deleted |
+| ErrBindExternalAccount | 110701 | 400 | Failed to bind external account |
+| ErrUnbindExternalAccount | 110702 | 400 | Failed to unbind external account |
+| ErrExternalAccountAlreadyBound | 110703 | 400 | External account already bound to another user |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |

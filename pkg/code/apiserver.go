@@ -131,3 +131,15 @@ const (
 	// ErrSubDepartmentsExist - 400: Sub departments exist and cannot be deleted.
 	ErrSubDepartmentsExist
 )
+
+// iam-apiserver: external account binding errors.
+const (
+	// ErrBindExternalAccount - 400: Failed to bind external account.
+	ErrBindExternalAccount int = iota + 110701
+
+	// ErrUnbindExternalAccount - 400: Failed to unbind external account.
+	ErrUnbindExternalAccount
+
+	// ErrExternalAccountAlreadyBound - 400: External account already bound to another user.
+	ErrExternalAccountAlreadyBound
+)
