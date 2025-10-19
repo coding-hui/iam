@@ -41,51 +41,28 @@ func NewApiKeyStrategy(apiKeyService service.ApiKeyService) ApiKeyStrategy {
 // AuthFunc defines API Key strategy as the gin authentication middleware.
 func (a ApiKeyStrategy) AuthFunc() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var apiKey, apiSecret string
+		var apiKey string
 
 		// Try to get API Key from Authorization header first
 		authHeader := strings.SplitN(c.Request.Header.Get("Authorization"), " ", 2)
 		if len(authHeader) == authHeaderCount && authHeader[0] == authHeaderBearer {
-			// Extract API Key and Secret from Bearer token
-			// Format: Bearer {apiKey}:{apiSecret}
-			credentials := strings.SplitN(authHeader[1], ":", 2)
-			if len(credentials) == 2 {
-				apiKey = credentials[0]
-				apiSecret = credentials[1]
-			} else {
-				// If no colon separator, check if it's a JWT token or malformed API Key
-				// JWT tokens typically have 3 parts separated by dots
-				jwtParts := strings.Split(authHeader[1], ".")
-				if len(jwtParts) != 3 {
-					// This might be a malformed API Key, try to use it as API Key only
-					// and look for secret in X-API-Secret header
-					apiKey = authHeader[1]
-					apiSecret = c.Request.Header.Get("X-API-Secret")
-				}
-			}
+			apiKey = authHeader[1]
 		}
 
-		// If not found in Authorization header, try X-API-Key and X-API-Secret headers
+		// If not found in Authorization header, try X-API-Key header
 		if apiKey == "" {
 			apiKey = c.Request.Header.Get("X-API-Key")
-			apiSecret = c.Request.Header.Get("X-API-Secret")
 		}
 
-		// Validate API Key and Secret
-		if apiKey == "" || apiSecret == "" {
-			errMsg := "Missing API Key or Secret. "
-			if authHeader[0] == authHeaderBearer {
-				errMsg += "Expected format: Bearer {apiKey}:{apiSecret}"
-			} else {
-				errMsg += "Use X-API-Key and X-API-Secret headers or Authorization: Bearer {apiKey}:{apiSecret}"
-			}
-			api.FailWithErrCode(errors.WithCode(code.ErrApiKeyInvalid, "%s", errMsg), c)
+		// Validate API Key
+		if apiKey == "" {
+			api.FailWithErrCode(errors.WithCode(code.ErrApiKeyInvalid, "Missing API Key. Use Authorization: Bearer {apiKey} or X-API-Key header"), c)
 			c.Abort()
 			return
 		}
 
 		// Validate API Key
-		user, _, err := a.apiKeyService.ValidateApiKey(c.Request.Context(), apiKey, apiSecret)
+		user, _, err := a.apiKeyService.ValidateApiKey(c.Request.Context(), apiKey)
 		if err != nil {
 			api.FailWithErrCode(err, c)
 			c.Abort()

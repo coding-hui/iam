@@ -53,6 +53,7 @@ func init() {
 	register(ErrApiKeyExpired, 401, "API Key has expired")
 	register(ErrApiKeyAlreadyEnabled, 400, "API Key is already enabled")
 	register(ErrApiKeyAlreadyDisabled, 400, "API Key is already disabled")
+	register(ErrApiKeyGenerationFailed, 500, "Failed to generate unique API Key")
 	register(ErrSuccess, 200, "OK")
 	register(ErrUnknown, 500, "Internal server error")
 	register(ErrBind, 400, "Error occurred while binding the request body to the struct")

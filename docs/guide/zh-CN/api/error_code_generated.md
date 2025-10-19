@@ -66,6 +66,7 @@ IAM 系统支持的错误码列表如下：
 | ErrApiKeyExpired | 110805 | 401 | API Key has expired |
 | ErrApiKeyAlreadyEnabled | 110806 | 400 | API Key is already enabled |
 | ErrApiKeyAlreadyDisabled | 110807 | 400 | API Key is already disabled |
+| ErrApiKeyGenerationFailed | 110808 | 500 | Failed to generate unique API Key |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |

@@ -26,21 +26,19 @@ func TestApiKeyService_CreateApiKey(t *testing.T) {
 	assert.Equal(t, req.Name, "Test API Key")
 }
 
-func TestApiKeyService_GenerateKeyAndSecret(t *testing.T) {
+func TestApiKeyService_GenerateKey(t *testing.T) {
 	s := &apiKeyServiceImpl{}
 
 	// Test key generation
 	key, err := s.generateKey()
 	assert.NilError(t, err)
-	assert.Equal(t, len(key), 35) // sk- + 32 hex chars
+	assert.Equal(t, len(key), 30) // sk_ + 27 base62 chars
 	assert.Check(t, len(key) > 0)
-	assert.Check(t, key[:3] == "sk-")
-
-	// Test secret generation
-	secret, err := s.generateSecret()
-	assert.NilError(t, err)
-	assert.Equal(t, len(secret), 64) // 64 hex chars
-	assert.Check(t, len(secret) > 0)
+	assert.Check(t, key[:3] == "sk_")
+	// Verify Base62 characters only
+	for _, ch := range key[3:] {
+		assert.Check(t, (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))
+	}
 }
 
 func TestApiKey_IsActive(t *testing.T) {

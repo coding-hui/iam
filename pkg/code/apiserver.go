@@ -166,4 +166,7 @@ const (
 
 	// ErrApiKeyAlreadyDisabled - 400: API Key is already disabled.
 	ErrApiKeyAlreadyDisabled
+
+	// ErrApiKeyGenerationFailed - 500: Failed to generate unique API Key.
+	ErrApiKeyGenerationFailed
 )

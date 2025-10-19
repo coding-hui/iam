@@ -7,7 +7,7 @@ package service
 import (
 	"context"
 	"crypto/rand"
-	"fmt"
+	"math/big"
 	"strings"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
@@ -46,17 +46,17 @@ type ApiKeyService interface {
 	// ListApiKeys retrieves a list of API Keys with pagination and filtering.
 	ListApiKeys(ctx context.Context, opts v1.ListApiKeyOptions) (*v1.ApiKeyList, error)
 
-	// RegenerateSecret regenerates the secret for an API Key.
-	RegenerateSecret(ctx context.Context, instanceId string) (*v1.CreateApiKeyResponse, error)
-
 	// EnableApiKey enables a disabled API Key.
 	EnableApiKey(ctx context.Context, instanceId string) error
 
 	// DisableApiKey disables an enabled API Key.
 	DisableApiKey(ctx context.Context, instanceId string) error
 
+	// RegenerateSecret regenerates the secret for an API Key.
+	RegenerateSecret(ctx context.Context, instanceId string) (*v1.CreateApiKeyResponse, error)
+
 	// ValidateApiKey validates an API Key and returns the associated user and API Key object.
-	ValidateApiKey(ctx context.Context, key, secret string) (*model.User, *model.ApiKey, error)
+	ValidateApiKey(ctx context.Context, key string) (*model.User, *model.ApiKey, error)
 
 	// CleanupExpiredApiKeys deletes expired API Keys.
 	CleanupExpiredApiKeys(ctx context.Context) error
@@ -86,11 +86,11 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 	}
 
 	// Validate generated key format
-	if !strings.HasPrefix(key, "sk-") || len(key) != 35 { // sk- + 32 hex chars = 35 chars
+	if !strings.HasPrefix(key, "sk_") || len(key) != 30 { // sk_ + 27 base62 chars = 30 chars
 		return nil, errors.WithCode(code.ErrUnknown, "Generated API Key format is invalid")
 	}
 
-	if len(secret) != 64 { // 64 hex characters
+	if len(secret) != 43 { // 43 base62 characters for 256-bit secret
 		return nil, errors.WithCode(code.ErrUnknown, "Generated API Secret format is invalid")
 	}
 
@@ -250,47 +250,6 @@ func (s *apiKeyServiceImpl) ListApiKeys(ctx context.Context, opts v1.ListApiKeyO
 	}, nil
 }
 
-// RegenerateSecret regenerates the secret for an API Key.
-func (s *apiKeyServiceImpl) RegenerateSecret(ctx context.Context, instanceId string) (*v1.CreateApiKeyResponse, error) {
-	apiKey, err := s.Store.ApiKeyRepository().GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
-	if err != nil {
-		return nil, err
-	}
-
-	// Verify ownership
-	user, err := s.getCurrentUser(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if apiKey.UserID != user.GetInstanceID() {
-		return nil, errors.WithCode(code.ErrPermissionDenied, "Permission denied")
-	}
-
-	// Generate new secret
-	secret, err := s.generateSecret()
-	if err != nil {
-		return nil, errors.WithMessage(err, "Failed to generate new secret")
-	}
-
-	// Encrypt the new secret
-	encryptedSecret, err := auth.Encrypt(secret)
-	if err != nil {
-		return nil, errors.WithMessage(err, "Failed to encrypt new secret")
-	}
-
-	// Update API Key
-	apiKey.Secret = encryptedSecret
-	if err := s.Store.ApiKeyRepository().Update(ctx, apiKey, metav1.UpdateOptions{}); err != nil {
-		return nil, err
-	}
-
-	base := assembler.ConvertApiKeyModelToBase(apiKey)
-
-	return &v1.CreateApiKeyResponse{
-		ApiKeyBase: *base,
-	}, nil
-}
-
 // EnableApiKey enables a disabled API Key.
 func (s *apiKeyServiceImpl) EnableApiKey(ctx context.Context, instanceId string) error {
 	apiKey, err := s.Store.ApiKeyRepository().GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
@@ -339,8 +298,49 @@ func (s *apiKeyServiceImpl) DisableApiKey(ctx context.Context, instanceId string
 	return s.Store.ApiKeyRepository().Update(ctx, apiKey, metav1.UpdateOptions{})
 }
 
+// RegenerateSecret regenerates the secret for an API Key.
+func (s *apiKeyServiceImpl) RegenerateSecret(ctx context.Context, instanceId string) (*v1.CreateApiKeyResponse, error) {
+	apiKey, err := s.Store.ApiKeyRepository().GetByInstanceId(ctx, instanceId, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	// Verify ownership
+	user, err := s.getCurrentUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if apiKey.UserID != user.GetInstanceID() {
+		return nil, errors.WithCode(code.ErrPermissionDenied, "Permission denied")
+	}
+
+	// Generate new secret
+	secret, err := s.generateSecret()
+	if err != nil {
+		return nil, errors.WithMessage(err, "Failed to generate new secret")
+	}
+
+	// Encrypt the new secret
+	encryptedSecret, err := auth.Encrypt(secret)
+	if err != nil {
+		return nil, errors.WithMessage(err, "Failed to encrypt new secret")
+	}
+
+	// Update API Key
+	apiKey.Secret = encryptedSecret
+	if err := s.Store.ApiKeyRepository().Update(ctx, apiKey, metav1.UpdateOptions{}); err != nil {
+		return nil, err
+	}
+
+	base := assembler.ConvertApiKeyModelToBase(apiKey)
+
+	return &v1.CreateApiKeyResponse{
+		ApiKeyBase: *base,
+	}, nil
+}
+
 // ValidateApiKey validates an API Key and returns the associated user and API Key object.
-func (s *apiKeyServiceImpl) ValidateApiKey(ctx context.Context, key, secret string) (*model.User, *model.ApiKey, error) {
+func (s *apiKeyServiceImpl) ValidateApiKey(ctx context.Context, key string) (*model.User, *model.ApiKey, error) {
 	apiKey, err := s.Store.ApiKeyRepository().GetByKey(ctx, key, metav1.GetOptions{})
 	if err != nil {
 		return nil, nil, errors.WithCode(code.ErrApiKeyInvalid, "Invalid API Key")
@@ -349,11 +349,6 @@ func (s *apiKeyServiceImpl) ValidateApiKey(ctx context.Context, key, secret stri
 	// Check if API Key is active
 	if !apiKey.IsActive() {
 		return nil, nil, errors.WithCode(code.ErrApiKeyInactive, "API Key is not active")
-	}
-
-	// Verify secret
-	if err := auth.Compare(apiKey.Secret, secret); err != nil {
-		return nil, nil, errors.WithCode(code.ErrApiKeyInvalid, "Invalid API Secret")
 	}
 
 	// Update usage statistics
@@ -378,9 +373,27 @@ func (s *apiKeyServiceImpl) CleanupExpiredApiKeys(ctx context.Context) error {
 // Helper functions
 
 func (s *apiKeyServiceImpl) generateApiKeyAndSecret() (string, string, error) {
-	key, err := s.generateKey()
-	if err != nil {
-		return "", "", err
+	// Generate key with retry logic for collision detection
+	var key string
+	for i := 0; i < 3; i++ { // Retry up to 3 times in case of collision
+		generatedKey, err := s.generateKey()
+		if err != nil {
+			return "", "", err
+		}
+
+		// Check if key already exists
+		ctx := context.Background()
+		_, err = s.Store.ApiKeyRepository().GetByKey(ctx, generatedKey, metav1.GetOptions{})
+		if err != nil {
+			// Key doesn't exist, we can use it
+			key = generatedKey
+			break
+		}
+		// Key exists, try again
+		if i == 2 {
+			// Last attempt failed
+			return "", "", errors.WithCode(code.ErrApiKeyGenerationFailed, "Failed to generate unique API Key after multiple attempts")
+		}
 	}
 
 	secret, err := s.generateSecret()
@@ -391,22 +404,58 @@ func (s *apiKeyServiceImpl) generateApiKeyAndSecret() (string, string, error) {
 	return key, secret, nil
 }
 
-func (s *apiKeyServiceImpl) generateKey() (string, error) {
-	bytes := make([]byte, 16) // 16 bytes = 32 hex characters
+func (s *apiKeyServiceImpl) generateSecret() (string, error) {
+	// Generate 32 bytes (256 bits) for high security
+	bytes := make([]byte, 32)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
 	}
-	// Format: sk-{32 hex characters} (e.g., sk-ec3336a7a7548c6344a34a0fdf1a6b54)
-	return "sk-" + fmt.Sprintf("%032x", bytes), nil
+	// Format: Base62 encoded 32 bytes (43 characters)
+	return encodeBase62(bytes), nil
 }
 
-func (s *apiKeyServiceImpl) generateSecret() (string, error) {
-	bytes := make([]byte, 32) // 32 bytes = 64 hex characters
+func (s *apiKeyServiceImpl) generateKey() (string, error) {
+	// Generate 20 bytes (160 bits) for better security and Base62 encoding
+	bytes := make([]byte, 20)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
 	}
-	// Format: {64 hex characters}
-	return fmt.Sprintf("%064x", bytes), nil
+	// Format: sk_ + Base62 encoded 20 bytes (27 characters)
+	// Base62 provides better character density than hex (62 vs 16)
+	return "sk_" + encodeBase62(bytes), nil
+}
+
+// encodeBase62 encodes bytes to Base62 string
+// Base62 character set: 0-9, A-Z, a-z (62 characters total)
+const base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+func encodeBase62(data []byte) string {
+	if len(data) == 0 {
+		return ""
+	}
+
+	var result []byte
+	n := newIntFromBytes(data)
+
+	zero := big.NewInt(0)
+	base := big.NewInt(62)
+
+	for n.Cmp(zero) > 0 {
+		mod := new(big.Int)
+		n.DivMod(n, base, mod)
+		result = append([]byte{base62Chars[mod.Int64()]}, result...)
+	}
+
+	// Handle the case where input is all zeros
+	if len(result) == 0 {
+		result = []byte{base62Chars[0]}
+	}
+
+	return string(result)
+}
+
+func newIntFromBytes(buf []byte) *big.Int {
+	return new(big.Int).SetBytes(buf)
 }
 
 func (s *apiKeyServiceImpl) getCurrentUser(ctx context.Context) (*model.User, error) {

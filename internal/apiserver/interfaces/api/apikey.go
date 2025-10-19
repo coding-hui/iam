@@ -7,36 +7,66 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/coding-hui/common/errors"
-	metav1 "github.com/coding-hui/common/meta/v1"
-
 	"github.com/coding-hui/iam/internal/apiserver/domain/service"
 	"github.com/coding-hui/iam/pkg/api"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/code"
+
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
+// apiKeyHandler create a apiKey handler used to handle request for apiKey resource.
 type apiKey struct {
 	ApiKeyService service.ApiKeyService `inject:""`
 }
 
-// NewApiKey is the of apiKey.
+// NewApiKey is the constructor of apiKeyHandler.
 func NewApiKey() Interface {
 	return &apiKey{}
 }
 
-func (a *apiKey) RegisterApiGroup(g *gin.Engine) {
-	apiv1 := g.Group(versionPrefix+`/apikeys`).Use(autoAuthCheck.AuthFunc(), permissionCheckFunc("apikeys"))
+// RegisterRouter register apiKey router to gin router group.
+func (a *apiKey) RegisterRouter(g *gin.RouterGroup) {
+	apiv1 := g.Group("/v1/apikeys")
 	{
 		apiv1.POST("", a.createApiKey)
 		apiv1.PUT("/:instanceId", a.updateApiKey)
 		apiv1.DELETE("/:instanceId", a.deleteApiKey)
 		apiv1.GET("/:instanceId", a.getApiKey)
 		apiv1.GET("", a.listApiKeys)
-		apiv1.POST("/:instanceId/regenerate", a.regenerateSecret)
+
 		apiv1.PUT("/:instanceId/enable", a.enableApiKey)
 		apiv1.PUT("/:instanceId/disable", a.disableApiKey)
+		apiv1.POST("/:instanceId/regenerate", a.regenerateSecret)
 	}
+}
+
+// RegisterApiGroup register apiKey router to gin engine.
+func (a *apiKey) RegisterApiGroup(g *gin.Engine) {
+	apiv1 := g.Group(versionPrefix + "/apikeys")
+	a.RegisterRouter(apiv1)
+}
+
+//	@Tags			ApiKeys
+//	@Summary		RegenerateApiKeySecret
+//	@Description	Regenerate API Key secret
+//	@Accept			application/json
+//	@Product		application/json
+//	@Param			instanceId	path		string			true	"identifier of an API Key"
+//	@Success		200			{object}	api.Response	"regenerate API Key secret"
+//	@Router			/api/v1/apikeys/{instanceId}/regenerate [post]
+//	@Security		BearerTokenAuth
+//
+// regenerateSecret regenerate API Key secret.
+func (a *apiKey) regenerateSecret(c *gin.Context) {
+	apiKeyResp, err := a.ApiKeyService.RegenerateSecret(c.Request.Context(), c.Param("instanceId"))
+	if err != nil {
+		api.FailWithErrCode(err, c)
+		return
+	}
+
+	api.OkWithData(apiKeyResp, c)
 }
 
 //	@Tags			ApiKeys
@@ -69,16 +99,16 @@ func (a *apiKey) createApiKey(c *gin.Context) {
 
 //	@Tags			ApiKeys
 //	@Summary		UpdateApiKey
-//	@Description	Update API Key info
+//	@Description	Update API Key
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			instanceId	path		string					true	"identifier of an API Key"
 //	@Param			data		body		v1.UpdateApiKeyRequest	true	"API Key info"
-//	@Success		200			{object}	api.Response			"update API Key info"
+//	@Success		200			{object}	api.Response			"update API Key"
 //	@Router			/api/v1/apikeys/{instanceId} [put]
 //	@Security		BearerTokenAuth
 //
-// updateApiKey update API Key info.
+// updateApiKey update API Key.
 func (a *apiKey) updateApiKey(c *gin.Context) {
 	updateReq := v1.UpdateApiKeyRequest{}
 	err := c.ShouldBindJSON(&updateReq)
@@ -87,13 +117,13 @@ func (a *apiKey) updateApiKey(c *gin.Context) {
 		return
 	}
 
-	apiKey, err := a.ApiKeyService.UpdateApiKey(c.Request.Context(), c.Param("instanceId"), updateReq)
+	apiKeyResp, err := a.ApiKeyService.UpdateApiKey(c.Request.Context(), c.Param("instanceId"), updateReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
 
-	api.OkWithData(apiKey, c)
+	api.OkWithData(apiKeyResp, c)
 }
 
 //	@Tags			ApiKeys
@@ -119,23 +149,23 @@ func (a *apiKey) deleteApiKey(c *gin.Context) {
 
 //	@Tags			ApiKeys
 //	@Summary		GetApiKey
-//	@Description	Get API Key details
+//	@Description	Get API Key
 //	@Accept			application/json
 //	@Product		application/json
 //	@Param			instanceId	path		string			true	"identifier of an API Key"
-//	@Success		200			{object}	api.Response	"get API Key details"
+//	@Success		200			{object}	api.Response	"get API Key"
 //	@Router			/api/v1/apikeys/{instanceId} [get]
 //	@Security		BearerTokenAuth
 //
-// getApiKey get API Key details.
+// getApiKey get API Key.
 func (a *apiKey) getApiKey(c *gin.Context) {
-	apiKey, err := a.ApiKeyService.GetApiKey(c.Request.Context(), c.Param("instanceId"), metav1.GetOptions{})
+	apiKeyResp, err := a.ApiKeyService.GetApiKey(c.Request.Context(), c.Param("instanceId"), metav1.GetOptions{})
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
 
-	api.OkWithData(apiKey, c)
+	api.OkWithData(apiKeyResp, c)
 }
 
 //	@Tags			ApiKeys
@@ -143,20 +173,16 @@ func (a *apiKey) getApiKey(c *gin.Context) {
 //	@Description	List API Keys
 //	@Accept			application/json
 //	@Product		application/json
-//	@Param			offset		query		int				false	"query the number of records to skip"
-//	@Param			limit		query		int				false	"query the number of records to return"
-//	@Param			page		query		int				false	"query the page number"
-//	@Param			pageSize	query		int				false	"query the page size number"
-//	@Param			status		query		int				false	"filter by status"
-//	@Success		200			{object}	api.Response	"list API Keys"
+//	@Param			query	query		v1.ListApiKeyOptions	false	"query parameters"
+//	@Success		200		{object}	api.Response			"list API Keys"
 //	@Router			/api/v1/apikeys [get]
 //	@Security		BearerTokenAuth
 //
 // listApiKeys list API Keys.
 func (a *apiKey) listApiKeys(c *gin.Context) {
 	var opts v1.ListApiKeyOptions
-
-	if err := c.ShouldBindQuery(&opts); err != nil {
+	err := c.ShouldBindQuery(&opts)
+	if err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
 		return
 	}
@@ -167,28 +193,7 @@ func (a *apiKey) listApiKeys(c *gin.Context) {
 		return
 	}
 
-	api.OkWithPage(apiKeys.Items, apiKeys.TotalCount, c)
-}
-
-//	@Tags			ApiKeys
-//	@Summary		RegenerateApiKeySecret
-//	@Description	Regenerate API Key secret
-//	@Accept			application/json
-//	@Product		application/json
-//	@Param			instanceId	path		string			true	"identifier of an API Key"
-//	@Success		200			{object}	api.Response	"regenerate API Key secret"
-//	@Router			/api/v1/apikeys/{instanceId}/regenerate [post]
-//	@Security		BearerTokenAuth
-//
-// regenerateSecret regenerate API Key secret.
-func (a *apiKey) regenerateSecret(c *gin.Context) {
-	apiKeyResp, err := a.ApiKeyService.RegenerateSecret(c.Request.Context(), c.Param("instanceId"))
-	if err != nil {
-		api.FailWithErrCode(err, c)
-		return
-	}
-
-	api.OkWithData(apiKeyResp, c)
+	api.OkWithData(apiKeys, c)
 }
 
 //	@Tags			ApiKeys
