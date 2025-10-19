@@ -61,6 +61,9 @@ func InitAPIBean(c config.Config) []interface{} {
 	// apps
 	RegisterAPI(NewApplication())
 
+	// mail templates
+	RegisterAPI(NewMailTemplate())
+
 	beans := make([]interface{}, 0, len(registeredAPI))
 	for i := range registeredAPI {
 		beans = append(beans, registeredAPI[i])

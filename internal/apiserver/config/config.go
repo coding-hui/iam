@@ -6,12 +6,21 @@ package config
 
 import (
 	"github.com/coding-hui/iam/cmd/iam-apiserver/app/options"
+	pkgoptions "github.com/coding-hui/iam/pkg/options"
 	genericapiserver "github.com/coding-hui/iam/pkg/server"
 )
 
 // Config config for iam-apiserver.
 type Config struct {
 	*options.Options
+}
+
+// MailOptions returns the mail configuration
+func (c *Config) MailOptions() *pkgoptions.MailOptions {
+	if c.Options != nil {
+		return c.Options.MailOptions
+	}
+	return nil
 }
 
 // CreateConfigFromOptions creates a running configuration instance based

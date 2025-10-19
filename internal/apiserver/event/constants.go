@@ -6,4 +6,6 @@ package event
 
 const (
 	AuthenticationEventType = "authentication"
+	// UserCreatedEventType user created event type
+	UserCreatedEventType = "user.created"
 )

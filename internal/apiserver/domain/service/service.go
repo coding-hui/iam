@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
+	"github.com/coding-hui/iam/internal/apiserver/domain/service/mail"
 	"github.com/coding-hui/iam/internal/pkg/token"
 )
 
@@ -26,6 +27,8 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 	organizationService := NewOrganizationService(c)
 	providerService := NewIdentityProviderService(c)
 	appService := NewApplicationService(c)
+	mailService := mail.NewServiceWithConfig(c)
+	mailTemplateService := mail.NewTemplateService()
 
 	needInitData = []DataInit{
 		organizationService, userService, roleService, resourceService,
@@ -36,6 +39,7 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 		organizationService, userService, authenticationService,
 		resourceService, roleService, policyService,
 		tokenService, providerService, appService,
+		mailService, mailTemplateService,
 	}
 }
 

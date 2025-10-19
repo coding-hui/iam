@@ -9,6 +9,8 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/domain/service/mail"
+	"github.com/coding-hui/iam/internal/apiserver/event"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/code"
@@ -47,6 +49,8 @@ type UserService interface {
 type userServiceImpl struct {
 	Store       repository.Factory `inject:"repository"`
 	RoleService RoleService        `inject:""`
+	MailService mail.Service       `inject:""`
+	EventBus    event.Bus          `inject:"eventBus"`
 }
 
 // NewUserService new User service.
@@ -153,6 +157,14 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	orgAssociationErr := u.Store.OrganizationRepository().AddDepartmentMembers(ctx, deptMembers)
 	if orgAssociationErr != nil {
 		log.Errorf("Failed to add user to the department: %w", orgAssociationErr)
+	}
+
+	// Send welcome email
+	if u.MailService != nil {
+		err := u.MailService.SendWelcomeEmail(createUser, req.Password)
+		if err != nil {
+			log.Warnf("Failed to send welcome email to user %s: %v", createUser.Name, err)
+		}
 	}
 
 	return &v1.CreateUserResponse{

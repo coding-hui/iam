@@ -52,13 +52,16 @@ type InProcBus struct {
 func InitEvent(c config.Config) (bus Bus, listeners []interface{}) {
 	bus = NewEventBus(c)
 
+	// Authentication event listener
 	authenticationSuccessListener := NewAuthenticationEventListener()
-
 	bus.AddEventListener(AuthenticationEventType, authenticationSuccessListener)
+	listeners = append(listeners, authenticationSuccessListener)
 
-	return bus, []interface{}{
-		authenticationSuccessListener,
-	}
+	// User created event listener (will be injected with mail service)
+	// userCreatedListenerSubscriber := &{}
+	//listeners = append(listeners, userCreatedListenerSubscriber)
+
+	return
 }
 
 func NewEventBus(c config.Config) *InProcBus {
