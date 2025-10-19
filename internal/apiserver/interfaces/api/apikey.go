@@ -26,8 +26,8 @@ func NewApiKey() Interface {
 	return &apiKey{}
 }
 
-// RegisterRouter register apiKey router to gin router group.
-func (a *apiKey) RegisterRouter(g *gin.RouterGroup) {
+// RegisterApiGroup register apiKey router to gin engine.
+func (a *apiKey) RegisterApiGroup(g *gin.Engine) {
 	apiv1 := g.Group(versionPrefix+"/apikeys").Use(autoAuthCheck.AuthFunc(), permissionCheckFunc("apikeys"))
 	{
 		apiv1.POST("", a.createApiKey)
@@ -40,12 +40,6 @@ func (a *apiKey) RegisterRouter(g *gin.RouterGroup) {
 		apiv1.PUT("/:instanceId/disable", a.disableApiKey)
 		apiv1.POST("/:instanceId/regenerate", a.regenerateSecret)
 	}
-}
-
-// RegisterApiGroup register apiKey router to gin engine.
-func (a *apiKey) RegisterApiGroup(g *gin.Engine) {
-	apiv1 := g.Group(versionPrefix + "/apikeys")
-	a.RegisterRouter(apiv1)
 }
 
 //	@Tags			ApiKeys
