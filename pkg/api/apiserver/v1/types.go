@@ -715,8 +715,8 @@ type ListApiKeyOptions struct {
 
 // CreateApiKeyRequest create API Key request.
 type CreateApiKeyRequest struct {
-	Description string    `json:"description,omitempty"`
-	ExpiresAt   time.Time `json:"expiresAt,omitempty"`
+	Name      string    `json:"name" validate:"required,name"`
+	ExpiresAt time.Time `json:"expiresAt,omitempty"`
 }
 
 // CreateApiKeyResponse create API Key response.
@@ -727,9 +727,9 @@ type CreateApiKeyResponse struct {
 
 // UpdateApiKeyRequest update API Key request.
 type UpdateApiKeyRequest struct {
-	Description string    `json:"description,omitempty"`
-	ExpiresAt   time.Time `json:"expiresAt,omitempty"`
-	Status      int       `json:"status,omitempty"`
+	Name      string    `json:"name" validate:"required,name"`
+	ExpiresAt time.Time `json:"expiresAt,omitempty"`
+	Status    int       `json:"status,omitempty"`
 }
 
 // ApiKeyBase represents an API Key restful resource.
@@ -737,13 +737,13 @@ type ApiKeyBase struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Key         string    `json:"key"`
-	UserID      string    `json:"userId"`
-	ExpiresAt   time.Time `json:"expiresAt,omitempty"`
-	Status      int       `json:"status"`
-	LastUsedAt  time.Time `json:"lastUsedAt,omitempty"`
-	UsageCount  int64     `json:"usageCount"`
-	Description string    `json:"description,omitempty"`
+	Name       string    `json:"name"`
+	Key        string    `json:"key"`
+	UserID     string    `json:"userId"`
+	ExpiresAt  time.Time `json:"expiresAt,omitempty"`
+	Status     int       `json:"status"`
+	LastUsedAt time.Time `json:"lastUsedAt,omitempty"`
+	UsageCount int64     `json:"usageCount"`
 }
 
 // ApiKeyList is the whole list of all API Keys which have been stored in storage.

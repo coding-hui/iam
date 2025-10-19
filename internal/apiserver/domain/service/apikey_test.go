@@ -18,12 +18,12 @@ func TestApiKeyService_CreateApiKey(t *testing.T) {
 	// Test request structure
 	expiresAt := time.Now().Add(24 * time.Hour)
 	req := v1.CreateApiKeyRequest{
-		Description: "Test description",
-		ExpiresAt:   expiresAt,
+		Name:      "Test API Key",
+		ExpiresAt: expiresAt,
 	}
 
 	// Test the request structure
-	assert.Equal(t, req.Description, "Test description")
+	assert.Equal(t, req.Name, "Test API Key")
 }
 
 func TestApiKeyService_GenerateKeyAndSecret(t *testing.T) {

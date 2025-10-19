@@ -34,6 +34,9 @@ type ApiKey struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
+	// Name is the human-readable name of the API Key.
+	Name string `json:"name" gorm:"column:name;type:varchar(128);not null"`
+
 	// Key is the API Key identifier (public part).
 	Key string `json:"key" gorm:"column:key;type:varchar(256);uniqueIndex;not null"`
 
@@ -54,9 +57,6 @@ type ApiKey struct {
 
 	// UsageCount tracks how many times this API Key has been used.
 	UsageCount int64 `json:"usageCount" gorm:"column:usage_count;default:0"`
-
-	// Description provides additional information about the API Key.
-	Description string `json:"description,omitempty" gorm:"column:description;type:text"`
 }
 
 // TableName maps to mysql table name.

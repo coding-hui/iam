@@ -176,12 +176,12 @@ func ConvertModelToIdentityProviderBase(idp *model.IdentityProvider) *v1.Identit
 // ConvertApiKeyModelToBase assemble the ApiKey model to DTO.
 func ConvertApiKeyModelToBase(apiKey *model.ApiKey) *v1.ApiKeyBase {
 	base := &v1.ApiKeyBase{
-		ObjectMeta:  apiKey.ObjectMeta,
-		Key:         apiKey.Key,
-		UserID:      apiKey.UserID,
-		Status:      int(apiKey.Status),
-		UsageCount:  apiKey.UsageCount,
-		Description: apiKey.Description,
+		ObjectMeta: apiKey.ObjectMeta,
+		Name:       apiKey.Name,
+		Key:        apiKey.Key,
+		UserID:     apiKey.UserID,
+		Status:     int(apiKey.Status),
+		UsageCount: apiKey.UsageCount,
 	}
 
 	// Convert *time.Time to time.Time
