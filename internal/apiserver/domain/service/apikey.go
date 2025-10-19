@@ -205,6 +205,16 @@ func (s *apiKeyServiceImpl) GetApiKey(ctx context.Context, instanceId string, op
 		return nil, errors.WithCode(code.ErrPermissionDenied, "Permission denied")
 	}
 
+	// Check if API Key has expired and update status if needed
+	if !apiKey.IsActive() && apiKey.Status == model.ApiKeyStatusActive {
+		// API Key has expired but status is still active, update to expired status
+		apiKey.Status = model.ApiKeyStatusExpired
+		if err := s.Store.ApiKeyRepository().Update(ctx, apiKey, metav1.UpdateOptions{}); err != nil {
+			log.Warnf("Failed to update expired API Key status: %v", err)
+			// Continue with the original status if update fails
+		}
+	}
+
 	return assembler.ConvertApiKeyModelToBase(apiKey), nil
 }
 
@@ -213,6 +223,16 @@ func (s *apiKeyServiceImpl) GetApiKeyByKey(ctx context.Context, key string, opts
 	apiKey, err := s.Store.ApiKeyRepository().GetByKey(ctx, key, opts)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check if API Key has expired and update status if needed
+	if !apiKey.IsActive() && apiKey.Status == model.ApiKeyStatusActive {
+		// API Key has expired but status is still active, update to expired status
+		apiKey.Status = model.ApiKeyStatusExpired
+		if err := s.Store.ApiKeyRepository().Update(ctx, apiKey, metav1.UpdateOptions{}); err != nil {
+			log.Warnf("Failed to update expired API Key status: %v", err)
+			// Continue with the original status if update fails
+		}
 	}
 
 	return assembler.ConvertApiKeyModelToBase(apiKey), nil
@@ -230,6 +250,19 @@ func (s *apiKeyServiceImpl) ListApiKeys(ctx context.Context, opts v1.ListApiKeyO
 	apiKeys, err := s.Store.ApiKeyRepository().List(ctx, opts)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check and update expired API Keys status
+	for i := range apiKeys {
+		apiKey := &apiKeys[i]
+		if !apiKey.IsActive() && apiKey.Status == model.ApiKeyStatusActive {
+			// API Key has expired but status is still active, update to expired status
+			apiKey.Status = model.ApiKeyStatusExpired
+			if err := s.Store.ApiKeyRepository().Update(ctx, apiKey, metav1.UpdateOptions{}); err != nil {
+				log.Warnf("Failed to update expired API Key status: %v", err)
+				// Continue with the original status if update fails
+			}
+		}
 	}
 
 	count, err := s.Store.ApiKeyRepository().Count(ctx, opts)
