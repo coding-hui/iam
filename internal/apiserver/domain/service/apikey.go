@@ -108,7 +108,9 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 
 	// Create API Key model
 	apiKey := &model.ApiKey{
-		Name:      req.Name,
+		ObjectMeta: metav1.ObjectMeta{
+			Name: req.Name,
+		},
 		Key:       key,
 		Secret:    encryptedSecret,
 		UserID:    user.GetInstanceID(),

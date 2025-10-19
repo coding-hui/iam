@@ -34,9 +34,6 @@ type ApiKey struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// Name is the human-readable name of the API Key.
-	Name string `json:"name" gorm:"column:name;type:varchar(128);not null"`
-
 	// Key is the API Key identifier (public part).
 	Key string `json:"key" gorm:"column:key;type:varchar(256);uniqueIndex;not null"`
 
