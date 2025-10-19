@@ -715,7 +715,7 @@ type ListApiKeyOptions struct {
 
 // CreateApiKeyRequest create API Key request.
 type CreateApiKeyRequest struct {
-	Name      string    `json:"name" validate:"required,name"`
+	Name      string    `json:"name"                validate:"required,name"`
 	ExpiresAt time.Time `json:"expiresAt,omitempty"`
 }
 
@@ -727,7 +727,7 @@ type CreateApiKeyResponse struct {
 
 // UpdateApiKeyRequest update API Key request.
 type UpdateApiKeyRequest struct {
-	Name      string    `json:"name" validate:"required,name"`
+	Name      string    `json:"name"                validate:"required,name"`
 	ExpiresAt time.Time `json:"expiresAt,omitempty"`
 	Status    int       `json:"status,omitempty"`
 }
