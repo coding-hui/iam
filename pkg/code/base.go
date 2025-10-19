@@ -37,16 +37,16 @@ const (
 	// ErrDatabase - 500: Database error.
 	ErrDatabase int = iota + 100101
 
-	// ErrPrimaryEmpty - 500: Primary key is empty.
+	// ErrPrimaryEmpty - 500: Primary key cannot be empty.
 	ErrPrimaryEmpty
 
-	// ErrNilEntity - 500: Entity is nil.
+	// ErrNilEntity - 500: Entity cannot be nil.
 	ErrNilEntity
 
-	// ErrRecordExist - 500: Data record is exist.
+	// ErrRecordExist - 500: Data record already exists.
 	ErrRecordExist
 
-	// ErrRecordNotExist - 500: Data record is not exist.
+	// ErrRecordNotExist - 500: Data record does not exist.
 	ErrRecordNotExist
 
 	// ErrIndexInvalid - 500: Entity index is invalid.

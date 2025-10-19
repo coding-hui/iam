@@ -75,10 +75,10 @@ IAM 系统支持的错误码列表如下：
 | ErrPageNotFound | 100006 | 404 | Page not found |
 | ErrInvalidRequest | 100007 | 404 | Invalid request |
 | ErrDatabase | 100101 | 500 | Database error |
-| ErrPrimaryEmpty | 100102 | 500 | Primary key is empty |
-| ErrNilEntity | 100103 | 500 | Entity is nil |
-| ErrRecordExist | 100104 | 500 | Data record is exist |
-| ErrRecordNotExist | 100105 | 500 | Data record is not exist |
+| ErrPrimaryEmpty | 100102 | 500 | Primary key cannot be empty |
+| ErrNilEntity | 100103 | 500 | Entity cannot be nil |
+| ErrRecordExist | 100104 | 500 | Data record already exists |
+| ErrRecordNotExist | 100105 | 500 | Data record does not exist |
 | ErrIndexInvalid | 100106 | 500 | Entity index is invalid |
 | ErrEntityInvalid | 100107 | 500 | Entity is invalid |
 | ErrTableNameEmpty | 100108 | 500 | Entity table name is empty |

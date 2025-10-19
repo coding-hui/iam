@@ -12,6 +12,7 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/code"
 
@@ -141,7 +142,7 @@ func (r *apiKeyRepository) Count(ctx context.Context, opts v1.ListApiKeyOptions)
 	db = db.Scopes(makeCondition(opts.ListOptions))
 
 	if err := db.Count(&count).Error; err != nil {
-		return 0, errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return 0, datastore.NewDBError(err, "count API Keys")
 	}
 
 	return count, nil
