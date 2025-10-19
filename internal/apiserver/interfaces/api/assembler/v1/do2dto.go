@@ -177,7 +177,6 @@ func ConvertModelToIdentityProviderBase(idp *model.IdentityProvider) *v1.Identit
 func ConvertApiKeyModelToBase(apiKey *model.ApiKey) *v1.ApiKeyBase {
 	base := &v1.ApiKeyBase{
 		ObjectMeta:  apiKey.ObjectMeta,
-		Name:        apiKey.Name,
 		Key:         apiKey.Key,
 		UserID:      apiKey.UserID,
 		Status:      int(apiKey.Status),

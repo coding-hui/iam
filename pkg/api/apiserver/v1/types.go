@@ -715,7 +715,6 @@ type ListApiKeyOptions struct {
 
 // CreateApiKeyRequest create API Key request.
 type CreateApiKeyRequest struct {
-	Name        string    `json:"name"                  validate:"required,name"`
 	Description string    `json:"description,omitempty"`
 	ExpiresAt   time.Time `json:"expiresAt,omitempty"`
 }
@@ -728,7 +727,6 @@ type CreateApiKeyResponse struct {
 
 // UpdateApiKeyRequest update API Key request.
 type UpdateApiKeyRequest struct {
-	Name        string    `json:"name"                  validate:"required,name"`
 	Description string    `json:"description,omitempty"`
 	ExpiresAt   time.Time `json:"expiresAt,omitempty"`
 	Status      int       `json:"status,omitempty"`
@@ -739,7 +737,6 @@ type ApiKeyBase struct {
 	// Standard object's metadata.
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Name        string    `json:"name"`
 	Key         string    `json:"key"`
 	UserID      string    `json:"userId"`
 	ExpiresAt   time.Time `json:"expiresAt,omitempty"`

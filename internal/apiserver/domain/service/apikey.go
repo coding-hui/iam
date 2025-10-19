@@ -74,11 +74,6 @@ func NewApiKeyService() ApiKeyService {
 
 // CreateApiKey creates a new API Key.
 func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKeyRequest) (*v1.CreateApiKeyResponse, error) {
-	// Validate request
-	if req.Name == "" {
-		return nil, errors.WithCode(code.ErrValidation, "API Key name is required")
-	}
-
 	// Generate API Key and Secret
 	key, secret, err := s.generateApiKeyAndSecret()
 	if err != nil {
@@ -108,7 +103,6 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 
 	// Create API Key model
 	apiKey := &model.ApiKey{
-		Name:        req.Name,
 		Key:         key,
 		Secret:      encryptedSecret,
 		UserID:      user.GetInstanceID(),
@@ -126,7 +120,7 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 	// Convert to response
 	base := assembler.ConvertApiKeyModelToBase(createdApiKey)
 
-	log.Infof("Created API Key '%s' for user '%s' with key: %s", req.Name, user.Name, key)
+	log.Infof("Created API Key for user '%s' with key: %s", user.Name, key)
 
 	return &v1.CreateApiKeyResponse{
 		ApiKeyBase: *base,
@@ -151,7 +145,6 @@ func (s *apiKeyServiceImpl) UpdateApiKey(ctx context.Context, instanceId string,
 	}
 
 	// Update fields
-	apiKey.Name = req.Name
 	apiKey.Description = req.Description
 	apiKey.ExpiresAt = &req.ExpiresAt
 
