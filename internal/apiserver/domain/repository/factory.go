@@ -18,6 +18,7 @@ type Factory interface {
 	IdentityProviderRepository() IdentityProviderRepository
 	ApplicationRepository() ApplicationRepository
 	ApiKeyRepository() ApiKeyRepository
+	DeviceAuthRepository() DeviceAuthRepository
 	Close() error
 }
 

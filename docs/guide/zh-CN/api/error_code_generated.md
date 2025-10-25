@@ -67,6 +67,11 @@ IAM 系统支持的错误码列表如下：
 | ErrApiKeyAlreadyEnabled | 110806 | 400 | API Key is already enabled |
 | ErrApiKeyAlreadyDisabled | 110807 | 400 | API Key is already disabled |
 | ErrApiKeyGenerationFailed | 110808 | 500 | Failed to generate unique API Key after multiple attempts. Please try again |
+| ErrDeviceCodeInvalid | 110901 | 400 | Invalid device code |
+| ErrAuthorizationPending | 110902 | 400 | Authorization pending |
+| ErrAuthorizationDenied | 110903 | 400 | Authorization denied by user |
+| ErrDeviceCodeExpired | 110904 | 400 | Device code has expired |
+| ErrClientNotFound | 110905 | 400 | OAuth client not found |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |

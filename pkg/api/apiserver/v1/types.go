@@ -758,6 +758,64 @@ type IdentityProviderConfig struct {
 	OAuthConfig `yaml:",inline" json:",inline"`
 }
 
+// DeviceAuthorizationRequest represents the request for device authorization.
+type DeviceAuthorizationRequest struct {
+	// ClientID is the OAuth client identifier
+	ClientID string `json:"client_id"       binding:"required"`
+	// Scope is the OAuth scope requested
+	Scope string `json:"scope,omitempty"`
+}
+
+// DeviceAuthorizationResponse represents the response for device authorization.
+type DeviceAuthorizationResponse struct {
+	// DeviceCode is the device verification code
+	DeviceCode string `json:"device_code"`
+	// UserCode is the user verification code
+	UserCode string `json:"user_code"`
+	// VerificationURI is the URL the user should visit
+	VerificationURI string `json:"verification_uri"`
+	// VerificationURIComplete is the complete URL with user code
+	VerificationURIComplete string `json:"verification_uri_complete,omitempty"`
+	// ExpiresIn is the lifetime in seconds of the device code
+	ExpiresIn int `json:"expires_in"`
+	// Interval is the minimum amount of time in seconds that the client should wait between polling requests
+	Interval int `json:"interval"`
+}
+
+// DeviceTokenRequest represents the request for device token.
+type DeviceTokenRequest struct {
+	// GrantType must be "urn:ietf:params:oauth:grant-type:device_code"
+	GrantType string `json:"grant_type"  binding:"required"`
+	// DeviceCode is the device code from the authorization response
+	DeviceCode string `json:"device_code" binding:"required"`
+	// ClientID is the OAuth client identifier
+	ClientID string `json:"client_id"   binding:"required"`
+}
+
+// DeviceTokenResponse represents the response for device token.
+type DeviceTokenResponse struct {
+	// AccessToken is the access token issued by the authorization server
+	AccessToken string `json:"access_token"`
+	// TokenType is the type of the token issued
+	TokenType string `json:"token_type"`
+	// ExpiresIn is the lifetime in seconds of the access token
+	ExpiresIn int `json:"expires_in"`
+	// RefreshToken is the refresh token which can be used to obtain new access tokens
+	RefreshToken string `json:"refresh_token,omitempty"`
+	// Scope is the scope of the access token
+	Scope string `json:"scope,omitempty"`
+}
+
+// VerifyDeviceRequest represents the request for verifying device authorization.
+type VerifyDeviceRequest struct {
+	// UserCode is the user verification code
+	UserCode string `json:"user_code"         binding:"required"`
+	// Approved indicates whether the user approved the authorization
+	Approved bool `json:"approved"`
+	// UserID is the ID of the user who approved the authorization
+	UserID string `json:"user_id,omitempty"`
+}
+
 type OAuthConfig struct {
 	// ClientID is the application's ID.
 	ClientID string `json:"clientID" yaml:"clientID"`
@@ -770,8 +828,8 @@ type OAuthConfig struct {
 	// often available via site-specific packages, such as
 	// google.Endpoint or gitee.endpoint.
 	Endpoint struct {
-		AuthURL     string `json:"authURL"     yaml:"authURL"`
-		TokenURL    string `json:"tokenURL"    yaml:"tokenURL"`
+		AuthURL     string `json:"authURL" yaml:"authURL"`
+		TokenURL    string `json:"tokenURL" yaml:"tokenURL"`
 		UserInfoURL string `json:"userInfoURL" yaml:"userInfoURL"`
 	} `json:"endpoint" yaml:"endpoint"`
 

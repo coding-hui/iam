@@ -87,6 +87,17 @@ feature:
 authentication:
   domain: wecoding.local
   jwtSecret: dfVpOK8LZeJLZHYmHdb1VdyRrACKpqoo
+  oauth:
+    issuer: iam-apiserver
+    accessTokenMaxAge: 2h
+    accessTokenInactivityTimeout: 2h
+    clients:
+    - name: iamctl
+      grantMethod: auto
+      redirectURIs:
+      - "urn:ietf:wg:oauth:2.0:oob"
+      accessTokenMaxAge: 2h
+      accessTokenInactivityTimeout: 2h
 
 # 邮件配置
 mail:

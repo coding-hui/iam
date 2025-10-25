@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<!--
+ Copyright (c) 2023 coding-hui. All rights reserved.
+ Use of this source code is governed by a MIT style
+ license that can be found in the LICENSE file.
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .code-display {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            letter-spacing: 2px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{.Title}}</h1>
+        <p>Please enter the user code to authorize the device:</p>
+        
+        <form id="authForm" method="POST">
+            <div class="form-group">
+                <label for="userCode">User Code:</label>
+                <input type="text" id="userCode" name="user_code" value="{{.UserCode}}" required>
+            </div>
+            
+            <button type="submit" class="btn">Authorize Device</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("authForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            const userCode = document.getElementById("userCode").value;
+            
+            fetch("/api/v1/device/authorize", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user_code: userCode,
+                    approved: true
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 0) {
+                    alert("Device authorized successfully!");
+                    window.close();
+                } else {
+                    alert("Authorization failed: " + data.message);
+                }
+            })
+            .catch(error => {
+                alert("Error: " + error.message);
+            });
+        });
+    </script>
+</body>
+</html>

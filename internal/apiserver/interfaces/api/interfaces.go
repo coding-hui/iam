@@ -43,6 +43,7 @@ func InitAPIBean(c config.Config) []interface{} {
 
 	// Authentication
 	RegisterAPI(NewAuthentication(c))
+	RegisterAPI(NewDeviceAuth(c))
 	RegisterAPI(NewUser())
 	RegisterAPI(NewResource())
 	RegisterAPI(NewRole())

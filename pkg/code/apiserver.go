@@ -170,3 +170,21 @@ const (
 	// ErrApiKeyGenerationFailed - 500: Failed to generate unique API Key after multiple attempts. Please try again.
 	ErrApiKeyGenerationFailed
 )
+
+// iam-apiserver: device authorization errors.
+const (
+	// ErrDeviceCodeInvalid - 400: Invalid device code.
+	ErrDeviceCodeInvalid int = iota + 110901
+
+	// ErrAuthorizationPending - 400: Authorization pending.
+	ErrAuthorizationPending
+
+	// ErrAuthorizationDenied - 400: Authorization denied by user.
+	ErrAuthorizationDenied
+
+	// ErrDeviceCodeExpired - 400: Device code has expired.
+	ErrDeviceCodeExpired
+
+	// ErrClientNotFound - 400: OAuth client not found.
+	ErrClientNotFound
+)

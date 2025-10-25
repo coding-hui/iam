@@ -17,6 +17,7 @@ import (
 	"github.com/coding-hui/iam/internal/iamctl/cmd/completion"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/info"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/jwt"
+	"github.com/coding-hui/iam/internal/iamctl/cmd/login"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/new"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/options"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/set"
@@ -92,6 +93,7 @@ func NewIAMCtlCommand(in io.Reader, out, err io.Writer) *cobra.Command {
 				info.NewCmdInfo(f, ioStreams),
 				color.NewCmdColor(f, ioStreams),
 				new.NewCmdNew(f, ioStreams),
+				login.NewCmdLogin(f, ioStreams),
 				jwt.NewCmdJWT(f, ioStreams),
 			},
 		},

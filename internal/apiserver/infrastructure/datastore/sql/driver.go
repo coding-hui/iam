@@ -94,6 +94,10 @@ func (m *Driver) ApiKeyRepository() repository.ApiKeyRepository {
 	return newApiKeyRepository(m.Client)
 }
 
+func (m *Driver) DeviceAuthRepository() repository.DeviceAuthRepository {
+	return newDeviceAuthRepository(m.Client.db)
+}
+
 func (m *Driver) Close() error {
 	db, err := m.Client.db.DB()
 	if err != nil {
