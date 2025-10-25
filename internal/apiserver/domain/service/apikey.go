@@ -111,11 +111,15 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 		ObjectMeta: metav1.ObjectMeta{
 			Name: req.Name,
 		},
-		Key:       key,
-		Secret:    encryptedSecret,
-		UserID:    user.GetInstanceID(),
-		ExpiresAt: &req.ExpiresAt,
-		Status:    model.ApiKeyStatusActive,
+		Key:    key,
+		Secret: encryptedSecret,
+		UserID: user.GetInstanceID(),
+		Status: model.ApiKeyStatusActive,
+	}
+
+	// Set expiration time if provided (non-zero time)
+	if !req.ExpiresAt.IsZero() {
+		apiKey.ExpiresAt = &req.ExpiresAt
 	}
 
 	// Save to database
@@ -152,7 +156,14 @@ func (s *apiKeyServiceImpl) UpdateApiKey(ctx context.Context, instanceId string,
 
 	// Update fields
 	apiKey.Name = req.Name
-	apiKey.ExpiresAt = &req.ExpiresAt
+
+	// Update expiration time if provided (non-zero time)
+	if !req.ExpiresAt.IsZero() {
+		apiKey.ExpiresAt = &req.ExpiresAt
+	} else {
+		// If ExpiresAt is zero, set it to nil to clear expiration
+		apiKey.ExpiresAt = nil
+	}
 
 	if req.Status != 0 {
 		apiKey.Status = model.ApiKeyStatus(req.Status)
