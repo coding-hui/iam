@@ -57,6 +57,21 @@ const (
 
 	// ErrTableNameEmpty - 500: Entity table name is empty.
 	ErrTableNameEmpty
+
+	// ErrDatabaseConnection - 500: Database connection error.
+	ErrDatabaseConnection
+
+	// ErrDatabaseCreate - 500: Database create operation error.
+	ErrDatabaseCreate
+
+	// ErrDatabaseUpdate - 500: Database update operation error.
+	ErrDatabaseUpdate
+
+	// ErrDatabaseDelete - 500: Database delete operation error.
+	ErrDatabaseDelete
+
+	// ErrDatabaseQuery - 500: Database query operation error.
+	ErrDatabaseQuery
 )
 
 // common: authorization and authentication errors.

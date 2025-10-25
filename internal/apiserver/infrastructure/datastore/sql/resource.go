@@ -55,7 +55,7 @@ func (r *resourceRepositoryImpl) Update(ctx context.Context, resource *model.Res
 	db := r.client.WithCtx(ctx)
 	err := db.Where("resource_id = ?", resource.ID).Delete(&model.Action{}).Error
 	if err != nil {
-		return errors.WithCode(code.ErrDatabase, "failed to delete resource actions")
+		return errors.WithCode(code.ErrDatabaseDelete, "Failed to delete resource actions: %s", err.Error())
 	}
 	err = db.Save(resource).Error
 	if err != nil {

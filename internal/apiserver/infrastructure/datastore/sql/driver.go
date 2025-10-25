@@ -101,7 +101,7 @@ func (m *Driver) DeviceAuthRepository() repository.DeviceAuthRepository {
 func (m *Driver) Close() error {
 	db, err := m.Client.db.DB()
 	if err != nil {
-		return errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return errors.WithCode(code.ErrDatabaseConnection, "Failed to get database connection: %s", err.Error())
 	}
 
 	return db.Close()

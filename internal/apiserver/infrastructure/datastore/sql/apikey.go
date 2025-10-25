@@ -31,7 +31,7 @@ func newApiKeyRepository(client *Client) repository.ApiKeyRepository {
 // Create creates a new API Key.
 func (r *apiKeyRepository) Create(ctx context.Context, apiKey *model.ApiKey, opts metav1.CreateOptions) (*model.ApiKey, error) {
 	if err := r.client.WithCtx(ctx).Create(apiKey).Error; err != nil {
-		return nil, errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return nil, errors.WithCode(code.ErrDatabaseCreate, "Failed to create API Key: %s", err.Error())
 	}
 
 	return apiKey, nil
@@ -40,7 +40,7 @@ func (r *apiKeyRepository) Create(ctx context.Context, apiKey *model.ApiKey, opt
 // Update updates an existing API Key.
 func (r *apiKeyRepository) Update(ctx context.Context, apiKey *model.ApiKey, opts metav1.UpdateOptions) error {
 	if err := r.client.WithCtx(ctx).Save(apiKey).Error; err != nil {
-		return errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return errors.WithCode(code.ErrDatabaseUpdate, "Failed to update API Key: %s", err.Error())
 	}
 
 	return nil
@@ -49,7 +49,7 @@ func (r *apiKeyRepository) Update(ctx context.Context, apiKey *model.ApiKey, opt
 // DeleteByInstanceId deletes an API Key by instance ID.
 func (r *apiKeyRepository) DeleteByInstanceId(ctx context.Context, instanceId string, opts metav1.DeleteOptions) error {
 	if err := r.client.WithCtx(ctx).Where("instance_id = ?", instanceId).Delete(&model.ApiKey{}).Error; err != nil {
-		return errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return errors.WithCode(code.ErrDatabaseDelete, "Failed to delete API Key: %s", err.Error())
 	}
 
 	return nil
@@ -58,7 +58,7 @@ func (r *apiKeyRepository) DeleteByInstanceId(ctx context.Context, instanceId st
 // BatchDelete deletes multiple API Keys by instance IDs.
 func (r *apiKeyRepository) BatchDelete(ctx context.Context, instanceIds []string, opts metav1.DeleteOptions) error {
 	if err := r.client.WithCtx(ctx).Where("instance_id IN ?", instanceIds).Delete(&model.ApiKey{}).Error; err != nil {
-		return errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return errors.WithCode(code.ErrDatabaseDelete, "Failed to delete API Keys: %s", err.Error())
 	}
 
 	return nil
@@ -71,7 +71,7 @@ func (r *apiKeyRepository) GetByInstanceId(ctx context.Context, instanceId strin
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrApiKeyNotFound, "API Key not found")
 		}
-		return nil, errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return nil, errors.WithCode(code.ErrDatabaseQuery, "Failed to query API Key: %s", err.Error())
 	}
 
 	return &apiKey, nil
@@ -84,7 +84,7 @@ func (r *apiKeyRepository) GetByKey(ctx context.Context, key string, opts metav1
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrApiKeyNotFound, "API Key not found")
 		}
-		return nil, errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return nil, errors.WithCode(code.ErrDatabaseQuery, "Failed to query API Key: %s", err.Error())
 	}
 
 	return &apiKey, nil
@@ -94,7 +94,7 @@ func (r *apiKeyRepository) GetByKey(ctx context.Context, key string, opts metav1
 func (r *apiKeyRepository) GetByUser(ctx context.Context, userId string, opts metav1.GetOptions) ([]model.ApiKey, error) {
 	var apiKeys []model.ApiKey
 	if err := r.client.WithCtx(ctx).Where("user_id = ?", userId).Find(&apiKeys).Error; err != nil {
-		return nil, errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return nil, errors.WithCode(code.ErrDatabaseQuery, "Failed to query user API Keys: %s", err.Error())
 	}
 
 	return apiKeys, nil
@@ -118,7 +118,7 @@ func (r *apiKeyRepository) List(ctx context.Context, opts v1.ListApiKeyOptions) 
 	db = db.Scopes(makeCondition(opts.ListOptions), paginate(opts.ListOptions))
 
 	if err := db.Order("created_at DESC").Find(&apiKeys).Error; err != nil {
-		return nil, errors.WithCode(code.ErrDatabase, "%s", err.Error())
+		return nil, errors.WithCode(code.ErrDatabaseQuery, "Failed to list API Keys: %s", err.Error())
 	}
 
 	return apiKeys, nil

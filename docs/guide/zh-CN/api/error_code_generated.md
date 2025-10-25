@@ -87,6 +87,11 @@ IAM 系统支持的错误码列表如下：
 | ErrIndexInvalid | 100106 | 500 | Entity index is invalid |
 | ErrEntityInvalid | 100107 | 500 | Entity is invalid |
 | ErrTableNameEmpty | 100108 | 500 | Entity table name is empty |
+| ErrDatabaseConnection | 100109 | 500 | Database connection error |
+| ErrDatabaseCreate | 100110 | 500 | Database create operation error |
+| ErrDatabaseUpdate | 100111 | 500 | Database update operation error |
+| ErrDatabaseDelete | 100112 | 500 | Database delete operation error |
+| ErrDatabaseQuery | 100113 | 500 | Database query operation error |
 | ErrEncrypt | 100201 | 401 | Error occurred while encrypting the user password |
 | ErrTokenInvalid | 100202 | 401 | Token invalid |
 | ErrSignatureInvalid | 100203 | 401 | Signature is invalid |

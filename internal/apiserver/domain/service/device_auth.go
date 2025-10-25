@@ -75,7 +75,7 @@ func (d *deviceAuthServiceImpl) CreateDeviceAuthorization(ctx context.Context, r
 	}
 
 	if err := d.Store.DeviceAuthRepository().Create(ctx, deviceAuth); err != nil {
-		return nil, errors.WithCode(code.ErrDatabase, "failed to create device authorization")
+		return nil, errors.WithCode(code.ErrDatabaseCreate, "Failed to create device authorization: %s", err.Error())
 	}
 
 	// Build verification URI using the insecure serving address
