@@ -21,7 +21,7 @@ fullnameOverride: ""
 ingress:
   enabled: true
   ingressClAssName: traefik
-  annotations: { }
+  annotations: {}
   #    nginx.ingress.kubernetes.io/auth-type: basic
   #    nginx.ingress.kubernetes.io/auth-secret: loki-distributed-basic-auth
   #    nginx.ingress.kubernetes.io/auth-secret-type: auth-map
@@ -74,9 +74,9 @@ apiServer:
   deploymentStrategy:
     type: RollingUpdate
   # -- The SecurityContext for ApiServer containers
-  podSecurityContext: { }
+  podSecurityContext: {}
   # -- The SecurityContext for ApiServer containers
-  containerSecurityContext: { }
+  containerSecurityContext: {}
   # -- Resource requests and limits for the ApiServer
   resources:
     requests:
@@ -89,13 +89,18 @@ apiServer:
   terminationGracePeriodSeconds: 30
   # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
   # @default -- Hard node and soft zone anti-affinity
-  affinity: { }
+  affinity: {}
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for ApiServer pods
-  nodeSelector: { }
+  nodeSelector: {}
   # -- Tolerations for ApiServer pods
-  tolerations: [ ]
+  tolerations: []
+  env:
+    - name: HTTP_PROXY
+      value: "http://192.168.1.4:7897"
+    - name: HTTPS_PROXY
+      value: "http://192.168.1.4:7897"
 
   # ApiServer service configuration
   service:
@@ -148,9 +153,9 @@ authzServer:
   deploymentStrategy:
     type: RollingUpdate
   # -- The SecurityContext for AuthzServer containers
-  podSecurityContext: { }
+  podSecurityContext: {}
   # -- The SecurityContext for AuthzServer containers
-  containerSecurityContext: { }
+  containerSecurityContext: {}
   # -- Resource requests and limits for the AuthzServer
   resources:
     requests:
@@ -163,13 +168,13 @@ authzServer:
   terminationGracePeriodSeconds: 30
   # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
   # @default -- Hard node and soft zone anti-affinity
-  affinity: { }
+  affinity: {}
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for AuthzServer pods
-  nodeSelector: { }
+  nodeSelector: {}
   # -- Tolerations for AuthzServer pods
-  tolerations: [ ]
+  tolerations: []
 
   # AuthzServer service configuration
   service:
@@ -243,13 +248,13 @@ console:
   terminationGracePeriodSeconds: 30
   # -- Affinity for ApiServer pods. Passed through `tpl` and, thus, to be configured as string
   # @default -- Hard node and soft zone anti-affinity
-  affinity: { }
+  affinity: {}
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for ApiServer pods
-  nodeSelector: { }
+  nodeSelector: {}
   # -- Tolerations for ApiServer pods
-  tolerations: [ ]
+  tolerations: []
   # ApiServer service configuration
   service:
     # -- Port of the ApiServer service
@@ -263,10 +268,10 @@ console:
     # -- Load balancer IPO address if service type is LoadBalancer
     loadBalancerIP: null
     # -- Load balancer allow traffic from CIDR list if service type is LoadBalancer
-    loadBalancerSourceRanges: [ ]
+    loadBalancerSourceRanges: []
     # -- Set appProtocol for the service
     appProtocol: null
     # -- Annotations for the ApiServer service
-    annotations: { }
+    annotations: {}
     # -- Labels for ApiServer service
-    labels: { }
+    labels: {}

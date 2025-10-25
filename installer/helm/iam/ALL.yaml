@@ -64,7 +64,7 @@ data:
       host: mysql.infra:3306
       username: root
       password: WeCoding@2023
-      database: iam_1
+      database: iam
       max-idle-connections: 100
       max-open-connections: 100
       max-connection-life-time: 10s
@@ -367,6 +367,11 @@ spec:
         - name: apiserver
           image: docker.cnb.cool/micromoving/iam/iam-apiserver:latest
           imagePullPolicy: Always
+          env:
+            - name: HTTP_PROXY
+              value: http://192.168.1.4:7897
+            - name: HTTPS_PROXY
+              value: http://192.168.1.4:7897
           ports:
             - name: http
               containerPort: 8000
@@ -591,7 +596,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: main
-          image: "docker.cnb.cool/micromoving/iam/iam-apiserver:latest"
+          image: docker.cnb.cool/micromoving/iam/iam-apiserver:latest
           imagePullPolicy: Always
           command: [ "/gen-k8s-secret.sh", "--service", "iam-apiserver", "--namespace",
                      "iam-system", "--secret", "iam" ]

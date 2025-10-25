@@ -40,6 +40,16 @@ spec:
         - name: apiserver
           image: {{ include "iam.apiServerImage" . }}
           imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
+          {{- if or .Values.apiServer.env .Values.apiServer.envFrom }}
+          {{- with .Values.apiServer.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.apiServer.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.apiServer.service.ports.http }}
