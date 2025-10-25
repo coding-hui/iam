@@ -16,7 +16,7 @@ import (
 
 func TestApiKeyService_CreateApiKey(t *testing.T) {
 	// Test request structure
-	expiresAt := time.Now().Add(24 * time.Hour)
+	expiresAt := time.Now().Add(24 * time.Hour).Format(time.RFC3339)
 	req := v1.CreateApiKeyRequest{
 		Name:      "Test API Key",
 		ExpiresAt: expiresAt,

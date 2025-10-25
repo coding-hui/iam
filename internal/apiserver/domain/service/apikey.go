@@ -9,6 +9,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -117,9 +118,13 @@ func (s *apiKeyServiceImpl) CreateApiKey(ctx context.Context, req v1.CreateApiKe
 		Status: model.ApiKeyStatusActive,
 	}
 
-	// Set expiration time if provided (non-zero time)
-	if !req.ExpiresAt.IsZero() {
-		apiKey.ExpiresAt = &req.ExpiresAt
+	// Set expiration time if provided
+	if req.ExpiresAt != "" {
+		expiresAt, err := time.Parse(time.RFC3339, req.ExpiresAt)
+		if err != nil {
+			return nil, errors.WithCode(code.ErrValidation, "Invalid ExpiresAt format")
+		}
+		apiKey.ExpiresAt = &expiresAt
 	}
 
 	// Save to database
@@ -157,11 +162,15 @@ func (s *apiKeyServiceImpl) UpdateApiKey(ctx context.Context, instanceId string,
 	// Update fields
 	apiKey.Name = req.Name
 
-	// Update expiration time if provided (non-zero time)
-	if !req.ExpiresAt.IsZero() {
-		apiKey.ExpiresAt = &req.ExpiresAt
+	// Update expiration time if provided
+	if req.ExpiresAt != "" {
+		expiresAt, err := time.Parse(time.RFC3339, req.ExpiresAt)
+		if err != nil {
+			return nil, errors.WithCode(code.ErrValidation, "Invalid ExpiresAt format")
+		}
+		apiKey.ExpiresAt = &expiresAt
 	} else {
-		// If ExpiresAt is zero, set it to nil to clear expiration
+		// If ExpiresAt is empty, set it to nil to clear expiration
 		apiKey.ExpiresAt = nil
 	}
 

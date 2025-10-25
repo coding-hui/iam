@@ -5,6 +5,8 @@
 package v1
 
 import (
+	"time"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1"
@@ -183,13 +185,13 @@ func ConvertApiKeyModelToBase(apiKey *model.ApiKey) *v1.ApiKeyBase {
 		UsageCount: apiKey.UsageCount,
 	}
 
-	// Convert *time.Time to time.Time
+	// Convert *time.Time to string format for DTO
 	if apiKey.ExpiresAt != nil {
-		base.ExpiresAt = *apiKey.ExpiresAt
+		base.ExpiresAt = apiKey.ExpiresAt.Format(time.RFC3339)
 	}
 
 	if apiKey.LastUsedAt != nil {
-		base.LastUsedAt = *apiKey.LastUsedAt
+		base.LastUsedAt = apiKey.LastUsedAt.Format(time.RFC3339)
 	}
 
 	return base

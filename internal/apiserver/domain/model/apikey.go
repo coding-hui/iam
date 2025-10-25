@@ -44,13 +44,13 @@ type ApiKey struct {
 	UserID string `json:"userId" gorm:"column:user_id;type:varchar(64);not null;index"`
 
 	// ExpiresAt is the expiration time of the API Key.
-	ExpiresAt *time.Time `json:"expiresAt,omitempty" gorm:"column:expires_at"`
+	ExpiresAt *time.Time `json:"expiresAt,omitempty" gorm:"column:expires_at;type:datetime"`
 
 	// Status indicates the current status of the API Key.
 	Status ApiKeyStatus `json:"status" gorm:"column:status;type:tinyint;default:1"`
 
 	// LastUsedAt is the timestamp when this API Key was last used.
-	LastUsedAt *time.Time `json:"lastUsedAt,omitempty" gorm:"column:last_used_at"`
+	LastUsedAt *time.Time `json:"lastUsedAt,omitempty" gorm:"column:last_used_at;type:datetime"`
 
 	// UsageCount tracks how many times this API Key has been used.
 	UsageCount int64 `json:"usageCount" gorm:"column:usage_count;default:0"`
@@ -80,9 +80,13 @@ func (a *ApiKey) IsActive() bool {
 	return true
 }
 
-// IsExpired return true if the API Key isi expired
+// IsExpired return true if the API Key is expired
 func (a *ApiKey) IsExpired() bool {
-	return a.ExpiresAt != nil && a.ExpiresAt.Before(time.Now())
+	if a.ExpiresAt == nil {
+		return false
+	}
+
+	return a.ExpiresAt.Before(time.Now())
 }
 
 // MarkUsed updates the usage statistics.
