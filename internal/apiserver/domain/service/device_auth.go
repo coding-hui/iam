@@ -35,7 +35,7 @@ type DeviceAuthService interface {
 type deviceAuthServiceImpl struct {
 	Store    repository.Factory
 	cfg      config.Config
-	TokenSvc TokenService `inject:"tokenService"`
+	TokenSvc TokenService `inject:""`
 }
 
 // NewDeviceAuthService creates a new device authorization service.
