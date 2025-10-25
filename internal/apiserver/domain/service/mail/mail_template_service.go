@@ -22,14 +22,19 @@ type TemplateService interface {
 	UpdateMailTemplates(ctx context.Context, templates *v1.MailTemplate) error
 	// PreviewMailTemplate preview mail template with sample data
 	PreviewMailTemplate(ctx context.Context, req *v1.PreviewMailTemplateRequest) (string, error)
+	// SendTestEmail send test email with specified template
+	SendTestEmail(ctx context.Context, req *v1.TestEmailRequest) error
 }
 
 type templateServiceImpl struct {
+	mailService Service
 }
 
 // NewTemplateService creates a new mail template service
-func NewTemplateService() TemplateService {
-	return &templateServiceImpl{}
+func NewTemplateService(mailService Service) TemplateService {
+	return &templateServiceImpl{
+		mailService: mailService,
+	}
 }
 
 // GetMailTemplates get current mail templates
@@ -101,12 +106,23 @@ func (m *templateServiceImpl) PreviewMailTemplate(ctx context.Context, req *v1.P
 	}
 }
 
-// getStringFromMap safely gets string value from map with default fallback
-func getStringFromMap(data map[string]interface{}, key string, defaultValue string) string {
-	if val, ok := data[key]; ok {
-		if str, ok := val.(string); ok {
-			return str
-		}
+// SendTestEmail send test email with specified template
+func (m *templateServiceImpl) SendTestEmail(ctx context.Context, req *v1.TestEmailRequest) error {
+	// Validate request
+	if err := req.Validate(); err != nil {
+		return errors.WithMessage(err, "invalid test email request")
 	}
-	return defaultValue
+
+	// Use the injected mail service
+	if m.mailService == nil {
+		return errors.New("mail service not available")
+	}
+
+	// Send test email
+	if err := m.mailService.SendTestEmail(req.Recipient, req.TemplateType, req.TemplateData); err != nil {
+		return errors.WithMessage(err, "failed to send test email")
+	}
+
+	log.Infof("Test email sent successfully to %s using %s template", req.Recipient, req.TemplateType)
+	return nil
 }

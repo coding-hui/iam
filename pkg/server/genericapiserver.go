@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -89,7 +90,12 @@ func (s *GenericAPIServer) Setup() {
 		log.Infof("%-6s %-s --> %s (%d handlers)", httpMethod, absolutePath, handlerName, nuHandlers)
 	}
 	if s.staticLocations != "" {
-		s.LoadHTMLGlob(s.staticLocations)
+		// Only load HTML templates if the static locations directory exists
+		if _, err := os.Stat(s.staticLocations); err == nil {
+			s.LoadHTMLGlob(s.staticLocations)
+		} else {
+			log.Warnf("Static locations directory %s does not exist, skipping HTML template loading", s.staticLocations)
+		}
 	}
 }
 

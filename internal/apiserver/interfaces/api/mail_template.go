@@ -30,6 +30,7 @@ func (m *mailTemplate) RegisterApiGroup(g *gin.Engine) {
 		apiv1.GET("", m.getMailTemplates)
 		apiv1.PUT("", m.updateMailTemplates)
 		apiv1.POST("/preview", m.previewMailTemplate)
+		apiv1.POST("/test", m.sendTestEmail)
 	}
 }
 
@@ -115,5 +116,39 @@ func (m *mailTemplate) previewMailTemplate(c *gin.Context) {
 
 	api.OkWithData(v1.PreviewMailTemplateResponse{
 		Data: result,
+	}, c)
+}
+
+//	@Tags			MailTemplates
+//	@Summary		SendTestEmail
+//	@Description	Send test email with specified template
+//	@Accept			json
+//	@Produce		json
+//	@Param			data	body		v1.TestEmailRequest						true	"test email request"
+//	@Success		200		{object}	api.Response{data=v1.TestEmailResponse}	"test email result"
+//	@Router			/api/v1/mail-templates/test [post]
+//
+// sendTestEmail send test email with specified template
+func (m *mailTemplate) sendTestEmail(c *gin.Context) {
+	testReq := v1.TestEmailRequest{}
+	if err := c.ShouldBindJSON(&testReq); err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrBind, "%s", err.Error()), c)
+		return
+	}
+
+	if err := testReq.Validate(); err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", err.Error()), c)
+		return
+	}
+
+	if err := m.MailTemplateService.SendTestEmail(c.Request.Context(), &testReq); err != nil {
+		api.FailWithErrCode(errors.WithCode(code.ErrUnknown, "%s", err.Error()), c)
+		return
+	}
+
+	api.OkWithData(v1.TestEmailResponse{
+		Message:      "Test email sent successfully",
+		Recipient:    testReq.Recipient,
+		TemplateType: testReq.TemplateType,
 	}, c)
 }

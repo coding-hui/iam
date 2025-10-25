@@ -29,7 +29,7 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 	appService := NewApplicationService(c)
 	apiKeyService := NewApiKeyService()
 	mailService := mail.NewServiceWithConfig(c)
-	mailTemplateService := mail.NewTemplateService()
+	mailTemplateService := mail.NewTemplateService(mailService)
 	deviceAuthService := NewDeviceAuthService(c)
 
 	needInitData = []DataInit{

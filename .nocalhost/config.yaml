@@ -9,12 +9,19 @@ containers:
     hub: null
     dev:
       gitUrl: ""
-      image: "devops-wecoding-docker.pkg.coding.net/wecoding/public/nocalhost-dev-golang:latest"
-      shell: "zsh"
+      sidecarImage: "bigbird0517/nocalhost-sidecar-arm64:v4"
+      shell: "bash"
+      image: "docker.cnb.cool/micromoving/iam/nocalhost-go:1.24.9"
       workDir: "/opt/iam"
       storageClass: ""
-      resources: null
-      persistentVolumeDirs: [ ]
+      resources:
+        requests:
+          memory: "2Gi"
+          cpu: "2"
+        limits:
+          memory: "4Gi"
+          cpu: "4"
+      persistentVolumeDirs: []
       command:
         build: [ "make", "build BINS=iam-apiserver" ]
         run: [ "make", "build BINS=iam-apiserver", "&&", "./_output/bin/iam-apiserver", "-c", "/etc/iam/iam-apiserver.yaml" ]
@@ -34,5 +41,7 @@ containers:
           - ".github/"
           - "./docs/"
           - "./test/"
-      env: [ ]
-      portForward: [ ]
+
+      env: []
+      portForward:
+        - 9000:8000

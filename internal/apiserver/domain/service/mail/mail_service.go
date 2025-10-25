@@ -16,6 +16,7 @@ import (
 	"github.com/coding-hui/iam/pkg/log"
 	pkgoptions "github.com/coding-hui/iam/pkg/options"
 
+	metav1 "github.com/coding-hui/common/meta/v1"
 	"github.com/spf13/viper"
 )
 
@@ -29,6 +30,7 @@ var defaultPasswordResetEmailTemplate string
 type Service interface {
 	SendWelcomeEmail(user *model.User, password string) error
 	SendPasswordResetEmail(user *model.User, resetToken string) error
+	SendTestEmail(recipient, templateType string, templateData interface{}) error
 }
 
 // TemplateManager defines the template manager interface
@@ -287,6 +289,56 @@ func (m *mailServiceImpl) sendEmail(to, subject, body string) error {
 
 	log.Infof("Successfully sent welcome email to %s", to)
 	return nil
+}
+
+// SendTestEmail sends a test email using the specified template
+func (m *mailServiceImpl) SendTestEmail(recipient, templateType string, templateData interface{}) error {
+	if recipient == "" {
+		return fmt.Errorf("recipient email is required")
+	}
+
+	// Extract template data based on template type
+	dataMap, ok := templateData.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("invalid template data format")
+	}
+
+	switch templateType {
+	case "welcome":
+		// Create mock user for welcome email
+		mockUser := &model.User{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: getStringFromMap(dataMap, "username", "testuser"),
+			},
+			Email: recipient,
+		}
+		password := getStringFromMap(dataMap, "password", "initialpassword")
+		return m.SendWelcomeEmail(mockUser, password)
+
+	case "password_reset":
+		// Create mock user for password reset email
+		mockUser := &model.User{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: getStringFromMap(dataMap, "username", "testuser"),
+			},
+			Email: recipient,
+		}
+		resetToken := getStringFromMap(dataMap, "resetToken", "test-reset-token")
+		return m.SendPasswordResetEmail(mockUser, resetToken)
+
+	default:
+		return fmt.Errorf("unsupported template type: %s", templateType)
+	}
+}
+
+// getStringFromMap safely gets string value from map with default fallback
+func getStringFromMap(data map[string]interface{}, key string, defaultValue string) string {
+	if val, ok := data[key]; ok {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return defaultValue
 }
 
 // convertTemplateConfig converts pkg/options TemplateConfig to domain TemplateConfig
