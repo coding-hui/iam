@@ -64,13 +64,20 @@ spec:
             httpGet:
               path: /healthz
               port: {{ .Values.apiServer.service.ports.http }}
-            initialDelaySeconds: 15
-            timeoutSeconds: 1
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+            successThreshold: 2
           livenessProbe:
             httpGet:
               path: /healthz
               port: {{ .Values.apiServer.service.ports.http }}
             initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
           securityContext:
             {{- toYaml .Values.apiServer.containerSecurityContext | nindent 12 }}
           resources:

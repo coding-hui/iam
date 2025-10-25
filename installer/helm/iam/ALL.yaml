@@ -386,13 +386,20 @@ spec:
             httpGet:
               path: /healthz
               port: 8000
-            initialDelaySeconds: 15
-            timeoutSeconds: 1
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+            successThreshold: 2
           livenessProbe:
             httpGet:
               path: /healthz
               port: 8000
             initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
           securityContext:
             {}
           resources:
@@ -464,17 +471,33 @@ spec:
             - name: https
               containerPort: 9443
               protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8010
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+            successThreshold: 1
           readinessProbe:
             httpGet:
               path: /healthz
               port: 8010
-            initialDelaySeconds: 15
-            timeoutSeconds: 1
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+            successThreshold: 2
           livenessProbe:
             httpGet:
               path: /healthz
               port: 8010
             initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
           securityContext:
             {}
           resources:
