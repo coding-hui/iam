@@ -28,21 +28,21 @@ mysql:
   host: mysql.infra:3306
   username: root
   password: WeCoding@2023
-  database: iam_1
+  database: iam
   max-idle-connections: 100
   max-open-connections: 100
   max-connection-life-time: 10s
   log-level: 4 # GORM log level, 1: silent, 2:error, 3:warn, 4:info
 
 redis:
-  host: redis-master.infra
+  host: redis.infra
   port: 6379
   password:
 
 cache:
   type: redis
   options:
-    host: redis-master.infra
+    host: redis.infra
     port: 6379
     password:
 

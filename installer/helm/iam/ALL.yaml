@@ -71,14 +71,14 @@ data:
       log-level: 4 # GORM log level, 1: silent, 2:error, 3:warn, 4:info
     
     redis:
-      host: redis-master.infra
+      host: redis.infra
       port: 6379
       password:
     
     cache:
       type: redis
       options:
-        host: redis-master.infra
+        host: redis.infra
         port: 6379
         password:
     
@@ -142,7 +142,7 @@ data:
         pair-name: tls
     
     redis:
-      host: redis-master.infra
+      host: redis.infra
       port: 6379
       password:
     
