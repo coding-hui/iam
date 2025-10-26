@@ -9,7 +9,6 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	"github.com/coding-hui/iam/internal/apiserver/domain/service/mail"
 	"github.com/coding-hui/iam/internal/apiserver/event"
 	assembler "github.com/coding-hui/iam/internal/apiserver/interfaces/api/assembler/v1"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
@@ -49,7 +48,6 @@ type UserService interface {
 type userServiceImpl struct {
 	Store       repository.Factory `inject:"repository"`
 	RoleService RoleService        `inject:""`
-	MailService mail.Service       `inject:""`
 	EventBus    event.Bus          `inject:"eventBus"`
 }
 
@@ -139,7 +137,7 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 			GetByName(ctx, model.DefaultOrganization, metav1.GetOptions{})
 		if getDefaultOrgErr != nil {
 			log.Errorf(
-				"Failed to get the default org [%s]: %w",
+				"Failed to get the default org [%s]: %v",
 				model.DefaultApplication,
 				getDefaultOrgErr,
 			)
@@ -150,21 +148,13 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	for _, dept := range req.DepartmentIds {
 		deptMembers = append(deptMembers, &model.DepartmentMember{
 			DepartmentID: dept,
-			MemberID:     user.GetInstanceID(),
+			MemberID:     createUser.GetInstanceID(),
 		})
 	}
 
 	orgAssociationErr := u.Store.OrganizationRepository().AddDepartmentMembers(ctx, deptMembers)
 	if orgAssociationErr != nil {
-		log.Errorf("Failed to add user to the department: %w", orgAssociationErr)
-	}
-
-	// Send welcome email
-	if u.MailService != nil {
-		err := u.MailService.SendWelcomeEmail(createUser, req.Password)
-		if err != nil {
-			log.Warnf("Failed to send welcome email to user %s: %v", createUser.Name, err)
-		}
+		log.Errorf("Failed to add user to the department: %v", orgAssociationErr)
 	}
 
 	return &v1.CreateUserResponse{

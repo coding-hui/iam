@@ -319,10 +319,10 @@ func convertCategoryModelToBase(c *model.EmailTemplateCategory) *v1.EmailTemplat
 	}
 }
 
-//go:embed mail/templates/welcome_email.html
+//go:embed emailtemplates/welcome_email.html
 var initWelcomeEmailTemplate string
 
-//go:embed mail/templates/password_reset_email.html
+//go:embed emailtemplates/password_reset_email.html
 var initPasswordResetEmailTemplate string
 
 // Init initializes default email template categories and templates.

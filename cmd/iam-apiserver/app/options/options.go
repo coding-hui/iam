@@ -28,7 +28,6 @@ type Options struct {
 	FeatureOptions          *options.FeatureOptions         `json:"feature"        mapstructure:"feature"`
 	AuthenticationOptions   *options.AuthenticationOptions  `json:"authentication" mapstructure:"authentication"`
 	CacheOptions            *cache.Options                  `json:"cache"          mapstructure:"cache"`
-	MailOptions             *options.MailOptions            `json:"mail"           mapstructure:"mail"`
 }
 
 // ApplyTo applies the run options to the method receiver and returns self.
@@ -47,7 +46,6 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 	o.SecureServing.AddFlags(fss.FlagSet("secure"))
 	o.LogOptions.AddFlags(fss.FlagSet("log"))
 	o.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"))
-	o.MailOptions.AddFlags(fss.FlagSet("mail"))
 
 	return fss
 }
@@ -84,7 +82,6 @@ func NewOptions() *Options {
 		FeatureOptions:          options.NewFeatureOptions(),
 		AuthenticationOptions:   options.NewAuthenticationOptions(),
 		CacheOptions:            cache.NewCacheOptions(),
-		MailOptions:             options.NewMailOptions(),
 	}
 
 	return &o

@@ -65,9 +65,6 @@ func InitAPIBean(c config.Config) []interface{} {
 	// apps
 	RegisterAPI(NewApplication())
 
-	// mail templates
-	RegisterAPI(NewMailTemplate())
-
 	// email template management
 	RegisterAPI(NewEmailTemplate())
 

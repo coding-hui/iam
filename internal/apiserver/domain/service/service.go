@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
-	"github.com/coding-hui/iam/internal/apiserver/domain/service/mail"
 	"github.com/coding-hui/iam/internal/pkg/token"
 )
 
@@ -28,8 +27,6 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 	providerService := NewIdentityProviderService(c)
 	appService := NewApplicationService(c)
 	apiKeyService := NewApiKeyService()
-	mailService := mail.NewServiceWithConfig(c)
-	mailTemplateService := mail.NewTemplateService(mailService)
 	emailTemplateService := NewEmailTemplateService()
 	deviceAuthService := NewDeviceAuthService(c)
 
@@ -43,7 +40,7 @@ func InitServiceBean(c config.Config, issuer token.Issuer) []interface{} {
 		organizationService, userService, authenticationService,
 		resourceService, roleService, policyService,
 		tokenService, providerService, appService,
-		apiKeyService, mailService, mailTemplateService, emailTemplateService, deviceAuthService,
+		apiKeyService, emailTemplateService, deviceAuthService,
 	}
 }
 

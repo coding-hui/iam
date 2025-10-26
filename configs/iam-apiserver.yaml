@@ -99,15 +99,3 @@ authentication:
       accessTokenMaxAge: 2h
       accessTokenInactivityTimeout: 2h
 
-# 邮件配置
-mail:
-  enabled: false # 是否启用邮件服务
-  host: smtp.example.com # SMTP服务器地址
-  port: 587 # SMTP端口
-  username: username@example.com # SMTP用户名
-  password: your-smtp-password # SMTP密码
-  from: no-reply@example.com # 发件人邮箱
-  fromName: WeCoding IAM System # 发件人名称
-  templates: # 邮件模板配置
-    welcomeEmailTemplate: | # 自定义欢迎邮件模板，留空使用默认模板
-    passwordResetEmailTemplate: | # 自定义密码重置邮件模板，留空使用默认模板

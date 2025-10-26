@@ -16,7 +16,6 @@ func (o *Options) Validate() []error {
 	errs = append(errs, o.RedisOptions.Validate()...)
 	errs = append(errs, o.FeatureOptions.Validate()...)
 	errs = append(errs, o.AuthenticationOptions.Validate()...)
-	errs = append(errs, o.MailOptions.Validate()...)
 
 	return errs
 }
