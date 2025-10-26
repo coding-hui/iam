@@ -6,7 +6,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/lib/pq"
@@ -51,12 +50,6 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 		return errors.WithMessagef(err, "Failed to get %s role info.", v1.PlatformAdmin.String())
 	}
 
-	// Initialize system built-in resources
-	if err := p.initSystemResources(ctx); err != nil {
-		log.Warnf("Failed to initialize system resources: %v", err)
-		return err
-	}
-
 	createReq := v1.CreatePolicyRequest{
 		Name:        DefaultAdmin,
 		Subjects:    []string{platformRole.InstanceID},
@@ -81,65 +74,6 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 	}
 	log.Info("initialize system default policies done")
 
-	return nil
-}
-
-// initSystemResources initializes all system built-in API resources
-func (p *policyServiceImpl) initSystemResources(ctx context.Context) error {
-	// Load statically configured API resources from model domain
-	resources := model.SystemBuiltInResources()
-
-	// Create resources if they don't exist
-	for _, resource := range resources {
-		if err := p.createSystemResource(ctx, resource.Name, resource.Description, resource.Actions, resource.Api); err != nil {
-			log.Warnf("Failed to create system resource %s: %v", resource.Name, err)
-			// Continue with other resources even if one fails
-		}
-	}
-
-	log.Info("initialize system built-in API resources done")
-	return nil
-}
-
-// createSystemResource creates a system resource with specified actions
-func (p *policyServiceImpl) createSystemResource(ctx context.Context, resourceName, description string, actions []string, apiPath string) error {
-	// Check if resource already exists
-	_, err := p.Store.ResourceRepository().GetByName(ctx, resourceName, metav1.GetOptions{})
-	if err == nil {
-		// Resource already exists, skip creation
-		return nil
-	}
-	if !errors.IsCode(err, code.ErrResourceNotFound) {
-		return err
-	}
-
-	// Convert string actions to Action models
-	actionModels := make([]model.Action, 0, len(actions))
-	for _, action := range actions {
-		actionModels = append(actionModels, model.Action{
-			Name:        fmt.Sprintf("%s:%s", resourceName, action),
-			Description: fmt.Sprintf("%s operation for %s resource", action, resourceName),
-		})
-	}
-
-	// Create the resource
-	resource := &model.Resource{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: resourceName,
-		},
-		Type:        string(v1.API),
-		Api:         apiPath,
-		Method:      "ALL",
-		IsDefault:   true,
-		Description: description,
-		Actions:     actionModels,
-	}
-
-	if err := p.Store.ResourceRepository().Create(ctx, resource, metav1.CreateOptions{}); err != nil {
-		return errors.WithMessagef(err, "Failed to create system resource %s", resourceName)
-	}
-
-	log.Infof("Created system resource: %s with actions: %v", resourceName, actions)
 	return nil
 }
 

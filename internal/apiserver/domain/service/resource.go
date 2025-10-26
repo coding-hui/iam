@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"
@@ -41,8 +42,69 @@ func NewResourceService() ResourceService {
 
 // Init initialize resource data.
 func (r *resourceServiceImpl) Init(ctx context.Context) error {
-	log.Info("initialize system default api resource done")
+	if err := r.initSystemResources(ctx); err != nil {
+		log.Warnf("Failed to initialize system resources: %v", err)
+		return err
+	}
+	return nil
+}
 
+// initSystemResources initializes all system built-in API resources
+func (r *resourceServiceImpl) initSystemResources(ctx context.Context) error {
+	// Load statically configured API resources from model domain
+	resources := model.SystemBuiltInResources()
+
+	// Create resources if they don't exist
+	for _, resource := range resources {
+		if err := r.createSystemResource(ctx, resource.Name, resource.Description, resource.Actions, resource.Api); err != nil {
+			log.Warnf("Failed to create system resource %s: %v", resource.Name, err)
+			// Continue with other resources even if one fails
+		}
+	}
+
+	log.Info("initialize system built-in API resources done")
+	return nil
+}
+
+// createSystemResource creates a system resource with specified actions
+func (r *resourceServiceImpl) createSystemResource(ctx context.Context, resourceName, description string, actions []string, apiPath string) error {
+	// Check if resource already exists
+	_, err := r.Store.ResourceRepository().GetByName(ctx, resourceName, metav1.GetOptions{})
+	if err == nil {
+		// Resource already exists, skip creation
+		return nil
+	}
+	if !errors.IsCode(err, code.ErrResourceNotFound) {
+		return err
+	}
+
+	// Convert string actions to Action models
+	actionModels := make([]model.Action, 0, len(actions))
+	for _, action := range actions {
+		actionModels = append(actionModels, model.Action{
+			Name:        fmt.Sprintf("%s:%s", resourceName, action),
+			Description: fmt.Sprintf("%s operation for %s resource", action, resourceName),
+		})
+	}
+
+	// Create the resource
+	resource := &model.Resource{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: resourceName,
+		},
+		Type:        string(v1.API),
+		Api:         apiPath,
+		Method:      "ALL",
+		IsDefault:   true,
+		Description: description,
+		Actions:     actionModels,
+	}
+
+	if err := r.Store.ResourceRepository().Create(ctx, resource, metav1.CreateOptions{}); err != nil {
+		return errors.WithMessagef(err, "Failed to create system resource %s", resourceName)
+	}
+
+	log.Infof("Created system resource: %s with actions: %v", resourceName, actions)
 	return nil
 }
 
