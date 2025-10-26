@@ -62,3 +62,29 @@ type Action struct {
 func (a *Action) TableName() string {
 	return TableNamePrefix + "resource_actions"
 }
+
+// BuiltInResourceSpec defines a system built-in API resource and its actions.
+type BuiltInResourceSpec struct {
+	Name        string
+	Description string
+	Actions     []string
+	Api         string
+}
+
+// SystemBuiltInResources returns statically configured system built-in API resources.
+func SystemBuiltInResources() []BuiltInResourceSpec {
+	return []BuiltInResourceSpec{
+		{Name: "users", Description: "System built-in users management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/users"},
+		{Name: "roles", Description: "System built-in roles management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/roles"},
+		{Name: "resources", Description: "System built-in resources management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/resources"},
+		{Name: "policies", Description: "System built-in policies management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/policies"},
+		{Name: "organizations", Description: "System built-in organizations management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/organizations"},
+		{Name: "departments", Description: "System built-in departments management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/departments"},
+		{Name: "applications", Description: "System built-in applications management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/applications"},
+		{Name: "identity_providers", Description: "System built-in identity_providers management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/identity_providers"},
+		{Name: "apikeys", Description: "System built-in apikeys management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/apikeys"},
+		{Name: "mail-templates", Description: "System built-in mail-templates management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/mail-templates"},
+		{Name: "email-templates", Description: "System built-in email-templates management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/email-templates"},
+		{Name: "email-template-categories", Description: "System built-in email-template-categories management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/email-template-categories"},
+	}
+}
