@@ -72,6 +72,9 @@ IAM 系统支持的错误码列表如下：
 | ErrAuthorizationDenied | 110903 | 400 | Authorization denied by user |
 | ErrDeviceCodeExpired | 110904 | 400 | Device code has expired |
 | ErrClientNotFound | 110905 | 400 | OAuth client not found |
+| ErrCannotDeleteSystemEmailTemplate | 111001 | 403 | Cannot delete system email template |
+| ErrCannotDeleteDefaultEmailTemplate | 111002 | 403 | Cannot delete default email template |
+| ErrCannotDeleteSystemEmailTemplateCategory | 111003 | 403 | Cannot delete system email template category |
 | ErrSuccess | 100001 | 200 | OK |
 | ErrUnknown | 100002 | 500 | Internal server error |
 | ErrBind | 100003 | 400 | Error occurred while binding the request body to the struct |

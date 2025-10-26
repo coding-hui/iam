@@ -98,6 +98,14 @@ func (m *Driver) DeviceAuthRepository() repository.DeviceAuthRepository {
 	return newDeviceAuthRepository(m.Client.db)
 }
 
+func (m *Driver) EmailTemplateRepository() repository.EmailTemplateRepository {
+	return newEmailTemplateRepository(m.Client)
+}
+
+func (m *Driver) EmailTemplateCategoryRepository() repository.EmailTemplateCategoryRepository {
+	return newEmailTemplateCategoryRepository(m.Client)
+}
+
 func (m *Driver) Close() error {
 	db, err := m.Client.db.DB()
 	if err != nil {

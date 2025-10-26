@@ -103,7 +103,7 @@ func (m *mailTemplate) previewMailTemplate(c *gin.Context) {
 		return
 	}
 
-	if err := previewReq.Validate(); err != nil {
+	if err = previewReq.Validate(); err != nil {
 		api.FailWithErrCode(errors.WithCode(code.ErrValidation, "%s", err.Error()), c)
 		return
 	}

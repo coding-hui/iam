@@ -188,3 +188,15 @@ const (
 	// ErrClientNotFound - 400: OAuth client not found.
 	ErrClientNotFound
 )
+
+// iam-apiserver: email template errors.
+const (
+	// ErrCannotDeleteSystemEmailTemplate - 403: Cannot delete system email template.
+	ErrCannotDeleteSystemEmailTemplate int = iota + 111001
+
+	// ErrCannotDeleteDefaultEmailTemplate - 403: Cannot delete default email template.
+	ErrCannotDeleteDefaultEmailTemplate
+
+	// ErrCannotDeleteSystemEmailTemplateCategory - 403: Cannot delete system email template category.
+	ErrCannotDeleteSystemEmailTemplateCategory
+)

@@ -41,7 +41,7 @@ containers:
           - ".github/"
           - "./docs/"
           - "./test/"
-
+          - "./web/"
       env: []
       portForward:
         - 9000:8000

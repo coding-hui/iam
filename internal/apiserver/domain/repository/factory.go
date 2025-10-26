@@ -19,6 +19,8 @@ type Factory interface {
 	ApplicationRepository() ApplicationRepository
 	ApiKeyRepository() ApiKeyRepository
 	DeviceAuthRepository() DeviceAuthRepository
+	EmailTemplateRepository() EmailTemplateRepository
+	EmailTemplateCategoryRepository() EmailTemplateCategoryRepository
 	Close() error
 }
 
