@@ -21,6 +21,8 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
+const AllResourceReadonlyPolicyName string = "AllResourceReadonly"
+
 // PolicyService Policy rule manage api.
 type PolicyService interface {
 	CreatePolicy(ctx context.Context, req v1.CreatePolicyRequest) error
@@ -51,7 +53,7 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 	}
 
 	createReq := v1.CreatePolicyRequest{
-		Name:        DefaultAdmin,
+		Name:        v1.DefaultAdminPolicyName,
 		Subjects:    []string{platformRole.InstanceID},
 		Type:        string(v1.SystemBuildInPolicy),
 		Owner:       DefaultAdmin,
@@ -67,11 +69,41 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 	}
 	_, err = p.Store.PolicyRepository().GetByName(ctx, createReq.Name, metav1.GetOptions{})
 	if err != nil && errors.IsCode(err, code.ErrPolicyNotFound) {
-		if err := p.CreatePolicy(ctx, createReq); err != nil {
+		if createErr := p.CreatePolicy(ctx, createReq); createErr != nil {
 			log.Warnf("Failed to create admin policy.")
 			return err
 		}
 	}
+
+	// initialize default read-only policy assigned to Default role
+	defaultRole, err := p.Store.RoleRepository().GetByName(ctx, v1.Default.String(), metav1.GetOptions{})
+	if err != nil {
+		log.Warnf("Failed to get %s role info: %v", v1.Default.String(), err)
+	} else {
+		readonlyReq := v1.CreatePolicyRequest{
+			Name:        v1.AllResourceReadonlyPolicyName,
+			Subjects:    []string{defaultRole.InstanceID},
+			Type:        string(v1.SystemBuildInPolicy),
+			Owner:       DefaultAdmin,
+			Description: "System default read-only policies for all resources",
+			Statements: []v1.Statement{
+				{
+					Effect:             v1.AllowAccess,
+					Resource:           "*",
+					ResourceIdentifier: "*:GET*",
+					Actions:            pq.StringArray{"GET"},
+				},
+			},
+		}
+		_, err = p.Store.PolicyRepository().GetByName(ctx, readonlyReq.Name, metav1.GetOptions{})
+		if err != nil && errors.IsCode(err, code.ErrPolicyNotFound) {
+			if createErr := p.CreatePolicy(ctx, readonlyReq); createErr != nil {
+				log.Warnf("Failed to create default read-only policy: %v", createErr)
+				return createErr
+			}
+		}
+	}
+
 	log.Info("initialize system default policies done")
 
 	return nil

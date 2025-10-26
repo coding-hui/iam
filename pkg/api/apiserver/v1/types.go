@@ -396,6 +396,12 @@ const (
 	DenyAccess string = "deny"
 )
 
+// Add system built-in policy names
+const (
+	AllResourceReadonlyPolicyName string = "ResourceReadonly"
+	DefaultAdminPolicyName        string = "ADMIN"
+)
+
 // PolicyType define policy type.
 type PolicyType string
 
