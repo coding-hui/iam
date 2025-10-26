@@ -81,7 +81,7 @@ func SystemBuiltInResources() []BuiltInResourceSpec {
 		{Name: "organizations", Description: "System built-in organizations management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/organizations"},
 		{Name: "departments", Description: "System built-in departments management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/departments"},
 		{Name: "applications", Description: "System built-in applications management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/applications"},
-		{Name: "identity_providers", Description: "System built-in identity_providers management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/identity_providers"},
+		{Name: "identity-providers", Description: "System built-in identity-providers management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/identity-providers"},
 		{Name: "apikeys", Description: "System built-in apikeys management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/apikeys"},
 		{Name: "mail-templates", Description: "System built-in mail-templates management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/mail-templates"},
 		{Name: "email-templates", Description: "System built-in email-templates management API resource", Actions: []string{"GET", "POST", "PUT", "DELETE"}, Api: "/api/v1/email-templates"},

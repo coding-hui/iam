@@ -16,7 +16,7 @@ import (
 	"github.com/coding-hui/iam/pkg/code"
 )
 
-var idpApiPath = versionPrefix + "/identity_providers"
+var idpApiPath = versionPrefix + "/identity-providers"
 
 type identityProvider struct {
 	IdentityProviderService service.IdentityProviderService `inject:""`
@@ -31,7 +31,7 @@ func (i *identityProvider) RegisterApiGroup(g *gin.Engine) {
 	apiv1 := g.Group(idpApiPath).
 		Use(
 			autoAuthCheck.AuthFunc(),
-			permissionCheckFunc("identity_providers"),
+			permissionCheckFunc("identity-providers"),
 		)
 	{
 		apiv1.POST("", i.createIdentityProvider)
@@ -49,7 +49,7 @@ func (i *identityProvider) RegisterApiGroup(g *gin.Engine) {
 //	@Product		application/json
 //	@Param			data	body		v1.CreateProviderRequest	true	"IdentityProvider"
 //	@Success		200		{object}	api.Response				"Create a nnw IdentityProvider"
-//	@Router			/api/v1/identity_providers [post]
+//	@Router			/api/v1/identity-providers [post]
 //	@Security		BearerTokenAuth
 //
 // createIdentityProvider create a new IdentityProvider.
@@ -81,7 +81,7 @@ func (i *identityProvider) createIdentityProvider(c *gin.Context) {
 //	@Param			data		body		v1.UpdateProviderRequest	true	"IdentityProvider"
 //	@Param			instanceId	path		string						true	"identifier of a IdentityProvider"
 //	@Success		200			{object}	api.Response				"Update IdentityProvider info"
-//	@Router			/api/v1/identity_providers/{identifier} [put]
+//	@Router			/api/v1/identity-providers/{identifier} [put]
 //	@Security		BearerTokenAuth
 //
 // updateIdentityProvider update IdentityProvider info.
@@ -110,7 +110,7 @@ func (i *identityProvider) updateIdentityProvider(c *gin.Context) {
 //	@Description	Delete IdentityProvider by identifier
 //	@Param			instanceId	path		string			true	"identifier of a IdentityProvider"
 //	@Success		200			{object}	api.Response	"Provider successfully deleted"
-//	@Router			/api/v1/identity_providers/{identifier} [DELETE]
+//	@Router			/api/v1/identity-providers/{identifier} [DELETE]
 //	@Security		BearerTokenAuth
 //
 // deleteIdentityProvider delete IdentityProvider by identifier.
@@ -133,7 +133,7 @@ func (i *identityProvider) deleteIdentityProvider(c *gin.Context) {
 //	@Description	Get a IdentityProvider by name
 //	@Param			instanceId	path		string											true	"identifier of a IdentityProvider"
 //	@Success		200			{object}	api.Response{data=v1.DetailProviderResponse}	"Provider detail"
-//	@Router			/api/v1/identity_providers/{identifier} [get]
+//	@Router			/api/v1/identity-providers/{identifier} [get]
 //	@Security		BearerTokenAuth
 //
 // detailIdentityProvider get IdentityProvider detail info.
@@ -158,7 +158,7 @@ func (i *identityProvider) detailIdentityProvider(c *gin.Context) {
 //	@Param			offset	query		int											false	"query the page number"
 //	@Param			limit	query		int											false	"query the page size number"
 //	@Success		200		{object}	api.Response{data=v1.IdentityProviderList}	"IdentityProviders"
-//	@Router			/api/v1/identity_providers [get]
+//	@Router			/api/v1/identity-providers [get]
 //	@Security		BearerTokenAuth
 //
 // listIdentityProviders list IdentityProvider page.
