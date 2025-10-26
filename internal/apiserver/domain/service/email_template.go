@@ -10,6 +10,7 @@ import (
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/pkg/request"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/code"
 	"github.com/coding-hui/iam/pkg/log"
@@ -49,6 +50,12 @@ func NewEmailTemplateService() EmailTemplateService { return &emailTemplateServi
 
 // CreateTemplate creates a new email template.
 func (s *emailTemplateServiceImpl) CreateTemplate(ctx context.Context, req *v1.CreateEmailTemplateRequest) (*v1.EmailTemplateBase, error) {
+	// Get current user from context
+	currentUser, ok := request.UserFrom(ctx)
+	if !ok {
+		return nil, errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user")
+	}
+
 	tpl := &model.EmailTemplate{
 		ObjectMeta:       metav1.ObjectMeta{Name: req.Name},
 		Subject:          req.Subject,
@@ -56,7 +63,7 @@ func (s *emailTemplateServiceImpl) CreateTemplate(ctx context.Context, req *v1.C
 		PlainTextContent: req.PlainTextContent,
 		Status:           model.EmailTemplateStatus(req.Status),
 		CategoryID:       req.CategoryID,
-		Owner:            req.Owner,
+		Owner:            currentUser.Name, // Use current user as owner
 		Description:      req.Description,
 		IsDefault:        req.IsDefault,
 	}
@@ -92,9 +99,7 @@ func (s *emailTemplateServiceImpl) UpdateTemplate(ctx context.Context, instanceI
 	if req.CategoryID != "" {
 		existed.CategoryID = req.CategoryID
 	}
-	if req.Owner != "" {
-		existed.Owner = req.Owner
-	}
+	// Owner should not be changed after creation
 	if req.Description != "" {
 		existed.Description = req.Description
 	}
@@ -177,10 +182,16 @@ func (s *emailTemplateServiceImpl) ListTemplates(ctx context.Context, opts v1.Li
 
 // CreateCategory creates a new email template category.
 func (s *emailTemplateServiceImpl) CreateCategory(ctx context.Context, req *v1.CreateEmailTemplateCategoryRequest) (*v1.EmailTemplateCategoryBase, error) {
+	// Get current user from context
+	currentUser, ok := request.UserFrom(ctx)
+	if !ok {
+		return nil, errors.WithCode(code.ErrPermissionDenied, "Failed to obtain the current user")
+	}
+
 	cat := &model.EmailTemplateCategory{
 		ObjectMeta:  metav1.ObjectMeta{Name: req.Name},
 		ParentID:    req.ParentID,
-		Owner:       req.Owner,
+		Owner:       currentUser.Name, // Use current user as owner
 		Description: req.Description,
 	}
 	if err := cat.Validate(); err != nil {
@@ -204,9 +215,7 @@ func (s *emailTemplateServiceImpl) UpdateCategory(ctx context.Context, instanceI
 	if req.ParentID != "" {
 		cat.ParentID = req.ParentID
 	}
-	if req.Owner != "" {
-		cat.Owner = req.Owner
-	}
+	// Owner should not be changed after creation
 	if req.Description != "" {
 		cat.Description = req.Description
 	}
