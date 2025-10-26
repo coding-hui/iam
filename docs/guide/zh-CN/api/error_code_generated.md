@@ -33,6 +33,8 @@ IAM 系统支持的错误码列表如下：
 | ErrPolicyNotFound | 110201 | 404 | Policy not found |
 | ErrPolicyAlreadyExist | 110202 | 400 | Policy already exists |
 | ErrPolicyNameIsEmpty | 110203 | 400 | Policy name cannot be empty |
+| ErrCannotUpdateSystemPolicy | 110204 | 403 | Cannot update system built-in policy |
+| ErrCannotDeleteSystemPolicy | 110205 | 403 | Cannot delete system built-in policy |
 | ErrResourceNotFound | 110301 | 404 | Resource not found |
 | ErrResourceAlreadyExist | 110302 | 400 | Resource already exists |
 | ErrResourceNameIsEmpty | 110303 | 400 | Resource name cannot be empty |

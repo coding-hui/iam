@@ -110,6 +110,12 @@ func (p *policyServiceImpl) UpdatePolicy(ctx context.Context, idOrName string, r
 			return err
 		}
 	}
+
+	// Check if it's a system built-in policy
+	if oldPolicy.Type == string(v1.SystemBuildInPolicy) {
+		return errors.WithCode(code.ErrCannotUpdateSystemPolicy, "Cannot update system built-in policy: %s", oldPolicy.Name)
+	}
+
 	// delete casbin rules before
 	e := p.Store.CasbinRepository().SyncedEnforcer()
 	_, err = e.RemovePolicies(oldPolicy.GetPolicyRules())
@@ -142,6 +148,11 @@ func (p *policyServiceImpl) DeletePolicy(ctx context.Context, name string, opts 
 	policy, err := p.Store.PolicyRepository().GetByName(ctx, name, metav1.GetOptions{})
 	if err != nil {
 		return err
+	}
+
+	// Check if it's a system built-in policy
+	if policy.Type == string(v1.SystemBuildInPolicy) {
+		return errors.WithCode(code.ErrCannotDeleteSystemPolicy, "Cannot delete system built-in policy: %s", policy.Name)
 	}
 
 	e := p.Store.CasbinRepository().SyncedEnforcer()

@@ -49,6 +49,12 @@ const (
 
 	// ErrPolicyNameIsEmpty - 400: Policy name cannot be empty.
 	ErrPolicyNameIsEmpty
+
+	// ErrCannotUpdateSystemPolicy - 403: Cannot update system built-in policy.
+	ErrCannotUpdateSystemPolicy
+
+	// ErrCannotDeleteSystemPolicy - 403: Cannot delete system built-in policy.
+	ErrCannotDeleteSystemPolicy
 )
 
 // iam-apiserver: resource errors.

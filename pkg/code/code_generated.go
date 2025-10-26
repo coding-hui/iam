@@ -20,6 +20,8 @@ func init() {
 	register(ErrPolicyNotFound, 404, "Policy not found")
 	register(ErrPolicyAlreadyExist, 400, "Policy already exists")
 	register(ErrPolicyNameIsEmpty, 400, "Policy name cannot be empty")
+	register(ErrCannotUpdateSystemPolicy, 403, "Cannot update system built-in policy")
+	register(ErrCannotDeleteSystemPolicy, 403, "Cannot delete system built-in policy")
 	register(ErrResourceNotFound, 404, "Resource not found")
 	register(ErrResourceAlreadyExist, 400, "Resource already exists")
 	register(ErrResourceNameIsEmpty, 400, "Resource name cannot be empty")
