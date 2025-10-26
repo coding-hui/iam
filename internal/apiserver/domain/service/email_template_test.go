@@ -7,6 +7,7 @@ import (
 
 	"github.com/coding-hui/common/errors"
 	metav1 "github.com/coding-hui/common/meta/v1"
+
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
@@ -189,8 +190,8 @@ func TestEmailTemplateService_CreateAndList(t *testing.T) {
 	if err != nil {
 		t.Fatalf("list templates failed: %v", err)
 	}
-	if list.ListMeta.TotalCount != 1 {
-		t.Fatalf("expected total 1, got %d", list.ListMeta.TotalCount)
+	if list.TotalCount != 1 {
+		t.Fatalf("expected total 1, got %d", list.TotalCount)
 	}
 }
 
@@ -203,7 +204,7 @@ func TestEmailTemplateService_CategoryCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("create category failed: %v", err)
 	}
-	if cat.ObjectMeta.Name != "system" {
+	if cat.Name != "system" {
 		t.Fatalf("unexpected category: %+v", cat)
 	}
 
@@ -211,7 +212,7 @@ func TestEmailTemplateService_CategoryCRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("get category failed: %v", err)
 	}
-	if fetched.ObjectMeta.InstanceID == "" {
+	if fetched.InstanceID == "" {
 		t.Fatalf("expected instance id set")
 	}
 
@@ -238,17 +239,17 @@ func TestEmailTemplateService_Init(t *testing.T) {
 	if err != nil {
 		t.Fatalf("list categories failed: %v", err)
 	}
-	if categories.ListMeta.TotalCount != 2 {
-		t.Fatalf("expected 2 categories, got %d", categories.ListMeta.TotalCount)
+	if categories.TotalCount != 2 {
+		t.Fatalf("expected 2 categories, got %d", categories.TotalCount)
 	}
 
 	// Verify System and Custom categories exist with correct types
 	var systemFound, customFound bool
 	for _, cat := range categories.Items {
-		if cat.ObjectMeta.Name == "System" && cat.Type == "system" {
+		if cat.Name == "System" && cat.Type == "system" {
 			systemFound = true
 		}
-		if cat.ObjectMeta.Name == "Custom" && cat.Type == "custom" {
+		if cat.Name == "Custom" && cat.Type == "custom" {
 			customFound = true
 		}
 	}
@@ -264,8 +265,8 @@ func TestEmailTemplateService_Init(t *testing.T) {
 	if err != nil {
 		t.Fatalf("list templates failed: %v", err)
 	}
-	if templates.ListMeta.TotalCount != 2 {
-		t.Fatalf("expected 2 default templates, got %d", templates.ListMeta.TotalCount)
+	if templates.TotalCount != 2 {
+		t.Fatalf("expected 2 default templates, got %d", templates.TotalCount)
 	}
 
 	// Test running init again (should not create duplicates)
@@ -279,16 +280,16 @@ func TestEmailTemplateService_Init(t *testing.T) {
 	if err != nil {
 		t.Fatalf("list categories after second init failed: %v", err)
 	}
-	if categories.ListMeta.TotalCount != 2 {
-		t.Fatalf("expected 2 categories after second init, got %d", categories.ListMeta.TotalCount)
+	if categories.TotalCount != 2 {
+		t.Fatalf("expected 2 categories after second init, got %d", categories.TotalCount)
 	}
 
 	templates, err = svc.ListTemplates(context.Background(), v1.ListEmailTemplateOptions{})
 	if err != nil {
 		t.Fatalf("list templates after second init failed: %v", err)
 	}
-	if templates.ListMeta.TotalCount != 2 {
-		t.Fatalf("expected 2 templates after second init, got %d", templates.ListMeta.TotalCount)
+	if templates.TotalCount != 2 {
+		t.Fatalf("expected 2 templates after second init, got %d", templates.TotalCount)
 	}
 }
 
@@ -309,10 +310,11 @@ func TestEmailTemplateService_DeleteProtection(t *testing.T) {
 
 	var systemCategoryID, customCategoryID string
 	for _, cat := range categories.Items {
-		if cat.Type == "system" {
-			systemCategoryID = cat.ObjectMeta.InstanceID
-		} else if cat.Type == "custom" {
-			customCategoryID = cat.ObjectMeta.InstanceID
+		switch cat.Type {
+		case "system":
+			systemCategoryID = cat.InstanceID
+		case "custom":
+			customCategoryID = cat.InstanceID
 		}
 	}
 
@@ -339,13 +341,13 @@ func TestEmailTemplateService_DeleteProtection(t *testing.T) {
 
 	// Test: Try to delete system templates (should fail)
 	for _, tpl := range templates.Items {
-		err = svc.DeleteTemplate(context.Background(), tpl.ObjectMeta.InstanceID)
+		err = svc.DeleteTemplate(context.Background(), tpl.InstanceID)
 		if err == nil {
-			t.Fatalf("expected error when deleting system template %s, but got none", tpl.ObjectMeta.Name)
+			t.Fatalf("expected error when deleting system template %s, but got none", tpl.Name)
 		}
 		// Check for either system template or default template error codes
 		if !errors.IsCode(err, code.ErrCannotDeleteSystemEmailTemplate) && !errors.IsCode(err, code.ErrCannotDeleteDefaultEmailTemplate) {
-			t.Fatalf("expected ErrCannotDeleteSystemEmailTemplate or ErrCannotDeleteDefaultEmailTemplate for template %s, got %v", tpl.ObjectMeta.Name, err)
+			t.Fatalf("expected ErrCannotDeleteSystemEmailTemplate or ErrCannotDeleteDefaultEmailTemplate for template %s, got %v", tpl.Name, err)
 		}
 	}
 
@@ -360,7 +362,7 @@ func TestEmailTemplateService_DeleteProtection(t *testing.T) {
 		t.Fatalf("failed to create custom template: %v", err)
 	}
 
-	err = svc.DeleteTemplate(context.Background(), customTpl.ObjectMeta.InstanceID)
+	err = svc.DeleteTemplate(context.Background(), customTpl.InstanceID)
 	if err != nil {
 		t.Fatalf("failed to delete custom template: %v", err)
 	}
@@ -384,7 +386,7 @@ func TestEmailTemplateService_ErrorCodes(t *testing.T) {
 	var systemCategoryID string
 	for _, cat := range categories.Items {
 		if cat.Type == "system" {
-			systemCategoryID = cat.ObjectMeta.InstanceID
+			systemCategoryID = cat.InstanceID
 			break
 		}
 	}
@@ -409,7 +411,7 @@ func TestEmailTemplateService_ErrorCodes(t *testing.T) {
 
 	// Test system template deletion
 	if len(templates.Items) > 0 {
-		err = svc.DeleteTemplate(context.Background(), templates.Items[0].ObjectMeta.InstanceID)
+		err = svc.DeleteTemplate(context.Background(), templates.Items[0].InstanceID)
 		if err == nil {
 			t.Fatalf("expected error when deleting system template")
 		}

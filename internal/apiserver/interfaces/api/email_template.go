@@ -45,13 +45,14 @@ func (h *emailTemplate) RegisterApiGroup(g *gin.Engine) {
 }
 
 // Template handlers
-// @Tags         EmailTemplates
-// @Summary      ListEmailTemplates
-// @Description  List email templates
-// @Param        query  query  v1.ListEmailTemplateOptions  false  "query parameters"
-// @Success      200    {object}  api.Response{data=v1.EmailTemplateList}  "email templates"
-// @Router       /api/v1/email-templates [get]
-// @Security     BearerTokenAuth
+//
+//	@Tags			EmailTemplates
+//	@Summary		ListEmailTemplates
+//	@Description	List email templates
+//	@Param			query	query		v1.ListEmailTemplateOptions				false	"query parameters"
+//	@Success		200		{object}	api.Response{data=v1.EmailTemplateList}	"email templates"
+//	@Router			/api/v1/email-templates [get]
+//	@Security		BearerTokenAuth
 func (h *emailTemplate) listTemplates(c *gin.Context) {
 	var opts v1.ListEmailTemplateOptions
 	if err := c.ShouldBindQuery(&opts); err != nil {
@@ -66,15 +67,15 @@ func (h *emailTemplate) listTemplates(c *gin.Context) {
 	api.OkWithData(list, c)
 }
 
-// @Tags         EmailTemplates
-// @Summary      CreateEmailTemplate
-// @Description  Create an email template
-// @Accept       application/json
-// @Product      application/json
-// @Param        data  body  v1.CreateEmailTemplateRequest  true  "email template"
-// @Success      200   {object}  api.Response{data=v1.EmailTemplateBase}  "created"
-// @Router       /api/v1/email-templates [post]
-// @Security     BearerTokenAuth
+// @Tags			EmailTemplates
+// @Summary		CreateEmailTemplate
+// @Description	Create an email template
+// @Accept			application/json
+// @Product		application/json
+// @Param			data	body		v1.CreateEmailTemplateRequest			true	"email template"
+// @Success		200		{object}	api.Response{data=v1.EmailTemplateBase}	"created"
+// @Router			/api/v1/email-templates [post]
+// @Security		BearerTokenAuth
 func (h *emailTemplate) createTemplate(c *gin.Context) {
 	var req v1.CreateEmailTemplateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -89,13 +90,13 @@ func (h *emailTemplate) createTemplate(c *gin.Context) {
 	api.OkWithData(tpl, c)
 }
 
-// @Tags         EmailTemplates
-// @Summary      GetEmailTemplate
-// @Description  Get an email template by instance ID
-// @Param        instanceId  path  string  true  "identifier of an email template" default(template-001)
-// @Success      200  {object}  api.Response{data=v1.EmailTemplateBase}  "email template"
-// @Router       /api/v1/email-templates/{instanceId} [get]
-// @Security     BearerTokenAuth
+// @Tags			EmailTemplates
+// @Summary		GetEmailTemplate
+// @Description	Get an email template by instance ID
+// @Param			instanceId	path		string									true	"identifier of an email template"	default(template-001)
+// @Success		200			{object}	api.Response{data=v1.EmailTemplateBase}	"email template"
+// @Router			/api/v1/email-templates/{instanceId} [get]
+// @Security		BearerTokenAuth
 func (h *emailTemplate) getTemplate(c *gin.Context) {
 	instanceId := c.Param("instanceId")
 	tpl, err := h.EmailTemplateService.GetTemplate(c.Request.Context(), instanceId)
@@ -106,16 +107,16 @@ func (h *emailTemplate) getTemplate(c *gin.Context) {
 	api.OkWithData(tpl, c)
 }
 
-// @Tags         EmailTemplates
-// @Summary      UpdateEmailTemplate
-// @Description  Update an email template
-// @Accept       application/json
-// @Product      application/json
-// @Param        instanceId  path  string  true  "identifier of an email template" default(template-001)
-// @Param        data        body  v1.UpdateEmailTemplateRequest  true  "email template"
-// @Success      200  {object}  api.Response{data=v1.EmailTemplateBase}  "updated"
-// @Router       /api/v1/email-templates/{instanceId} [put]
-// @Security     BearerTokenAuth
+// @Tags			EmailTemplates
+// @Summary		UpdateEmailTemplate
+// @Description	Update an email template
+// @Accept			application/json
+// @Product		application/json
+// @Param			instanceId	path		string									true	"identifier of an email template"	default(template-001)
+// @Param			data		body		v1.UpdateEmailTemplateRequest			true	"email template"
+// @Success		200			{object}	api.Response{data=v1.EmailTemplateBase}	"updated"
+// @Router			/api/v1/email-templates/{instanceId} [put]
+// @Security		BearerTokenAuth
 func (h *emailTemplate) updateTemplate(c *gin.Context) {
 	instanceId := c.Param("instanceId")
 	var req v1.UpdateEmailTemplateRequest
@@ -131,13 +132,13 @@ func (h *emailTemplate) updateTemplate(c *gin.Context) {
 	api.OkWithData(tpl, c)
 }
 
-// @Tags         EmailTemplates
-// @Summary      DeleteEmailTemplate
-// @Description  Delete an email template
-// @Param        instanceId  path  string  true  "identifier of an email template" default(template-001)
-// @Success      200  {object}  api.Response  "deleted"
-// @Router       /api/v1/email-templates/{instanceId} [delete]
-// @Security     BearerTokenAuth
+// @Tags			EmailTemplates
+// @Summary		DeleteEmailTemplate
+// @Description	Delete an email template
+// @Param			instanceId	path		string			true	"identifier of an email template"	default(template-001)
+// @Success		200			{object}	api.Response	"deleted"
+// @Router			/api/v1/email-templates/{instanceId} [delete]
+// @Security		BearerTokenAuth
 func (h *emailTemplate) deleteTemplate(c *gin.Context) {
 	instanceId := c.Param("instanceId")
 	if err := h.EmailTemplateService.DeleteTemplate(c.Request.Context(), instanceId); err != nil {
@@ -148,13 +149,14 @@ func (h *emailTemplate) deleteTemplate(c *gin.Context) {
 }
 
 // Category handlers
-// @Tags         EmailTemplateCategories
-// @Summary      ListEmailTemplateCategories
-// @Description  List email template categories
-// @Param        query  query  v1.ListEmailTemplateOptions  false  "query parameters"
-// @Success      200  {object}  api.Response{data=v1.EmailTemplateCategoryList}  "categories"
-// @Router       /api/v1/email-template-categories [get]
-// @Security     BearerTokenAuth
+//
+//	@Tags			EmailTemplateCategories
+//	@Summary		ListEmailTemplateCategories
+//	@Description	List email template categories
+//	@Param			query	query		v1.ListEmailTemplateOptions						false	"query parameters"
+//	@Success		200		{object}	api.Response{data=v1.EmailTemplateCategoryList}	"categories"
+//	@Router			/api/v1/email-template-categories [get]
+//	@Security		BearerTokenAuth
 func (h *emailTemplate) listCategories(c *gin.Context) {
 	var opts v1.ListEmailTemplateOptions // reuse ListOptions only
 	if err := c.ShouldBindQuery(&opts); err != nil {
@@ -169,15 +171,15 @@ func (h *emailTemplate) listCategories(c *gin.Context) {
 	api.OkWithData(list, c)
 }
 
-// @Tags         EmailTemplateCategories
-// @Summary      CreateEmailTemplateCategory
-// @Description  Create an email template category
-// @Accept       application/json
-// @Product      application/json
-// @Param        data  body  v1.CreateEmailTemplateCategoryRequest  true  "category"
-// @Success      200  {object}  api.Response{data=v1.EmailTemplateCategoryBase}  "created"
-// @Router       /api/v1/email-template-categories [post]
-// @Security     BearerTokenAuth
+// @Tags			EmailTemplateCategories
+// @Summary		CreateEmailTemplateCategory
+// @Description	Create an email template category
+// @Accept			application/json
+// @Product		application/json
+// @Param			data	body		v1.CreateEmailTemplateCategoryRequest			true	"category"
+// @Success		200		{object}	api.Response{data=v1.EmailTemplateCategoryBase}	"created"
+// @Router			/api/v1/email-template-categories [post]
+// @Security		BearerTokenAuth
 func (h *emailTemplate) createCategory(c *gin.Context) {
 	var req v1.CreateEmailTemplateCategoryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -192,13 +194,13 @@ func (h *emailTemplate) createCategory(c *gin.Context) {
 	api.OkWithData(cat, c)
 }
 
-// @Tags         EmailTemplateCategories
-// @Summary      GetEmailTemplateCategory
-// @Description  Get an email template category by instance ID
-// @Param        instanceId  path  string  true  "identifier of a category" default(category-001)
-// @Success      200  {object}  api.Response{data=v1.EmailTemplateCategoryBase}  "category"
-// @Router       /api/v1/email-template-categories/{instanceId} [get]
-// @Security     BearerTokenAuth
+// @Tags			EmailTemplateCategories
+// @Summary		GetEmailTemplateCategory
+// @Description	Get an email template category by instance ID
+// @Param			instanceId	path		string											true	"identifier of a category"	default(category-001)
+// @Success		200			{object}	api.Response{data=v1.EmailTemplateCategoryBase}	"category"
+// @Router			/api/v1/email-template-categories/{instanceId} [get]
+// @Security		BearerTokenAuth
 func (h *emailTemplate) getCategory(c *gin.Context) {
 	instanceId := c.Param("instanceId")
 	cat, err := h.EmailTemplateService.GetCategory(c.Request.Context(), instanceId)
@@ -209,16 +211,16 @@ func (h *emailTemplate) getCategory(c *gin.Context) {
 	api.OkWithData(cat, c)
 }
 
-// @Tags         EmailTemplateCategories
-// @Summary      UpdateEmailTemplateCategory
-// @Description  Update an email template category
-// @Accept       application/json
-// @Product      application/json
-// @Param        instanceId  path  string  true  "identifier of a category" default(category-001)
-// @Param        data        body  v1.UpdateEmailTemplateCategoryRequest  true  "category"
-// @Success      200  {object}  api.Response{data=v1.EmailTemplateCategoryBase}  "updated"
-// @Router       /api/v1/email-template-categories/{instanceId} [put]
-// @Security     BearerTokenAuth
+// @Tags			EmailTemplateCategories
+// @Summary		UpdateEmailTemplateCategory
+// @Description	Update an email template category
+// @Accept			application/json
+// @Product		application/json
+// @Param			instanceId	path		string											true	"identifier of a category"	default(category-001)
+// @Param			data		body		v1.UpdateEmailTemplateCategoryRequest			true	"category"
+// @Success		200			{object}	api.Response{data=v1.EmailTemplateCategoryBase}	"updated"
+// @Router			/api/v1/email-template-categories/{instanceId} [put]
+// @Security		BearerTokenAuth
 func (h *emailTemplate) updateCategory(c *gin.Context) {
 	instanceId := c.Param("instanceId")
 	var req v1.UpdateEmailTemplateCategoryRequest
@@ -234,13 +236,13 @@ func (h *emailTemplate) updateCategory(c *gin.Context) {
 	api.OkWithData(cat, c)
 }
 
-// @Tags         EmailTemplateCategories
-// @Summary      DeleteEmailTemplateCategory
-// @Description  Delete an email template category
-// @Param        instanceId  path  string  true  "identifier of a category" default(category-001)
-// @Success      200  {object}  api.Response  "deleted"
-// @Router       /api/v1/email-template-categories/{instanceId} [delete]
-// @Security     BearerTokenAuth
+// @Tags			EmailTemplateCategories
+// @Summary		DeleteEmailTemplateCategory
+// @Description	Delete an email template category
+// @Param			instanceId	path		string			true	"identifier of a category"	default(category-001)
+// @Success		200			{object}	api.Response	"deleted"
+// @Router			/api/v1/email-template-categories/{instanceId} [delete]
+// @Security		BearerTokenAuth
 func (h *emailTemplate) deleteCategory(c *gin.Context) {
 	instanceId := c.Param("instanceId")
 	if err := h.EmailTemplateService.DeleteCategory(c.Request.Context(), instanceId); err != nil {

@@ -146,7 +146,12 @@ func (r *emailTemplateRepositoryImpl) ListVersions(ctx context.Context, template
 }
 
 // GetVersionByNumber gets a specific version by template instance ID and version number.
-func (r *emailTemplateRepositoryImpl) GetVersionByNumber(ctx context.Context, templateInstanceId string, versionNumber int, _ metav1.GetOptions) (*model.EmailTemplateVersion, error) {
+func (r *emailTemplateRepositoryImpl) GetVersionByNumber(
+	ctx context.Context,
+	templateInstanceId string,
+	versionNumber int,
+	_ metav1.GetOptions,
+) (*model.EmailTemplateVersion, error) {
 	var ver *model.EmailTemplateVersion
 	if err := r.client.WithCtx(ctx).
 		Where("template_id = ? AND version_number = ?", templateInstanceId, versionNumber).
