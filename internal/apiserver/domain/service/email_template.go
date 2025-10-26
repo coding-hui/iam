@@ -19,6 +19,13 @@ import (
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
+const (
+	// SystemCategoryName default system category name.
+	SystemCategoryName = "System"
+	// CustomCategoryName default custom category name.
+	CustomCategoryName = "Custom"
+)
+
 // EmailTemplateService defines operations for email templates and categories.
 // Handles basic CRUD; versioning and variable management can be extended later.
 type EmailTemplateService interface {
@@ -328,8 +335,8 @@ func (s *emailTemplateServiceImpl) Init(ctx context.Context) error {
 	}
 
 	defaultCategories := []categoryDef{
-		{name: "System", description: "System default email templates", categoryType: model.EmailTemplateCategoryTypeSystem},
-		{name: "Custom", description: "User custom email templates", categoryType: model.EmailTemplateCategoryTypeCustom},
+		{name: SystemCategoryName, description: "System default email templates", categoryType: model.EmailTemplateCategoryTypeSystem},
+		{name: CustomCategoryName, description: "User custom email templates", categoryType: model.EmailTemplateCategoryTypeCustom},
 	}
 
 	var systemCategoryInstanceID string
@@ -355,7 +362,7 @@ func (s *emailTemplateServiceImpl) Init(ctx context.Context) error {
 				log.Infof("initialize email template category %s done", catDef.name)
 
 				// Store System category instance ID for template creation
-				if catDef.name == "System" {
+				if catDef.name == SystemCategoryName {
 					systemCategoryInstanceID = newCat.InstanceID
 				}
 			} else {
@@ -363,7 +370,7 @@ func (s *emailTemplateServiceImpl) Init(ctx context.Context) error {
 			}
 		} else {
 			// Store System category instance ID for template creation
-			if catDef.name == "System" {
+			if catDef.name == SystemCategoryName {
 				systemCategoryInstanceID = cat.InstanceID
 			}
 		}
