@@ -160,6 +160,10 @@ func (a *authenticationServiceImpl) LoginByProvider(
 		userBase = &createResp.UserBase
 	}
 
+	if userBase != nil && userBase.Disabled {
+		return nil, errors.WithCode(code.ErrUserHasDisabled, "The account [%s] has been disabled.", userBase.Name)
+	}
+
 	go func() {
 		err := a.Store.UserRepository().FlushLastLoginTime(ctx, userBase.Name)
 		if err != nil {
@@ -236,6 +240,11 @@ func (a *authenticationServiceImpl) LoginByOAuthProvider(
 			Email:  authenticated.GetEmail(),
 		}
 	}
+
+	if userBase != nil && userBase.Disabled {
+		return nil, errors.WithCode(code.ErrUserHasDisabled, "The account [%s] has been disabled.", userBase.Name)
+	}
+
 	a.EventBus.AsyncPublish(&event.AuthenticationEvent{
 		Success:        true,
 		Username:       userBase.Name,
