@@ -55,8 +55,8 @@ require (
 	golang.org/x/tools v0.34.0
 	google.golang.org/grpc v1.72.0
 	google.golang.org/protobuf v1.36.6
-	gorm.io/driver/mysql v1.5.7
-	gorm.io/gorm v1.25.12
+	gorm.io/driver/mysql v1.6.0
+	gorm.io/gorm v1.30.0
 	gotest.tools v2.2.0+incompatible
 	helm.sh/helm/v3 v3.18.5
 	k8s.io/apimachinery v0.33.3
