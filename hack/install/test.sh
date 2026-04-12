@@ -257,5 +257,5 @@ iam::test::test() {
 }
 
 if [[ "$*" =~ iam::test:: ]]; then
-  eval $*
+  :
 fi

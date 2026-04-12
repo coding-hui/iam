@@ -70,7 +70,7 @@ function iam::apiserver::install()
   cp "${LOCAL_OUTPUT_ROOT}/cert/iam-apiserver"*.pem "${IAM_CONFIG_DIR}/cert"
 
   # 2. 构建 iam-apiserver
-  make build BINS=iam-apiserver
+  CGO_ENABLED=1 go build -o "${LOCAL_OUTPUT_ROOT}/bin/iam-apiserver" github.com/coding-hui/iam/cmd/iam-apiserver
   local bin_path=$(iam::common::get_bin_path)
   cp "${LOCAL_OUTPUT_ROOT}/bin/iam-apiserver" "${bin_path}/iam-apiserver"
 
@@ -169,5 +169,5 @@ function iam::apiserver::status()
 }
 
 if [[ "$*" =~ iam::apiserver:: ]];then
-  eval $*
+  :
 fi

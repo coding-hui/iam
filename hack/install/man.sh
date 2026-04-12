@@ -49,5 +49,5 @@ function iam::man::status()
 }
 
 if [[ "$*" =~ iam::man:: ]];then
-  eval $*
+  :
 fi

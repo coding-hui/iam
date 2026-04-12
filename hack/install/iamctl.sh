@@ -77,5 +77,5 @@ function iam::iamctl::status()
 }
 
 if [[ "$*" =~ iam::iamctl:: ]];then
-  eval $*
+  :
 fi

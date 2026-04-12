@@ -158,5 +158,5 @@ function iam::authzserver::status()
 }
 
 if [[ "$*" =~ iam::authzserver:: ]];then
-  eval $*
+  :
 fi

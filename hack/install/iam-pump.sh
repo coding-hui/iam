@@ -151,5 +151,5 @@ function iam::pump::status()
 }
 
 if [[ "$*" =~ iam::pump:: ]];then
-  eval $*
+  :
 fi

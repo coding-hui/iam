@@ -189,5 +189,5 @@ function iam::redis::status()
 }
 
 if [[ "$*" =~ iam::redis:: ]];then
-  eval $*
+: # no-op
 fi

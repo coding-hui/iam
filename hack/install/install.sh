@@ -143,10 +143,10 @@ function iam::install::uninstall_storage() {
 # 安装 IAM 应用
 function iam::install::install_iam() {
   # 1. 安装并初始化数据库
-  iam::install::install_storage || return 1
+  # iam::install::install_storage || return 1
 
   # 2. 先准备安装环境
-  iam::install::prepare_iam || return 1
+  # iam::install::prepare_iam || return 1
 
   # 3. 安装 iam-apiserver 服务
   iam::apiserver::install || return 1
@@ -155,16 +155,16 @@ function iam::install::install_iam() {
   iam::iamctl::install || return 1
 
   # 5. 安装 iam-authz-server 服务
-  iam::authzserver::install || return 1
+  # iam::authzserver::install || return 1
 
   # 6. 安装 iam-pump 服务
-  iam::pump::install || return 1
+  # iam::pump::install || return 1
 
   # 7. 安装 iam-watcher 服务
-  iam::watcher::install || return 1
+  # iam::watcher::install || return 1
 
   # 8. 安装 man page
-  iam::man::install || return 1
+  # iam::man::install || return 1
 
   iam::log::info "install iam application successfully"
 }

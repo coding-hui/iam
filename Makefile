@@ -179,7 +179,7 @@ tidy:
 
 ## install: Install IAM services (use INSTALL_MODE=local/docker/k8s/all)
 .PHONY: install
-install: build
+install:
 	@$(MAKE) install.$(or $(INSTALL_MODE),local)
 
 ## stop: Stop all IAM services

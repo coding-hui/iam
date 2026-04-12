@@ -107,5 +107,5 @@ function iam::mariadb::status() {
 }
 
 if [[ "$*" =~ iam::mariadb:: ]];then
-  eval $*
+  :
 fi

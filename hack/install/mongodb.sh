@@ -153,5 +153,5 @@ function iam::mongodb::status() {
 }
 
 if [[ "$*" =~ iam::mongodb:: ]];then
-  eval $*
+  :
 fi

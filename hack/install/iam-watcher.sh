@@ -151,5 +151,5 @@ function iam::watcher::status()
 }
 
 if [[ "$*" =~ iam::watcher:: ]];then
-  eval $*
+  :
 fi
