@@ -17,6 +17,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
+	"github.com/coding-hui/iam/internal/pkg/request"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	v1 "github.com/coding-hui/iam/pkg/api/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/code"
@@ -117,6 +118,11 @@ func (d *deviceAuthServiceImpl) GetDeviceToken(ctx context.Context, req *v1.Devi
 		return nil, errors.WithCode(code.ErrDeviceCodeInvalid, "invalid device code")
 	}
 
+	// Validate client ID
+	if deviceAuth.ClientID != req.ClientID {
+		return nil, errors.WithCode(code.ErrDeviceCodeInvalid, "invalid client ID")
+	}
+
 	// Check status
 	if deviceAuth.Status != model.DeviceAuthApproved {
 		return nil, errors.WithCode(code.ErrAuthorizationPending, "authorization pending")
@@ -159,14 +165,25 @@ func (d *deviceAuthServiceImpl) VerifyUserAuthorization(ctx context.Context, req
 		return errors.WithCode(code.ErrAuthorizationDenied, "authorization denied by user")
 	}
 
+	// Get the authenticated user from context - do not trust UserID from request body
+	currentUser, ok := request.UserFrom(ctx)
+	if !ok {
+		return errors.WithCode(code.ErrPermissionDenied, "failed to obtain the current user")
+	}
+
 	deviceAuth, err := d.Store.DeviceAuthRepository().GetByUserCode(ctx, req.UserCode)
 	if err != nil {
 		return errors.WithCode(code.ErrDeviceCodeInvalid, "invalid user code")
 	}
 
-	// Update authorization status
+	// Check if the device authorization has expired
+	if deviceAuth.ExpiresAt.Before(time.Now()) {
+		return errors.WithCode(code.ErrDeviceCodeExpired, "device authorization has expired")
+	}
+
+	// Update authorization status - use InstanceID from authenticated context, not from request
 	deviceAuth.Status = model.DeviceAuthApproved
-	deviceAuth.UserID = req.UserID
+	deviceAuth.UserID = currentUser.InstanceID
 	now := time.Now()
 	deviceAuth.ApprovedAt = &now
 
@@ -188,13 +205,21 @@ func generateUserCode() (string, error) {
 	const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	const length = 8
 
-	bytes := make([]byte, length)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
+	// Rejection sampling to eliminate modulo bias
+	max := byte(256 - (256 % len(charset)))
 
+	bytes := make([]byte, length)
 	for i := 0; i < length; i++ {
-		bytes[i] = charset[int(bytes[i])%len(charset)]
+		for {
+			b := make([]byte, 1)
+			if _, err := rand.Read(b); err != nil {
+				return "", err
+			}
+			if b[0] < max {
+				bytes[i] = charset[int(b[0])%len(charset)]
+				break
+			}
+		}
 	}
 
 	// Format as ABCD-EFGH for better readability

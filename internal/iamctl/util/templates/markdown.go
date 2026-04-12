@@ -8,14 +8,13 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/russross/blackfriday"
 )
 
 const linebreak = "\n"
 
-// ASCIIRenderer implements blackfriday.Renderer.
+// ASCIIRenderer implements blackfriday.Renderer for v2 API.
 var _ blackfriday.Renderer = &ASCIIRenderer{}
 
 // ASCIIRenderer is a blackfriday.Renderer intended for rendering markdown
@@ -27,113 +26,127 @@ type ASCIIRenderer struct {
 	listLevel     uint
 }
 
-// NormalText gets a text chunk *after* the markdown syntax was already
-// processed and does a final cleanup on things we don't expect here, like
-// removing linebreaks on things that are not a paragraph break (auto unwrap).
-func (r *ASCIIRenderer) NormalText(out *bytes.Buffer, text []byte) {
-	raw := string(text)
-	lines := strings.Split(raw, linebreak)
-	for _, line := range lines {
-		trimmed := strings.Trim(line, " \n\t")
-		if len(trimmed) > 0 && trimmed[0] != '_' {
-			out.WriteString(" ")
+// RenderNode implements the v2 Renderer interface.
+func (r *ASCIIRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+	switch node.Type {
+	case blackfriday.Text:
+		r.renderText(w, node)
+	case blackfriday.Paragraph:
+		_, _ = w.Write([]byte(linebreak))
+	case blackfriday.Heading:
+		if entering {
+			_, _ = w.Write([]byte(linebreak))
 		}
-		out.WriteString(trimmed)
+	case blackfriday.HorizontalRule:
+		_, _ = w.Write([]byte(linebreak + "----------" + linebreak))
+	case blackfriday.BlockQuote:
+		r.renderBlockQuote(w, node, entering)
+	case blackfriday.CodeBlock:
+		r.renderCodeBlock(w, node)
+	case blackfriday.Code:
+		r.renderCode(w, node)
+	case blackfriday.Emph:
+		r.renderEmph(w, node, entering)
+	case blackfriday.Strong:
+		r.renderStrong(w, node, entering)
+	case blackfriday.Link:
+		r.renderLink(w, node, entering)
+	case blackfriday.Image:
+		r.renderImage(w, node, entering)
+	case blackfriday.List:
+		r.renderList(w, node, entering)
+	case blackfriday.Item:
+		r.renderItem(w, node, entering)
+	default:
+		r.fw(w, node.Literal)
+	}
+	return blackfriday.GoToNext
+}
+
+func (r *ASCIIRenderer) renderText(w io.Writer, node *blackfriday.Node) {
+	raw := string(node.Literal)
+	lines := bytes.Split([]byte(raw), []byte(linebreak))
+	for i, line := range lines {
+		trimmed := bytes.Trim(line, " \n\t")
+		if len(trimmed) > 0 && trimmed[0] != '_' {
+			_, _ = w.Write([]byte(" "))
+		}
+		_, _ = w.Write(trimmed)
+		if i < len(lines)-1 {
+			_, _ = w.Write([]byte(linebreak))
+		}
 	}
 }
 
-// List renders the start and end of a list.
-func (r *ASCIIRenderer) List(out *bytes.Buffer, text func() bool, flags int) {
-	r.listLevel++
-	out.WriteString(linebreak)
-	text()
-	r.listLevel--
+func (r *ASCIIRenderer) renderBlockQuote(w io.Writer, node *blackfriday.Node, entering bool) {
+	r.fw(w, node.Literal)
 }
 
-// ListItem renders list items and supports both ordered and unordered lists.
-func (r *ASCIIRenderer) ListItem(out *bytes.Buffer, text []byte, flags int) {
-	if flags&blackfriday.LIST_ITEM_BEGINNING_OF_LIST != 0 {
-		r.listItemCount = 1
+func (r *ASCIIRenderer) renderCodeBlock(w io.Writer, node *blackfriday.Node) {
+	_, _ = w.Write([]byte(linebreak))
+	lines := bytes.Split(node.Literal, []byte(linebreak))
+	for _, line := range lines {
+		indented := append([]byte(r.Indentation), line...)
+		_, _ = w.Write(indented)
+		_, _ = w.Write([]byte(linebreak))
+	}
+}
+
+func (r *ASCIIRenderer) renderCode(w io.Writer, node *blackfriday.Node) {
+	r.fw(w, node.Literal)
+}
+
+func (r *ASCIIRenderer) renderEmph(w io.Writer, node *blackfriday.Node, entering bool) {
+	r.fw(w, node.Literal)
+}
+
+func (r *ASCIIRenderer) renderStrong(w io.Writer, node *blackfriday.Node, entering bool) {
+	r.fw(w, node.Literal)
+}
+
+func (r *ASCIIRenderer) renderLink(w io.Writer, node *blackfriday.Node, entering bool) {
+	_, _ = w.Write([]byte(" "))
+	r.fw(w, node.Destination)
+}
+
+func (r *ASCIIRenderer) renderImage(w io.Writer, node *blackfriday.Node, entering bool) {
+	r.fw(w, node.Destination)
+}
+
+func (r *ASCIIRenderer) renderList(w io.Writer, node *blackfriday.Node, entering bool) {
+	if entering {
+		r.listLevel++
+		_, _ = w.Write([]byte(linebreak))
 	} else {
-		r.listItemCount++
+		r.listLevel--
 	}
-	indent := strings.Repeat(r.Indentation, int(r.listLevel))
-	var bullet string
-	if flags&blackfriday.LIST_TYPE_ORDERED != 0 {
-		bullet += fmt.Sprintf("%d.", r.listItemCount)
-	} else {
-		bullet += "*"
+}
+
+func (r *ASCIIRenderer) renderItem(w io.Writer, node *blackfriday.Node, entering bool) {
+	if entering {
+		indent := bytes.Repeat([]byte(r.Indentation), int(r.listLevel))
+		_, _ = w.Write(indent)
+
+		if node.ListFlags&blackfriday.ListTypeOrdered != 0 {
+			r.listItemCount++
+			fmt.Fprintf(w, "%d.", r.listItemCount)
+		} else {
+			_, _ = w.Write([]byte("*"))
+		}
+		_, _ = w.Write([]byte(" "))
 	}
-	out.WriteString(indent + bullet + " ")
-	r.fw(out, text)
-	out.WriteString(linebreak)
 }
 
-// Paragraph renders the start and end of a paragraph.
-func (r *ASCIIRenderer) Paragraph(out *bytes.Buffer, text func() bool) {
-	out.WriteString(linebreak)
-	text()
-	out.WriteString(linebreak)
+// RenderHeader implements the v2 Renderer interface.
+func (r *ASCIIRenderer) RenderHeader(w io.Writer, ast *blackfriday.Node) {
 }
 
-// BlockCode renders a chunk of text that represents source code.
-func (r *ASCIIRenderer) BlockCode(out *bytes.Buffer, text []byte, lang string) {
-	out.WriteString(linebreak)
-	lines := []string{}
-	for _, line := range strings.Split(string(text), linebreak) {
-		indented := r.Indentation + line
-		lines = append(lines, indented)
-	}
-	out.WriteString(strings.Join(lines, linebreak))
+// RenderFooter implements the v2 Renderer interface.
+func (r *ASCIIRenderer) RenderFooter(w io.Writer, ast *blackfriday.Node) {
 }
 
-func (r *ASCIIRenderer) GetFlags() int { return 0 }
-func (r *ASCIIRenderer) HRule(out *bytes.Buffer) {
-	out.WriteString(linebreak + "----------" + linebreak)
-}
-func (r *ASCIIRenderer) LineBreak(out *bytes.Buffer)                                      { out.WriteString(linebreak) }
-func (r *ASCIIRenderer) TitleBlock(out *bytes.Buffer, text []byte)                        { r.fw(out, text) }
-func (r *ASCIIRenderer) Header(out *bytes.Buffer, text func() bool, level int, id string) { text() }
-func (r *ASCIIRenderer) BlockHtml(out *bytes.Buffer, text []byte)                         { r.fw(out, text) }
-func (r *ASCIIRenderer) BlockQuote(out *bytes.Buffer, text []byte)                        { r.fw(out, text) }
-func (r *ASCIIRenderer) TableRow(out *bytes.Buffer, text []byte)                          { r.fw(out, text) }
-func (r *ASCIIRenderer) TableHeaderCell(out *bytes.Buffer, text []byte, align int)        { r.fw(out, text) }
-func (r *ASCIIRenderer) TableCell(out *bytes.Buffer, text []byte, align int)              { r.fw(out, text) }
-func (r *ASCIIRenderer) Footnotes(out *bytes.Buffer, text func() bool)                    { text() }
-func (r *ASCIIRenderer) FootnoteItem(out *bytes.Buffer, name, text []byte, flags int) {
-	r.fw(out, text)
-}
-func (r *ASCIIRenderer) AutoLink(out *bytes.Buffer, link []byte, kind int)         { r.fw(out, link) }
-func (r *ASCIIRenderer) CodeSpan(out *bytes.Buffer, text []byte)                   { r.fw(out, text) }
-func (r *ASCIIRenderer) DoubleEmphasis(out *bytes.Buffer, text []byte)             { r.fw(out, text) }
-func (r *ASCIIRenderer) Emphasis(out *bytes.Buffer, text []byte)                   { r.fw(out, text) }
-func (r *ASCIIRenderer) RawHtmlTag(out *bytes.Buffer, text []byte)                 { r.fw(out, text) }
-func (r *ASCIIRenderer) TripleEmphasis(out *bytes.Buffer, text []byte)             { r.fw(out, text) }
-func (r *ASCIIRenderer) StrikeThrough(out *bytes.Buffer, text []byte)              { r.fw(out, text) }
-func (r *ASCIIRenderer) FootnoteRef(out *bytes.Buffer, ref []byte, id int)         { r.fw(out, ref) }
-func (r *ASCIIRenderer) Entity(out *bytes.Buffer, entity []byte)                   { r.fw(out, entity) }
-func (r *ASCIIRenderer) Smartypants(out *bytes.Buffer, text []byte)                { r.fw(out, text) }
-func (r *ASCIIRenderer) DocumentHeader(out *bytes.Buffer)                          {}
-func (r *ASCIIRenderer) DocumentFooter(out *bytes.Buffer)                          {}
-func (r *ASCIIRenderer) TocHeaderWithAnchor(text []byte, level int, anchor string) {}
-func (r *ASCIIRenderer) TocHeader(text []byte, level int)                          {}
-func (r *ASCIIRenderer) TocFinalize()                                              {}
-
-func (r *ASCIIRenderer) Table(out *bytes.Buffer, header []byte, body []byte, columnData []int) {
-	r.fw(out, header, body)
-}
-
-func (r *ASCIIRenderer) Link(out *bytes.Buffer, link []byte, title []byte, content []byte) {
-	out.WriteString(" ")
-	r.fw(out, link)
-}
-
-func (r *ASCIIRenderer) Image(out *bytes.Buffer, link []byte, title []byte, alt []byte) {
-	r.fw(out, link)
-}
-
-func (r *ASCIIRenderer) fw(out io.Writer, text ...[]byte) {
+func (r *ASCIIRenderer) fw(w io.Writer, text ...[]byte) {
 	for _, t := range text {
-		_, _ = out.Write(t)
+		_, _ = w.Write(t)
 	}
 }

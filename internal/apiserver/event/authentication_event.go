@@ -6,6 +6,7 @@ package event
 
 import (
 	"context"
+	"time"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
 	"github.com/coding-hui/iam/pkg/log"
@@ -32,8 +33,13 @@ func NewAuthenticationEventListener() Listener {
 }
 
 func (l *authenticationSuccessListener) Handle(raw Event) error {
-	e := raw.(*AuthenticationEvent)
-	err := l.Store.UserRepository().FlushLastLoginTime(context.Background(), e.Username)
+	e, ok := raw.(*AuthenticationEvent)
+	if !ok {
+		return nil
+	}
+	bgCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := l.Store.UserRepository().FlushLastLoginTime(bgCtx, e.Username)
 	if err != nil {
 		log.Errorf("Failed to flush user [%s] last login time: %v", e.Username, err)
 		return err

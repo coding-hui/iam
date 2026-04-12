@@ -45,7 +45,13 @@ func (b BasicStrategy) AuthFunc() gin.HandlerFunc {
 			return
 		}
 
-		payload, _ := base64.StdEncoding.DecodeString(auth[1])
+		payload, err := base64.StdEncoding.DecodeString(auth[1])
+		if err != nil {
+			api.FailWithErrCode(errors.WithCode(code.ErrSignatureInvalid, "Authorization header contains invalid base64."), c)
+			c.Abort()
+
+			return
+		}
 		pair := strings.SplitN(string(payload), ":", 2)
 
 		if len(pair) != 2 {

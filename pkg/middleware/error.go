@@ -5,6 +5,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net"
 	"net/http/httputil"
 	"os"
@@ -30,33 +31,39 @@ func GinRecovery(c *gin.Context) {
 }
 
 func customRecovery(err any, c *gin.Context) {
-	if c.IsAborted() {
-		c.Status(200)
-	}
 	// Check for a broken connection, as it is not really a
 	// condition that warrants a panic stack trace.
 	var brokenPipe bool
-	var ne *net.OpError
-	var se *os.SyscallError
-	if ok := errors.As(err.(error), &ne); ok {
-		if ok := errors.As(err.(error), &se); ok {
-			if strings.Contains(strings.ToLower(se.Error()), "broken pipe") ||
-				strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
-				brokenPipe = true
+	if errErr, ok := err.(error); ok {
+		var ne *net.OpError
+		var se *os.SyscallError
+		if errors.As(errErr, &ne) {
+			if errors.As(errErr, &se) {
+				if strings.Contains(strings.ToLower(se.Error()), "broken pipe") ||
+					strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
+					brokenPipe = true
+				}
 			}
 		}
 	}
 
 	httpRequest, _ := httputil.DumpRequest(c.Request, false)
-	log.Errorf("[Recovery] %s panic recovered. err: %s. request: %s.",
+	log.Errorf("[Recovery] %s panic recovered. err: %v. request: %s.",
 		timeFormat(time.Now()), err, httpRequest)
 	if brokenPipe {
 		// If the connection is dead, we can't write a status to it.
-		_ = c.Error(err.(error))
+		if errErr, ok := err.(error); ok {
+			_ = c.Error(errErr)
+		}
 		c.Abort()
+		return
 	}
 
-	api.FailWithErrCode(err.(error), c)
+	if errErr, ok := err.(error); ok {
+		api.FailWithErrCode(errErr, c)
+	} else {
+		api.FailWithErrCode(errors.New(fmt.Sprint(err)), c)
+	}
 }
 
 func timeFormat(t time.Time) string {

@@ -7,6 +7,7 @@ package cache
 import (
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -50,6 +51,7 @@ type InMemoryCacheOptions struct {
 
 // imMemoryCache implements cache.Interface use memory objects, it should be used only for testing.
 type inMemoryCache struct {
+	mu    sync.RWMutex
 	store map[string]simpleObject
 }
 
@@ -70,6 +72,8 @@ func NewInMemoryCache(options *InMemoryCacheOptions, stopCh <-chan struct{}) (In
 }
 
 func (s *inMemoryCache) cleanInvalidToken() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	for k, v := range s.store {
 		if v.IsExpired() {
 			delete(s.store, k)
@@ -87,6 +91,8 @@ func (s *inMemoryCache) Keys(pattern string) ([]string, error) {
 		return nil, err
 	}
 	var keys []string
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	for k := range s.store {
 		if re.MatchString(k) {
 			keys = append(keys, k)
@@ -107,11 +113,15 @@ func (s *inMemoryCache) Set(key string, value string, duration time.Duration) er
 		sobject.neverExpire = true
 	}
 
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.store[key] = sobject
 	return nil
 }
 
 func (s *inMemoryCache) Del(keys ...string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	for _, key := range keys {
 		delete(s.store, key)
 	}
@@ -119,18 +129,31 @@ func (s *inMemoryCache) Del(keys ...string) error {
 }
 
 func (s *inMemoryCache) Get(key string) (string, error) {
-	if sobject, ok := s.store[key]; ok {
+	s.mu.RLock()
+	sobject, ok := s.store[key]
+	s.mu.RUnlock()
+	if ok {
 		if sobject.neverExpire || time.Now().Before(sobject.expiredAt) {
 			return sobject.value, nil
 		}
+		// Delete expired key on read
+		s.mu.Lock()
+		delete(s.store, key)
+		s.mu.Unlock()
 	}
 
 	return "", ErrNoSuchKey
 }
 
 func (s *inMemoryCache) Exists(keys ...string) (bool, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	for _, key := range keys {
-		if _, ok := s.store[key]; !ok {
+		sobject, ok := s.store[key]
+		if !ok {
+			return false, nil
+		}
+		if !sobject.neverExpire && time.Now().After(sobject.expiredAt) {
 			return false, nil
 		}
 	}
@@ -154,6 +177,8 @@ func (s *inMemoryCache) Expire(key string, duration time.Duration) error {
 		sobject.neverExpire = true
 	}
 
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.store[key] = sobject
 	return nil
 }

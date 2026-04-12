@@ -168,7 +168,6 @@ func (s *issuer) IssueTo(request *IssueRequest) (string, error) {
 func (s *issuer) Verify(token string) (*VerifiedResponse, error) {
 	parser := jwt.NewParser(
 		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg(), jwt.SigningMethodRS256.Alg()}),
-		jwt.WithoutClaimsValidation(),
 	)
 
 	var claims Claims
@@ -192,7 +191,7 @@ func (s *issuer) Verify(token string) (*VerifiedResponse, error) {
 	}
 
 	now := time.Now()
-	if !claims.VerifyExpiresAt(now, false) {
+	if !claims.VerifyExpiresAt(now, true) {
 		delta := now.Sub(claims.ExpiresAt.Time)
 		log.Warnf("jwt: token is expired by %v", delta)
 		return nil, errors.WithCode(code.ErrExpired, "")
@@ -293,7 +292,7 @@ func loadSignKey(options *options.AuthenticationOptions) (*rsa.PrivateKey, strin
 	if len(signKeyData) > 0 {
 		signKey, err = loadPrivateKey(signKeyData)
 		if err != nil {
-			log.Errorf("issuer: failed to load private key from data: %v", err)
+			return nil, "", fmt.Errorf("issuer: failed to load private key from data: %w", err)
 		}
 	}
 

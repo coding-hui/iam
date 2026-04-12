@@ -11,7 +11,9 @@ import (
 )
 
 // ctxKeyUser request context key of user.
-var ctxKeyUser = "user"
+type contextKey string
+
+var ctxKeyUser = contextKey("user")
 
 // NewContext instantiates a base context object for request flows.
 func NewContext() context.Context {

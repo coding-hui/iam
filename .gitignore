@@ -31,4 +31,6 @@
 /output*/
 /_output*/
 /_output
+/.claude
 .aider*
+*.db

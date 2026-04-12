@@ -75,8 +75,11 @@ func ConvertToStatementModel(statements []v1.Statement) []model.Statement {
 }
 
 // ConvertCreateUserReqToUserModel assemble the create user request to User Model.
-func ConvertCreateUserReqToUserModel(req v1.CreateUserRequest, external *model.UserExternal) *model.User {
-	encryptPassword, _ := auth.Encrypt(req.Password)
+func ConvertCreateUserReqToUserModel(req v1.CreateUserRequest, external *model.UserExternal) (*model.User, error) {
+	encryptPassword, err := auth.Encrypt(req.Password)
+	if err != nil {
+		return nil, err
+	}
 	return &model.User{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: req.Name,
@@ -88,7 +91,7 @@ func ConvertCreateUserReqToUserModel(req v1.CreateUserRequest, external *model.U
 		UserType: req.UserType,
 		Disabled: false,
 		External: external,
-	}
+	}, nil
 }
 
 // ConvertCreateDeptReqToModel assemble the create org dept request to Organization Model.

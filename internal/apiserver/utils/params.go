@@ -37,7 +37,7 @@ func ExtractPagingParams(c *gin.Context, minPageSize, maxPageSize int64) (int64,
 	pageStr := c.Query(pageParam)
 	pageSizeStr := c.Query(pageSizeParam)
 	if pageStr == "" {
-		pageStr = "0"
+		pageStr = "1"
 	}
 	if pageSizeStr == "" {
 		pageSizeStr = defaultPageSize
@@ -61,5 +61,5 @@ func ExtractPagingParams(c *gin.Context, minPageSize, maxPageSize int64) (int64,
 	if pageSize > maxPageSize {
 		pageSize = maxPageSize
 	}
-	return (page - 1) * pageSize64, pageSize, nil
+	return (page - 1) * pageSize, pageSize, nil
 }

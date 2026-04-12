@@ -100,7 +100,7 @@ func (a *applicationServiceImpl) CreateApplication(ctx context.Context, req v1.C
 func (a *applicationServiceImpl) UpdateApplication(ctx context.Context, app string, req v1.UpdateApplicationRequest) error {
 	oldApp, err := a.GetApplication(ctx, app, metav1.GetOptions{})
 	if err != nil {
-		return nil
+		return err
 	}
 	newApp := assembler.ConvertUpdateAppReqToModel(req, oldApp)
 	if newApp.AppID == "" {

@@ -71,8 +71,8 @@ func (p *applicationRepositoryImpl) Delete(ctx context.Context, name string, opt
 	}
 	err := db.Where("instance_id = ?", name).Delete(&model.Application{}).Error
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return datastore.ErrRecordNotExist
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
 		}
 
 		return err
@@ -168,9 +168,7 @@ func (p *applicationRepositoryImpl) Count(ctx context.Context, opts metav1.ListO
 	err := p.client.WithCtx(ctx).Model(model.Application{}).
 		Scopes(
 			makeCondition(opts),
-			paginate(opts),
 		).
-		Order("id desc").
 		Count(&totalCount).Error
 	if err != nil {
 		return 0, datastore.NewDBError(err, "failed to count apps")

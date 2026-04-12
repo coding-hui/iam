@@ -165,7 +165,7 @@ func (u *userRepositoryImpl) GetByNameOrInstanceId(ctx context.Context, nameOrId
 }
 
 func (u *userRepositoryImpl) FlushLastLoginTime(ctx context.Context, nameOrId string) error {
-	err := u.client.WithCtx(ctx).Debug().
+	err := u.client.WithCtx(ctx).
 		Model(&model.User{}).
 		Where("instance_id = ? or name = ?", nameOrId, nameOrId).
 		Update("last_login_time", time.Now()).Error
@@ -270,7 +270,7 @@ func joinDepartments(opts v1.ListUserOptions) func(db *gorm.DB) *gorm.DB {
 				Joins("INNER JOIN iam_organization o ON o.instance_id = dm.department_id").
 				Where("dm.department_id = ?", opts.DepartmentID)
 			if opts.IncludeChildrenDepartments {
-				db.Or("FIND_IN_SET(?, o.ancestors)", opts.DepartmentID)
+				db.Or("',' || o.ancestors || ',' LIKE '%,' || ? || ',%'", opts.DepartmentID)
 			}
 		}
 		return db

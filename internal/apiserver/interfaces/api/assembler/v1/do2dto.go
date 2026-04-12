@@ -5,6 +5,7 @@
 package v1
 
 import (
+	"strings"
 	"time"
 
 	"github.com/coding-hui/iam/internal/apiserver/domain/model"
@@ -13,6 +14,15 @@ import (
 
 	metav1 "github.com/coding-hui/common/meta/v1"
 )
+
+// maskString masks a string, showing only the last visibleChars characters.
+// For example, maskString("sk-abc123def456", 4) returns "****def456".
+func maskString(s string, visibleChars int) string {
+	if len(s) <= visibleChars {
+		return s
+	}
+	return strings.Repeat("*", len(s)-visibleChars) + s[len(s)-visibleChars:]
+}
 
 // ConvertUserModelToBase assemble the User model to DTO.
 func ConvertUserModelToBase(user *model.User) *v1.UserBase {
@@ -145,7 +155,6 @@ func ConvertModelToApplicationBase(app *model.Application) *v1.ApplicationBase {
 		Logo:              app.Logo,
 		HomepageUrl:       app.HomepageUrl,
 		AppID:             app.AppID,
-		AppSecret:         app.AppSecret,
 		CallbackURL:       app.CallbackURL,
 		LoginURL:          app.LoginURL,
 		IdentityProviders: identityProviders,
@@ -177,9 +186,11 @@ func ConvertModelToIdentityProviderBase(idp *model.IdentityProvider) *v1.Identit
 
 // ConvertApiKeyModelToBase assemble the ApiKey model to DTO.
 func ConvertApiKeyModelToBase(apiKey *model.ApiKey) *v1.ApiKeyBase {
+	// Mask the key, showing only the last 4 characters for security
+	maskedKey := maskString(apiKey.Key, 4)
 	base := &v1.ApiKeyBase{
 		ObjectMeta: apiKey.ObjectMeta,
-		Key:        apiKey.Key,
+		Key:        maskedKey,
 		UserID:     apiKey.UserID,
 		Status:     int(apiKey.Status),
 		UsageCount: apiKey.UsageCount,

@@ -44,7 +44,7 @@ type DeviceAuthorization struct {
 
 // TableName returns the table name for DeviceAuthorization.
 func (d *DeviceAuthorization) TableName() string {
-	return "device_authorizations"
+	return TableNamePrefix + "device_authorization"
 }
 
 func init() {

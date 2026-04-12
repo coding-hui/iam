@@ -79,8 +79,8 @@ func (p *policyRepositoryImpl) Delete(ctx context.Context, name string, opts met
 	}
 	err := db.Where("name = ?", name).Delete(&model.Policy{}).Error
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrPolicyNotFound, "%s", err.Error())
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
 		}
 
 		return err
@@ -96,7 +96,7 @@ func (p *policyRepositoryImpl) DeleteCollection(ctx context.Context, names []str
 		db = db.Unscoped()
 	}
 
-	return db.Where("name in (?)", names).Delete(&model.User{}).Error
+	return db.Where("name in (?)", names).Delete(&model.Policy{}).Error
 }
 
 // GetByName get policy.
@@ -119,7 +119,7 @@ func (p *policyRepositoryImpl) GetByInstanceId(
 	instanceId string,
 	_ metav1.GetOptions,
 ) (policy *model.Policy, err error) {
-	err = p.client.WithCtx(ctx).Debug().Preload("Statements").Where("instance_id = ?", instanceId).First(&policy).Error
+	err = p.client.WithCtx(ctx).Preload("Statements").Where("instance_id = ?", instanceId).First(&policy).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.WithCode(code.ErrPolicyNotFound, "%s", err.Error())

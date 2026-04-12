@@ -30,7 +30,7 @@ type User struct {
 
 	Status        int           `json:"status"                  gorm:"column:status;"`
 	Alias         string        `json:"alias"                   gorm:"column:alias;type:varchar(64)"`
-	Password      string        `json:"password,omitempty"      gorm:"column:password;type:varchar(256)"`
+	Password      string        `json:"-"                       gorm:"column:password;type:varchar(256)"`
 	Email         string        `json:"email"                   gorm:"column:email;type:varchar(64)"`
 	Phone         string        `json:"phone"                   gorm:"column:phone;type:varchar(20)"`
 	UserType      string        `json:"userType"                gorm:"column:user_type;type:varchar(20)"`

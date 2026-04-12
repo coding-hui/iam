@@ -20,7 +20,7 @@ var (
 	oauthProviders           = make(map[string]OAuthProvider)
 	genericProviders         = make(map[string]GenericProvider)
 
-	lock = sync.Mutex{}
+	lock = sync.RWMutex{}
 )
 
 // Identity represents the account mapped to iam.
@@ -39,7 +39,10 @@ type Identity interface {
 
 // GetGenericProvider returns GenericProvider with given name.
 func GetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
-	if provider, ok := genericProviders[idp.Name]; ok {
+	lock.RLock()
+	provider, ok := genericProviders[idp.Name]
+	lock.RUnlock()
+	if ok {
 		return provider, nil
 	}
 	if genericProviderFactories[idp.Type] == nil {
@@ -59,9 +62,9 @@ func SetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
 		if provider, err := factory.Create(options.DynamicOptions(idp.Extend)); err != nil {
 			log.Errorf("failed to create identity provider %s: %s", idp.Name, err)
 		} else {
-			lock.TryLock()
-			defer lock.Unlock()
+			lock.Lock()
 			genericProviders[idp.Name] = provider
+			lock.Unlock()
 			log.Infof("create identity provider %s successfully", idp.Name)
 			return provider, nil
 		}
@@ -71,7 +74,10 @@ func SetGenericProvider(idp *model.IdentityProvider) (GenericProvider, error) {
 
 // GetOAuthProvider returns OAuthProvider with given name.
 func GetOAuthProvider(idp *model.IdentityProvider) (OAuthProvider, error) {
-	if provider, ok := oauthProviders[idp.Name]; ok {
+	lock.RLock()
+	provider, ok := oauthProviders[idp.Name]
+	lock.RUnlock()
+	if ok {
 		return provider, nil
 	}
 	if oauthProviderFactories[idp.Type] == nil {
@@ -91,9 +97,9 @@ func SetOAuthProvider(idp *model.IdentityProvider) (OAuthProvider, error) {
 		if provider, err := factory.Create(options.DynamicOptions(idp.Extend)); err != nil {
 			log.Errorf("failed to create identity provider %s: %s", idp.Name, err)
 		} else {
-			lock.TryLock()
-			defer lock.Unlock()
+			lock.Lock()
 			oauthProviders[idp.Name] = provider
+			lock.Unlock()
 			log.Infof("create identity provider %s successfully", idp.Name)
 			return provider, nil
 		}

@@ -134,20 +134,20 @@ func (s *GenericAPIServer) PrepareRun() preparedGenericAPIServer {
 func (s *GenericAPIServer) Run() error {
 	// For scalability, use custom HTTP configuration mode here
 	s.insecureServer = &http.Server{
-		Addr:    s.InsecureServingInfo.Address,
-		Handler: s,
-		// ReadTimeout:    10 * time.Second,
-		// WriteTimeout:   10 * time.Second,
-		// MaxHeaderBytes: 1 << 20,
+		Addr:           s.InsecureServingInfo.Address,
+		Handler:        s,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
 	}
 
 	// For scalability, use custom HTTP configuration mode here
 	s.secureServer = &http.Server{
-		Addr:    s.SecureServingInfo.Address(),
-		Handler: s,
-		// ReadTimeout:    10 * time.Second,
-		// WriteTimeout:   10 * time.Second,
-		// MaxHeaderBytes: 1 << 20,
+		Addr:           s.SecureServingInfo.Address(),
+		Handler:        s,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
 	}
 
 	var eg errgroup.Group
@@ -158,7 +158,7 @@ func (s *GenericAPIServer) Run() error {
 		log.Infof("Start to listening the incoming requests on http address: %s", s.InsecureServingInfo.Address)
 
 		if err := s.insecureServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf(err.Error())
+			log.Errorf("HTTP server listen error: %s", err.Error())
 
 			return err
 		}
@@ -181,7 +181,7 @@ func (s *GenericAPIServer) Run() error {
 		log.Infof("Start to listening the incoming requests on https address: %s", s.SecureServingInfo.Address())
 
 		if err := s.secureServer.ListenAndServeTLS(cert, key); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatal(err.Error())
+			log.Errorf("HTTPS server listen error: %s", err.Error())
 
 			return err
 		}
@@ -201,7 +201,8 @@ func (s *GenericAPIServer) Run() error {
 	}
 
 	if err := eg.Wait(); err != nil {
-		log.Fatal(err.Error())
+		log.Errorf("Server group error: %s", err.Error())
+		return err
 	}
 
 	return nil
@@ -253,7 +254,7 @@ func (s *GenericAPIServer) ping(ctx context.Context) error {
 
 		select {
 		case <-ctx.Done():
-			log.Fatal("can not ping http server within the specified time interval.")
+			return fmt.Errorf("can not ping http server within the specified time interval")
 		default:
 		}
 	}

@@ -88,8 +88,8 @@ func (o *orgRepositoryImpl) DeleteByName(ctx context.Context, name string, opts 
 	}
 	err := db.Where("name = ?", name).Delete(&model.Organization{}).Error
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrOrgNotFound, "%s", err.Error())
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
 		}
 
 		return err
@@ -105,8 +105,8 @@ func (o *orgRepositoryImpl) DeleteByInstanceId(ctx context.Context, uid string, 
 	}
 	err := db.Where("instance_id = ?", uid).Delete(&model.Organization{}).Error
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrOrgNotFound, "%s", err.Error())
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
 		}
 
 		return err
@@ -179,7 +179,7 @@ func (o *orgRepositoryImpl) CountDepartmentByParent(ctx context.Context, parent 
 		Scopes(
 			makeCondition(opts),
 		).
-		Where("FIND_IN_SET(?, ancestors)", parent).
+		Where("',' || ancestors || ',' LIKE '%,' || ? || ',%'", parent).
 		Count(&totalCount).Error
 	if err != nil {
 		return 0, datastore.NewDBError(err, "failed to get department total")
@@ -222,7 +222,7 @@ func (o *orgRepositoryImpl) ListChildDepartments(
 			makeCondition(opts),
 			paginate(opts),
 		).
-		Where("FIND_IN_SET(?, ancestors)", org).
+		Where("',' || ancestors || ',' LIKE '%,' || ? || ',%'", org).
 		Find(&child).Error
 	if err != nil {
 		return nil, datastore.NewDBError(err, "failed to list 【org】 child departments")

@@ -65,8 +65,8 @@ func (u *roleRepositoryImpl) DeleteByInstanceId(ctx context.Context, instanceId 
 	}
 	err := db.Where("instance_id = ?", instanceId).Delete(&model.Role{}).Error
 	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.WithCode(code.ErrRoleNotFound, "%s", err.Error())
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
 		}
 
 		return err

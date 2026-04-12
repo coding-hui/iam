@@ -80,5 +80,6 @@ func (a ApiKeyStrategy) AuthFunc() gin.HandlerFunc {
 			UserType:   user.UserType,
 			Disabled:   user.Disabled,
 		}))
+		c.Next()
 	}
 }

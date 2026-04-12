@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
-
 	"github.com/coding-hui/iam/pkg/log"
 )
 
@@ -34,9 +33,12 @@ type Bus interface {
 type InProcBus struct {
 	sync.Mutex
 
-	wg  sync.WaitGroup
-	ch  chan Event
-	oc  sync.Once
+	wg   sync.WaitGroup
+	ch   chan Event
+	oc   sync.Once
+	done chan struct{}
+
+	mu  sync.Mutex
 	err error
 
 	cfg config.Config
@@ -68,6 +70,7 @@ func NewEventBus(c config.Config) *InProcBus {
 	return &InProcBus{
 		cfg:       c,
 		listeners: make(map[string]*ListenerQueue),
+		done:      make(chan struct{}),
 	}
 }
 
@@ -96,8 +99,11 @@ func (b *InProcBus) AsyncPublish(e Event) {
 		b.makeConsumers()
 	})
 
-	// dispatch event
-	b.ch <- e
+	// dispatch event with done channel guard to prevent panic on closed channel
+	select {
+	case b.ch <- e:
+	case <-b.done:
+	}
 }
 
 func (b *InProcBus) makeConsumers() {
@@ -114,15 +120,24 @@ func (b *InProcBus) makeConsumers() {
 		b.wg.Add(1)
 
 		go func() {
-			defer func() {
-				if err := recover(); err != nil {
-					b.err = fmt.Errorf("async consum event error: %v", err)
-				}
-				b.wg.Done()
-			}()
+			defer b.wg.Done()
 
 			for e := range b.ch {
-				_ = b.Publish(e)
+				func() {
+					defer func() {
+						if r := recover(); r != nil {
+							b.mu.Lock()
+							b.err = fmt.Errorf("async consume event error: %v", r)
+							b.mu.Unlock()
+						}
+					}()
+					if err := b.Publish(e); err != nil {
+						log.Errorf("Failed to publish async event: %v", err)
+						b.mu.Lock()
+						b.err = err
+						b.mu.Unlock()
+					}
+				}()
 			}
 		}()
 	}
@@ -160,13 +175,21 @@ func (b *InProcBus) CloseWait() error {
 // Wait wait all async event done.
 func (b *InProcBus) Wait() error {
 	b.wg.Wait()
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	return b.err
 }
 
 // Close event channel, deny to fire new event.
 func (b *InProcBus) Close() error {
-	if b.ch != nil {
-		close(b.ch)
+	select {
+	case <-b.done:
+		// already closed
+	default:
+		close(b.done)
+		if b.ch != nil {
+			close(b.ch)
+		}
 	}
 	return nil
 }

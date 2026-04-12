@@ -22,6 +22,7 @@ func RequestLog() gin.HandlerFunc {
 			c.Request.Header.Get("Upgrade") == "Upgrade" ||
 			c.Request.Method == http.MethodOptions {
 			c.Next()
+			return
 		}
 		start := time.Now()
 

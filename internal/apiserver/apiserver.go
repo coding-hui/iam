@@ -19,6 +19,7 @@ import (
 	"github.com/coding-hui/iam/internal/apiserver/event"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/cache"
 	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
+	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/sqlitedb"
 	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
 	"github.com/coding-hui/iam/internal/pkg/token"
 	"github.com/coding-hui/iam/pkg/container"
@@ -149,8 +150,14 @@ func (s *apiServer) buildIoCContainer(ctx context.Context) (err error) {
 
 	// datastore repository
 	var factory repository.Factory
-	if s.cfg.MySQLOptions != nil {
-		factory, err = mysqldb.New(context.Background(), s.cfg)
+	// Prefer SQLite if database file path is specified, otherwise fall back to MySQL
+	if s.cfg.SQLiteOptions != nil && s.cfg.SQLiteOptions.Database != "" {
+		factory, err = sqlitedb.New(ctx, s.cfg)
+		if err != nil {
+			return fmt.Errorf("create sqlitedb datastore instance failure %w", err)
+		}
+	} else if s.cfg.MySQLOptions != nil && s.cfg.MySQLOptions.Database != "" {
+		factory, err = mysqldb.New(ctx, s.cfg)
 		if err != nil {
 			return fmt.Errorf("create mysqldb datastore instance failure %w", err)
 		}

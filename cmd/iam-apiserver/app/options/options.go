@@ -23,6 +23,7 @@ type Options struct {
 	InsecureServing         *options.InsecureServingOptions `json:"insecure"       mapstructure:"insecure"`
 	SecureServing           *options.SecureServingOptions   `json:"secure"         mapstructure:"secure"`
 	MySQLOptions            *options.MySQLOptions           `json:"mysql"          mapstructure:"mysql"`
+	SQLiteOptions           *options.SQLiteOptions          `json:"sqlite"         mapstructure:"sqlite"`
 	RedisOptions            *options.RedisOptions           `json:"redis"          mapstructure:"redis"`
 	LogOptions              *log.Options                    `json:"log"            mapstructure:"log"`
 	FeatureOptions          *options.FeatureOptions         `json:"feature"        mapstructure:"feature"`
@@ -40,6 +41,7 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 	o.GenericServerRunOptions.AddFlags(fss.FlagSet("generic"))
 	o.GRPCOptions.AddFlags(fss.FlagSet("grpc"))
 	o.MySQLOptions.AddFlags(fss.FlagSet("mysql"))
+	o.SQLiteOptions.AddFlags(fss.FlagSet("sqlite"))
 	o.RedisOptions.AddFlags(fss.FlagSet("redis"))
 	o.FeatureOptions.AddFlags(fss.FlagSet("features"))
 	o.InsecureServing.AddFlags(fss.FlagSet("insecure"))
@@ -77,6 +79,7 @@ func NewOptions() *Options {
 		InsecureServing:         options.NewInsecureServingOptions(),
 		SecureServing:           options.NewSecureServingOptions(),
 		MySQLOptions:            options.NewMySQLOptions(),
+		SQLiteOptions:           options.NewSQLiteOptions(),
 		RedisOptions:            options.NewRedisOptions(),
 		LogOptions:              log.NewOptions(),
 		FeatureOptions:          options.NewFeatureOptions(),

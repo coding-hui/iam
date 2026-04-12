@@ -5,6 +5,7 @@
 package templates
 
 import (
+	"bytes"
 	"strings"
 
 	"github.com/MakeNowJust/heredoc/v2"
@@ -57,13 +58,17 @@ type normalizer struct {
 }
 
 func (s normalizer) markdown() normalizer {
-	bytes := []byte(s.string)
-	formatted := blackfriday.Markdown(
-		bytes,
-		&ASCIIRenderer{Indentation: Indentation},
-		blackfriday.EXTENSION_NO_INTRA_EMPHASIS,
+	r := &ASCIIRenderer{Indentation: Indentation}
+	md := blackfriday.New(
+		blackfriday.WithRenderer(r),
+		blackfriday.WithNoExtensions(),
 	)
-	s.string = string(formatted)
+	root := md.Parse([]byte(s.string))
+	var buf bytes.Buffer
+	root.Walk(func(node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+		return r.RenderNode(&buf, node, entering)
+	})
+	s.string = buf.String()
 	return s
 }
 

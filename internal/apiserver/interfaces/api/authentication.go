@@ -1,7 +1,6 @@
 // Copyright (c) 2023 coding-hui. All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
-
 package api
 
 import (
@@ -10,6 +9,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/coding-hui/common/errors"
+	metav1 "github.com/coding-hui/common/meta/v1"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
 	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
@@ -22,9 +24,6 @@ import (
 	"github.com/coding-hui/iam/pkg/log"
 	"github.com/coding-hui/iam/pkg/middleware"
 	"github.com/coding-hui/iam/pkg/middleware/auth"
-
-	"github.com/coding-hui/common/errors"
-	metav1 "github.com/coding-hui/common/meta/v1"
 )
 
 // autoAuthCheck authentication strategy which can automatically choose between Basic and Bearer.
@@ -38,8 +37,7 @@ type authentication struct {
 	TokenService            service.TokenService            `inject:""`
 	IdentityProviderService service.IdentityProviderService `inject:""`
 	ApiKeyService           service.ApiKeyService           `inject:""`
-
-	cfg config.Config
+	cfg                     config.Config
 }
 
 // NewAuthentication is the  of authentication.
@@ -62,7 +60,6 @@ func (a *authentication) RegisterApiGroup(g *gin.Engine) {
 		apiv1.POST("/auth/bind-external", autoAuthCheck.AuthFunc(), a.bindExternalAccount)
 		apiv1.POST("/auth/unbind-external", autoAuthCheck.AuthFunc(), a.unbindExternalAccount)
 	}
-
 	oauth := g.Group(versionPrefix + "/oauth")
 	{
 		oauth.GET("/callback/:callback", a.oauthCallback)
@@ -75,11 +72,10 @@ func newBasicAuth(authentication service.AuthenticationService) middleware.AuthS
 			Username: username,
 			Password: password,
 		}
-		response, err := authentication.Login(context.TODO(), login)
+		response, err := authentication.Login(context.Background(), login)
 		if err != nil {
 			return nil, err
 		}
-
 		return response, nil
 	})
 }
@@ -106,12 +102,10 @@ func permissionCheckFunc(r string) gin.HandlerFunc {
 			c.Next()
 			return
 		}
-
 		sub := user.InstanceID
 		url := c.Request.URL.Path
 		obj := fmt.Sprintf("%s:%s", r, url)
 		act := strings.ToLower(c.Request.Method)
-
 		e := repository.Client().CasbinRepository().SyncedEnforcer()
 		pass, err := e.Enforce(sub, obj, act)
 		if err != nil {
@@ -120,15 +114,12 @@ func permissionCheckFunc(r string) gin.HandlerFunc {
 			return
 		}
 		if !pass {
-			api.FailWithErrCode(errors.WithCode(
-				code.ErrPermissionDenied,
-				"Permission denied. obj: [%s] sub: [%s] act: [%s]", obj, sub, act),
-				c)
+			log.Warnf("Permission denied. obj: [%s] sub: [%s] act: [%s]", obj, sub, act)
+			api.FailWithErrCode(errors.WithCode(code.ErrPermissionDenied, "Permission denied"), c)
 			c.Abort()
 			return
 		}
 		log.Infof("Permission verification. path: %s", c.Request.URL.Path)
-
 		c.Next()
 	}
 }
@@ -146,7 +137,6 @@ func permissionCheckFunc(r string) gin.HandlerFunc {
 func (a *authentication) authenticate(c *gin.Context) {
 	var login v1.AuthenticateRequest
 	var err error
-
 	// support header and body both
 	if c.Request.Header.Get("Authorization") != "" {
 		login, err = parseWithHeader(c)
@@ -154,28 +144,22 @@ func (a *authentication) authenticate(c *gin.Context) {
 	if c.Request.Header.Get("Authorization") == "" || err != nil {
 		login, err = parseWithBody(c)
 	}
-
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
-
 	var resp *v1.AuthenticateResponse
-
 	if login.Username != "" && login.Password != "" {
 		resp, err = a.AuthenticationService.Login(c.Request.Context(), login)
 	} else {
 		resp, err = a.AuthenticationService.LoginByProvider(c.Request.Context(), login)
 	}
-
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
-
 	// set cookie if need
 	a.setAuthCookie(resp.AccessToken, c)
-
 	api.OkWithData(resp, c)
 }
 
@@ -184,7 +168,6 @@ func parseWithHeader(c *gin.Context) (v1.AuthenticateRequest, error) {
 	if !ok {
 		return v1.AuthenticateRequest{}, errors.WithCode(code.ErrPasswordIncorrect, "")
 	}
-
 	return v1.AuthenticateRequest{
 		Username: username,
 		Password: password,
@@ -196,7 +179,6 @@ func parseWithBody(c *gin.Context) (v1.AuthenticateRequest, error) {
 	if err := c.ShouldBindJSON(&login); err != nil {
 		return v1.AuthenticateRequest{}, errors.WithCode(code.ErrPasswordIncorrect, "")
 	}
-
 	return login, nil
 }
 
@@ -219,10 +201,8 @@ func (a *authentication) refreshToken(c *gin.Context) {
 		api.FailWithErrCode(err, c)
 		return
 	}
-
 	// set cookie if need
 	a.setAuthCookie(base.AccessToken, c)
-
 	api.OkWithData(base, c)
 }
 
@@ -245,10 +225,8 @@ func (a *authentication) userInfo(c *gin.Context) {
 		api.FailWithErrCode(err, c)
 		return
 	}
-
 	api.OkWithData(resp, c)
 }
-
 func (a *authentication) oauthCallback(c *gin.Context) {
 	callback := c.Param("callback")
 	idp, err := a.IdentityProviderService.GetIdentityProvider(c.Request.Context(), callback, metav1.GetOptions{})
@@ -261,10 +239,8 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 		api.FailWithHTML("authorize_callback.html", gin.H{"idp": idp}, err, c)
 		return
 	}
-
 	// set cookie if need
 	a.setAuthCookie(tokenInfo.AccessToken, c)
-
 	// If CallbackURL is not empty, redirect to frontend
 	if callbackURL := idp.CallbackURL; callbackURL != "" {
 		// Build the redirect URL with token information in URL fragment
@@ -274,17 +250,13 @@ func (a *authentication) oauthCallback(c *gin.Context) {
 			tokenInfo.TokenType,
 			tokenInfo.ExpiresIn,
 		)
-
 		// Add refresh_token only if present
 		if tokenInfo.RefreshToken != "" {
 			redirectURL += fmt.Sprintf("&refresh_token=%s", tokenInfo.RefreshToken)
 		}
-
 		c.Redirect(302, redirectURL)
-
 		return
 	}
-
 	api.OkWithHTML("authorize_callback.html", gin.H{"tokenInfo": tokenInfo, "idp": idp}, c)
 }
 
@@ -304,13 +276,11 @@ func (a *authentication) bindExternalAccount(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, "Error occurred while binding the request body to the struct"), c)
 		return
 	}
-
 	resp, err := a.AuthenticationService.BindExternalAccount(c.Request.Context(), bindReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
-
 	api.OkWithData(resp, c)
 }
 
@@ -330,13 +300,11 @@ func (a *authentication) unbindExternalAccount(c *gin.Context) {
 		api.FailWithErrCode(errors.WithCode(code.ErrBind, "Error occurred while binding the request body to the struct"), c)
 		return
 	}
-
 	resp, err := a.AuthenticationService.UnbindExternalAccount(c.Request.Context(), unbindReq)
 	if err != nil {
 		api.FailWithErrCode(err, c)
 		return
 	}
-
 	api.OkWithData(resp, c)
 }
 
@@ -361,22 +329,18 @@ func (a *authentication) logout(c *gin.Context) {
 		api.FailWithErrCode(err, c)
 		return
 	}
-
 	a.cleanCookie(c)
-
 	api.Ok(c)
 }
 
 func (a *authentication) setAuthCookie(token string, c *gin.Context) {
 	opts := a.cfg.AuthenticationOptions
 	oauthOpts := a.cfg.AuthenticationOptions.OAuthOptions
-
 	tokenMaxAge := int(oauthOpts.AccessTokenMaxAge.Seconds())
-
-	c.SetCookie(IamTokenName, token, tokenMaxAge, "/", opts.Domain, false, false)
+	c.SetCookie(IamTokenName, token, tokenMaxAge, "/", opts.Domain, true, true)
 }
 
 func (a *authentication) cleanCookie(c *gin.Context) {
 	opts := a.cfg.AuthenticationOptions
-	c.SetCookie(IamTokenName, "", -1, "/", opts.Domain, false, false)
+	c.SetCookie(IamTokenName, "", -1, "/", opts.Domain, true, true)
 }

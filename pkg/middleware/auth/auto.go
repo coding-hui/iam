@@ -50,7 +50,6 @@ func (a AutoStrategy) AuthFunc() gin.HandlerFunc {
 		if apiKey != "" {
 			operator.SetStrategy(a.apiKey)
 			operator.AuthFunc()(c)
-			c.Next()
 			return
 		}
 
@@ -94,7 +93,5 @@ func (a AutoStrategy) AuthFunc() gin.HandlerFunc {
 		}
 
 		operator.AuthFunc()(c)
-
-		c.Next()
 	}
 }

@@ -34,7 +34,7 @@ type Organization struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	Owner       string `json:"owner"       gorm:"column:owner;varchar(64)"`
-	Ancestors   string `json:"ancestors"   gorm:"column:ancestors;varchar(521)"`
+	Ancestors   string `json:"ancestors"   gorm:"column:ancestors;type:varchar(512)"`
 	ParentID    string `json:"parentId"    gorm:"column:parent_id;varchar(64)"`
 	DisplayName string `json:"displayName" gorm:"column:display_name;varchar(100)"`
 	WebsiteUrl  string `json:"websiteUrl"  gorm:"column:website_url;varchar(100)"`

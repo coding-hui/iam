@@ -71,7 +71,7 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 	if err != nil && errors.IsCode(err, code.ErrPolicyNotFound) {
 		if createErr := p.CreatePolicy(ctx, createReq); createErr != nil {
 			log.Warnf("Failed to create admin policy.")
-			return err
+			return createErr
 		}
 	}
 
@@ -112,7 +112,7 @@ func (p *policyServiceImpl) Init(ctx context.Context) error {
 // CreatePolicy create a new policy.
 func (p *policyServiceImpl) CreatePolicy(ctx context.Context, req v1.CreatePolicyRequest) error {
 	if len(req.Statements) == 0 {
-		return nil
+		return errors.WithCode(code.ErrValidation, "Policy must have at least one statement")
 	}
 	policy := assembler.ConvertPolicyModel(req)
 	if len(policy.Type) == 0 {

@@ -92,7 +92,10 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, req v1.CreateUserReque
 	}
 
 	// Create user
-	user := assembler.ConvertCreateUserReqToUserModel(req, external)
+	user, err := assembler.ConvertCreateUserReqToUserModel(req, external)
+	if err != nil {
+		return nil, err
+	}
 	if user.Alias == "" {
 		user.Alias = req.Name
 	}

@@ -53,7 +53,7 @@ func (r *Resource) AfterCreate(tx *gorm.DB) error {
 // Action resource all operator actions.
 type Action struct {
 	ID          uint64 `json:"id"          gorm:"primary_key;AUTO_INCREMENT;column:id"`
-	ResourceId  uint64 `json:"resourceId"  gorm:"column:resource_id;type:varchar(64)"`
+	ResourceId  uint64 `json:"resourceId"  gorm:"column:resource_id"`
 	Name        string `json:"name"        gorm:"column:name;type:varchar(64)"`
 	Description string `json:"description" gorm:"column:description;type:varchar(512)"`
 }

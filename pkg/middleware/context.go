@@ -16,7 +16,6 @@ const (
 func Context() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Set(RequestIDKey, c.GetString(XRequestIDKey))
-		c.Set(UsernameKey, c.GetString(UsernameKey))
 		c.Next()
 	}
 }
