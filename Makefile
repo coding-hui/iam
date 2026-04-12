@@ -176,68 +176,39 @@ check-updates:
 tidy:
 	@$(GO) mod tidy
 
+## install: Install IAM services (use INSTALL_MODE=local/docker/k8s/all)
+.PHONY: install
+install: install.$(or $(INSTALL_MODE),local)
+
 ## install.local: Install iam-apiserver with SQLite + Redis (local development)
 .PHONY: install.local
-install.local: prerequisites.local
-	@echo "===========> Starting Redis..."
-	@if command -v brew &> /dev/null; then \
-		brew services start redis 2>/dev/null || redis-server --daemonize yes; \
-	elif command -v redis-server &> /dev/null; then \
-		redis-server --daemonize yes 2>/dev/null || true; \
-	else \
-		echo "Redis not found. Please install Redis first."; \
-	fi
-	@echo "===========> Building iam-apiserver..."
-	@$(MAKE) go.build BINS=iam-apiserver
-	@echo "===========> Starting iam-apiserver..."
-	@$(LOCAL_OUTPUT_ROOT)/platforms/$(GOOS)/$(GOARCH)/iam-apiserver -c $(ROOT_DIR)/configs/iam-apiserver-sqlite.yaml &> $(LOCAL_OUTPUT_ROOT)/iam-apiserver.log &
-	@sleep 2
-	@echo "===========> iam-apiserver started"
-	@echo "Log file: $(LOCAL_OUTPUT_ROOT)/iam-apiserver.log"
-	@echo "API Server: http://127.0.0.1:8000"
+install.local:
+	$(MAKE) -f hack/makelib/install.mk install.local
 
 ## install.docker: Install IAM with Docker
 .PHONY: install.docker
 install.docker:
-	@$(ROOT_DIR)/hack/install/install.sh iam::install::install_storage
-	@$(ROOT_DIR)/hack/install/install.sh iam::install::prepare_iam
-	@$(ROOT_DIR)/hack/install/install.sh iam::apiserver::install
+	$(MAKE) -f hack/makelib/install.mk install.docker
 
 ## install.k8s: Install IAM with Kubernetes
 .PHONY: install.k8s
 install.k8s:
-	@echo "===========> Installing IAM with Kubernetes..."
-	@echo "This feature is not implemented yet."
-	@echo "Please use 'make install.docker' or 'make install.local' instead."
+	$(MAKE) -f hack/makelib/install.mk install.k8s
 
 ## install.all: Install all IAM components
 .PHONY: install.all
 install.all:
-	@$(ROOT_DIR)/hack/install/install.sh iam::install::install_iam
+	$(MAKE) -f hack/makelib/install.mk install.all
 
 ## stop: Stop all IAM services
 .PHONY: stop
 stop:
-	@echo "===========> Stopping IAM services..."
-	@pkill -f iam-apiserver 2>/dev/null || true
-	@pkill -f iam-authz-server 2>/dev/null || true
-	@echo "===========> IAM services stopped"
+	$(MAKE) -f hack/makelib/install.mk stop
 
 ## clean.install: Clean up installed files
 .PHONY: clean.install
 clean.install:
-	@echo "===========> Cleaning up IAM installation..."
-	@rm -rf $(LOCAL_OUTPUT_ROOT)/iam-apiserver.log
-	@rm -rf $(LOCAL_OUTPUT_ROOT)/platforms/iam-apiserver
-	@$(ROOT_DIR)/hack/install/install.sh iam::install::uninstall_iam 2>/dev/null || true
-	@echo "===========> Cleanup completed"
-
-## prerequisites.local: Check prerequisites for local development
-.PHONY: prerequisites.local
-prerequisites.local:
-	@echo "===========> Checking prerequisites..."
-	@command -v go &> /dev/null || { echo "Go is not installed."; exit 1; }
-	@command -v redis-server &> /dev/null || { echo "Redis is not installed."; exit 1; }
+	$(MAKE) -f hack/makelib/install.mk clean.install
 
 ## help: Show this help info.
 .PHONY: help
