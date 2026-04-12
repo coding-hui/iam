@@ -21,3 +21,25 @@ source "${IAM_ROOT}/hack/install/environment.sh"
 function iam::common::sudo {
   echo ${LINUX_PASSWORD} | sudo -S $1
 }
+
+# 判断当前操作系统是否为 macOS
+function iam::common::is_macos() {
+  [[ "$(uname -s)" == "Darwin" ]]
+}
+
+# 判断当前 Linux 发行版是否为 Ubuntu/Debian
+function iam::common::is_ubuntu() {
+  command -v apt-get &>/dev/null
+}
+
+# 获取二进制文件安装路径
+# macOS: ~/.local/bin (用户可写，无需 sudo)
+# Linux: ${IAM_INSTALL_DIR}/bin
+function iam::common::get_bin_path() {
+  if iam::common::is_macos; then
+    echo "${HOME}/.local/bin"
+  else
+    echo "${IAM_INSTALL_DIR}/bin"
+  fi
+}
+

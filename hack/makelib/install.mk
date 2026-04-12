@@ -25,29 +25,9 @@ INSTALL_MODE ?= local
 ## install.local: Install iam-apiserver with SQLite + Redis for local development
 .PHONY: install.local
 install.local: prerequisites.local
-	@echo "===========> Starting Redis..."
-	@if command -v brew &> /dev/null; then \
-		brew services start redis 2>/dev/null || redis-server --daemonize yes; \
-	elif command -v redis-server &> /dev/null; then \
-		redis-server --daemonize yes 2>/dev/null || true; \
-	else \
-		echo "Redis not found. Please install Redis first."; \
-	fi
-	@echo "===========> Building iam-apiserver..."
-	@$(MAKE) go.build BINS=iam-apiserver
-	@echo "===========> Starting iam-apiserver..."
-	@$(LOCAL_OUTPUT_ROOT)/platforms/$(GOOS)/$(GOARCH)/iam-apiserver -c $(ROOT_DIR)/configs/iam-apiserver-sqlite.yaml &> $(LOCAL_OUTPUT_ROOT)/iam-apiserver.log &
-	@sleep 2
-	@echo "===========> iam-apiserver started successfully"
+	$(ROOT_DIR)/hack/install/install.sh iam::apiserver::install
 	@echo "Log file: $(LOCAL_OUTPUT_ROOT)/iam-apiserver.log"
 	@echo "API Server: http://127.0.0.1:8000"
-
-## install.docker: Install IAM with Docker
-.PHONY: install.docker
-install.docker: prerequisites.docker
-	@$(ROOT_DIR)/hack/install/install.sh iam::install::install_storage
-	@$(ROOT_DIR)/hack/install/install.sh iam::install::prepare_iam
-	@$(ROOT_DIR)/hack/install/install.sh iam::apiserver::install
 
 ## install.k8s: Install IAM with Kubernetes
 .PHONY: install.k8s
@@ -55,11 +35,6 @@ install.k8s: prerequisites.k8s
 	@echo "===========> Installing IAM with Kubernetes..."
 	@echo "This feature is not implemented yet."
 	@echo "Please use 'make install INSTALL_MODE=docker' or 'make install INSTALL_MODE=local' instead."
-
-## install.all: Install all IAM components
-.PHONY: install.all
-install.all: prerequisites.all
-	@$(ROOT_DIR)/hack/install/install.sh iam::install::install_iam
 
 ## stop: Stop all IAM services
 .PHONY: stop
@@ -69,14 +44,14 @@ stop:
 	@pkill -f iam-authz-server 2>/dev/null || true
 	@echo "===========> IAM services stopped"
 
-## clean.install: Clean up installed files
-.PHONY: clean.install
-clean.install:
-	@echo "===========> Cleaning up IAM installation..."
+## uninstall: Uninstall IAM services
+.PHONY: uninstall
+uninstall:
+	@echo "===========> Uninstalling IAM services..."
 	@rm -rf $(LOCAL_OUTPUT_ROOT)/iam-apiserver.log
 	@rm -rf $(LOCAL_OUTPUT_ROOT)/platforms/iam-apiserver
 	@$(ROOT_DIR)/hack/install/install.sh iam::install::uninstall_iam 2>/dev/null || true
-	@echo "===========> Cleanup completed"
+	@echo "===========> Uninstall completed"
 
 ## prerequisites.local: Check prerequisites for local development
 .PHONY: prerequisites.local
@@ -99,11 +74,4 @@ prerequisites.k8s:
 	@echo "===========> Checking prerequisites for Kubernetes installation..."
 	@command -v kubectl &> /dev/null || { echo "Error: kubectl is not installed."; exit 1; }
 	@command -v helm &> /dev/null || { echo "Error: helm is not installed."; exit 1; }
-	@echo "===========> Prerequisites check passed"
-
-## prerequisites.all: Check prerequisites for full installation
-.PHONY: prerequisites.all
-prerequisites.all:
-	@echo "===========> Checking prerequisites for full installation..."
-	@command -v docker &> /dev/null || { echo "Error: Docker is not installed."; exit 1; }
 	@echo "===========> Prerequisites check passed"

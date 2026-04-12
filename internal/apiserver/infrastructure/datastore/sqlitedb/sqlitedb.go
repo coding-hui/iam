@@ -28,9 +28,12 @@ func New(ctx context.Context, c config.Config) (factory repository.Factory, last
 		Database: c.SQLiteOptions.Database,
 	}
 	dbIns, lastErr = db.NewForSQLite(options)
+	if dbIns == nil {
+		return nil, fmt.Errorf("failed to create sqlite datastore instance: %w", lastErr)
+	}
 
 	m := &sqlitedb{Driver: sql.NewDriver(dbIns.WithContext(ctx), c)}
-	if m == nil || lastErr != nil {
+	if lastErr != nil {
 		return nil, fmt.Errorf("failed to get sqlite store factory, sqliteFactory: %+v, error: %w", m, lastErr)
 	}
 

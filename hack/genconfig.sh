@@ -1,4 +1,4 @@
-gendoc.sh#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # Copyright (c) 2023 coding-hui. All rights reserved.
 # Use of this source code is governed by a MIT style
@@ -20,8 +20,6 @@ if [ $# -ne 2 ]; then
 fi
 
 source "${env_file}"
-
-declare -A envs
 
 set +u
 for env in $(sed -n 's/^[^#].*${\(.*\)}.*/\1/p' ${template_file}); do

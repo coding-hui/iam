@@ -28,6 +28,7 @@ include hack/makelib/release.mk
 include hack/makelib/swagger.mk
 include hack/makelib/dependencies.mk
 include hack/makelib/tools.mk
+include hack/makelib/install.mk
 
 # ==============================================================================
 # Usage
@@ -178,37 +179,16 @@ tidy:
 
 ## install: Install IAM services (use INSTALL_MODE=local/docker/k8s/all)
 .PHONY: install
-install: install.$(or $(INSTALL_MODE),local)
-
-## install.local: Install iam-apiserver with SQLite + Redis (local development)
-.PHONY: install.local
-install.local:
-	$(MAKE) -f hack/makelib/install.mk install.local
-
-## install.docker: Install IAM with Docker
-.PHONY: install.docker
-install.docker:
-	$(MAKE) -f hack/makelib/install.mk install.docker
-
-## install.k8s: Install IAM with Kubernetes
-.PHONY: install.k8s
-install.k8s:
-	$(MAKE) -f hack/makelib/install.mk install.k8s
-
-## install.all: Install all IAM components
-.PHONY: install.all
-install.all:
-	$(MAKE) -f hack/makelib/install.mk install.all
+install: build
+	@$(MAKE) install.$(or $(INSTALL_MODE),local)
 
 ## stop: Stop all IAM services
 .PHONY: stop
-stop:
-	$(MAKE) -f hack/makelib/install.mk stop
+stop: stop
 
-## clean.install: Clean up installed files
-.PHONY: clean.install
-clean.install:
-	$(MAKE) -f hack/makelib/install.mk clean.install
+## uninstall: Uninstall IAM services
+.PHONY: uninstall
+uninstall: uninstall
 
 ## help: Show this help info.
 .PHONY: help
