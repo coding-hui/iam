@@ -85,9 +85,6 @@ function iam::apiserver::install()
     # 5. 启动 iam-apiserver 服务
     launchctl unload "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist" 2>/dev/null || true
     launchctl load "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist"
-
-    # 等待服务启动
-    sleep 3
   else
     # 4. 创建并安装 iam-apiserver systemd unit 文件（Linux）
     echo "${LINUX_PASSWORD}" | sudo -S bash -c \
@@ -98,6 +95,9 @@ function iam::apiserver::install()
     iam::common::sudo "systemctl restart iam-apiserver"
     iam::common::sudo "systemctl enable iam-apiserver"
   fi
+
+  # 等待服务启动（每1s检查一次，最多60s）
+  iam::apiserver::wait_for_start || return 1
 
   iam::apiserver::status || return 1
   iam::apiserver::info
@@ -128,6 +128,23 @@ function iam::apiserver::uninstall()
   iam::log::info "uninstall iam-apiserver successfully"
 }
 
+# 等待服务启动（每1s检查一次，最多60s）
+function iam::apiserver::wait_for_start() {
+  local max_attempts=60
+  local attempt=0
+  while true; do
+    if nc -z -w 1 ${IAM_APISERVER_HOST} ${IAM_APISERVER_INSECURE_BIND_PORT} 2>/dev/null; then
+      return 0
+    fi
+    sleep 1
+    attempt=$((attempt + 1))
+    if [ $attempt -ge $max_attempts ]; then
+      iam::log::error "iam-apiserver failed to start within 60 seconds"
+      return 1
+    fi
+  done
+}
+
 # 状态检查
 function iam::apiserver::status()
 {
@@ -141,21 +158,11 @@ function iam::apiserver::status()
       iam::log::error "iam-apiserver process not running"
       return 1
     }
-
-    if echo | nc -z -w 2 ${IAM_APISERVER_HOST} ${IAM_APISERVER_INSECURE_BIND_PORT} 2>&1 | grep -q "refused\|failed"; then
-      iam::log::error "cannot access insecure port, iam-apiserver maybe not startup"
-      return 1
-    fi
   else
     systemctl status iam-apiserver | grep -q 'active' || {
       iam::log::error "iam-apiserver failed to start, maybe not installed properly"
       return 1
     }
-
-    if echo | telnet ${IAM_APISERVER_HOST} ${IAM_APISERVER_INSECURE_BIND_PORT} 2>&1 | grep refused &>/dev/null; then
-      iam::log::error "cannot access insecure port, iam-apiserver maybe not startup"
-      return 1
-    fi
   fi
 
   iam::log::info "iam-apiserver status active"
