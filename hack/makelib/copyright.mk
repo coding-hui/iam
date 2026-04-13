@@ -8,7 +8,7 @@
 
 .PHONY: copyright.verify
 copyright.verify: tools.verify.addlicense
-	@echo "===========> Verifying the boilerplate headers for all files"
+	@echo "==> Verifying the boilerplate headers for all files"
 	@addlicense --check -f $(ROOT_DIR)/hack/boilerplate.txt --skip-dirs "api/*" --skip-dirs "installer/*" --skip-dirs "web/node_modules/*" --skip-dirs "_output/*" $(ROOT_DIR)
 
 .PHONY: copyright.add

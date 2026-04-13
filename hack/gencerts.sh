@@ -26,7 +26,7 @@ function generate-iam-cert() {
   local prefix=${2:-}
 
   mkdir -p "${cert_dir}"
-  pushd "${cert_dir}"
+  pushd "${cert_dir}" >/dev/null 2>&1
 
   iam::util::ensure-cfssl
 
@@ -78,21 +78,20 @@ EOF
   fi
 
   if [[ ! -r "ca.pem" || ! -r "ca-key.pem" ]]; then
-    ${CFSSL_BIN} gencert -initca ca-csr.json | ${CFSSLJSON_BIN} -bare ca -
+    ${CFSSL_BIN} gencert -loglevel=5 -initca ca-csr.json | ${CFSSLJSON_BIN} -bare ca -
   fi
 
   if [[ -z "${prefix}" ]]; then
     return 0
   fi
 
-  echo "Generate "${prefix}" certificates..."
   echo '{"CN":"'"${prefix}"'","hosts":[],"key":{"algo":"rsa","size":2048},"names":[{"C":"CN","ST":"ShangHai","L":"ShangHai","O":"wecoding","OU":"'"${prefix}"'"}]}' |
-    ${CFSSL_BIN} gencert -hostname="${CERT_HOSTNAME},${prefix}" -ca=ca.pem -ca-key=ca-key.pem \
+    ${CFSSL_BIN} gencert -loglevel=5 -hostname="${CERT_HOSTNAME},${prefix}" -ca=ca.pem -ca-key=ca-key.pem \
       -config=ca-config.json -profile=iam - | ${CFSSLJSON_BIN} -bare "${prefix}"
 
   # the popd will access `directory stack`, no `real` parameters is actually needed
   # shellcheck disable=SC2119
-  popd
+  popd >/dev/null 2>&1
 }
 
 # Generates SSL certificates for iam components. Uses cfssl program.
@@ -122,7 +121,7 @@ function create-iam-certs {
 
   generate-iam-cert "${IAM_TEMP}/cfssl" ${prefix}
 
-  pushd "${IAM_TEMP}/cfssl"
+  pushd "${IAM_TEMP}/cfssl" >/dev/null 2>&1
   IAM_CA_KEY_BASE64=$(cat "ca-key.pem" | base64 | tr -d '\r\n')
   IAM_CA_CERT_BASE64=$(cat "ca.pem" | gzip | base64 | tr -d '\r\n')
   case "${prefix}" in

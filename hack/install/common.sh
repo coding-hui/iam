@@ -22,24 +22,47 @@ function iam::common::sudo {
   echo ${LINUX_PASSWORD} | sudo -S $1
 }
 
-# 判断当前操作系统是否为 macOS
+# ==============================================================================
+# Aliases for backward compatibility
+# These functions are now in hack/lib/util.sh
+# ==============================================================================
+
 function iam::common::is_macos() {
-  [[ "$(uname -s)" == "Darwin" ]]
+  iam::util::is_macos
 }
 
-# 判断当前 Linux 发行版是否为 Ubuntu/Debian
 function iam::common::is_ubuntu() {
-  command -v apt-get &>/dev/null
+  iam::util::is_ubuntu
 }
 
-# 获取二进制文件安装路径
-# macOS: ~/.local/bin (用户可写，无需 sudo)
-# Linux: ${IAM_INSTALL_DIR}/bin
 function iam::common::get_bin_path() {
-  if iam::common::is_macos; then
-    echo "${HOME}/.local/bin"
-  else
-    echo "${IAM_INSTALL_DIR}/bin"
-  fi
+  iam::util::get_bin_path "$@"
 }
 
+function iam::common::get_sed_i_flag() {
+  iam::util::get_sed_i_flag
+}
+
+function iam::common::launchd_load() {
+  iam::util::launchd_load "$@"
+}
+
+function iam::common::launchd_unload() {
+  iam::util::launchd_unload "$@"
+}
+
+function iam::common::launchd_is_running() {
+  iam::util::launchd_is_running "$@"
+}
+
+function iam::common::brew_service_start() {
+  iam::util::brew_service_start "$@"
+}
+
+function iam::common::brew_service_stop() {
+  iam::util::brew_service_stop "$@"
+}
+
+function iam::common::pkill() {
+  iam::util::pkill "$@"
+}

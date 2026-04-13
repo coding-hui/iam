@@ -109,6 +109,10 @@ function iam::mongodb::install() {
 # 卸载
 function iam::mongodb::uninstall() {
   set +o errexit
+  if iam::common::is_macos; then
+    iam::log::info "MongoDB uninstall skipped on macOS"
+    return 0
+  fi
   iam::common::sudo "systemctl stop mongod"
   iam::common::sudo "systemctl disable mongod"
   if command -v apt-get &>/dev/null; then

@@ -90,7 +90,7 @@ undeploy:
 ## clean: Remove all files that are created by building.
 .PHONY: clean
 clean:
-	@echo "===========> Cleaning all build output"
+	@echo "==> Cleaning all build output"
 	@-rm -vrf $(OUTPUT_DIR)
 
 ## lint: Check syntax and styling of go sources.
@@ -120,7 +120,7 @@ release:
 ## format: Gofmt (reformat) package sources (exclude vendor dir if existed).
 .PHONY: format
 format: tools.verify.golines tools.verify.goimports tools.verify.swag
-	@echo "===========> Formating codes"
+	@echo "==> Formatting codes"
 	@$(FIND) -type f -name '*.go' ! -path 'web/*' | $(XARGS) gofmt -s -w
 	@$(FIND) -type f -name '*.go' ! -path 'web/*' | $(XARGS) goimports -w -local $(ROOT_PACKAGE)
 	@$(FIND) -type f -name '*.go' ! -path 'web/*' | $(XARGS) golines -w --max-len=180 --reformat-tags --shorten-comments --ignore-generated .
@@ -182,13 +182,6 @@ tidy:
 install:
 	@$(MAKE) install.$(or $(INSTALL_MODE),local)
 
-## stop: Stop all IAM services
-.PHONY: stop
-stop: stop
-
-## uninstall: Uninstall IAM services
-.PHONY: uninstall
-uninstall: uninstall
 
 ## help: Show this help info.
 .PHONY: help

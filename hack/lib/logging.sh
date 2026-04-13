@@ -126,6 +126,40 @@ iam::log::info() {
   done
 }
 
+# Print a section header (e.g. "==> Installing Redis")
+iam::log::section() {
+  for message; do
+    echo "==> ${message}"
+  done
+}
+
+# Print a sub-step message with 4-space indentation (e.g. "    Generating certificates...")
+iam::log::substep() {
+  for message; do
+    echo "    ${message}"
+  done
+}
+
+# Print progress with animated dots
+iam::log::progress() {
+  for message; do
+    echo -n "    ${message}"
+  done
+}
+
+iam::log::progress_next() {
+  echo -n "."
+}
+
+# Print a success banner
+iam::log::success() {
+  local msg="${1:-Installation completed successfully!}"
+  echo ""
+  echo "==========================================="
+  echo "  ${msg}"
+  echo "==========================================="
+}
+
 # Just like iam::log::info, but no \n, so you can make a progress bar
 iam::log::progress() {
   for message; do

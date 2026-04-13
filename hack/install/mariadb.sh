@@ -77,6 +77,10 @@ function iam::mariadb::install() {
 # 卸载
 function iam::mariadb::uninstall() {
   set +o errexit
+  if iam::common::is_macos; then
+    iam::log::info "MariaDB uninstall skipped on macOS"
+    return 0
+  fi
   iam::common::sudo "systemctl stop mariadb"
   iam::common::sudo "systemctl disable mariadb"
   if command -v apt-get &>/dev/null; then

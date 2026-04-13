@@ -18,31 +18,33 @@ EOF
 # 安装
 function iam::iamctl::install()
 {
-  pushd ${IAM_ROOT}
+  pushd ${IAM_ROOT} > /dev/null
+
+  iam::log::section "Installing iamctl"
 
   # 1. 生成并安装 CA 证书和私钥
+  iam::log::substep "Generating certificates..."
   ./hack/gencerts.sh generate-iam-cert ${LOCAL_OUTPUT_ROOT}/cert
-  mkdir -p "${IAM_INSTALL_DIR}"
-  mkdir -p "${IAM_CONFIG_DIR}/cert"
-  cp ${LOCAL_OUTPUT_ROOT}/cert/ca* ${IAM_CONFIG_DIR}/cert
+  mkdir -p "${IAM_INSTALL_DIR}" 2>/dev/null
+  mkdir -p "${IAM_CONFIG_DIR}/cert" 2>/dev/null
+  cp ${LOCAL_OUTPUT_ROOT}/cert/ca* ${IAM_CONFIG_DIR}/cert 2>/dev/null
 
   ./hack/gencerts.sh generate-iam-cert ${LOCAL_OUTPUT_ROOT}/cert admin
-  #iam::common::sudo "cp ${LOCAL_OUTPUT_ROOT}/cert/admin*pem ${IAM_CONFIG_DIR}/cert"
   cert_dir=$(dirname ${CONFIG_USER_CLIENT_CERTIFICATE})
   key_dir=$(dirname ${CONFIG_USER_CLIENT_KEY})
-  mkdir -p ${cert_dir} ${key_dir}
-  cp ${LOCAL_OUTPUT_ROOT}/cert/admin.pem ${CONFIG_USER_CLIENT_CERTIFICATE}
-  cp ${LOCAL_OUTPUT_ROOT}/cert/admin-key.pem ${CONFIG_USER_CLIENT_KEY}
+  mkdir -p ${cert_dir} ${key_dir} 2>/dev/null
+  cp ${LOCAL_OUTPUT_ROOT}/cert/admin.pem ${CONFIG_USER_CLIENT_CERTIFICATE} 2>/dev/null
+  cp ${LOCAL_OUTPUT_ROOT}/cert/admin-key.pem ${CONFIG_USER_CLIENT_KEY} 2>/dev/null
 
   # 2. 构建 iamctl
+  iam::log::substep "Building iamctl..."
   CGO_ENABLED=1 go build -o ${LOCAL_OUTPUT_ROOT}/bin/iamctl github.com/coding-hui/iam/cmd/iamctl
   local bin_path=$(iam::common::get_bin_path)
-  mkdir -p "${bin_path}"
-  cp ${LOCAL_OUTPUT_ROOT}/bin/iamctl "${bin_path}/iamctl"
+  mkdir -p "${bin_path}" 2>/dev/null
+  cp ${LOCAL_OUTPUT_ROOT}/bin/iamctl "${bin_path}/iamctl" 2>/dev/null
 
   # 3. 生成并安装 iamctl 的配置文件（iamctl.yaml）
   mkdir -p $HOME/.iam
-  # Always create a working config for local development
   cat > $HOME/.iam/iamctl.yaml << EOFCONFIG
 apiVersion: v1
 user:
@@ -54,26 +56,28 @@ server:
   timeout: 10s
   insecure-skip-tls-verify: true
 EOFCONFIG
-  iam::iamctl::status || return 1
-  iam::iamctl::info
 
-  iam::log::info "install iamctl successfully"
-  popd
+  iam::iamctl::status || return 1
+
+  popd >/dev/null 2>&1
 }
 
 # 卸载
 function iam::iamctl::uninstall()
 {
+  iam::log::section "Uninstalling iamctl"
   set +o errexit
   local bin_path=$(iam::common::get_bin_path)
+  iam::log::substep "Removing binary..."
   rm -f "${bin_path}/iamctl"
+  iam::log::substep "Removing config..."
   rm -f $HOME/.iam/iamctl.yaml
   #iam::common::sudo "rm -f ${IAM_CONFIG_DIR}/cert/admin*pem"
   rm -f ${CONFIG_USER_CLIENT_CERTIFICATE}
   rm -f ${CONFIG_USER_CLIENT_KEY}
   set -o errexit
 
-  iam::log::info "uninstall iamctl successfully"
+  iam::log::info "Uninstall iamctl successfully"
 }
 
 # 状态检查

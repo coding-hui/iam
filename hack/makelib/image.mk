@@ -58,7 +58,7 @@ image.build: image.verify go.build.verify $(addprefix image.build., $(addprefix 
 .PHONY: image.build.%
 image.build.%:
 	$(eval IMAGE := $(word 2,$(subst ., ,$*)))
-	@echo "===========> Building docker image $(IMAGE) $(VERSION) for $(PLATFORMS)"
+	@echo "==> Building docker image $(IMAGE) $(VERSION) for $(PLATFORMS)"
 	$(eval BUILD_SUFFIX := -f $(ROOT_DIR)/installer/dockerfile/$(IMAGE)/Dockerfile $(_DOCKER_BUILD_EXTRA_ARGS))
 	$(MAKE) image.daemon.verify ;\
 	$(DOCKER) buildx create --use ;\
@@ -72,5 +72,5 @@ image.push: image.verify go.build.verify $(addprefix image.push., $(addprefix $(
 
 .PHONY: image.push.%
 image.push.%: image.build.%
-	@echo "===========> Pushing image $(IMAGE) $(VERSION) to $(REGISTRY_PREFIX)"
+	@echo "==> Pushing image $(IMAGE) $(VERSION) to $(REGISTRY_PREFIX)"
 	$(DOCKER) push $(REGISTRY_PREFIX)/$(IMAGE):$(VERSION)

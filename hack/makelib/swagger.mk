@@ -8,12 +8,12 @@
 
 .PHONY: swag.run
 swag.run: tools.verify.swagger
-	@echo "===========> Generating swagger API docs"
+	@echo "==> Generating swagger API docs"
 	@swag i -g apiserver.go -dir ${ROOT_DIR}/internal/apiserver --parseDependency --parseInternal -o ${ROOT_DIR}/api/swagger
 
 .PHONY: swag.fmt
 swag.fmt: tools.verify.swagger
-	@echo "===========> Format swag comments"
+	@echo "==> Format swag comments"
 	@swag fmt -d ${ROOT_DIR}/
 
 .PHONY: swag.serve

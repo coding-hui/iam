@@ -23,8 +23,7 @@ function iam::redis::_install_macos() {
     return 1
   fi
 
-  iam::log::info "Installing Redis via Homebrew..."
-  brew install redis
+  iam::log::section "Installing Redis"
 
   # 找到配置文件（Apple Silicon 与 Intel 路径不同）
   local redis_conf=""
@@ -36,7 +35,12 @@ function iam::redis::_install_macos() {
     iam::log::error_exit "Redis configuration file not found"
     return 1
   fi
-  iam::log::info "Using Redis config: ${redis_conf}"
+
+  # 检查 Redis 是否已安装，未安装则安装
+  if ! brew list redis &>/dev/null 2>&1; then
+    iam::log::substep "Installing redis..."
+    HOMEBREW_NO_INSTALL_CLEANUP=1 HOMEBREW_NO_ENV_HINTS=1 brew install redis
+  fi
 
   # 允许后台运行
   sed -i '' 's/^daemonize no/daemonize yes/' ${redis_conf}
@@ -48,26 +52,27 @@ function iam::redis::_install_macos() {
   # 关闭保护模式
   sed -i '' 's/^protected-mode yes/protected-mode no/' ${redis_conf}
 
-  brew services stop redis 2>/dev/null || true
-  brew services start redis
+  iam::log::substep "Starting redis service..."
+  iam::common::brew_service_stop redis
+  iam::common::brew_service_start redis
   sleep 2
 }
 
 function iam::redis::_uninstall_macos() {
-  brew services stop redis 2>/dev/null || true
-  pkill -f redis-server 2>/dev/null || true
+  iam::common::brew_service_stop redis
+  iam::common::pkill redis-server
   brew uninstall redis 2>/dev/null || true
 }
 
 function iam::redis::_status_macos() {
   if ! pgrep -f redis-server &>/dev/null; then
-    iam::log::error_exit "Redis not running, maybe not installed properly"
+    iam::log::error_exit "Redis not running"
     return 1
   fi
 
   redis-cli --no-auth-warning -h ${REDIS_HOST} -p ${REDIS_PORT} -a "${REDIS_PASSWORD}" PING 2>/dev/null \
     | grep -q "PONG" || {
-    iam::log::error "cannot connect to Redis, maybe not initialized properly"
+    iam::log::error "cannot connect to Redis"
     return 1
   }
 }
@@ -156,23 +161,25 @@ function iam::redis::install()
   fi
 
   iam::redis::status || return 1
-  iam::redis::info
-  iam::log::info "install Redis successfully"
 }
 
 # 卸载
 function iam::redis::uninstall()
 {
+  iam::log::section "Uninstalling Redis"
   set +o errexit
   if iam::common::is_macos; then
+    iam::log::substep "Stopping redis service..."
     iam::redis::_uninstall_macos
   elif iam::common::is_ubuntu; then
+    iam::log::substep "Stopping redis service..."
     iam::redis::_uninstall_ubuntu
   else
+    iam::log::substep "Stopping redis service..."
     iam::redis::_uninstall_linux
   fi
   set -o errexit
-  iam::log::info "uninstall Redis successfully"
+  iam::log::info "Uninstall Redis successfully"
 }
 
 # 状态检查
@@ -185,8 +192,6 @@ function iam::redis::status()
   else
     iam::redis::_status_linux
   fi
-
-  iam::log::info "redis-server status active"
 }
 
 if [[ "$*" =~ iam::redis:: ]];then

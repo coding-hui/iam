@@ -44,7 +44,7 @@ function iam::install::prepare_iam() {
   IAM_ROOT=$WORKSPACE/golang/src/github.com/coding-hui/iam
   LOCAL_OUTPUT_ROOT="${IAM_ROOT}/${OUT_DIR:-_output}"
 
-  pushd ${IAM_ROOT}
+  pushd ${IAM_ROOT} > /dev/null
 
   # 2. 配置 $HOME/.bashrc 添加一些便捷入口
   if ! grep -q 'Alias for quick access' $HOME/.bashrc; then
@@ -95,13 +95,15 @@ EOF
 }
 
 function iam::install::unprepare_iam() {
-  pushd ${IAM_ROOT}
+  pushd ${IAM_ROOT} > /dev/null
 
-  # 1. 删除 iam 数据库和用户
-  mysql -h127.0.0.1 -P3306 -u"${MARIADB_ADMIN_USERNAME}" -p"${MARIADB_ADMIN_PASSWORD}" <<EOF
+  # 1. 删除 iam 数据库和用户 (仅 Linux，macOS 使用 SQLite)
+  if ! iam::common::is_macos && command -v mysql &>/dev/null; then
+    mysql -h127.0.0.1 -P3306 -u"${MARIADB_ADMIN_USERNAME}" -p"${MARIADB_ADMIN_PASSWORD}" <<EOF
 drop database iam;
 drop user ${MARIADB_USERNAME}@127.0.0.1
 EOF
+  fi
 
   # 2. 删除创建的目录
   iam::common::sudo "rm -rf ${IAM_DATA_DIR}"
@@ -110,8 +112,10 @@ EOF
   iam::common::sudo "rm -rf ${IAM_LOG_DIR}"
 
   # 3. 删除配置 hosts
-  echo ${LINUX_PASSWORD} | sudo -S sed -i '/iam.api.coding-hui.com/d' /etc/hosts
-  echo ${LINUX_PASSWORD} | sudo -S sed -i '/iam.authz.coding-hui.com/d' /etc/hosts
+  local sed_i_flag
+  sed_i_flag=$(iam::common::get_sed_i_flag)
+  echo ${LINUX_PASSWORD} | sudo -S sed ${sed_i_flag} '/iam.api.coding-hui.com/d' /etc/hosts
+  echo ${LINUX_PASSWORD} | sudo -S sed ${sed_i_flag} '/iam.authz.coding-hui.com/d' /etc/hosts
 
   iam::log::info "unprepare for iam installation successfully"
   popd
@@ -127,58 +131,28 @@ function iam::install::install_cfssl() {
 }
 
 function iam::install::install_storage() {
-#  iam::mariadb::install || return 1
   iam::redis::install || return 1
-#  iam::mongodb::install || return 1
-  iam::log::info "install storage successfully"
 }
 
 function iam::install::uninstall_storage() {
-  iam::mariadb::uninstall || return 1
   iam::redis::uninstall || return 1
-  iam::mongodb::uninstall || return 1
-  iam::log::info "uninstall storage successfully"
 }
 
 # 安装 IAM 应用
 function iam::install::install_iam() {
-  # 1. 安装并初始化数据库
+  # 1. 安装存储服务 (Redis)
   iam::install::install_storage || return 1
 
-  # 2. 先准备安装环境
-  # iam::install::prepare_iam || return 1
-
-  # 3. 安装 iam-apiserver 服务
+  # 2. 安装 iam-apiserver 服务
   iam::apiserver::install || return 1
 
-  # 4. 安装 iamctl 客户端工具
+  # 3. 安装 iamctl 客户端工具
   iam::iamctl::install || return 1
-
-  # 5. 安装 iam-authz-server 服务
-  # iam::authzserver::install || return 1
-
-  # 6. 安装 iam-pump 服务
-  # iam::pump::install || return 1
-
-  # 7. 安装 iam-watcher 服务
-  # iam::watcher::install || return 1
-
-  # 8. 安装 man page
-  # iam::man::install || return 1
-
-  iam::log::info "install iam application successfully"
 }
 
 function iam::install::uninstall_iam() {
-  iam::man::uninstall || return 1
   iam::iamctl::uninstall || return 1
-  iam::pump::uninstall || return 1
-  iam::watcher::uninstall || return 1
-  iam::authzserver::uninstall || return 1
   iam::apiserver::uninstall || return 1
-
-  iam::install::unprepare_iam || return 1
-
   iam::install::uninstall_storage || return 1
 }
 
@@ -187,4 +161,44 @@ function iam::install::uninstall() {
   iam::log::info "uninstall iam application successfully"
 }
 
-eval $*
+# ==============================================================================
+# Main dispatch - supports both direct sourcing and CLI execution
+# Usage:
+#   ./install.sh install        # Install IAM
+#   ./install.sh uninstall     # Uninstall IAM
+#   ./install.sh start         # Start services
+#   ./install.sh stop          # Stop services
+#   ./install.sh status        # Check status
+#   ./install.sh restart       # Restart services
+#   ./install.sh logs          # Show logs
+
+if [[ -n "${1}" ]]; then
+  case "${1}" in
+    install)
+      iam::install::install_iam
+      ;;
+    uninstall)
+      iam::install::uninstall
+      ;;
+    start)
+      iam::apiserver::start
+      ;;
+    stop)
+      iam::apiserver::stop
+      ;;
+    status)
+      iam::apiserver::status
+      ;;
+    restart)
+      iam::apiserver::stop
+      iam::apiserver::start
+      ;;
+    logs)
+      iam::apiserver::logs
+      ;;
+    *)
+      echo "Usage: $0 {install|uninstall|start|stop|status|restart|logs}"
+      exit 1
+      ;;
+  esac
+fi

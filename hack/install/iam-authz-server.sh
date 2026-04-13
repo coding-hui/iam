@@ -50,7 +50,7 @@ EOF
 # 安装
 function iam::authzserver::install()
 {
-  pushd ${IAM_ROOT}
+  pushd ${IAM_ROOT} > /dev/null
 
   # 0. 确保目录存在
   mkdir -p "${IAM_INSTALL_DIR}"

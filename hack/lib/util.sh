@@ -666,6 +666,97 @@ function iam::util::read-array {
   eval "[[ \${$1[--i]} ]]" || unset "$1[i]" # ensures last element isn't empty
 }
 
+# ==============================================================================
+# Platform detection utilities
+# ==============================================================================
+
+# 判断当前操作系统是否为 macOS
+function iam::util::is_macos() {
+  [[ "$(uname -s)" == "Darwin" ]]
+}
+
+# 判断当前 Linux 发行版是否为 Ubuntu/Debian
+function iam::util::is_ubuntu() {
+  command -v apt-get &>/dev/null
+}
+
+# ==============================================================================
+# Path utilities
+# ==============================================================================
+
+# 获取二进制文件安装路径
+# macOS: ~/.local/bin (用户可写，无需 sudo)
+# Linux: ${IAM_INSTALL_DIR}/bin
+function iam::util::get_bin_path() {
+  if iam::util::is_macos; then
+    echo "${HOME}/.local/bin"
+  else
+    echo "${IAM_INSTALL_DIR}/bin"
+  fi
+}
+
+# 获取 sed -i 的参数 (macOS 需要 '', Linux 不需要)
+# 用法: sed ${IAM_SED_I_FLAG} 'pattern' file
+function iam::util::get_sed_i_flag() {
+  if iam::util::is_macos; then
+    echo "-i ''"
+  else
+    echo "-i"
+  fi
+}
+
+# ==============================================================================
+# macOS launchd service management
+# ==============================================================================
+
+# 加载 launchd 服务
+function iam::util::launchd_load() {
+  local plist="$1"
+  if [ -f "${plist}" ]; then
+    launchctl load "${plist}" 2>/dev/null || true
+  fi
+}
+
+# 卸载 launchd 服务
+function iam::util::launchd_unload() {
+  local plist="$1"
+  if [ -f "${plist}" ]; then
+    launchctl unload "${plist}" 2>/dev/null || true
+  fi
+}
+
+# 检查 launchd 服务是否运行
+function iam::util::launchd_is_running() {
+  local label="$1"
+  launchctl list | grep -q "${label}" 2>/dev/null
+}
+
+# ==============================================================================
+# macOS Homebrew service management
+# ==============================================================================
+
+# 启动 Homebrew 服务
+function iam::util::brew_service_start() {
+  local service="$1"
+  HOMEBREW_NO_ENV_HINTS=1 brew services start "${service}" >/dev/null 2>&1
+}
+
+# 停止 Homebrew 服务
+function iam::util::brew_service_stop() {
+  local service="$1"
+  HOMEBREW_NO_ENV_HINTS=1 brew services stop "${service}" 2>/dev/null || true
+}
+
+# ==============================================================================
+# Process management
+# ==============================================================================
+
+# 杀死进程 by name
+function iam::util::pkill() {
+  local pattern="$1"
+  command pkill -f "${pattern}" 2>/dev/null || true
+}
+
 # Some useful colors.
 if [[ -z "${color_start-}" ]]; then
   declare -r color_start="\033["

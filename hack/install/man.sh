@@ -18,7 +18,7 @@ EOF
 # 安装
 function iam::man::install()
 {
-  pushd ${IAM_ROOT}
+  pushd ${IAM_ROOT} > /dev/null
 
   # 1. 生成各个组件的 man1 文件
   ${IAM_ROOT}/hack/update-generated-docs.sh

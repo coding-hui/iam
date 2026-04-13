@@ -58,7 +58,7 @@ go.build.%:
 	$(eval PLATFORM := $(word 1,$(subst ., ,$*)))
 	$(eval OS := $(word 1,$(subst _, ,$(PLATFORM))))
 	$(eval ARCH := $(word 2,$(subst _, ,$(PLATFORM))))
-	@echo "===========> Building binary $(COMMAND) $(VERSION) for $(OS) $(ARCH)"
+	@echo "==> Building binary $(COMMAND) $(VERSION) for $(OS) $(ARCH)"
 	@mkdir -p $(BIN_DIR)
 	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(GO_BUILD_FLAGS) -o $(BIN_DIR)/$(COMMAND)$(GO_OUT_EXT) $(ROOT_PACKAGE)/cmd/$(COMMAND)
 
@@ -70,17 +70,17 @@ go.build.multiarch: go.build.verify $(foreach p,$(PLATFORMS),$(addprefix go.buil
 
 .PHONY: go.clean
 go.clean:
-	@echo "===========> Cleaning all build output"
+	@echo "==> Cleaning all build output"
 	@-rm -vrf $(OUTPUT_DIR)
 
 .PHONY: go.lint
 go.lint: tools.verify.golangci-lint
-	@echo "===========> Run golangci to lint source codes"
+	@echo "==> Run golangci to lint source codes"
 	@golangci-lint run -c $(ROOT_DIR)/.golangci.yaml $(ROOT_DIR)/...
 
 .PHONY: go.test
 go.test: tools.verify.go-junit-report
-	@echo "===========> Run unit test"
+	@echo "==> Run unit test"
 	@set -o pipefail;$(GO) test -race -cover -coverprofile=$(OUTPUT_DIR)/coverage.out \
 		-timeout=10m -shuffle=on -short -v `go list ./...|\
 		egrep -v $(subst $(SPACE),'|',$(sort $(EXCLUDE_TESTS)))` 2>&1 | \
