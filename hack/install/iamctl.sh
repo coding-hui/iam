@@ -35,12 +35,29 @@ function iam::iamctl::install()
   cp ${LOCAL_OUTPUT_ROOT}/cert/admin-key.pem ${CONFIG_USER_CLIENT_KEY}
 
   # 2. 构建 iamctl
-  make build BINS=iamctl
-  cp ${LOCAL_OUTPUT_ROOT}/bin/iamctl $HOME/bin/
+  CGO_ENABLED=1 go build -o ${LOCAL_OUTPUT_ROOT}/bin/iamctl github.com/coding-hui/iam/cmd/iamctl
+  local bin_path=$(iam::common::get_bin_path)
+  mkdir -p "${bin_path}"
+  cp ${LOCAL_OUTPUT_ROOT}/bin/iamctl "${bin_path}/iamctl"
 
-  # 3.  生成并安装 iamctl 的配置文件（iamctl.yaml）
+  # 3. 生成并安装 iamctl 的配置文件（iamctl.yaml）
   mkdir -p $HOME/.iam
-  ./hack/genconfig.sh ${ENV_FILE} configs/iamctl.yaml > $HOME/.iam/iamctl.yaml
+  ./hack/genconfig.sh ${ENV_FILE} configs/iamctl-template.yaml > $HOME/.iam/iamctl.yaml 2>/dev/null || {
+    # Fallback: create config manually if genconfig fails
+    cat > $HOME/.iam/iamctl.yaml << 'EOFCONFIG'
+apiVersion: v1
+user:
+  username: admin
+  password: Admin@2021
+  client-certificate: ${HOME}/.iam/cert/admin.pem
+  client-key: ${HOME}/.iam/cert/admin-key.pem
+
+server:
+  address: https://127.0.0.1:8443
+  timeout: 10s
+  insecure-skip-tls-verify: true
+EOFCONFIG
+  }
   iam::iamctl::status || return 1
   iam::iamctl::info
 
@@ -52,7 +69,8 @@ function iam::iamctl::install()
 function iam::iamctl::uninstall()
 {
   set +o errexit
-  rm -f $HOME/bin/iamctl
+  local bin_path=$(iam::common::get_bin_path)
+  rm -f "${bin_path}/iamctl"
   rm -f $HOME/.iam/iamctl.yaml
   #iam::common::sudo "rm -f ${IAM_CONFIG_DIR}/cert/admin*pem"
   rm -f ${CONFIG_USER_CLIENT_CERTIFICATE}
