@@ -24,8 +24,8 @@ INSTALL_MODE ?= local
 
 ## install.local: Install iam-apiserver with SQLite + Redis for local development
 .PHONY: install.local
-install.local: prerequisites.local
-	$(ROOT_DIR)/hack/install/install.sh iam::apiserver::install
+install.local:
+	$(ROOT_DIR)/hack/install/install.sh iam::install::install_iam
 	@echo "Log file: $(LOCAL_OUTPUT_ROOT)/iam-apiserver.log"
 	@echo "API Server: http://127.0.0.1:8000"
 

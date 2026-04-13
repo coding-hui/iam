@@ -127,9 +127,9 @@ function iam::install::install_cfssl() {
 }
 
 function iam::install::install_storage() {
-  iam::mariadb::install || return 1
+#  iam::mariadb::install || return 1
   iam::redis::install || return 1
-  iam::mongodb::install || return 1
+#  iam::mongodb::install || return 1
   iam::log::info "install storage successfully"
 }
 
@@ -152,7 +152,7 @@ function iam::install::install_iam() {
   iam::apiserver::install || return 1
 
   # 4. 安装 iamctl 客户端工具
-  iam::iamctl::install || return 1
+#  iam::iamctl::install || return 1
 
   # 5. 安装 iam-authz-server 服务
   # iam::authzserver::install || return 1
