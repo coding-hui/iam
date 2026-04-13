@@ -39,23 +39,24 @@ function iam::redis::_install_macos() {
   iam::log::info "Using Redis config: ${redis_conf}"
 
   # 允许后台运行
-  sed -i '' '/^daemonize/{s/no/yes/}' ${redis_conf}
+  sed -i '' 's/^daemonize no/daemonize yes/' ${redis_conf}
   # 允许外网连接
-  sed -i '' '/^bind 127.0.0.1/{s/^/#/}' ${redis_conf}
+  sed -i '' 's/^bind 127.0.0.1/# bind 127.0.0.1/' ${redis_conf}
   # 设置密码
   sed -i '' 's/^# requirepass.*$/requirepass '"${REDIS_PASSWORD}"'/' ${redis_conf}
   sed -i '' 's/^requirepass.*$/requirepass '"${REDIS_PASSWORD}"'/' ${redis_conf}
   # 关闭保护模式
-  sed -i '' '/^protected-mode/{s/yes/no/}' ${redis_conf}
+  sed -i '' 's/^protected-mode yes/protected-mode no/' ${redis_conf}
 
   brew services stop redis 2>/dev/null || true
-  redis-server ${redis_conf}
+  brew services start redis
   sleep 2
 }
 
 function iam::redis::_uninstall_macos() {
-  brew services stop redis
-  brew uninstall redis
+  brew services stop redis 2>/dev/null || true
+  pkill -f redis-server 2>/dev/null || true
+  brew uninstall redis 2>/dev/null || true
 }
 
 function iam::redis::_status_macos() {

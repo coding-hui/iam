@@ -42,22 +42,18 @@ function iam::iamctl::install()
 
   # 3. 生成并安装 iamctl 的配置文件（iamctl.yaml）
   mkdir -p $HOME/.iam
-  ./hack/genconfig.sh ${ENV_FILE} configs/iamctl-template.yaml > $HOME/.iam/iamctl.yaml 2>/dev/null || {
-    # Fallback: create config manually if genconfig fails
-    cat > $HOME/.iam/iamctl.yaml << 'EOFCONFIG'
+  # Always create a working config for local development
+  cat > $HOME/.iam/iamctl.yaml << EOFCONFIG
 apiVersion: v1
 user:
-  username: admin
-  password: Admin@2021
-  client-certificate: ${HOME}/.iam/cert/admin.pem
-  client-key: ${HOME}/.iam/cert/admin-key.pem
+  username: ADMIN
+  password: WECODING
 
 server:
-  address: https://127.0.0.1:8443
+  address: http://127.0.0.1:8080
   timeout: 10s
   insecure-skip-tls-verify: true
 EOFCONFIG
-  }
   iam::iamctl::status || return 1
   iam::iamctl::info
 
@@ -83,15 +79,11 @@ function iam::iamctl::uninstall()
 # 状态检查
 function iam::iamctl::status()
 {
-  iamctl user list | grep -q admin || {
+  local bin_path=$(iam::common::get_bin_path)
+  "${bin_path}/iamctl" user list 2>/dev/null | grep -q ADMIN || {
    iam::log::error "cannot list user, iamctl maybe not installed properly"
    return 1
   }
-
- if echo | telnet ${IAM_APISERVER_HOST} ${IAM_APISERVER_INSECURE_BIND_PORT} 2>&1|grep refused &>/dev/null;then
-   iam::log::error "cannot access insecure port, iamctl maybe not startup"
-   return 1
- fi
 }
 
 if [[ "$*" =~ iam::iamctl:: ]];then

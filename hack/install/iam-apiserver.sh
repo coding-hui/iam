@@ -34,8 +34,6 @@ function iam::apiserver::create_plist() {
     </array>
     <key>RunAtLoad</key>
     <true/>
-    <key>KeepAlive</key>
-    <true/>
     <key>StandardOutPath</key>
     <string>${IAM_LOG_DIR}/iam-apiserver.log</string>
     <key>StandardErrorPath</key>
@@ -78,12 +76,10 @@ function iam::apiserver::install()
   ./hack/genconfig.sh "${ENV_FILE}" configs/iam-apiserver-template.yaml > "${IAM_CONFIG_DIR}/iam-apiserver.yaml"
 
   if iam::common::is_macos; then
-    # 4. 创建并安装 iam-apiserver launchd plist 文件
+    # 4. 创建并安装 launchd plist
     iam::apiserver::create_plist
+    mkdir -p "${HOME}/Library/LaunchAgents"
     cp "${IAM_ROOT}/io.github.coding-hui.iam-apiserver.plist" "${HOME}/Library/LaunchAgents/"
-
-    # 5. 启动 iam-apiserver 服务
-    launchctl unload "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist" 2>/dev/null || true
     launchctl load "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist"
   else
     # 4. 创建并安装 iam-apiserver systemd unit 文件（Linux）
@@ -149,13 +145,8 @@ function iam::apiserver::wait_for_start() {
 function iam::apiserver::status()
 {
   if iam::common::is_macos; then
-    launchctl list | grep -q 'io.github.coding-hui.iam-apiserver' || {
+    nc -z -w 1 ${IAM_APISERVER_HOST} ${IAM_APISERVER_INSECURE_BIND_PORT} 2>/dev/null || {
       iam::log::error "iam-apiserver failed to start, maybe not installed properly"
-      return 1
-    }
-
-    pgrep -x iam-apiserver &>/dev/null || {
-      iam::log::error "iam-apiserver process not running"
       return 1
     }
   else

@@ -143,7 +143,7 @@ function iam::install::uninstall_storage() {
 # 安装 IAM 应用
 function iam::install::install_iam() {
   # 1. 安装并初始化数据库
-  # iam::install::install_storage || return 1
+  iam::install::install_storage || return 1
 
   # 2. 先准备安装环境
   # iam::install::prepare_iam || return 1
@@ -152,7 +152,7 @@ function iam::install::install_iam() {
   iam::apiserver::install || return 1
 
   # 4. 安装 iamctl 客户端工具
-#  iam::iamctl::install || return 1
+  iam::iamctl::install || return 1
 
   # 5. 安装 iam-authz-server 服务
   # iam::authzserver::install || return 1

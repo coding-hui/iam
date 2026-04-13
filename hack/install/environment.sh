@@ -11,10 +11,10 @@ IAM_ROOT=$(cd $(dirname "${BASH_SOURCE[0]}")/../.. && pwd)
 LOCAL_OUTPUT_ROOT="${IAM_ROOT}/${OUT_DIR:-_output}"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-  readonly IAM_DATA_DIR="${IAM_ROOT}/.iam/data"       # 各组件数据目录
-  readonly IAM_INSTALL_DIR="${IAM_ROOT}/.iam"         # 二进制和静态文件
-  readonly IAM_CONFIG_DIR="${IAM_ROOT}/.iam/conf"      # 配置文件
-  readonly IAM_LOG_DIR="${IAM_ROOT}/.iam/logs"        # 日志文件
+  readonly IAM_DATA_DIR="${HOME}/.iam/data"       # 各组件数据目录
+  readonly IAM_INSTALL_DIR="${HOME}/.iam"         # 二进制和静态文件
+  readonly IAM_CONFIG_DIR="${HOME}/.iam/conf"      # 配置文件
+  readonly IAM_LOG_DIR="${HOME}/.iam/logs"        # 日志文件
 else
   readonly IAM_DATA_DIR=${IAM_DATA_DIR:-/data/iam}
   readonly IAM_INSTALL_DIR=${IAM_INSTALL_DIR:-/opt/iam}

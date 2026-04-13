@@ -21,5 +21,5 @@ server:
   #retry-interval: # 重试间隔，默认为 1s
   #tls-server-name: # TLS 服务器名称
   #insecure-skip-tls-verify: # 设置为 true 表示跳过 TLS 安全验证模式，将使得 HTTPS 连接不安全
-  certificate-authority: ${CONFIG_SERVER_CERTIFICATE_AUTHORITY} # 用于 CA 授权的 cert 文件路径
+#  certificate-authority: ${CONFIG_SERVER_CERTIFICATE_AUTHORITY} # 用于 CA 授权的 cert 文件路径
   #certificate-authority-data:
