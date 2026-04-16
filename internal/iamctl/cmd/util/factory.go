@@ -7,6 +7,7 @@ package util
 import (
 	restclient "github.com/coding-hui/wecoding-sdk-go/rest"
 	"github.com/coding-hui/wecoding-sdk-go/services/iam"
+	authzv1 "github.com/coding-hui/wecoding-sdk-go/services/iam/authz/v1"
 
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
 )
@@ -30,4 +31,7 @@ type Factory interface {
 
 	// Returns a RESTClient for accessing IAM resources or an error.
 	RESTClient() (*restclient.RESTClient, error)
+
+	// AuthzV1Client gives you back an AuthzV1Client for authzserver
+	AuthzV1Client() (authzv1.AuthzV1Interface, error)
 }
