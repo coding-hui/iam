@@ -104,6 +104,43 @@ func (f *ConfigFlags) toRawIAMConfigLoader() clientcmd.ClientConfig {
 		panic(err)
 	}
 
+	// Handle IAM to SDK field mapping:
+	// 1. IAM uses "server.address" but SDK uses "server.endpoint"
+	if config.Server != nil && config.Server.Endpoint == "" {
+		if addr := viper.GetString("server.address"); addr != "" {
+			config.Server.Endpoint = addr
+		}
+	}
+
+	// 2. IAM uses "user.*" but SDK uses "credentials.*"
+	if config.Credentials != nil {
+		if config.Credentials.Username == "" {
+			if u := viper.GetString("user.username"); u != "" {
+				config.Credentials.Username = u
+			}
+		}
+		if config.Credentials.Password == "" {
+			if p := viper.GetString("user.password"); p != "" {
+				config.Credentials.Password = p
+			}
+		}
+		if config.Credentials.Token == "" {
+			if t := viper.GetString("user.token"); t != "" {
+				config.Credentials.Token = t
+			}
+		}
+		if config.Credentials.AccessKeyId == "" {
+			if ak := viper.GetString("user.accessKeyId"); ak != "" {
+				config.Credentials.AccessKeyId = ak
+			}
+		}
+		if config.Credentials.SecretAccessKey == "" {
+			if sk := viper.GetString("user.secretAccessKey"); sk != "" {
+				config.Credentials.SecretAccessKey = sk
+			}
+		}
+	}
+
 	return clientcmd.NewClientConfigFromConfig(config)
 }
 

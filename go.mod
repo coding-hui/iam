@@ -181,3 +181,5 @@ require (
 	modernc.org/sqlite v1.33.1 // indirect
 	moul.io/http2curl v1.0.0 // indirect
 )
+
+replace github.com/coding-hui/wecoding-sdk-go => ./sdk

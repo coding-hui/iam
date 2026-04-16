@@ -64,9 +64,10 @@ user:
   password: WECODING
 
 server:
-  address: http://127.0.0.1:8080
+  endpoint: http://127.0.0.1:8080
   timeout: 10s
   insecure-skip-tls-verify: true
+  authzEndpoint: http://127.0.0.1:9090
 EOFCONFIG
 
   iam::iamctl::status || return 1
@@ -96,7 +97,7 @@ function iam::iamctl::uninstall()
 function iam::iamctl::status()
 {
   local bin_path=$(iam::common::get_bin_path)
-  "${bin_path}/iamctl" user list 2>/dev/null | grep -q ADMIN || {
+  "${bin_path}/iamctl" user list --iamconfig=$HOME/.iam/iamctl.yaml 2>/dev/null | grep -q ADMIN || {
    iam::log::error "cannot list user, iamctl maybe not installed properly"
    return 1
   }
