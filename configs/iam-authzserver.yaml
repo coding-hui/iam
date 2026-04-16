@@ -19,7 +19,7 @@ server:
 # HTTP 配置
 insecure:
   bind-address: 0.0.0.0
-  bind-port: 8010
+  bind-port: ${IAM_AUTHZ_SERVER_INSECURE_BIND_PORT}
 
 # HTTPS 配置
 secure:

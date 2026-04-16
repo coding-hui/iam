@@ -5,13 +5,17 @@
 package authz
 
 import (
-	"context"
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	v1 "github.com/coding-hui/iam/pkg/api/authzserver/v1"
-	"github.com/coding-hui/wecoding-sdk-go/services/iam"
+	"github.com/coding-hui/iam/pkg/api"
 	cmdutil "github.com/coding-hui/iam/internal/iamctl/cmd/util"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
@@ -23,8 +27,7 @@ type CheckOptions struct {
 	Resource string
 	Action   string
 
-	iamclient iam.IamInterface
-	genericclioptions.IOStreams
+	IOStreams genericclioptions.IOStreams
 }
 
 var checkExample = templates.Examples(`
@@ -43,7 +46,7 @@ func NewCmdCheck(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobr
 		Short:   "Check if a subject has permission for an action on a resource",
 		Example: checkExample,
 		Run: func(cmd *cobra.Command, args []string) {
-			cmdutil.CheckErr(o.Complete(f, args))
+			cmdutil.CheckErr(o.Complete(args))
 			cmdutil.CheckErr(o.Run())
 		},
 	}
@@ -52,7 +55,7 @@ func NewCmdCheck(f cmdutil.Factory, ioStreams genericclioptions.IOStreams) *cobr
 }
 
 // Complete completes all the required options.
-func (o *CheckOptions) Complete(f cmdutil.Factory, args []string) error {
+func (o *CheckOptions) Complete(args []string) error {
 	if len(args) != 3 {
 		return fmt.Errorf("requires exactly 3 args: subject, resource, action")
 	}
@@ -60,32 +63,68 @@ func (o *CheckOptions) Complete(f cmdutil.Factory, args []string) error {
 	o.Resource = args[1]
 	o.Action = args[2]
 
-	var err error
-	o.iamclient, err = f.IAMClient()
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
 // Run executes a check subcommand using the specified options.
 func (o *CheckOptions) Run() error {
-	req := &v1.Request{
+	// Get authz server address from config, default to 9090
+	authzServer := viper.GetString("authzserver.address")
+	if authzServer == "" {
+		authzServer = "http://127.0.0.1:9090"
+	}
+
+	reqBody := &v1.Request{
 		Subject:  o.Subject,
 		Resource: o.Resource,
 		Action:   o.Action,
 	}
-
-	resp, err := o.iamclient.AuthzV1().Authz().Authorize(context.TODO(), req)
+	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
 		return err
 	}
 
-	if resp.Allowed {
-		fmt.Fprintln(o.Out, "allowed")
+	url := fmt.Sprintf("%s/api/v1/authz", authzServer)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("authz check failed: status %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	// Parse the wrapped API response
+	var apiResp api.Response
+	if err := json.Unmarshal(body, &apiResp); err != nil {
+		return fmt.Errorf("failed to parse response: %w", err)
+	}
+
+	if !apiResp.Success {
+		return fmt.Errorf("authz check failed: %s", apiResp.Msg)
+	}
+
+	// Extract the authz response from data
+	dataBytes, err := json.Marshal(apiResp.Data)
+	if err != nil {
+		return fmt.Errorf("failed to marshal authz data: %w", err)
+	}
+
+	var authzResp v1.Response
+	if err := json.Unmarshal(dataBytes, &authzResp); err != nil {
+		return fmt.Errorf("failed to parse authz response: %w", err)
+	}
+
+	if authzResp.Allowed {
+		fmt.Fprintln(o.IOStreams.Out, "allowed")
 	} else {
-		fmt.Fprintf(o.Out, "denied: %s\n", resp.Reason)
+		fmt.Fprintf(o.IOStreams.Out, "denied: %s\n", authzResp.Reason)
 	}
 
 	return nil
