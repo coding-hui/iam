@@ -28,7 +28,7 @@ function iam::authzserver::create_plist() {
     <string>io.github.coding-hui.iam-authz-server</string>
     <key>ProgramArguments</key>
     <array>
-        <string>${bin_path}/iam-authz-server</string>
+        <string>${bin_path}/iam-authzserver</string>
         <string>--config</string>
         <string>${IAM_CONFIG_DIR}/iam-authz-server.yaml</string>
     </array>
@@ -66,12 +66,16 @@ function iam::authzserver::install()
   cp "${LOCAL_OUTPUT_ROOT}/cert/iam-authz-server"*.pem "${IAM_CONFIG_DIR}/cert"
 
   # 2. 构建 iam-authz-server
-  make build BINS=iam-authz-server
+  make build BINS=iam-authzserver
   local bin_path=$(iam::common::get_bin_path)
-  cp "${LOCAL_OUTPUT_ROOT}/bin/iam-authz-server" "${bin_path}/iam-authz-server"
+  cp "${LOCAL_OUTPUT_ROOT}/bin/iam-authzserver" "${bin_path}/iam-authzserver"
 
   # 3. 生成并安装 iam-authz-server 的配置文件（iam-authz-server.yaml）
   ./hack/genconfig.sh "${ENV_FILE}" configs/iam-authzserver.yaml > "${IAM_CONFIG_DIR}/iam-authz-server.yaml"
+
+  # 3.1 创建符号链接，使 _output/cert 能找到证书（配置文件使用相对路径）
+  mkdir -p "${IAM_INSTALL_DIR}/_output/cert"
+  ln -sf "${IAM_CONFIG_DIR}/cert/"* "${IAM_INSTALL_DIR}/_output/cert/"
 
   if iam::common::is_macos; then
     # 4. 创建并安装 iam-authz-server launchd plist 文件（macOS 用户级 Agent）
@@ -117,8 +121,9 @@ function iam::authzserver::uninstall()
     iam::common::sudo "rm -f /etc/systemd/system/iam-authz-server.service"
   fi
 
-  rm -f "${bin_path}/iam-authz-server"
+  rm -f "${bin_path}/iam-authzserver"
   rm -f "${IAM_CONFIG_DIR}/iam-authz-server.yaml"
+  rm -rf "${IAM_INSTALL_DIR}/_output"
   rm -f "${IAM_CONFIG_DIR}/cert/iam-authz-server"*.pem
   set -o errexit
   iam::log::info "uninstall iam-authz-server successfully"
@@ -133,7 +138,7 @@ function iam::authzserver::status()
       return 1
     }
 
-    pgrep -x iam-authz-server &>/dev/null || {
+    pgrep -x iam-authzserver &>/dev/null || {
       iam::log::error "iam-authz-server process not running"
       return 1
     }

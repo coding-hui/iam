@@ -37,7 +37,7 @@ secure:
 redis:
   host: 127.0.0.1
   port: 6379
-  password: ""
+  password: ${REDIS_PASSWORD}
   database: 0 # redis 数据库
   #addrs:
   #master-name: # redis 集群 master 名称

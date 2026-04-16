@@ -155,6 +155,7 @@ function iam::install::install_iam() {
 
 function iam::install::uninstall_iam() {
   iam::iamctl::uninstall || return 1
+  iam::authzserver::uninstall || return 1
   iam::apiserver::uninstall || return 1
   iam::install::uninstall_storage || return 1
 }
