@@ -73,10 +73,6 @@ function iam::authzserver::install()
   # 3. 生成并安装 iam-authz-server 的配置文件（iam-authz-server.yaml）
   ./hack/genconfig.sh "${ENV_FILE}" configs/iam-authzserver.yaml > "${IAM_CONFIG_DIR}/iam-authz-server.yaml"
 
-  # 3.1 创建符号链接，使 _output/cert 能找到证书（配置文件使用相对路径）
-  mkdir -p "${IAM_INSTALL_DIR}/_output/cert"
-  ln -sf "${IAM_CONFIG_DIR}/cert/"* "${IAM_INSTALL_DIR}/_output/cert/"
-
   if iam::common::is_macos; then
     # 4. 创建并安装 iam-authz-server launchd plist 文件（macOS 用户级 Agent）
     iam::authzserver::create_plist
@@ -123,7 +119,6 @@ function iam::authzserver::uninstall()
 
   rm -f "${bin_path}/iam-authzserver"
   rm -f "${IAM_CONFIG_DIR}/iam-authz-server.yaml"
-  rm -rf "${IAM_INSTALL_DIR}/_output"
   rm -f "${IAM_CONFIG_DIR}/cert/iam-authz-server"*.pem
   set -o errexit
   iam::log::info "uninstall iam-authz-server successfully"

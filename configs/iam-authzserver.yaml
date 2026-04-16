@@ -8,7 +8,7 @@
 rpcserver: localhost:8081 # iam-apiserver grpc 服务器地址和端口
 
 # TLS客户端证书文件
-client-ca-file: _output/cert/ca.pem
+client-ca-file: ${IAM_CONFIG_DIR}/cert/ca.pem
 
 # RESTful 服务配置
 server:
@@ -30,8 +30,8 @@ secure:
     #cert-dir: .iam/cert # TLS 证书所在的目录，默认值为 /var/run/iam
     #pair-name: iam # TLS 私钥对名称，默认 iam
     cert-key:
-      cert-file: _output/cert/iam-authz-server.pem
-      private-key-file: _output/cert/iam-authz-server-key.pem
+      cert-file: ${IAM_AUTHZ_SERVER_SECURE_TLS_CERT_KEY_CERT_FILE}
+      private-key-file: ${IAM_AUTHZ_SERVER_SECURE_TLS_CERT_KEY_PRIVATE_KEY_FILE}
 
 # Redis 配置
 redis:
