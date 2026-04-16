@@ -71,9 +71,21 @@ function iam::apiserver::install()
   ./hack/gencerts.sh generate-iam-cert "${LOCAL_OUTPUT_ROOT}"/cert iam-apiserver
   cp "${LOCAL_OUTPUT_ROOT}/cert/iam-apiserver"*.pem "${IAM_CONFIG_DIR}/cert" 2>/dev/null
 
-  # 2. 构建 iam-apiserver
+  # 2. 构建 iam-apiserver (包含版本信息)
   iam::log::substep "Building iam-apiserver..."
-  CGO_ENABLED=1 go build -o "${LOCAL_OUTPUT_ROOT}/bin/iam-apiserver" github.com/coding-hui/iam/cmd/iam-apiserver
+  local version=$(git describe --tags --always --match='v*' 2>/dev/null || echo "v0.0.0")
+  local git_commit=$(git rev-parse HEAD 2>/dev/null || echo "")
+  local git_tree_state="dirty"
+  if [ -z "$(git status --porcelain 2>/dev/null)" ]; then
+    git_tree_state="clean"
+  fi
+  local build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+  CGO_ENABLED=1 go build -ldflags "\
+    -X github.com/coding-hui/common/version.GitVersion=${version} \
+    -X github.com/coding-hui/common/version.GitCommit=${git_commit} \
+    -X github.com/coding-hui/common/version.GitTreeState=${git_tree_state} \
+    -X github.com/coding-hui/common/version.BuildDate=${build_date}" \
+    -o "${LOCAL_OUTPUT_ROOT}/bin/iam-apiserver" github.com/coding-hui/iam/cmd/iam-apiserver
   local bin_path=$(iam::common::get_bin_path)
   cp "${LOCAL_OUTPUT_ROOT}/bin/iam-apiserver" "${bin_path}/iam-apiserver" 2>/dev/null
 

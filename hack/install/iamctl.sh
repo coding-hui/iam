@@ -36,9 +36,21 @@ function iam::iamctl::install()
   cp ${LOCAL_OUTPUT_ROOT}/cert/admin.pem ${CONFIG_USER_CLIENT_CERTIFICATE} 2>/dev/null
   cp ${LOCAL_OUTPUT_ROOT}/cert/admin-key.pem ${CONFIG_USER_CLIENT_KEY} 2>/dev/null
 
-  # 2. 构建 iamctl
+  # 2. 构建 iamctl (包含版本信息)
   iam::log::substep "Building iamctl..."
-  CGO_ENABLED=1 go build -o ${LOCAL_OUTPUT_ROOT}/bin/iamctl github.com/coding-hui/iam/cmd/iamctl
+  local version=$(git describe --tags --always --match='v*' 2>/dev/null || echo "v0.0.0")
+  local git_commit=$(git rev-parse HEAD 2>/dev/null || echo "")
+  local git_tree_state="dirty"
+  if [ -z "$(git status --porcelain 2>/dev/null)" ]; then
+    git_tree_state="clean"
+  fi
+  local build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+  CGO_ENABLED=1 go build -ldflags "\
+    -X github.com/coding-hui/common/version.GitVersion=${version} \
+    -X github.com/coding-hui/common/version.GitCommit=${git_commit} \
+    -X github.com/coding-hui/common/version.GitTreeState=${git_tree_state} \
+    -X github.com/coding-hui/common/version.BuildDate=${build_date}" \
+    -o ${LOCAL_OUTPUT_ROOT}/bin/iamctl github.com/coding-hui/iam/cmd/iamctl
   local bin_path=$(iam::common::get_bin_path)
   mkdir -p "${bin_path}" 2>/dev/null
   cp ${LOCAL_OUTPUT_ROOT}/bin/iamctl "${bin_path}/iamctl" 2>/dev/null
