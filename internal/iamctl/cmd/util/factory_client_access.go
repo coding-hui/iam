@@ -9,9 +9,7 @@ package util
 import (
 	restclient "github.com/coding-hui/wecoding-sdk-go/rest"
 	"github.com/coding-hui/wecoding-sdk-go/services/iam"
-	authzv1 "github.com/coding-hui/wecoding-sdk-go/services/iam/authz/v1"
 	"github.com/coding-hui/wecoding-sdk-go/tools/clientcmd"
-	"github.com/spf13/viper"
 
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
 )
@@ -55,26 +53,4 @@ func (f *factoryImpl) RESTClient() (*restclient.RESTClient, error) {
 	}
 	_ = setIAMDefaults(clientConfig)
 	return restclient.RESTClientFor(clientConfig)
-}
-
-func (f *factoryImpl) AuthzV1Client() (authzv1.AuthzV1Interface, error) {
-	clientConfig, err := f.ToRESTConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	// Override host to authzserver address
-	authzServer := viper.GetString("authzserver.address")
-	if authzServer == "" {
-		authzServer = "http://127.0.0.1:9090"
-	}
-	// Update the host in the config
-	clientConfig.Host = authzServer
-
-	iamClient, err := iam.NewForConfig(clientConfig)
-	if err != nil {
-		return nil, err
-	}
-
-	return iamClient.AuthzV1(), nil
 }

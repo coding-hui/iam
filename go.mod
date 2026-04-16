@@ -12,7 +12,7 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.32.0
 	github.com/casbin/redis-watcher/v2 v2.5.0
 	github.com/coding-hui/common v0.8.7
-	github.com/coding-hui/wecoding-sdk-go v0.8.15
+	github.com/coding-hui/wecoding-sdk-go v0.8.16
 	github.com/fatih/color v1.18.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-contrib/cors v1.7.5

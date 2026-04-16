@@ -360,15 +360,16 @@ func CombineRequestErr(resp gorequest.Response, body string, errs []error) error
 
 func NewForConfigOrDie() *services.Clientset {
 	clientConfig := &restclient.Config{
-		Host:          viper.GetString("server.address"),
-		BearerToken:   viper.GetString("user.token"),
-		Username:      viper.GetString("user.username"),
-		Password:      viper.GetString("user.password"),
-		SecretID:      viper.GetString("user.secret-id"),
-		SecretKey:     viper.GetString("user.secret-key"),
-		Timeout:       viper.GetDuration("server.timeout"),
-		MaxRetries:    viper.GetInt("server.max-retries"),
-		RetryInterval: viper.GetDuration("server.retry-interval"),
+		Host:            viper.GetString("server.endpoint"),
+		BearerToken:     viper.GetString("user.token"),
+		Username:        viper.GetString("user.username"),
+		Password:        viper.GetString("user.password"),
+		AccessKeyId:     viper.GetString("user.accessKeyId"),
+		SecretAccessKey: viper.GetString("user.secretAccessKey"),
+		Timeout:         viper.GetDuration("server.timeout"),
+		MaxRetries:      viper.GetInt("server.max-retries"),
+		RetryInterval:   viper.GetDuration("server.retry-interval"),
+		AuthzEndpoint:   viper.GetString("server.authzEndpoint"),
 	}
 
 	return services.NewForConfigOrDie(clientConfig)

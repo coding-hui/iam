@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	v1 "github.com/coding-hui/iam/pkg/api/authzserver/v1"
-	authzv1 "github.com/coding-hui/wecoding-sdk-go/services/iam/authz/v1"
+	"github.com/coding-hui/wecoding-sdk-go/services/iam"
 	cmdutil "github.com/coding-hui/iam/internal/iamctl/cmd/util"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
@@ -23,7 +23,7 @@ type CheckOptions struct {
 	Resource string
 	Action   string
 
-	authzClient authzv1.AuthzV1Interface
+	iamclient *iam.IamClient
 	genericclioptions.IOStreams
 }
 
@@ -61,7 +61,7 @@ func (o *CheckOptions) Complete(f cmdutil.Factory, args []string) error {
 	o.Action = args[2]
 
 	var err error
-	o.authzClient, err = f.AuthzV1Client()
+	o.iamclient, err = f.IAMClient()
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (o *CheckOptions) Run() error {
 		Action:   o.Action,
 	}
 
-	resp, err := o.authzClient.Authz().Authorize(context.TODO(), req)
+	resp, err := o.iamclient.AuthzV1().Authz().Authorize(context.TODO(), req)
 	if err != nil {
 		return err
 	}

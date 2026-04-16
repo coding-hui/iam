@@ -86,7 +86,7 @@ func (o *ValidateOptions) Run(args []string) error {
 
 	// check if can access db
 	validateInfo.ItemName = "iam-apiserver"
-	target, err := url.Parse(viper.GetString("server.address"))
+	target, err := url.Parse(viper.GetString("server.endpoint"))
 	if err != nil {
 		return err
 	}
