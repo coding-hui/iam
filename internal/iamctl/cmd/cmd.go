@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/coding-hui/iam/internal/iamctl/cmd/authz"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/color"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/completion"
 	"github.com/coding-hui/iam/internal/iamctl/cmd/info"
@@ -101,6 +102,7 @@ func NewIAMCtlCommand(in io.Reader, out, err io.Writer) *cobra.Command {
 			Message: "Identity and Access Management Commands:",
 			Commands: []*cobra.Command{
 				user.NewCmdUser(f, ioStreams),
+				authz.NewCmdAuthz(f, ioStreams),
 			},
 		},
 		templates.CommandGroup{
