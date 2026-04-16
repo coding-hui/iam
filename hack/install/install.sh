@@ -146,7 +146,10 @@ function iam::install::install_iam() {
   # 2. 安装 iam-apiserver 服务
   iam::apiserver::install || return 1
 
-  # 3. 安装 iamctl 客户端工具
+  # 3. 安装 iam-authz-server 服务
+  iam::authzserver::install || return 1
+
+  # 4. 安装 iamctl 客户端工具
   iam::iamctl::install || return 1
 }
 
