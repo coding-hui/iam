@@ -71,7 +71,7 @@ function iam::authzserver::install()
   cp "${LOCAL_OUTPUT_ROOT}/bin/iam-authz-server" "${bin_path}/iam-authz-server"
 
   # 3. 生成并安装 iam-authz-server 的配置文件（iam-authz-server.yaml）
-  ./hack/genconfig.sh "${ENV_FILE}" configs/iam-authz-server.yaml > "${IAM_CONFIG_DIR}/iam-authz-server.yaml"
+  ./hack/genconfig.sh "${ENV_FILE}" configs/iam-authzserver.yaml > "${IAM_CONFIG_DIR}/iam-authz-server.yaml"
 
   if iam::common::is_macos; then
     # 4. 创建并安装 iam-authz-server launchd plist 文件（macOS 用户级 Agent）
