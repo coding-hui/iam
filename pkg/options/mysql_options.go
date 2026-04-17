@@ -8,9 +8,6 @@ import (
 	"time"
 
 	"github.com/spf13/pflag"
-	"gorm.io/gorm"
-
-	"github.com/coding-hui/iam/pkg/db"
 )
 
 // MySQLOptions defines options for mysql database.
@@ -71,20 +68,4 @@ func (o *MySQLOptions) AddFlags(fs *pflag.FlagSet) {
 
 	fs.IntVar(&o.LogLevel, "mysql.log-mode", o.LogLevel, ""+
 		"Specify gorm log level.")
-}
-
-// NewClient create mysql store with the given config.
-func (o *MySQLOptions) NewClient() (*gorm.DB, error) {
-	opts := &db.Options{
-		Host:                  o.Host,
-		Username:              o.Username,
-		Password:              o.Password,
-		Database:              o.Database,
-		MaxIdleConnections:    o.MaxIdleConnections,
-		MaxOpenConnections:    o.MaxOpenConnections,
-		MaxConnectionLifeTime: o.MaxConnectionLifeTime,
-		LogLevel:              o.LogLevel,
-	}
-
-	return db.New(opts)
 }

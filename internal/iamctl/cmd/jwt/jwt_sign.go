@@ -15,7 +15,6 @@ import (
 	cmdutil "github.com/coding-hui/iam/internal/iamctl/cmd/util"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
-	"github.com/coding-hui/iam/pkg/middleware/auth"
 )
 
 const (
@@ -57,7 +56,7 @@ func NewSignOptions(ioStreams genericclioptions.IOStreams) *SignOptions {
 	return &SignOptions{
 		Timeout:   2 * time.Hour,
 		Algorithm: "HS256",
-		Audience:  auth.AuthzAudience,
+		Audience:  "iam.api.wecoding.top",
 		Issuer:    "iamctl",
 		Claims:    make(ArgList),
 		Head:      make(ArgList),

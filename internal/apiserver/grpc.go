@@ -13,10 +13,8 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"github.com/coding-hui/iam/internal/apiserver/config"
-	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
-	pb "github.com/coding-hui/iam/pkg/api/proto/apiserver/v1"
 	"github.com/coding-hui/iam/pkg/log"
-	genericoptions "github.com/coding-hui/iam/pkg/options"
+	pkgoptions "github.com/coding-hui/iam/pkg/options"
 )
 
 // gRPCConfig defines extra configuration for the iam-apiserver.
@@ -24,7 +22,7 @@ type gRPCConfig struct {
 	Enabled    bool
 	Addr       string
 	MaxMsgSize int
-	ServerCert genericoptions.GeneratableKeyCert
+	ServerCert pkgoptions.GeneratableKeyCert
 }
 
 type grpcAPIServer struct {
@@ -80,6 +78,7 @@ func (c *completedGRPCConfig) New() (*grpcAPIServer, error) {
 		log.Infof("GRPC server is not enabled.")
 		return nil, nil
 	}
+
 	creds, err := credentials.NewServerTLSFromFile(c.ServerCert.CertKey.CertFile, c.ServerCert.CertKey.KeyFile)
 	if err != nil {
 		log.Fatalf("Failed to generate credentials %s", err.Error())
@@ -88,7 +87,8 @@ func (c *completedGRPCConfig) New() (*grpcAPIServer, error) {
 
 	grpcServer := grpc.NewServer(opts...)
 
-	pb.RegisterCacheServer(grpcServer, apisv1.NewCacheServer())
+	// gRPC services will be registered here as they are implemented
+	// pb.RegisterCacheServer(grpcServer, cacheServer)
 
 	reflection.Register(grpcServer)
 

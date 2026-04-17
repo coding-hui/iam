@@ -7,7 +7,6 @@ package options
 import (
 	"encoding/json"
 
-	"github.com/coding-hui/iam/internal/apiserver/infrastructure/cache"
 	"github.com/coding-hui/iam/pkg/log"
 	"github.com/coding-hui/iam/pkg/options"
 	"github.com/coding-hui/iam/pkg/server"
@@ -28,7 +27,6 @@ type Options struct {
 	LogOptions              *log.Options                    `json:"log"            mapstructure:"log"`
 	FeatureOptions          *options.FeatureOptions         `json:"feature"        mapstructure:"feature"`
 	AuthenticationOptions   *options.AuthenticationOptions  `json:"authentication" mapstructure:"authentication"`
-	CacheOptions            *cache.Options                  `json:"cache"          mapstructure:"cache"`
 }
 
 // ApplyTo applies the run options to the method receiver and returns self.
@@ -84,7 +82,6 @@ func NewOptions() *Options {
 		LogOptions:              log.NewOptions(),
 		FeatureOptions:          options.NewFeatureOptions(),
 		AuthenticationOptions:   options.NewAuthenticationOptions(),
-		CacheOptions:            cache.NewCacheOptions(),
 	}
 
 	return &o

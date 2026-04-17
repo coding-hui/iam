@@ -13,16 +13,9 @@ import (
 
 	_ "github.com/coding-hui/iam/api/swagger"
 
+	"github.com/coding-hui/iam/internal/api"
 	"github.com/coding-hui/iam/internal/apiserver/config"
-	"github.com/coding-hui/iam/internal/apiserver/domain/repository"
-	"github.com/coding-hui/iam/internal/apiserver/domain/service"
-	"github.com/coding-hui/iam/internal/apiserver/event"
-	"github.com/coding-hui/iam/internal/apiserver/infrastructure/cache"
-	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/mysqldb"
-	"github.com/coding-hui/iam/internal/apiserver/infrastructure/datastore/sqlitedb"
-	apisv1 "github.com/coding-hui/iam/internal/apiserver/interfaces/api"
-	"github.com/coding-hui/iam/internal/pkg/token"
-	"github.com/coding-hui/iam/pkg/container"
+	"github.com/coding-hui/iam/internal/driver"
 	"github.com/coding-hui/iam/pkg/log"
 	genericapiserver "github.com/coding-hui/iam/pkg/server"
 	"github.com/coding-hui/iam/pkg/shutdown"
@@ -55,16 +48,11 @@ type APIServer interface {
 
 // apiServer rest iam-apiserver.
 type apiServer struct {
-	cfg              config.Config
-	gs               *shutdown.GracefulShutdown
-	webServer        *genericapiserver.GenericAPIServer
-	gRPCAPIServer    *grpcAPIServer
-	beanContainer    *container.Container
-	repositoryFactor repository.Factory
-	eventBus         *event.Bus
-
-	// entity that issues tokens
-	issuer token.Issuer
+	cfg           config.Config
+	gs            *shutdown.GracefulShutdown
+	webServer     *genericapiserver.GenericAPIServer
+	gRPCAPIServer *grpcAPIServer
+	registry      *driver.RegistryDefault
 }
 
 // New create iam-apiserver with config data.
@@ -93,134 +81,101 @@ func New(cfg *config.Config) (a APIServer, err error) {
 	}
 
 	server := &apiServer{
-		webServer:     genericServer,
-		gRPCAPIServer: gRPCAPIServer,
-		beanContainer: container.NewContainer(),
 		cfg:           *cfg,
 		gs:            gs,
+		webServer:     genericServer,
+		gRPCAPIServer: gRPCAPIServer,
 	}
 
 	return server, nil
 }
 
+// Run runs the apiserver.
 func (s *apiServer) Run(ctx context.Context, errChan chan error) (lastErr error) {
 	s.gs.AddShutdownCallback(shutdown.ShutdownFunc(func(string) error {
 		s.webServer.Close()
 		if s.cfg.GRPCOptions.BindPort > 0 {
 			s.gRPCAPIServer.Close()
 		}
-		if s.repositoryFactor != nil {
-			_ = s.repositoryFactor.Close()
-		}
-		if s.eventBus != nil {
-			_ = (*s.eventBus).CloseWait()
-		}
-
 		return nil
 	}))
 
-	// create token issuer
-	s.issuer, lastErr = token.NewIssuer(s.cfg.AuthenticationOptions)
-	if lastErr != nil {
-		return fmt.Errorf("unable to create issuer: %w", lastErr)
+	// Create driver config from options
+	driverConfig := s.createDriverConfig()
+
+	// Create registry and initialize
+	s.registry = driver.NewRegistry(driverConfig)
+	if lastErr = s.registry.Init(ctx); lastErr != nil {
+		return fmt.Errorf("failed to initialize registry: %w", lastErr)
 	}
 
-	// build the Ioc Container
-	if lastErr = s.buildIoCContainer(ctx); lastErr != nil {
-		return fmt.Errorf("failed to build IoCContainer %w", lastErr)
+	// Create router with registry
+	router := api.NewRouter(s.registry)
+
+	// Replace the embedded gin.Engine with our new router
+	s.webServer.Engine = router
+
+	// Run database migrations
+	if lastErr = s.registry.MigrateUp(ctx); lastErr != nil {
+		return fmt.Errorf("failed to migrate database: %w", lastErr)
 	}
 
-	// register apis
-	s.registerAPIRoute()
-
-	// init database
-	if lastErr = service.InitData(ctx); lastErr != nil {
-		return fmt.Errorf("failed to init database %w", lastErr)
-	}
-
+	// Start servers
 	return s.startAPIServer()
 }
 
-// buildIoCContainer build ioc container.
-func (s *apiServer) buildIoCContainer(ctx context.Context) (err error) {
-	// infrastructure
-	if err = s.beanContainer.ProvideWithName("apiServer", s); err != nil {
-		return fmt.Errorf("fail to provides the apiServer bean to the container: %w", err)
+// createDriverConfig creates a driver.Config from the apiserver config.
+func (s *apiServer) createDriverConfig() *driver.Config {
+	opts := s.cfg.Options
+
+	serverMode := "debug"
+	switch opts.GenericServerRunOptions.Mode {
+	case "release":
+		serverMode = "release"
+	case "test":
+		serverMode = "test"
 	}
 
-	// datastore repository
-	var factory repository.Factory
-	// Prefer SQLite if database file path is specified, otherwise fall back to MySQL
-	if s.cfg.SQLiteOptions != nil && s.cfg.SQLiteOptions.Database != "" {
-		factory, err = sqlitedb.New(ctx, s.cfg)
-		if err != nil {
-			return fmt.Errorf("create sqlitedb datastore instance failure %w", err)
-		}
-	} else if s.cfg.MySQLOptions != nil && s.cfg.MySQLOptions.Database != "" {
-		factory, err = mysqldb.New(ctx, s.cfg)
-		if err != nil {
-			return fmt.Errorf("create mysqldb datastore instance failure %w", err)
-		}
+	var dbDriver string
+	var dbDSN string
+	if opts.SQLiteOptions != nil && opts.SQLiteOptions.Database != "" {
+		dbDriver = "sqlite"
+		dbDSN = opts.SQLiteOptions.Database
+	} else if opts.MySQLOptions != nil && opts.MySQLOptions.Database != "" {
+		dbDriver = "mysql"
+		// Construct DSN from individual fields
+		dbDSN = opts.MySQLOptions.Username + ":" + opts.MySQLOptions.Password +
+			"@tcp(" + opts.MySQLOptions.Host + ")/" + opts.MySQLOptions.Database +
+			"?charset=utf8&parseTime=True&loc=Local"
 	}
 
-	s.repositoryFactor = factory
-	if err = s.beanContainer.ProvideWithName("repository", s.repositoryFactor); err != nil {
-		return fmt.Errorf("fail to provides the datastore bean to the container: %w", err)
-	}
-	repository.SetClient(factory)
-
-	// cache
-	var cacheClient cache.Interface
-	if cacheClient, err = cache.New(s.cfg.CacheOptions, ctx.Done()); err != nil {
-		return fmt.Errorf("failed to create cache, error: %w", err)
-	}
-	if err = s.beanContainer.ProvideWithName("cache", cacheClient); err != nil {
-		return fmt.Errorf("fail to provides the cache bean to the container: %w", err)
+	redisAddr := ""
+	redisPassword := ""
+	redisDB := 0
+	if opts.RedisOptions != nil && len(opts.RedisOptions.Addrs) > 0 {
+		redisAddr = opts.RedisOptions.Addrs[0]
+		redisPassword = opts.RedisOptions.Password
+		redisDB = opts.RedisOptions.Database
 	}
 
-	// domain
-	if err = s.beanContainer.Provides(service.InitServiceBean(s.cfg, s.issuer)...); err != nil {
-		return fmt.Errorf("fail to provides the service bean to the container: %w", err)
+	return &driver.Config{
+		Server: driver.ServerConfig{
+			Host:        opts.InsecureServing.BindAddress,
+			Port:        opts.InsecureServing.BindPort,
+			Mode:        serverMode,
+			Healthz:     true,
+			Middlewares: opts.GenericServerRunOptions.Middlewares,
+		},
+		Database: driver.DatabaseConfig{
+			Driver: dbDriver,
+			DSN:    dbDSN,
+		},
+		Redis: driver.RedisConfig{
+			Addr:     redisAddr,
+			Password: redisPassword,
+			DB:       redisDB,
+		},
 	}
-
-	// interfaces
-	if err = s.beanContainer.Provides(apisv1.InitAPIBean(s.cfg)...); err != nil {
-		return fmt.Errorf("fail to provides the api bean to the container: %w", err)
-	}
-
-	// event
-	eventBus, listeners := event.InitEvent(s.cfg)
-	if err = s.beanContainer.ProvideWithName("eventBus", eventBus); err != nil {
-		return fmt.Errorf("fail to provides the event bus bean to the container: %w", err)
-	}
-	if err = s.beanContainer.Provides(listeners...); err != nil {
-		return fmt.Errorf("fail to provides the event listener bean to the container: %w", err)
-	}
-	s.eventBus = &eventBus
-
-	if err = s.beanContainer.Populate(); err != nil {
-		return fmt.Errorf("fail to populate the bean container: %w", err)
-	}
-	log.Infof("build IoC Container successful")
-
-	return nil
-}
-
-// registerAPIRoute register the API route.
-func (s *apiServer) registerAPIRoute() {
-	// swagger router
-	s.configSwagger()
-
-	// Register all custom api
-	for _, api := range apisv1.GetRegisteredAPI() {
-		api.RegisterApiGroup(s.webServer.Engine)
-	}
-
-	log.Infof("register API route successful")
-}
-
-func (s *apiServer) configSwagger() {
-	s.webServer.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
 }
 
 // startAPIServer start api server.
@@ -234,6 +189,9 @@ func (s *apiServer) startAPIServer() error {
 	if err := s.gs.Start(); err != nil {
 		log.Fatalf("start shutdown manager failed: %s", err.Error())
 	}
+
+	// Configure swagger before running
+	s.webServer.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.NewHandler()))
 
 	// web server
 	return s.webServer.Run()
