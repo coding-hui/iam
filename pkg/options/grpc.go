@@ -14,10 +14,10 @@ import (
 // No one should be using these anymore.
 type GRPCOptions struct {
 	// Required set to true means that BindPort cannot be zero.
-	Required    bool   `json:"required"     mapstructure:"required"`
-	BindAddress string `json:"bind-address" mapstructure:"bind-address"`
-	BindPort    int    `json:"bind-port"    mapstructure:"bind-port"`
-	MaxMsgSize  int    `json:"max-msg-size" mapstructure:"max-msg-size"`
+	Required    bool   `json:"required"    mapstructure:"required"`
+	BindAddress string `json:"bindAddress" mapstructure:"bindAddress"`
+	BindPort    int    `json:"bindPort"    mapstructure:"bindPort"`
+	MaxMsgSize  int    `json:"maxMsgSize"  mapstructure:"maxMsgSize"`
 }
 
 // NewGRPCOptions is for creating an unauthenticated, unauthorized, insecure port.

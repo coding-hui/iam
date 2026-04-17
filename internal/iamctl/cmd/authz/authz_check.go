@@ -10,10 +10,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	v1 "github.com/coding-hui/iam/pkg/api/authzserver/v1"
 	"github.com/coding-hui/wecoding-sdk-go/services/iam"
+
 	cmdutil "github.com/coding-hui/iam/internal/iamctl/cmd/util"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"
+	v1 "github.com/coding-hui/iam/pkg/api/authzserver/v1"
 	"github.com/coding-hui/iam/pkg/cli/genericclioptions"
 )
 

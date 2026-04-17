@@ -57,18 +57,7 @@ function iam::iamctl::install()
 
   # 3. 生成并安装 iamctl 的配置文件（iamctl.yaml）
   mkdir -p $HOME/.iam
-  cat > $HOME/.iam/iamctl.yaml << EOFCONFIG
-apiVersion: v1
-user:
-  username: ADMIN
-  password: WECODING
-
-server:
-  endpoint: http://127.0.0.1:8080
-  timeout: 10s
-  insecure-skip-tls-verify: true
-  authzEndpoint: http://127.0.0.1:9090
-EOFCONFIG
+  envsubst < ${IAM_ROOT}/configs/iamctl-template.yaml > $HOME/.iam/iamctl.yaml
 
   iam::iamctl::status || return 1
 

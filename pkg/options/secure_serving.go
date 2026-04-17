@@ -16,36 +16,36 @@ import (
 
 // SecureServingOptions contains configuration items related to HTTPS server startup.
 type SecureServingOptions struct {
-	BindAddress string `json:"bind-address" mapstructure:"bind-address"`
+	BindAddress string `json:"bindAddress" mapstructure:"bindAddress"`
 	// BindPort is ignored when Listener is set, will serve HTTPS even with 0.
-	BindPort int `json:"bind-port"    mapstructure:"bind-port"`
+	BindPort int `json:"bindPort"    mapstructure:"bindPort"`
 	// Required set to true means that BindPort cannot be zero.
-	Required bool `json:"required"     mapstructure:"required"`
+	Required bool `json:"required"    mapstructure:"required"`
 	// ServerCert is the TLS cert info for serving secure traffic
-	ServerCert GeneratableKeyCert `json:"tls"          mapstructure:"tls"`
+	ServerCert GeneratableKeyCert `json:"tls"         mapstructure:"tls"`
 	// AdvertiseAddress net.IP
 }
 
 // CertKey contains configuration items related to certificate.
 type CertKey struct {
 	// CertFile is a file containing a PEM-encoded certificate, and possibly the complete certificate chain
-	CertFile string `json:"cert-file"        mapstructure:"cert-file"`
+	CertFile string `json:"certFile"       mapstructure:"certFile"`
 	// KeyFile is a file containing a PEM-encoded private key for the certificate specified by CertFile
-	KeyFile string `json:"private-key-file" mapstructure:"private-key-file"`
+	KeyFile string `json:"privateKeyFile" mapstructure:"privateKeyFile"`
 }
 
 // GeneratableKeyCert contains configuration items related to certificate.
 type GeneratableKeyCert struct {
 	// CertKey allows setting an explicit cert/key file to use.
-	CertKey CertKey `json:"cert-key" mapstructure:"cert-key"`
+	CertKey CertKey `json:"certKey" mapstructure:"certKey"`
 
 	// CertDirectory specifies a directory to write generated certificates to if CertFile/KeyFile aren't explicitly set.
 	// PairName is used to determine the filenames within CertDirectory.
 	// If CertDirectory and PairName are not set, an in-memory certificate will be generated.
-	CertDirectory string `json:"cert-dir"  mapstructure:"cert-dir"`
+	CertDirectory string `json:"certDir"  mapstructure:"certDir"`
 	// PairName is the name which will be used with CertDirectory to make a cert and key filenames.
 	// It becomes CertDirectory/PairName.crt and CertDirectory/PairName.key
-	PairName string `json:"pair-name" mapstructure:"pair-name"`
+	PairName string `json:"pairName" mapstructure:"pairName"`
 }
 
 // NewSecureServingOptions creates a SecureServingOptions object with default parameters.

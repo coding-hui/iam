@@ -296,7 +296,7 @@ func (o *ColorOptions) Run(args []string) error {
 			bg := [][]string{
 				{"bg", "black", color.New(color.FgWhite, color.BgBlack).SprintFunc()("color.BgBlack")},
 				{"bg", "red", color.New(color.FgBlack, color.BgRed).SprintFunc()("color.BgRed")},
-				{"bg", "greep", color.New(color.FgBlack, color.BgGreen).SprintFunc()("color.BgGreen")},
+				{"bg", "green", color.New(color.FgBlack, color.BgGreen).SprintFunc()("color.BgGreen")},
 				{"bg", "yellow", color.New(color.FgWhite, color.BgYellow).SprintFunc()("color.BgYellow")},
 				{"bg", "blue", color.New(color.FgWhite, color.BgBlue).SprintFunc()("color.BgBlue")},
 				{"bg", "magenta", color.New(color.FgWhite, color.BgMagenta).SprintFunc()("color.BgMagenta")},
@@ -309,7 +309,7 @@ func (o *ColorOptions) Run(args []string) error {
 			bghi := [][]string{
 				{"bg-hi", "black", color.New(color.FgWhite, color.BgHiBlack).SprintFunc()("color.BgHiBlack")},
 				{"bg-hi", "red", color.New(color.FgBlack, color.BgHiRed).SprintFunc()("color.BgHiRed")},
-				{"bg-hi", "greep", color.New(color.FgBlack, color.BgHiGreen).SprintFunc()("color.BgHiGreen")},
+				{"bg-hi", "green", color.New(color.FgBlack, color.BgHiGreen).SprintFunc()("color.BgHiGreen")},
 				{"bg-hi", "yellow", color.New(color.FgWhite, color.BgHiYellow).SprintFunc()("color.BgHiYellow")},
 				{"bg-hi", "blue", color.New(color.FgWhite, color.BgHiBlue).SprintFunc()("color.BgHiBlue")},
 				{"bg-hi", "magenta", color.New(color.FgWhite, color.BgHiMagenta).SprintFunc()("color.BgHiMagenta")},

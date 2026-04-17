@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	veirfyUsageStr = "veirfy SECRETKEY TOKEN"
+	verifyUsageStr = "verify SECRETKEY TOKEN"
 )
 
 // VerifyOptions is an options struct to support verify subcommands.
@@ -34,8 +34,8 @@ var (
 		iamctl jwt verify XXX xxxxx.yyyyy.zzzzz`)
 
 	verifyUsageErrStr = fmt.Sprintf(
-		"expected '%s'.\nSECRETKEY and TOKEN are required arguments for the subcmd1 command",
-		veirfyUsageStr,
+		"expected '%s'.\nSECRETKEY and TOKEN are required arguments for the verify command",
+		verifyUsageStr,
 	)
 )
 

@@ -17,11 +17,8 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/parnurzeal/gorequest"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/coding-hui/common/errors"
-	restclient "github.com/coding-hui/wecoding-sdk-go/rest"
-	"github.com/coding-hui/wecoding-sdk-go/services"
 
 	"github.com/coding-hui/iam/pkg/log"
 )
@@ -196,7 +193,7 @@ func UsageErrorf(cmd *cobra.Command, format string, args ...interface{}) error {
 	return fmt.Errorf("%s\nSee '%s -h' for help and examples", msg, cmd.CommandPath())
 }
 
-// IsFilenameSliceEmpty checkes where filenames and directory are both zero value.
+// IsFilenameSliceEmpty checks where filenames and directory are both zero value.
 func IsFilenameSliceEmpty(filenames []string, directory string) bool {
 	return len(filenames) == 0 && directory == ""
 }
@@ -356,23 +353,6 @@ func CombineRequestErr(resp gorequest.Response, body string, errs []error) error
 	}
 
 	return nil
-}
-
-func NewForConfigOrDie() *services.Clientset {
-	clientConfig := &restclient.Config{
-		Host:            viper.GetString("server.endpoint"),
-		BearerToken:     viper.GetString("user.token"),
-		Username:        viper.GetString("user.username"),
-		Password:        viper.GetString("user.password"),
-		AccessKeyId:     viper.GetString("user.accessKeyId"),
-		SecretAccessKey: viper.GetString("user.secretAccessKey"),
-		Timeout:         viper.GetDuration("server.timeout"),
-		MaxRetries:      viper.GetInt("server.max-retries"),
-		RetryInterval:   viper.GetDuration("server.retry-interval"),
-		AuthzEndpoint:   viper.GetString("server.authzEndpoint"),
-	}
-
-	return services.NewForConfigOrDie(clientConfig)
 }
 
 func TableWriterDefaultConfig(table *tablewriter.Table) *tablewriter.Table {

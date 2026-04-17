@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	metav1 "github.com/coding-hui/common/meta/v1"
-	apiv1 "github.com/coding-hui/wecoding-sdk-go/services/iam/apiserver/v1"
+	"github.com/coding-hui/wecoding-sdk-go/services/iam"
 
 	cmdutil "github.com/coding-hui/iam/internal/iamctl/cmd/util"
 	"github.com/coding-hui/iam/internal/iamctl/util/templates"
@@ -30,7 +30,7 @@ type CreateOptions struct {
 
 	User *v1.CreateUserRequest
 
-	Client apiv1.APIV1Interface
+	iamclient iam.IamInterface
 	genericclioptions.IOStreams
 }
 
@@ -104,11 +104,7 @@ func (o *CreateOptions) Complete(f cmdutil.Factory, cmd *cobra.Command, args []s
 		Phone:    o.Phone,
 	}
 
-	clientConfig, err := f.ToRESTConfig()
-	if err != nil {
-		return err
-	}
-	o.Client, err = apiv1.NewForConfig(clientConfig)
+	o.iamclient, err = f.IAMClient()
 	if err != nil {
 		return err
 	}
@@ -127,7 +123,7 @@ func (o *CreateOptions) Validate(cmd *cobra.Command, args []string) error {
 
 // Run executes a create subcommand using the specified options.
 func (o *CreateOptions) Run(args []string) error {
-	ret, err := o.Client.Users().Create(context.TODO(), o.User, metav1.CreateOptions{})
+	ret, err := o.iamclient.APIV1().Users().Create(context.TODO(), o.User, metav1.CreateOptions{})
 	if err != nil {
 		return err
 	}

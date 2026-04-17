@@ -127,7 +127,7 @@ func (o *DeviceLoginOptions) Run() error {
 	// Step 2: Poll for token
 	fmt.Fprintf(o.IOStreams.Out, "\n2. Polling for access token...\n")
 
-	for i := 0; i < 120; i++ { // Max 10 minutes (600 seconds / 5 seconds interval)
+	for i := 0; i < 120; i++ {
 		time.Sleep(time.Duration(authResp.Interval) * time.Second)
 
 		tokenReq := v1.DeviceTokenRequest{
@@ -155,8 +155,8 @@ func (o *DeviceLoginOptions) Run() error {
 			return nil
 		}
 
-		// Check if authorization is still pending
-		if i%6 == 0 { // Print status every 30 seconds
+		// Print status every 30 seconds
+		if i%6 == 0 {
 			fmt.Fprintf(o.IOStreams.Out, ".")
 		}
 	}

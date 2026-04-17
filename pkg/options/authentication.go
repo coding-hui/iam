@@ -22,7 +22,7 @@ type AuthenticationOptions struct {
 	// OAuthOptions defines options needed for integrated oauth plugins
 	OAuthOptions *OAuthOptions `json:"oauth"            mapstructure:"oauth"`
 	// ClientCA is the certificate bundle for all the signers that you'll recognize for incoming client certificates
-	ClientCA string `json:"client-ca-file"   mapstructure:"client-ca-file"`
+	ClientCA string `json:"clientCaFile"     mapstructure:"clientCaFile"`
 	// Domain is the domain name to set
 	Domain string `json:"domain"           mapstructure:"domain"`
 }

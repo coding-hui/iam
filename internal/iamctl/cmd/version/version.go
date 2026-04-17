@@ -104,7 +104,6 @@ func (o *Options) Validate() error {
 func (o *Options) Run() error {
 	var (
 		serverVersion *version.Info
-		serverErr     error
 		versionInfo   Version
 	)
 
@@ -153,5 +152,5 @@ func (o *Options) Run() error {
 		return fmt.Errorf("VersionOptions were not validated: --output=%q should have been rejected", o.Output)
 	}
 
-	return serverErr
+	return nil
 }
