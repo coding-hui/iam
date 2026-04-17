@@ -10,7 +10,7 @@ WeCoding IAM — a Go-based Identity and Access Management system with RBAC via 
 
 ### Build
 ```bash
-make build                                    # Build all binaries (iam-apiserver, iam-authzserver, iamctl)
+make build                                    # Build all binaries (iam-apiserver, iamctl)
 make build BINS="iam-apiserver"               # Build specific binary
 make build.multiarch                         # Multi-platform (linux_amd64, linux_arm64)
 make image                                   # Build Docker images for host arch
@@ -22,7 +22,7 @@ go run ./cmd/iam-apiserver/main.go -c configs/iam-apiserver.yaml  # Run API serv
 ```bash
 make test                                     # Run all unit tests (race + coverage)
 make cover                                    # Tests + HTML coverage report in _output/coverage.html
-go test -race -short -v ./internal/apiserver/domain/service/...  # Run single package tests
+go test -race -short -v ./internal/identity/...  # Run single package tests
 ```
 
 ### Lint & Format
@@ -64,39 +64,59 @@ cd web && pnpm test                           # Run frontend tests
 
 ## Architecture
 
-**Three binaries**, each with a cobra-based app framework:
+**Two binaries**:
 
-1. **iam-apiserver** (`cmd/iam-apiserver/`) — Main REST API server (Gin) + optional gRPC server. Default port 8080 (HTTP), 9443 (gRPC). Connects to MySQL/SQLite + Redis.
-2. **iam-authzserver** (`cmd/iam-authzserver/`) — Authorization server using Casbin. Fetches policies from apiserver via gRPC, caches in Redis.
-3. **iamctl** (`internal/iamctl/`) — CLI tool with commands: jwt, user, login, set, new, info, validate, version, authz.
+1. **iam-apiserver** (`cmd/iam-apiserver/`) — Main REST API server (Gin) + optional gRPC server. Default port 8080 (HTTP), 8081 (gRPC). Connects to MySQL/SQLite + Redis.
+2. **iamctl** (`cmd/iamctl/` / `internal/iamctl/`) — CLI tool with commands: authz, info, jwt, login, new, set, user, validate, version.
 
 **Default credentials**: Admin user `ADMIN/WECODING` seeded on first run.
 
-### DDD Layering (apiserver)
+### L1/L2/L3 Layer Architecture
 
-The apiserver follows Domain-Driven Design with four layers:
+The internal packages follow a layered architecture:
 
-- **Interfaces** (`internal/apiserver/interfaces/api/`) — Gin HTTP handlers + DTO assemblers
-- **Domain** (`internal/apiserver/domain/`) — Business logic
-  - `model/` — Entity structs (GORM models with `iam_` table prefix, self-register via `init()`)
-  - `repository/` — Repository interfaces (Factory pattern with typed accessors like `UserRepository()`)
-  - `service/` — Domain services implementing business logic; `InitServiceBean()` registers all in IoC
-- **Infrastructure** (`internal/apiserver/infrastructure/`) — Technical implementations
-  - `datastore/mysqldb/` — MySQL connection + GORM AutoMigrate
-  - `datastore/sqlitedb/` — SQLite alternative (preferred when configured)
-  - `datastore/sql/` — GORM-based repository implementations
-  - `cache/` — Redis + in-memory cache (factory pattern)
-- **Event** (`internal/apiserver/event/`) — Event bus with async listeners for auth/user events
+**L1 - Foundation Layer** (no dependencies on other layers):
+- `internal/identity/` — User/identity management (Pool, PrivilegedPool, Manager, Hasher using Argon2id)
+- `internal/session/` — Session management
+- `internal/authn/` — Authentication (password-based authenticator)
 
-### IoC Container
+**L2 - Core Business Layer** (depends on L1):
+- `internal/role/` — Role management (Pool, PrivilegedPool, Manager)
+- `internal/policy/` — Policy management (Pool, PrivilegedPool, Manager)
+- `internal/authz/` — Authorization engine (Casbin-based)
 
-Uses `github.com/barnettZQG/inject` for dependency injection. Beans are registered by name and auto-wired via `Populate()`. Key registration points: `service.InitServiceBean()`, `api.InitAPIBean()`.
+**L3 - Extension Layer** (depends on L1 + L2):
+- `internal/token/` — Token management (Pool, Manager)
+- `internal/mfa/` — MFA/TOTP support
+- `internal/audit/` — Audit event recording
+- `internal/lockout/` — Account lockout protection
+- `internal/webhook/` — Webhook management
+
+**Infrastructure**:
+- `internal/api/` — HTTP router and middleware (request_id, logging, recovery, cors)
+- `internal/cache/` — Redis + in-memory cache adapter
+- `internal/driver/` — Registry pattern with thread-safe lazy initialization
+- `internal/persistence/` — GORM-based repository implementations (MySQL/SQLite)
+- `internal/apiserver/` — APIServer config, gRPC client
+
+### Pool/Manager Pattern
+
+Each domain (identity, role, policy, etc.) follows a consistent pattern:
+- **Pool**: Read-only operations (Get, List, FindCredentialsByIdentifier)
+- **PrivilegedPool**: Write operations (Create, Update, Delete) — embedded Pool
+- **Manager**: Business logic orchestration, uses both Pool and PrivilegedPool
+
+### Registry (IoC)
+
+The `Registry` interface in `internal/driver/registry.go` provides access to all services via thread-safe lazy initialization using `sync.Once` and the `initOnce[T]` generic wrapper. `RegistryDefault` is the concrete implementation. Config is loaded from YAML via Viper.
 
 ### Data Flow
 
-HTTP request → Gin middleware chain → API handler → Domain service → Repository (GORM/MySQL) → Response
+HTTP request → Gin middleware chain → API handler → Domain Manager → Domain Pool → Persister (GORM) → MySQL/SQLite
+                                                                                    ↓
+                                                                              Redis Cache
 
-Authorization flow: authzserver fetches policies from apiserver via gRPC → caches in Redis → evaluates via Casbin RBAC.
+Authorization: Policies evaluated via Casbin RBAC using the authz engine in `internal/authz/`.
 
 ### Authentication
 
@@ -113,7 +133,7 @@ REST client uses `gorequest`; auth supports Basic, Bearer token, SecretID/Secret
 
 ### Data Initialization
 
-Models self-register via `init()` calling `model.RegisterModel()`. GORM AutoMigrate runs at startup. Data initialization via `service.InitData()` which calls `Init()` on services implementing `DataInit`. System resources and built-in policies are seeded on first run.
+GORM AutoMigrate runs via `persistence.Persister.MigrateUp()` at startup with models: IdentityModel, SessionModel, RoleModel, PolicyModel, TokenModel, AuditEventModel, SecretKey. Data initialization via `Registry.Init()` which calls `Init()` on services implementing `DataInit`. System resources and built-in policies are seeded on first run.
 
 ## Key Shared Packages
 
