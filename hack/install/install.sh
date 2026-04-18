@@ -38,32 +38,10 @@ cmd_install() {
 
   # Config
   echo "[INFO] Generating configuration..."
-  cat > "${IAM_CONF}" << EOF
-server:
-  insecure:
-    bind_address: 127.0.0.1
-    bind_port: 8080
-  secure:
-    bind_address: 0.0.0.0
-    bind_port: 8443
-    tls:
-      cert_file: ${IAM_CERT}/iam-apiserver.pem
-      key_file: ${IAM_CERT}/iam-apiserver-key.pem
-  grpc:
-    bind_address: 0.0.0.0
-    bind_port: 8081
-database:
-  type: sqlite
-  dsn: ${IAM_DATA}/iam.db
-cache:
-  type: memory
-  redis:
-    host: 127.0.0.1
-    port: 6379
-log:
-  level: info
-  path: ${IAM_LOG}
-EOF
+  sed -e "s|{{IAM_CERT}}|${IAM_CERT}|g" \
+      -e "s|{{IAM_DATA}}|${IAM_DATA}|g" \
+      -e "s|{{IAM_LOG}}|${IAM_LOG}|g" \
+      "${IAM_ROOT}/hack/install/iam-apiserver.yaml" > "${IAM_CONF}"
 
   # Binary
   cp "${OUTPUT_DIR}/bin/iam-apiserver" "${IAM_BIN}"
