@@ -57,6 +57,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Install tools
+        run: go install github.com/coding-hui/addlicense@latest
+
       - name: License Header Check
         run: make verify-copyright
 
