@@ -5,6 +5,7 @@
 package api
 
 import (
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,10 @@ import (
 
 // NewRouter creates a new Gin router with all middleware and routes configured.
 func NewRouter(reg driver.Registry) *gin.Engine {
+	// Disable GIN debug logging and set to release mode
+	gin.SetMode(gin.ReleaseMode)
+	gin.DefaultWriter = io.Discard
+
 	r := gin.New()
 
 	// Global middleware
