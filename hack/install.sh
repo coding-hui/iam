@@ -29,7 +29,7 @@ cmd_install() {
   echo "[INFO] Generating configuration..."
   sed -e "s|{{IAM_DATA}}|${IAM_DATA}|g" \
       -e "s|{{IAM_LOG}}|${IAM_LOG}|g" \
-      "${IAM_ROOT}/configs/iam-apiserver.yaml" > "${IAM_CONF}"
+      "${IAM_ROOT}/conf/iam-apiserver.yaml" > "${IAM_CONF}"
 
   # Binary
   cp "${OUTPUT_DIR}/bin/iam-apiserver" "${IAM_BIN}"
