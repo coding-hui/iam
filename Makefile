@@ -257,9 +257,7 @@ go.lint: tools.verify.golangci-lint
 go.test:
 	@echo "==> Running tests"
 	@mkdir -p $(OUTPUT_DIR)
-	@set -o pipefail; $(GO) test -race -cover -coverprofile=$(OUTPUT_DIR)/coverage.out \
-		-timeout=10m -shuffle=on -short -v ./... 2>&1 | \
-		tee >(go-junit-report --set-exit-code >$(OUTPUT_DIR)/report.xml) || true
+	@set -o pipefail; $(GO) test -race -cover -coverprofile=$(OUTPUT_DIR)/coverage.out -timeout=10m -shuffle=on -short -v ./... 2>&1 || true
 	@$(GO) tool cover -html=$(OUTPUT_DIR)/coverage.out -o $(OUTPUT_DIR)/coverage.html 2>/dev/null || true
 
 go.test.cover: go.test
