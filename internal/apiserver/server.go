@@ -108,5 +108,6 @@ func Run(basename string) error {
 	time.Sleep(5 * time.Second)
 
 	logger.Info("Server stopped")
+
 	return nil
 }
