@@ -6,10 +6,11 @@ package policy
 
 import (
 	"errors"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 // Handler handles HTTP requests for policy operations.
@@ -26,38 +27,38 @@ func NewHandler(manager Manager) *Handler {
 func (h *Handler) Create(c *gin.Context) {
 	var req CreatePolicyRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
 	p, err := h.manager.CreatePolicy(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusCreated, p)
+	api.OkWithData(p, c)
 }
 
 // Get handles GET /api/v1/policies/:id.
 func (h *Handler) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	p, err := h.manager.GetPolicy(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, ErrPolicyNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			api.FailWithMessage(err.Error(), c)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, p)
+	api.OkWithData(p, c)
 }
 
 // List handles GET /api/v1/policies.
@@ -68,57 +69,54 @@ func (h *Handler) List(c *gin.Context) {
 	}
 	networkID, err := uuid.Parse(networkIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid network_id"})
+		api.FailWithMessage("invalid network_id", c)
 		return
 	}
 
 	policies, err := h.manager.ListPolicies(c.Request.Context(), networkID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"items": policies,
-		"total": len(policies),
-	})
+	api.OkWithPage(policies, int64(len(policies)), c)
 }
 
 // Update handles PATCH /api/v1/policies/:id.
 func (h *Handler) Update(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	var req UpdatePolicyRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
 	p, err := h.manager.UpdatePolicy(c.Request.Context(), id, &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, p)
+	api.OkWithData(p, c)
 }
 
 // Delete handles DELETE /api/v1/policies/:id.
 func (h *Handler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	if err := h.manager.DeletePolicy(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	api.Ok(c)
 }

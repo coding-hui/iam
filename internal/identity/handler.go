@@ -6,10 +6,11 @@ package identity
 
 import (
 	"errors"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 // Handler handles HTTP requests for identity operations.
@@ -26,45 +27,45 @@ func NewHandler(manager Manager) *Handler {
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateIdentityRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
 	identity, err := h.manager.CreateIdentity(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusCreated, identity)
+	api.OkWithData(identity, c)
 }
 
 // Get handles GET /api/v1/identities/:id.
 func (h *Handler) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	identity, err := h.manager.GetIdentity(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, ErrIdentityNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			api.FailWithMessage(err.Error(), c)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, identity)
+	api.OkWithData(identity, c)
 }
 
 // List handles GET /api/v1/identities.
 func (h *Handler) List(c *gin.Context) {
 	var params ListIdentitiesParams
 	if err := c.ShouldBindQuery(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid params: "+err.Error(), c)
 		return
 	}
 
@@ -76,95 +77,92 @@ func (h *Handler) List(c *gin.Context) {
 
 	identities, total, err := h.manager.ListIdentities(c.Request.Context(), networkID, params)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"items": identities,
-		"total": total,
-	})
+	api.OkWithPage(identities, int64(total), c)
 }
 
 // Update handles PATCH /api/v1/identities/:id.
 func (h *Handler) Update(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	var req UpdateIdentityRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
 	identity, err := h.manager.UpdateIdentity(c.Request.Context(), id, &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, identity)
+	api.OkWithData(identity, c)
 }
 
 // Delete handles DELETE /api/v1/identities/:id.
 func (h *Handler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	if err := h.manager.DeleteIdentity(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	api.Ok(c)
 }
 
 // AddCredentials handles POST /api/v1/identities/:id/credentials.
 func (h *Handler) AddCredentials(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	var req AddCredentialsRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
 	if err := h.manager.AddCredentials(c.Request.Context(), id, &req); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	api.Ok(c)
 }
 
 // DeleteCredentials handles DELETE /api/v1/identities/:id/credentials/:type.
 func (h *Handler) DeleteCredentials(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	credType := CredentialsType(c.Param("type"))
 	if credType != CredentialsTypePassword && credType != CredentialsTypeAPIKey && credType != CredentialsTypeTOTP {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid credentials type"})
+		api.FailWithMessage("invalid credentials type", c)
 		return
 	}
 
 	if err := h.manager.DeleteCredentials(c.Request.Context(), id, credType); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	api.Ok(c)
 }

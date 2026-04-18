@@ -5,10 +5,10 @@
 package audit
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 // Handler handles HTTP requests for audit operations.
@@ -24,9 +24,12 @@ func NewHandler(manager Manager) *Handler {
 // List handles GET /api/v1/audit/events.
 func (h *Handler) List(c *gin.Context) {
 	networkIDStr := c.GetString("network_id")
+	if networkIDStr == "" {
+		networkIDStr = "00000000-0000-0000-0000-000000000000"
+	}
 	networkID, err := uuid.Parse(networkIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid network_id"})
+		api.FailWithMessage("invalid network_id", c)
 		return
 	}
 
@@ -35,7 +38,7 @@ func (h *Handler) List(c *gin.Context) {
 		Offset int `form:"offset"`
 	}
 	if err := c.ShouldBindQuery(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 	if req.Limit <= 0 {
@@ -47,12 +50,9 @@ func (h *Handler) List(c *gin.Context) {
 
 	events, total, err := h.manager.ListEvents(c.Request.Context(), networkID, req.Limit, req.Offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"items": events,
-		"total": total,
-	})
+	api.OkWithPage(events, int64(total), c)
 }

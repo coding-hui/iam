@@ -5,11 +5,10 @@
 package selfservice
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/coding-hui/iam/internal/selfservice/strategies"
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 // Handler handles HTTP requests for selfservice operations.
@@ -30,7 +29,7 @@ func NewHandler(passwordAuthenticator *strategies.PasswordAuthenticator, mfaMana
 func (h *Handler) Login(c *gin.Context) {
 	var req strategies.AuthenticateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
@@ -39,31 +38,27 @@ func (h *Handler) Login(c *gin.Context) {
 
 	resp, err := h.passwordAuthenticator.Authenticate(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"session_id":  resp.SessionID,
-		"identity_id": resp.IdentityID,
-		"expires_at":  resp.ExpiresAt,
-	})
+	api.OkWithData(resp, c)
 }
 
 // SetupTOTP handles POST /api/v1/mfa/totp/setup.
 func (h *Handler) SetupTOTP(c *gin.Context) {
 	// TODO: implement
-	c.JSON(http.StatusNotImplemented, gin.H{"error": "not implemented"})
+	api.FailWithMessage("not implemented", c)
 }
 
 // VerifyTOTP handles POST /api/v1/mfa/totp/verify.
 func (h *Handler) VerifyTOTP(c *gin.Context) {
 	// TODO: implement
-	c.JSON(http.StatusNotImplemented, gin.H{"error": "not implemented"})
+	api.FailWithMessage("not implemented", c)
 }
 
 // DisableTOTP handles POST /api/v1/mfa/totp/disable.
 func (h *Handler) DisableTOTP(c *gin.Context) {
 	// TODO: implement
-	c.JSON(http.StatusNotImplemented, gin.H{"error": "not implemented"})
+	api.FailWithMessage("not implemented", c)
 }

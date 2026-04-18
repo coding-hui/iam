@@ -5,9 +5,9 @@
 package lockout
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 // Handler handles HTTP requests for lockout operations.
@@ -24,34 +24,34 @@ func NewHandler(manager Manager) *Handler {
 func (h *Handler) CheckStatus(c *gin.Context) {
 	identifier := c.Param("identifier")
 	if identifier == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "identifier is required"})
+		api.FailWithMessage("identifier is required", c)
 		return
 	}
 
 	locked, remaining, err := h.manager.IsLocked(c.Request.Context(), identifier)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	api.OkWithData(gin.H{
 		"locked":    locked,
 		"remaining": remaining.Seconds(),
-	})
+	}, c)
 }
 
 // Unlock handles POST /api/v1/lockout/:identifier/unlock.
 func (h *Handler) Unlock(c *gin.Context) {
 	identifier := c.Param("identifier")
 	if identifier == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "identifier is required"})
+		api.FailWithMessage("identifier is required", c)
 		return
 	}
 
 	if err := h.manager.Unlock(c.Request.Context(), identifier); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"unlocked": true})
+	api.Ok(c)
 }

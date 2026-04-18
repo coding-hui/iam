@@ -5,10 +5,10 @@
 package token
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 // Handler handles HTTP requests for token operations.
@@ -25,17 +25,17 @@ func NewHandler(manager Manager) *Handler {
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
 	t, err := h.manager.CreateToken(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusCreated, t)
+	api.OkWithData(t, c)
 }
 
 // Introspect handles POST /api/v1/tokens/introspect.
@@ -44,40 +44,40 @@ func (h *Handler) Introspect(c *gin.Context) {
 		Token string `json:"token"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
 	t, err := h.manager.IntrospectToken(c.Request.Context(), req.Token)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
+		api.OkWithData(gin.H{
 			"active": false,
 			"error":  err.Error(),
-		})
+		}, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	api.OkWithData(gin.H{
 		"active":      true,
 		"token_id":    t.ID,
 		"identity_id": t.IdentityID,
 		"token_type":  t.Type,
 		"expires_at":  t.ExpiresAt,
-	})
+	}, c)
 }
 
 // Revoke handles DELETE /api/v1/tokens/:id.
 func (h *Handler) Revoke(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	if err := h.manager.RevokeToken(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	api.Ok(c)
 }

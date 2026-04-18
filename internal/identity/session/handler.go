@@ -6,11 +6,12 @@ package session
 
 import (
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 // Handler handles HTTP requests for session operations.
@@ -27,7 +28,7 @@ func NewHandler(manager Manager) *Handler {
 func (h *Handler) Create(c *gin.Context) {
 	var req CreateSessionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
@@ -37,73 +38,70 @@ func (h *Handler) Create(c *gin.Context) {
 
 	sess, err := h.manager.CreateSession(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusCreated, sess)
+	api.OkWithData(sess, c)
 }
 
 // Get handles GET /api/v1/sessions/:id.
 func (h *Handler) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	sess, err := h.manager.GetSession(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, ErrSessionNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			api.FailWithMessage(err.Error(), c)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, sess)
+	api.OkWithData(sess, c)
 }
 
 // List handles GET /api/v1/sessions.
 func (h *Handler) List(c *gin.Context) {
 	identityIDStr := c.GetString("identity_id")
 	if identityIDStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid identity_id"})
+		api.FailWithMessage("invalid identity_id", c)
 		return
 	}
 	identityID, err := uuid.Parse(identityIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid identity_id"})
+		api.FailWithMessage("invalid identity_id", c)
 		return
 	}
 
 	sessions, err := h.manager.ListSessions(c.Request.Context(), identityID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"items": sessions,
-		"total": len(sessions),
-	})
+	api.OkWithPage(sessions, int64(len(sessions)), c)
 }
 
 // Revoke handles DELETE /api/v1/sessions/:id.
 func (h *Handler) Revoke(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
 	if err := h.manager.RevokeSession(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	api.Ok(c)
 }
 
 // RevokeAll handles DELETE /api/v1/sessions.
@@ -111,23 +109,23 @@ func (h *Handler) RevokeAll(c *gin.Context) {
 	identityIDStr := c.GetString("identity_id")
 	identityID, err := uuid.Parse(identityIDStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid identity_id"})
+		api.FailWithMessage("invalid identity_id", c)
 		return
 	}
 
 	if err := h.manager.RevokeAllSessions(c.Request.Context(), identityID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	api.Ok(c)
 }
 
 // Extend handles PATCH /api/v1/sessions/:id.
 func (h *Handler) Extend(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		api.FailWithMessage("invalid id", c)
 		return
 	}
 
@@ -135,7 +133,7 @@ func (h *Handler) Extend(c *gin.Context) {
 		Extend time.Duration `json:"extend"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
@@ -145,9 +143,9 @@ func (h *Handler) Extend(c *gin.Context) {
 
 	sess, err := h.manager.ExtendSession(c.Request.Context(), id, req.Extend)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, sess)
+	api.OkWithData(sess, c)
 }

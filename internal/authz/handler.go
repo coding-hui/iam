@@ -5,9 +5,9 @@
 package authz
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+
+	"github.com/coding-hui/iam/pkg/api"
 )
 
 // Handler handles HTTP requests for authorization operations.
@@ -24,18 +24,15 @@ func NewHandler(engine *Engine) *Handler {
 func (h *Handler) Check(c *gin.Context) {
 	var req AuthzRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		api.FailWithMessage("invalid request: "+err.Error(), c)
 		return
 	}
 
 	resp, err := h.engine.Authorize(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		api.FailWithErrCode(err, c)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"decision": resp.Decision,
-		"reason":   resp.Reason,
-	})
+	api.OkWithData(resp, c)
 }
