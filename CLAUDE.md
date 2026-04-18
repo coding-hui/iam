@@ -43,11 +43,11 @@ go test ./internal/authz/... -v -run TestRoleCreate
 
 ## Architecture
 
-### Backend: Ory-style Registry Pattern
+### Backend: Registry Pattern
 
 All services are accessed through a central `driver.Registry` (`internal/driver/registry_default.go`), which uses `sync.Once` for lazy initialization. The registry wires up:
 
-- **L1 (Infrastructure)**: Logger (logrus), OpenTelemetry tracer, Config
+- **L1 (Infrastructure)**: Logger (logrus), Config
 - **L1 (Low-level)**: Identity, Session, Self-service flows
 - **L2**: Authorization (Casbin RBAC), Role, Policy
 - **L3**: Token management, Lockout (brute-force protection), Audit, Courier (webhooks)
@@ -62,7 +62,7 @@ All REST API routes are in `internal/api/router.go` under `/api/v1`. Global midd
 
 ### Persistence
 
-GORM-based SQL implementations in `internal/persistence/sql/` support MySQL and SQLite (switchable via config). The cache layer (`internal/cache/`) uses Redis with in-memory fallback.
+GORM-based SQL implementations in `internal/persistence/sql/` support MySQL and SQLite (switchable via config).
 
 ### Authorization Engine
 
@@ -71,19 +71,27 @@ Casbin-based RBAC in `internal/authz/`. Roles are granted to users; policies com
 ## Key Patterns
 
 - **Registry**: All services accessed via `driver.Registry` — never instantiate services directly
-- **Config**: All config structs in `internal/config/` — server, database, redis, jwt, mfa, audit, notify
+- **Config**: All config structs in `internal/config/` — only Server (host, port) and Database (driver, dsn)
 - **Error Codes**: Generated in `pkg/code/` — do not edit manually
 - **Graceful Shutdown**: Use `pkg/shutdown/` manager for shutdown callbacks
-- **CLI Apps**: Generic CLI framework in `pkg/app/` (cobra-based with viper)
 
 ## Configuration
 
-Server config: `configs/iam-apiserver.yaml`. Database and Redis must be configured before running.
+Server config: `conf/apiserver.yaml`. Config fields:
+
+```yaml
+server:
+  host: 127.0.0.1
+  port: 8080
+database:
+  driver: sqlite  # or mysql
+  dsn: /path/to/database
+```
 
 ## Development Notes
 
 - Go 1.24, Node >= 20.0.0, pnpm 8.5.1
 - Backend entry: `cmd/apiserver/main.go`
 - Frontend entry: `web/` (Umi.js 4 + React 19 + Ant Design)
-- Build output: `_output/platforms/`
+- Build output: `_output/`
 - API docs: `api/swagger/` (Swagger 2.0)

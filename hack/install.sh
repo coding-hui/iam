@@ -28,7 +28,6 @@ cmd_install() {
   # Config
   echo "[INFO] Generating configuration..."
   sed -e "s|{{IAM_DATA}}|${IAM_DATA}|g" \
-      -e "s|{{IAM_LOG}}|${IAM_LOG}|g" \
       "${IAM_ROOT}/conf/apiserver.yaml" > "${IAM_CONF}"
 
   # Binary

@@ -398,22 +398,10 @@ linters:
         text: (hugeParam:|rangeValCopy:)
       - linters:
           - tagliatelle
-        path: (internal/.*/options|internal/pump|pkg/log/options.go|internal/authzserver|tools/)
-      - linters:
-          - deadcode
-          - forbidigo
-          - unused
-          - varcheck
-        path: (pkg/app/.*)\.go
+        path: (internal/.*/options)
       - linters:
           - lll
         source: '^//go:generate '
-      - path: internal/iamctl/util/templates/templates.go
-        linters:
-          - gosec
-      - path: tools/codegen/codegen.go
-        linters:
-          - gosmopolitan
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
