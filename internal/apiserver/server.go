@@ -15,14 +15,14 @@ import (
 	"time"
 
 	"github.com/coding-hui/iam/internal/api"
+	"github.com/coding-hui/iam/internal/config"
 	"github.com/coding-hui/iam/internal/driver"
 	"github.com/coding-hui/iam/pkg/shutdown"
 	"github.com/coding-hui/iam/pkg/shutdown/shutdownmanagers/posixsignal"
 )
 
 // Run starts the API server.
-func Run(basename string, opts *Options) error {
-	cfg := &opts.Config
+func Run(basename string, cfg *config.Config) error {
 
 	// Create registry
 	reg := driver.NewRegistry(cfg)

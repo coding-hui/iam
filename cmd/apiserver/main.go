@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/coding-hui/iam/internal/apiserver"
+	"github.com/coding-hui/iam/internal/config"
 )
 
 func main() {
@@ -30,25 +31,23 @@ func main() {
 
 	zap.S().Infof("Config file used: %s", viper.ConfigFileUsed())
 
-	opts := apiserver.NewOptions()
-	if err := viper.Unmarshal(opts); err != nil {
+	var cfg config.Config
+	if err := viper.Unmarshal(&cfg); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: failed to unmarshal config: %v\n", err)
 		os.Exit(1)
 	}
 
-	if err := opts.Complete(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: failed to complete config: %v\n", err)
+	// Validate
+	if cfg.Database.DSN == "" {
+		fmt.Fprintf(os.Stderr, "Error: database DSN is required\n")
+		os.Exit(1)
+	}
+	if cfg.Server.Port < 1 || cfg.Server.Port > 65535 {
+		fmt.Fprintf(os.Stderr, "Error: server port must be between 1 and 65535\n")
 		os.Exit(1)
 	}
 
-	if errs := opts.Validate(); len(errs) > 0 {
-		for _, err := range errs {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		}
-		os.Exit(1)
-	}
-
-	if err := apiserver.Run("apiserver", opts); err != nil {
+	if err := apiserver.Run("apiserver", &cfg); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
