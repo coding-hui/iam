@@ -16,6 +16,7 @@ import (
 	"github.com/coding-hui/iam/internal/authz/policy"
 	"github.com/coding-hui/iam/internal/authz/role"
 	"github.com/coding-hui/iam/internal/cache"
+	"github.com/coding-hui/iam/internal/config"
 	"github.com/coding-hui/iam/internal/identity"
 	"github.com/coding-hui/iam/internal/identity/lockout"
 	"github.com/coding-hui/iam/internal/identity/session"
@@ -49,7 +50,7 @@ func (o *initOnce[T]) Get() T {
 // RegistryDefault provides the default implementation of Registry.
 // It uses sync.Once for thread-safe lazy initialization of all services.
 type RegistryDefault struct {
-	config *Config
+	config *config.Config
 
 	persister initOnce[*sql.Persister]
 	cache     initOnce[Cache]
@@ -97,16 +98,16 @@ type RegistryDefault struct {
 }
 
 // NewRegistry creates a new Registry instance with the given configuration.
-func NewRegistry(config *Config) *RegistryDefault {
+func NewRegistry(cfg *config.Config) *RegistryDefault {
 	return &RegistryDefault{
-		config: config,
-		logger: newLogger(config.Server.Mode),
+		config: cfg,
+		logger: newLogger(cfg.Server.Mode),
 		tracer: otel.Tracer("iam"),
 	}
 }
 
 // Config returns the application configuration.
-func (r *RegistryDefault) Config() *Config {
+func (r *RegistryDefault) Config() *config.Config {
 	return r.config
 }
 

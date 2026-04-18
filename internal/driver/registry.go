@@ -7,8 +7,10 @@ package driver
 import (
 	"context"
 
-	"github.com/coding-hui/iam/internal/selfservice"
 	"github.com/sirupsen/logrus"
+
+	"github.com/coding-hui/iam/internal/config"
+	"github.com/coding-hui/iam/internal/selfservice"
 
 	"go.opentelemetry.io/otel/trace"
 
@@ -29,7 +31,7 @@ import (
 // It follows the Ory Registry pattern with sync.Once lazy initialization.
 type Registry interface {
 	// Infrastructure
-	Config() *Config
+	Config() *config.Config
 	Logger() *logrus.Logger
 	Tracer() trace.Tracer
 

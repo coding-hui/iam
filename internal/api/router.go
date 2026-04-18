@@ -44,7 +44,7 @@ func NewRouter(reg driver.Registry) *gin.Engine {
 	r.Use(middleware.Cors())
 
 	// Health check endpoints
-	r.GET("/healthz", healthHandler)
+	r.GET("/healthz", healthHandler(reg))
 	r.GET("/ping", pingHandler)
 
 	// Register API routes
@@ -117,10 +117,12 @@ func registerRoutes(r *gin.Engine, reg driver.Registry) {
 }
 
 // healthHandler handles health check requests.
-func healthHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status": "healthy",
-	})
+func healthHandler(reg driver.Registry) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "healthy",
+		})
+	}
 }
 
 // pingHandler handles ping requests.
