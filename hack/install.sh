@@ -5,7 +5,7 @@
 set -euo pipefail
 
 # Paths
-IAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+IAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT_DIR="${IAM_ROOT}/_output"
 IAM_DIR="${HOME}/.iam"
 IAM_BIN="${IAM_DIR}/bin/iam-apiserver"
@@ -41,7 +41,7 @@ cmd_install() {
   sed -e "s|{{IAM_CERT}}|${IAM_CERT}|g" \
       -e "s|{{IAM_DATA}}|${IAM_DATA}|g" \
       -e "s|{{IAM_LOG}}|${IAM_LOG}|g" \
-      "${IAM_ROOT}/hack/install/iam-apiserver.yaml" > "${IAM_CONF}"
+      "${IAM_ROOT}/hack/iam-apiserver.yaml" > "${IAM_CONF}"
 
   # Binary
   cp "${OUTPUT_DIR}/bin/iam-apiserver" "${IAM_BIN}"

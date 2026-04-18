@@ -180,37 +180,37 @@ undeploy:
 ## install: Install IAM services locally (use INSTALL_MODE=local/docker/k8s)
 .PHONY: install
 install:
-	@$(ROOT_DIR)/hack/install/install.sh install
+	@$(ROOT_DIR)/hack/install.sh install
 
 ## start: Start IAM services
 .PHONY: start
 start:
-	@$(ROOT_DIR)/hack/install/install.sh start
+	@$(ROOT_DIR)/hack/install.sh start
 
 ## stop: Stop IAM services
 .PHONY: stop
 stop:
-	@$(ROOT_DIR)/hack/install/install.sh stop
+	@$(ROOT_DIR)/hack/install.sh stop
 
 ## status: Check IAM services status
 .PHONY: status
 status:
-	@$(ROOT_DIR)/hack/install/install.sh status
+	@$(ROOT_DIR)/hack/install.sh status
 
 ## restart: Restart IAM services
 .PHONY: restart
 restart:
-	@$(ROOT_DIR)/hack/install/install.sh restart
+	@$(ROOT_DIR)/hack/install.sh restart
 
 ## logs: Show IAM logs
 .PHONY: logs
 logs:
-	@$(ROOT_DIR)/hack/install/install.sh logs
+	@$(ROOT_DIR)/hack/install.sh logs
 
 ## uninstall: Uninstall IAM services
 .PHONY: uninstall
 uninstall:
-	@$(ROOT_DIR)/hack/install/install.sh uninstall
+	@$(ROOT_DIR)/hack/install.sh uninstall
 
 ## check-updates: Check outdated Go dependencies
 .PHONY: check-updates
