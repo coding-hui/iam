@@ -97,7 +97,7 @@ func (o *Options) Complete() error {
 
 // Validate validates the required fields.
 func (o *Options) Validate() []error {
-	errs := []error{}
+	var errs []error
 
 	if o.Database.DSN == "" {
 		errs = append(errs, errors.New("database DSN is required"))
