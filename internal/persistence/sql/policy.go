@@ -15,12 +15,12 @@ import (
 type PolicyModel struct {
 	ID         string    `gorm:"primaryKey;column:id" json:"id"`
 	NetworkID  string    `gorm:"column:nid;index"     json:"network_id"`
-	Name       string    `gorm:"column:name"           json:"name"`
-	Type       string    `gorm:"column:type"           json:"type"`
-	Subjects   string    `gorm:"column:subjects"       json:"subjects"`
-	Effect     string    `gorm:"column:effect"         json:"effect"`
-	Actions    string    `gorm:"column:actions"        json:"actions"`
-	Resources  string    `gorm:"column:resources"      json:"resources"`
+	Name       string    `gorm:"column:name"          json:"name"`
+	Type       string    `gorm:"column:type"          json:"type"`
+	Subjects   string    `gorm:"column:subjects"      json:"subjects"`
+	Effect     string    `gorm:"column:effect"        json:"effect"`
+	Actions    string    `gorm:"column:actions"       json:"actions"`
+	Resources  string    `gorm:"column:resources"     json:"resources"`
 	Conditions []byte    `gorm:"column:conditions"    json:"conditions"`
 	CreatedAt  time.Time `gorm:"column:created_at"    json:"created_at"`
 	UpdatedAt  time.Time `gorm:"column:updated_at"    json:"updated_at"`

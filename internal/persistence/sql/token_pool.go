@@ -13,12 +13,12 @@ import (
 
 // TokenModel represents a token in the database.
 type TokenModel struct {
-	ID         string    `gorm:"primaryKey;column:id" json:"id"`
+	ID         string    `gorm:"primaryKey;column:id"     json:"id"`
 	IdentityID string    `gorm:"column:identity_id;index" json:"identity_id"`
-	Type       string    `gorm:"column:type"           json:"type"`
+	Type       string    `gorm:"column:type"              json:"type"`
 	Value      string    `gorm:"column:value;uniqueIndex" json:"value"`
-	ExpiresAt  time.Time `gorm:"column:expires_at"     json:"expires_at"`
-	CreatedAt  time.Time `gorm:"column:created_at"     json:"created_at"`
+	ExpiresAt  time.Time `gorm:"column:expires_at"        json:"expires_at"`
+	CreatedAt  time.Time `gorm:"column:created_at"        json:"created_at"`
 }
 
 // TableName returns the table name for TokenModel.

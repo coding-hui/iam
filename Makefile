@@ -2,190 +2,272 @@
 # Use of this source code is governed by a MIT style
 # license that can be found in the LICENSE file.
 
-# Build all by default, even if it's not first
 .DEFAULT_GOAL := all
 
-.PHONY: all
-all: tidy gen add-copyright format lint build
+# ==============================================================================
+# Variables
+
+ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+OUTPUT_DIR := $(ROOT_DIR)/_output
+TOOLS_DIR := $(OUTPUT_DIR)/tools
+ROOT_PACKAGE := github.com/coding-hui/iam
+VERSION_PACKAGE := github.com/coding-hui/common/version
+
+GO := go
+CGO_ENABLED ?= 1
+PLATFORM ?= $(GOOS)_$(GOARCH)
+GOOS ?= $(shell $(GO) env GOOS)
+GOARCH ?= $(shell $(GO) env GOARCH)
+GO_OUT_EXT :=
+ifeq ($(GOOS), windows)
+	GO_OUT_EXT := .exe
+endif
+
+# Version info from git
+VERSION := $(shell git describe --tags --always --match='v*' 2>/dev/null || echo "v0.0.0")
+GIT_COMMIT := $(shell git rev-parse HEAD 2>/dev/null || echo "unknown")
+GIT_TREE_STATE := $(shell git status --porcelain 2>/dev/null || echo "")
+ifeq ($(GIT_TREE_STATE),)
+	GIT_TREE_STATE := clean
+else
+	GIT_TREE_STATE := dirty
+endif
+
+GO_LDFLAGS := -X $(VERSION_PACKAGE).GitVersion=$(VERSION) \
+	-X $(VERSION_PACKAGE).GitCommit=$(GIT_COMMIT) \
+	-X $(VERSION_PACKAGE).GitTreeState=$(GIT_TREE_STATE) \
+	-X $(VERSION_PACKAGE).BuildDate=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
+GO_BUILD_FLAGS := -ldflags "$(GO_LDFLAGS)"
+
+# Binaries to build
+COMMANDS := $(filter-out %.md, $(wildcard $(ROOT_DIR)/cmd/*))
+BINS := $(foreach cmd,$(COMMANDS),$(notdir $(cmd)))
+
+# Minimum coverage
+COVERAGE ?= 60
+
+# Platforms for multi-arch build
+PLATFORMS ?= linux/amd64 linux/arm64
 
 # ==============================================================================
-# Build options
+# Includes (only for tools installation)
 
-ROOT_PACKAGE=github.com/coding-hui/iam
-VERSION_PACKAGE=github.com/coding-hui/common/version
-
-# ==============================================================================
-# Includes
-
-include hack/makelib/common.mk # make sure include common.mk at the first include line
-include hack/makelib/golang.mk
-include hack/makelib/image.mk
-include hack/makelib/deploy.mk
-include hack/makelib/copyright.mk
-include hack/makelib/gen.mk
-include hack/makelib/ca.mk
-include hack/makelib/release.mk
-include hack/makelib/swagger.mk
-include hack/makelib/dependencies.mk
 include hack/makelib/tools.mk
-include hack/makelib/install.mk
 
 # ==============================================================================
 # Usage
 
 define USAGE_OPTIONS
-
 Options:
-  DEBUG            Whether to generate debug symbols. Default is 0.
-  BINS             The binaries to build. Default is all of cmd.
-                   This option is available when using: make build/build.multiarch
-                   Example: make build BINS="iam-apiserver iam-authz-server"
-  IMAGES           Backend images to make. Default is all of cmd.
-                   This option is available when using: make image/image.multiarch/push/push.multiarch
-                   Example: make image.multiarch IMAGES="iam-apiserver iam-authz-server"
-  REGISTRY_PREFIX  Docker registry prefix. Default is wecoding.
-                   Example: make push REGISTRY_PREFIX=devops-wecoding-docker.pkg.coding.net/wecoding/docker-repo VERSION=v1.6.2
-  PLATFORMS        The multiple platforms to build. Default is linux_amd64 and linux_arm64.
-                   This option is available when using: make build.multiarch/image.multiarch/push.multiarch
-                   Example: make image.multiarch IMAGES="iam-apiserver iam-pump" PLATFORMS="linux/amd64,linux/arm64"
-  VERSION          The version information compiled into binaries.
-                   The default is obtained from gsemver or git.
-  V                Set to 1 enable verbose build. Default is 0.
+  BINS            Binaries to build. Default is all cmd/*.
+  PLATFORMS       Multi-platform build. Default: linux/amd64 linux/arm64.
+  VERSION         Version info compiled into binaries.
+  COVERAGE        Minimum test coverage. Default: 60.
+  CGO_ENABLED     Enable CGO. Default: 1.
 endef
 export USAGE_OPTIONS
 
 # ==============================================================================
 # Targets
 
-## build: Build source code for host platform.
+## all: Full pipeline (tidy, gen, copyright, format, lint, build)
+.PHONY: all
+all: tidy gen add-copyright format lint build
+
+## build: Build binaries for host platform
 .PHONY: build
-build:
-	@$(MAKE) go.build
+build: go.build
 
-## build.multiarch: Build source code for multiple platforms. See option PLATFORMS.
+## build.multiarch: Build binaries for multiple platforms
 .PHONY: build.multiarch
-build.multiarch:
-	@$(MAKE) go.build.multiarch
+build.multiarch: go.build.multiarch
 
-## image: Build docker images for host arch.
-.PHONY: image
-image:
-	@$(MAKE) image.build
-
-## push: Build docker images for host arch and push images to registry.
-.PHONY: push
-push:
-	@$(MAKE) image.build BUILDX_OUTPUT_TYPE=registry
-
-## deploy: Deploy updated components to development env.
-.PHONY: deploy
-deploy:
-	@$(MAKE) deploy.k8s
-
-## undeploy: Undeploy components.
-.PHONY: undeploy
-undeploy:
-	@helm uninstall iam -n iam-system
-
-## clean: Remove all files that are created by building.
-.PHONY: clean
-clean:
-	@echo "==> Cleaning all build output"
-	@-rm -vrf $(OUTPUT_DIR)
-
-## lint: Check syntax and styling of go sources.
-.PHONY: lint
-lint:
-	@$(MAKE) go.lint
-
-## test: Run unit test.
+## test: Run unit tests with race detection and coverage
 .PHONY: test
-test:
-	@$(MAKE) go.test
+test: go.test
 
-## cover: Run unit test and get test coverage.
+## cover: Run tests and generate HTML coverage report
 .PHONY: cover
-cover:
-	@$(MAKE) go.test.cover
+cover: go.test.cover
 
-.PHONY: release.build
-release.build:
-	@$(MAKE) push.multiarch
+## lint: Run golangci-lint
+.PHONY: lint
+lint: go.lint
 
-## release: Release iam
-.PHONY: release
-release:
-	@$(MAKE) release.run
-
-## format: Gofmt (reformat) package sources (exclude vendor dir if existed).
+## format: Format Go source files
 .PHONY: format
-format: tools.verify.golines tools.verify.goimports tools.verify.swag
+format: tools.verify.goimports tools.verify.golines tools.verify.swag
 	@echo "==> Formatting codes"
-	@$(FIND) -type f -name '*.go' ! -path 'web/*' | $(XARGS) gofmt -s -w
-	@$(FIND) -type f -name '*.go' ! -path 'web/*' | $(XARGS) goimports -w -local $(ROOT_PACKAGE)
-	@$(FIND) -type f -name '*.go' ! -path 'web/*' | $(XARGS) golines -w --max-len=180 --reformat-tags --shorten-comments --ignore-generated .
+	@find $(ROOT_DIR) -type f -name '*.go' ! -path '$(ROOT_DIR)/web/*' ! -path '$(ROOT_DIR)/vendor/*' | \
+		xargs -r gofmt -s -w
+	@find $(ROOT_DIR) -type f -name '*.go' ! -path '$(ROOT_DIR)/web/*' ! -path '$(ROOT_DIR)/vendor/*' | \
+		xargs -r goimports -w -local $(ROOT_PACKAGE)
+	@find $(ROOT_DIR) -type f -name '*.go' ! -path '$(ROOT_DIR)/web/*' ! -path '$(ROOT_DIR)/vendor/*' | \
+		xargs -r golines -w --max-len=180 --reformat-tags --shorten-comments --ignore-generated .
 	@$(GO) mod edit -fmt
-	@swag fmt -d ${ROOT_DIR}/
-
-## verify-copyright: Verify the boilerplate headers for all files.
-.PHONY: verify-copyright
-verify-copyright:
-	@$(MAKE) copyright.verify
-
-## add-copyright: Ensures source code files have copyright license headers.
-.PHONY: add-copyright
-add-copyright:
-	@$(MAKE) copyright.add
-
-## gen: Generate all necessary files, such as error code files.
-.PHONY: gen
-gen:
-	@$(MAKE) gen.run
-
-## ca: Generate CA files for all iam components.
-.PHONY: ca
-ca:
-	@$(MAKE) gen.ca
-
-## swag: Generate swagger document.
-.PHONY: swag
-swag:
-	@$(MAKE) swag.run
-
-## serve-swagger: Serve swagger spec and docs.
-.PHONY: swagger.serve
-serve-swagger:
-	@$(MAKE) swagger.serve
-
-## dependencies: Install necessary dependencies.
-.PHONY: dependencies
-dependencies:
-	@$(MAKE) dependencies.run
-
-## tools: Install dependent tools.
-.PHONY: tools
-tools:
-	@$(MAKE) tools.install
-
-## check-updates: Check outdated dependencies of the go projects.
-.PHONY: check-updates
-check-updates:
-	@$(MAKE) go.updates
+	@swag fmt -d $(ROOT_DIR)/
 
 ## tidy: Go mod tidy
 .PHONY: tidy
 tidy:
 	@$(GO) mod tidy
 
-## install: Install IAM services (use INSTALL_MODE=local/docker/k8s/all)
+## gen: Generate code (error codes)
+.PHONY: gen
+gen: gen.errcode
+
+## gen.errcode: Generate error code files
+.PHONY: gen.errcode
+gen.errcode: tools.verify.codegen
+	@echo "==> Generating error codes"
+	@codegen -type=int $(ROOT_DIR)/pkg/code
+
+## swag: Generate Swagger docs
+.PHONY: swag
+swag: tools.verify.swag
+	@echo "==> Generating swagger docs"
+	@swag i -g apiserver.go -dir $(ROOT_DIR)/internal/apiserver --parseDependency --parseInternal -o $(ROOT_DIR)/api/swagger
+
+## serve-swagger: Serve Swagger UI
+.PHONY: serve-swagger
+serve-swagger: tools.verify.swag
+	@swag serve -F=redoc --no-open --port 36666 $(ROOT_DIR)/api/swagger/swagger.yaml
+
+## verify-copyright: Verify license headers
+.PHONY: verify-copyright
+verify-copyright: tools.verify.addlicense
+	@echo "==> Verifying license headers"
+	@addlicense --check -f $(ROOT_DIR)/hack/boilerplate.txt \
+		--skip-dirs "api/*" --skip-dirs "installer/*" --skip-dirs "web/node_modules/*" \
+		--skip-dirs "_output/*" $(ROOT_DIR)
+
+## add-copyright: Add license headers
+.PHONY: add-copyright
+add-copyright: tools.verify.addlicense
+	@echo "==> Adding license headers"
+	@addlicense -v -f $(ROOT_DIR)/hack/boilerplate.txt \
+		--skip-dirs "api/*" --skip-dirs "web/*" --skip-dirs "installer/*" \
+		--skip-dirs "_output/*" $(ROOT_DIR)
+
+## clean: Remove build output
+.PHONY: clean
+clean:
+	@echo "==> Cleaning build output"
+	@rm -vrf $(OUTPUT_DIR)
+
+## image: Build Docker image for host platform
+.PHONY: image
+image: tools.verify.swag
+	@echo "==> Building Docker image"
+	@docker build -t $(REGISTRY_PREFIX)/iam-apiserver:$(VERSION) \
+		-f $(ROOT_DIR)/installer/dockerfile/iam-apiserver/Dockerfile $(ROOT_DIR)
+
+## image.multiarch: Build multi-arch Docker image
+.PHONY: image.multiarch
+image.multiarch:
+	@echo "==> Building multi-arch Docker image (requires docker buildx)"
+	@docker buildx create --use 2>/dev/null || true
+	@docker buildx build --platform $(PLATFORMS) \
+		-t $(REGISTRY_PREFIX)/iam-apiserver:$(VERSION) \
+		--output=type=registry \
+		-f $(ROOT_DIR)/installer/dockerfile/iam-apiserver/Dockerfile $(ROOT_DIR)
+
+## deploy: Deploy to Kubernetes dev environment
+.PHONY: deploy
+deploy:
+	@$(ROOT_DIR)/hack/deploy-iam.sh
+
+## undeploy: Remove Kubernetes deployment
+.PHONY: undeploy
+undeploy:
+	@helm uninstall iam -n iam-system 2>/dev/null || true
+
+## install: Install IAM services locally (use INSTALL_MODE=local/docker/k8s)
 .PHONY: install
 install:
-	@$(MAKE) install.$(or $(INSTALL_MODE),local)
+	@$(ROOT_DIR)/hack/install/install.sh install
 
+## start: Start IAM services
+.PHONY: start
+start:
+	@$(ROOT_DIR)/hack/install/install.sh start
 
-## help: Show this help info.
+## stop: Stop IAM services
+.PHONY: stop
+stop:
+	@$(ROOT_DIR)/hack/install/install.sh stop
+
+## status: Check IAM services status
+.PHONY: status
+status:
+	@$(ROOT_DIR)/hack/install/install.sh status
+
+## restart: Restart IAM services
+.PHONY: restart
+restart:
+	@$(ROOT_DIR)/hack/install/install.sh restart
+
+## logs: Show IAM logs
+.PHONY: logs
+logs:
+	@$(ROOT_DIR)/hack/install/install.sh logs
+
+## uninstall: Uninstall IAM services
+.PHONY: uninstall
+uninstall:
+	@$(ROOT_DIR)/hack/install/install.sh uninstall
+
+## check-updates: Check outdated Go dependencies
+.PHONY: check-updates
+check-updates:
+	@$(GO) list -u -m -json all | \
+		$(TOOLS_DIR)/go-mod-outdated@latest -update -direct 2>/dev/null || \
+		echo "Install go-mod-outdated: go install github.com/psampaz/go-mod-outdated@latest"
+
+## tools: Install build tools
+.PHONY: tools
+tools: tools.verify.golangci-lint tools.verify.addlicense tools.verify.goimports \
+	tools.verify.golines tools.verify.swag tools.verify.go-junit-report tools.verify.codegen
+
+## help: Show this help
 .PHONY: help
 help: Makefile
 	@printf "\nUsage: make <TARGETS> <OPTIONS> ...\n\nTargets:\n"
 	@sed -n 's/^##//p' $< | column -t -s ':' | sed -e 's/^/ /'
 	@echo "$$USAGE_OPTIONS"
+
+# ==============================================================================
+# Go build targets
+
+.PHONY: go.build go.build.multiarch go.lint go.test go.test.cover
+
+go.build: $(addprefix go.build., $(addprefix $(PLATFORM)., $(BINS)))
+
+go.build.%:
+	$(eval COMMAND := $(word 2,$(subst ., ,$*)))
+	$(eval OS := $(word 1,$(subst _, ,$(PLATFORM))))
+	$(eval ARCH := $(word 2,$(subst _, ,$(PLATFORM))))
+	@echo "==> Building $(COMMAND) $(VERSION) for $(OS)/$(ARCH)"
+	@mkdir -p $(OUTPUT_DIR)/bin
+	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(OS) GOARCH=$(ARCH) $(GO) build \
+		$(GO_BUILD_FLAGS) -o $(OUTPUT_DIR)/bin/$(COMMAND)$(GO_OUT_EXT) \
+		$(ROOT_PACKAGE)/cmd/$(COMMAND)
+
+go.build.multiarch: $(foreach p,$(PLATFORMS),$(addprefix go.build., $(addprefix $(p)., $(BINS))))
+
+go.lint: tools.verify.golangci-lint
+	@echo "==> Linting"
+	@golangci-lint run -c $(ROOT_DIR)/.golangci.yaml $(ROOT_DIR)/...
+
+go.test:
+	@echo "==> Running tests"
+	@mkdir -p $(OUTPUT_DIR)
+	@set -o pipefail; $(GO) test -race -cover -coverprofile=$(OUTPUT_DIR)/coverage.out \
+		-timeout=10m -shuffle=on -short -v ./... 2>&1 | \
+		tee >(go-junit-report --set-exit-code >$(OUTPUT_DIR)/report.xml) || true
+	@$(GO) tool cover -html=$(OUTPUT_DIR)/coverage.out -o $(OUTPUT_DIR)/coverage.html 2>/dev/null || true
+
+go.test.cover: go.test
+	@echo "==> Coverage report"
+	@$(GO) tool cover -func=$(OUTPUT_DIR)/coverage.out | \
+		awk -v target=$(COVERAGE) -f $(ROOT_DIR)/hack/coverage.awk

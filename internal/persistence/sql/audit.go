@@ -22,9 +22,9 @@ type AuditEventModel struct {
 	TargetType string    `gorm:"column:target_type"      json:"target_type"`
 	Outcome    string    `gorm:"column:outcome;index"    json:"outcome"`
 	ClientIP   string    `gorm:"column:client_ip"        json:"client_ip"`
-	UserAgent  string    `gorm:"column:user_agent"      json:"user_agent"`
+	UserAgent  string    `gorm:"column:user_agent"       json:"user_agent"`
 	RequestID  string    `gorm:"column:request_id;index" json:"request_id"`
-	Metadata   []byte    `gorm:"column:metadata"        json:"metadata"`
+	Metadata   []byte    `gorm:"column:metadata"         json:"metadata"`
 	Timestamp  time.Time `gorm:"column:timestamp;index"  json:"timestamp"`
 }
 
