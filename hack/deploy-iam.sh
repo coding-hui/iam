@@ -76,7 +76,7 @@ install_redis() {
 # Install IAM
 install_iam() {
   echo "Installing IAM..."
-  pushd "$IAM_ROOT/installer/helm/iam" >/dev/null
+  pushd "$IAM_ROOT/installer/helm/apiserver" >/dev/null
   helm install iam . -n "$IAM_SYSTEM_NAMESPACE" --create-namespace
   popd >/dev/null
 

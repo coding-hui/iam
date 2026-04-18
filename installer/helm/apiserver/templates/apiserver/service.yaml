@@ -1,0 +1,53 @@
+{{- if .Values.apiServer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "iam.apiServerFullname" . }}
+  labels:
+    {{- include "iam.apiServerLabels" . | nindent 4 }}
+    {{- with .Values.apiServer.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.apiServer.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.apiServer.service.type }}
+  {{- with .Values.apiServer.service.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- if eq "LoadBalancer" .Values.apiServer.service.type }}
+  {{- with .Values.apiServer.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.apiServer.service.loadBalancerSourceRanges  }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.apiServer.service.ports.http }}
+      targetPort: http
+      {{- if (and (or (eq .Values.apiServer.service.type "NodePort") (eq .Values.apiServer.service.type "LoadBalancer")) (not (empty .Values.apiServer.service.nodePorts.http))) }}
+      nodePort: {{ .Values.apiServer.service.nodePorts.http }}
+      {{- end }}
+      protocol: TCP
+    - name: https
+      port: {{ .Values.apiServer.service.ports.https }}
+      targetPort: https
+      {{- if (and (or (eq .Values.apiServer.service.type "NodePort") (eq .Values.apiServer.service.type "LoadBalancer")) (not (empty .Values.apiServer.service.nodePorts.https))) }}
+      nodePort: {{ .Values.apiServer.service.nodePorts.https }}
+      {{- end }}
+      protocol: TCP
+    - name: grpc
+      port: {{ .Values.apiServer.service.ports.grpc }}
+      targetPort: grpc
+      {{- if (and (or (eq .Values.apiServer.service.type "NodePort") (eq .Values.apiServer.service.type "LoadBalancer")) (not (empty .Values.apiServer.service.nodePorts.grpc))) }}
+      nodePort: {{ .Values.apiServer.service.nodePorts.grpc }}
+      {{- end }}
+      protocol: TCP
+  selector:
+    {{- include "iam.apiServerSelectorLabels" . | nindent 4 }}
+{{- end }}

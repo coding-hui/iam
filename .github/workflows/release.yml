@@ -57,4 +57,4 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             --push \
             -t ${{ vars.REGISTRY_PREFIX }}/apiserver:$VERSION \
-            -f installer/dockerfile/iam-apiserver/Dockerfile .
+            -f installer/dockerfile/apiserver/Dockerfile .

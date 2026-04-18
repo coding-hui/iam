@@ -155,7 +155,7 @@ clean:
 image: tools.verify.swag
 	@echo "==> Building Docker image"
 	@docker build -t $(REGISTRY_PREFIX)/iam-apiserver:$(VERSION) \
-		-f $(ROOT_DIR)/installer/dockerfile/iam-apiserver/Dockerfile $(ROOT_DIR)
+		-f $(ROOT_DIR)/installer/dockerfile/apiserver/Dockerfile $(ROOT_DIR)
 
 ## image.multiarch: Build multi-arch Docker image
 .PHONY: image.multiarch
@@ -165,7 +165,7 @@ image.multiarch:
 	@docker buildx build --platform $(PLATFORMS) \
 		-t $(REGISTRY_PREFIX)/iam-apiserver:$(VERSION) \
 		--output=type=registry \
-		-f $(ROOT_DIR)/installer/dockerfile/iam-apiserver/Dockerfile $(ROOT_DIR)
+		-f $(ROOT_DIR)/installer/dockerfile/apiserver/Dockerfile $(ROOT_DIR)
 
 ## deploy: Deploy to Kubernetes dev environment
 .PHONY: deploy

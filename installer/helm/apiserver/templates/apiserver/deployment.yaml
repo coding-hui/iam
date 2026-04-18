@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "iam.apiServerFullname" . }}
+  labels:
+    {{- include "iam.apiServerLabels" . | nindent 4 }}
+spec:
+  {{- if not .Values.apiServer.autoscaling.enabled }}
+  replicas: {{ .Values.apiServer.replicas }}
+  {{- end }}
+  {{- with .Values.apiServer.deploymentStrategy }}
+  strategy:
+  {{ toYaml . | trim | indent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "iam.apiServerSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.apiServer.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "iam.apiServerSelectorLabels" . | nindent 8 }}
+        {{- with .Values.apiServer.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "iam.apiServerFullname" . }}
+      {{- with .Values.apiServer.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{ end }}
+      containers:
+        - name: apiserver
+          image: {{ include "iam.apiServerImage" . }}
+          imagePullPolicy: {{ .Values.apiServer.image.pullPolicy }}
+          {{- if or .Values.apiServer.env .Values.apiServer.envFrom }}
+          {{- with .Values.apiServer.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.apiServer.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.apiServer.service.ports.http }}
+              protocol: TCP
+            - name: https
+              containerPort: {{ .Values.apiServer.service.ports.https }}
+              protocol: TCP
+            - name: grpc
+              containerPort: {{ .Values.apiServer.service.ports.grpc }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.apiServer.service.ports.http }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+            successThreshold: 2
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.apiServer.service.ports.http }}
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          securityContext:
+            {{- toYaml .Values.apiServer.containerSecurityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.apiServer.resources | nindent 12 }}
+          volumeMounts:
+            - name: log
+              mountPath: /var/log/iam
+            - name: config
+              mountPath: /etc/iam/iam-apiserver.yaml
+              subPath: iam-apiserver.yaml
+            - name: iam-certs
+              mountPath: /var/run/iam/certificates
+              readOnly: true
+      {{- with .Values.apiServer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiServer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiServer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: iam-certs
+          secret:
+            defaultMode: 420
+            secretName: {{ include "iam.fullname" . }}
+        - name: config
+          configMap:
+            name: {{ include "iam.apiServerFullname" . }}
+        - name: log
+          emptyDir: { }
+
