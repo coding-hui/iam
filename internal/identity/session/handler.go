@@ -68,6 +68,10 @@ func (h *Handler) Get(c *gin.Context) {
 // List handles GET /api/v1/sessions.
 func (h *Handler) List(c *gin.Context) {
 	identityIDStr := c.GetString("identity_id")
+	if identityIDStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid identity_id"})
+		return
+	}
 	identityID, err := uuid.Parse(identityIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid identity_id"})

@@ -63,6 +63,9 @@ func (h *Handler) Get(c *gin.Context) {
 // List handles GET /api/v1/policies.
 func (h *Handler) List(c *gin.Context) {
 	networkIDStr := c.GetString("network_id")
+	if networkIDStr == "" {
+		networkIDStr = "00000000-0000-0000-0000-000000000000"
+	}
 	networkID, err := uuid.Parse(networkIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid network_id"})
