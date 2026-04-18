@@ -1,5 +1,3 @@
-Language : [us](./README.md) | [🇨🇳](./README_zh.md)
-
 <h1 align="center">WeCoding IAM</h1>
 
 <div align="center">
@@ -51,7 +49,7 @@ An identity and access management system developed in Go, used for authorizing r
 
 ### Environment Requirements
 
-- go 1.19
+- go 1.24
 - node v16.19.1
 - pnpm 8.5.1
 

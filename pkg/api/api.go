@@ -9,8 +9,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"go.uber.org/zap"
+
 	"github.com/coding-hui/iam/pkg/code"
-	"github.com/coding-hui/iam/pkg/log"
 
 	"github.com/coding-hui/common/errors"
 )
@@ -113,7 +114,7 @@ func FailWithMessage(message string, c *gin.Context) {
 // FailWithHTML return the HTTP template specified by its file name.
 func FailWithHTML(name string, data interface{}, err error, c *gin.Context) {
 	if err != nil {
-		log.Errorf("%#+v", err)
+		zap.S().Errorf("%#+v", err)
 		coder := errors.ParseCoder(err)
 		c.HTML(coder.HTTPStatus(), name, Response{
 			Success:   false,
@@ -139,7 +140,7 @@ func FailWithHTML(name string, data interface{}, err error, c *gin.Context) {
 // errors.Coder contains error code, user-safe error message and http status code.
 func FailWithErrCode(err error, c *gin.Context) {
 	if err != nil {
-		log.Errorf("%#+v", err)
+		zap.S().Errorf("%#+v", err)
 		coder := errors.ParseCoder(err)
 		c.JSON(coder.HTTPStatus(), Response{
 			Success:   false,

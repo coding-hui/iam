@@ -71,9 +71,6 @@ ifndef V
 MAKEFLAGS += --no-print-directory
 endif
 
-# Copy githook scripts when execute makefile
-COPY_GITHOOK:=$(shell cp -f .githooks/* .git/hooks/)
-
 # Specify components which need certificate
 ifeq ($(origin CERTIFICATES),undefined)
 CERTIFICATES=iam-apiserver iam-authz-server admin

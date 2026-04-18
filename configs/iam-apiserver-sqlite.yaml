@@ -12,7 +12,6 @@ server:
   healthz: true # 是否开启健康检查，如果开启会安装 /healthz 路由，默认 true
   middlewares: recovery,logger,secure,nocache,cors # 加载的 gin 中间件列表，多个中间件，逗号(,)隔开
   maxPingCount: 3 # http 服务启动后，自检尝试次数，默认 3
-  staticLocations: template/*
 
 # GRPC 服务配置
 grpc:
@@ -32,7 +31,8 @@ secure:
   bindPort: 0 # 使用 HTTPS 安全模式的端口号，设置为 0 表示不启用 HTTPS，默认为 8443
 
 # SQLite 数据库配置（用于本地快速启动）
-sqlite:
+database:
+  driver: sqlite
   database: iam.db # SQLite 数据库文件路径
 
 # Redis 配置（单实例模式下可不用，但配置仍需保留）

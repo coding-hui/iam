@@ -12,19 +12,19 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/coding-hui/iam/internal/audit"
-	"github.com/coding-hui/iam/internal/authn"
 	"github.com/coding-hui/iam/internal/authz"
+	"github.com/coding-hui/iam/internal/authz/policy"
+	"github.com/coding-hui/iam/internal/authz/role"
 	"github.com/coding-hui/iam/internal/cache"
 	"github.com/coding-hui/iam/internal/identity"
-	"github.com/coding-hui/iam/internal/lockout"
-	"github.com/coding-hui/iam/internal/mfa"
+	"github.com/coding-hui/iam/internal/identity/lockout"
+	"github.com/coding-hui/iam/internal/identity/session"
+	"github.com/coding-hui/iam/internal/identity/token"
 	"github.com/coding-hui/iam/internal/persistence"
 	"github.com/coding-hui/iam/internal/persistence/sql"
-	"github.com/coding-hui/iam/internal/policy"
-	"github.com/coding-hui/iam/internal/role"
-	"github.com/coding-hui/iam/internal/session"
-	"github.com/coding-hui/iam/internal/token"
-	"github.com/coding-hui/iam/internal/webhook"
+	"github.com/coding-hui/iam/internal/selfservice"
+	"github.com/coding-hui/iam/internal/selfservice/courier"
+	"github.com/coding-hui/iam/internal/selfservice/strategies"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -69,6 +69,12 @@ type RegistryDefault struct {
 	sessionPrivilegedPool initOnce[session.PrivilegedPool]
 	sessionManager        initOnce[session.Manager]
 
+	tokenPool           initOnce[token.Pool]
+	tokenPrivilegedPool initOnce[token.PrivilegedPool]
+	tokenManager        initOnce[token.Manager]
+
+	lockoutManager initOnce[lockout.Manager]
+
 	rolePool           initOnce[role.Pool]
 	rolePrivilegedPool initOnce[role.PrivilegedPool]
 	roleManager        initOnce[role.Manager]
@@ -79,21 +85,15 @@ type RegistryDefault struct {
 
 	authzEngine *authz.Engine
 
-	tokenPool           initOnce[token.Pool]
-	tokenPrivilegedPool initOnce[token.PrivilegedPool]
-	tokenManager        initOnce[token.Manager]
+	passwordAuthenticator *strategies.PasswordAuthenticator
+	mfaManager            *strategies.ManagerImpl
 
-	authenticator authn.Authenticator
-
-	mfaManager initOnce[mfa.Manager]
+	selfserviceHandler initOnce[*selfservice.Handler]
+	courierInstance    initOnce[courier.Courier]
 
 	auditPool     initOnce[audit.Pool]
 	auditRecorder initOnce[audit.Recorder]
 	auditManager  initOnce[audit.Manager]
-
-	lockoutManager initOnce[lockout.Manager]
-
-	webhookManager initOnce[webhook.Manager]
 }
 
 // NewRegistry creates a new Registry instance with the given configuration.
@@ -195,6 +195,35 @@ func (r *RegistryDefault) initialize(ctx context.Context) error {
 		},
 	}
 
+	r.tokenPool = initOnce[token.Pool]{
+		fn: func() token.Pool {
+			p := r.persister.Get()
+			return token.NewPool(sql.NewTokenPool(p))
+		},
+	}
+
+	r.tokenPrivilegedPool = initOnce[token.PrivilegedPool]{
+		fn: func() token.PrivilegedPool {
+			p := r.persister.Get()
+			return token.NewPrivilegedPool(sql.NewTokenPool(p))
+		},
+	}
+
+	r.tokenManager = initOnce[token.Manager]{
+		fn: func() token.Manager {
+			return token.NewManagerImpl(
+				r.tokenPool.Get(),
+				r.tokenPrivilegedPool.Get(),
+			)
+		},
+	}
+
+	r.lockoutManager = initOnce[lockout.Manager]{
+		fn: func() lockout.Manager {
+			return lockout.NewManager(5, 15*60*1000*1000*1000)
+		},
+	}
+
 	r.rolePool = initOnce[role.Pool]{
 		fn: func() role.Pool {
 			p := r.persister.Get()
@@ -243,41 +272,29 @@ func (r *RegistryDefault) initialize(ctx context.Context) error {
 
 	r.authzEngine = authz.NewEngine()
 
-	// Token (L3)
-	r.tokenPool = initOnce[token.Pool]{
-		fn: func() token.Pool {
-			p := r.persister.Get()
-			return token.NewPool(sql.NewTokenPool(p))
-		},
-	}
-
-	r.tokenPrivilegedPool = initOnce[token.PrivilegedPool]{
-		fn: func() token.PrivilegedPool {
-			p := r.persister.Get()
-			return token.NewPrivilegedPool(sql.NewTokenPool(p))
-		},
-	}
-
-	r.tokenManager = initOnce[token.Manager]{
-		fn: func() token.Manager {
-			return token.NewManagerImpl(
-				r.tokenPool.Get(),
-				r.tokenPrivilegedPool.Get(),
-			)
-		},
-	}
-
-	// AuthN (L1)
-	r.authenticator = authn.NewPasswordAuthenticator(
+	// Selfservice (L1) - Strategies
+	r.passwordAuthenticator = strategies.NewPasswordAuthenticator(
 		r.identityPrivilegedPool.Get(),
 		r.sessionPrivilegedPool.Get(),
 		r.identityHasher,
 	)
 
-	// MFA (L3)
-	r.mfaManager = initOnce[mfa.Manager]{
-		fn: func() mfa.Manager {
-			return mfa.NewManagerImpl()
+	r.mfaManager = strategies.NewManagerImpl()
+
+	// Selfservice Handler
+	r.selfserviceHandler = initOnce[*selfservice.Handler]{
+		fn: func() *selfservice.Handler {
+			return selfservice.NewHandler(
+				r.passwordAuthenticator,
+				r.mfaManager,
+			)
+		},
+	}
+
+	// Courier (L3)
+	r.courierInstance = initOnce[courier.Courier]{
+		fn: func() courier.Courier {
+			return courier.NewCourier()
 		},
 	}
 
@@ -302,21 +319,6 @@ func (r *RegistryDefault) initialize(ctx context.Context) error {
 				r.auditPool.Get(),
 				r.auditRecorder.Get(),
 			)
-		},
-	}
-
-	// Lockout (L3)
-	r.lockoutManager = initOnce[lockout.Manager]{
-		fn: func() lockout.Manager {
-			// Default: 5 attempts, 15 minute lockout
-			return lockout.NewManager(5, 15*60*1000*1000*1000) // 15 minutes in nanoseconds
-		},
-	}
-
-	// Webhook (L3)
-	r.webhookManager = initOnce[webhook.Manager]{
-		fn: func() webhook.Manager {
-			return webhook.NewManager()
 		},
 	}
 
@@ -394,113 +396,123 @@ func (r *RegistryDefault) MigrateUp(ctx context.Context) error {
 }
 
 // IdentityPool returns the identity pool.
-func (r *RegistryDefault) IdentityPool() any {
+func (r *RegistryDefault) IdentityPool() identity.Pool {
 	return r.identityPool.Get()
 }
 
 // PrivilegedIdentityPool returns the privileged identity pool.
-func (r *RegistryDefault) PrivilegedIdentityPool() any {
+func (r *RegistryDefault) PrivilegedIdentityPool() identity.PrivilegedPool {
 	return r.identityPrivilegedPool.Get()
 }
 
 // IdentityManager returns the identity manager.
-func (r *RegistryDefault) IdentityManager() any {
+func (r *RegistryDefault) IdentityManager() identity.Manager {
 	return r.identityManager.Get()
 }
 
+// IdentityHasher returns the identity hasher.
+func (r *RegistryDefault) IdentityHasher() identity.Hasher {
+	return r.identityHasher
+}
+
 // SessionPool returns the session pool.
-func (r *RegistryDefault) SessionPool() any {
+func (r *RegistryDefault) SessionPool() session.Pool {
 	return r.sessionPool.Get()
 }
 
 // PrivilegedSessionPool returns the privileged session pool.
-func (r *RegistryDefault) PrivilegedSessionPool() any {
+func (r *RegistryDefault) PrivilegedSessionPool() session.PrivilegedPool {
 	return r.sessionPrivilegedPool.Get()
 }
 
 // SessionManager returns the session manager.
-func (r *RegistryDefault) SessionManager() any {
+func (r *RegistryDefault) SessionManager() session.Manager {
 	return r.sessionManager.Get()
 }
 
-// RolePool returns the role pool.
-func (r *RegistryDefault) RolePool() any {
-	return r.rolePool.Get()
-}
-
-// PrivilegedRolePool returns the privileged role pool.
-func (r *RegistryDefault) PrivilegedRolePool() any {
-	return r.rolePrivilegedPool.Get()
-}
-
-// RoleManager returns the role manager.
-func (r *RegistryDefault) RoleManager() any {
-	return r.roleManager.Get()
-}
-
-// PolicyPool returns the policy pool.
-func (r *RegistryDefault) PolicyPool() any {
-	return r.policyPool.Get()
-}
-
-// PrivilegedPolicyPool returns the privileged policy pool.
-func (r *RegistryDefault) PrivilegedPolicyPool() any {
-	return r.policyPrivilegedPool.Get()
-}
-
-// PolicyManager returns the policy manager.
-func (r *RegistryDefault) PolicyManager() any {
-	return r.policyManager.Get()
-}
-
-// AuthzEngine returns the authz engine.
-func (r *RegistryDefault) AuthzEngine() any {
-	return r.authzEngine
-}
-
 // TokenPool returns the token pool.
-func (r *RegistryDefault) TokenPool() any {
+func (r *RegistryDefault) TokenPool() token.Pool {
 	return r.tokenPool.Get()
 }
 
 // TokenManager returns the token manager.
-func (r *RegistryDefault) TokenManager() any {
+func (r *RegistryDefault) TokenManager() token.Manager {
 	return r.tokenManager.Get()
 }
 
-// Authenticator returns the authenticator.
-func (r *RegistryDefault) Authenticator() any {
-	return r.authenticator
-}
-
-// MFAManager returns the MFA manager.
-func (r *RegistryDefault) MFAManager() any {
-	return r.mfaManager.Get()
-}
-
-// AuditRecorder returns the audit recorder.
-func (r *RegistryDefault) AuditRecorder() any {
-	return r.auditRecorder.Get()
-}
-
-// AuditPool returns the audit pool.
-func (r *RegistryDefault) AuditPool() any {
-	return r.auditPool.Get()
-}
-
-// AuditManager returns the audit manager.
-func (r *RegistryDefault) AuditManager() any {
-	return r.auditManager.Get()
-}
-
 // LockoutManager returns the lockout manager.
-func (r *RegistryDefault) LockoutManager() any {
+func (r *RegistryDefault) LockoutManager() lockout.Manager {
 	return r.lockoutManager.Get()
 }
 
-// WebhookManager returns the webhook manager.
-func (r *RegistryDefault) WebhookManager() any {
-	return r.webhookManager.Get()
+// RolePool returns the role pool.
+func (r *RegistryDefault) RolePool() role.Pool {
+	return r.rolePool.Get()
+}
+
+// PrivilegedRolePool returns the privileged role pool.
+func (r *RegistryDefault) PrivilegedRolePool() role.PrivilegedPool {
+	return r.rolePrivilegedPool.Get()
+}
+
+// RoleManager returns the role manager.
+func (r *RegistryDefault) RoleManager() role.Manager {
+	return r.roleManager.Get()
+}
+
+// PolicyPool returns the policy pool.
+func (r *RegistryDefault) PolicyPool() policy.Pool {
+	return r.policyPool.Get()
+}
+
+// PrivilegedPolicyPool returns the privileged policy pool.
+func (r *RegistryDefault) PrivilegedPolicyPool() policy.PrivilegedPool {
+	return r.policyPrivilegedPool.Get()
+}
+
+// PolicyManager returns the policy manager.
+func (r *RegistryDefault) PolicyManager() policy.Manager {
+	return r.policyManager.Get()
+}
+
+// AuthzEngine returns the authz engine.
+func (r *RegistryDefault) AuthzEngine() *authz.Engine {
+	return r.authzEngine
+}
+
+// PasswordAuthenticator returns the password authenticator.
+func (r *RegistryDefault) PasswordAuthenticator() *strategies.PasswordAuthenticator {
+	return r.passwordAuthenticator
+}
+
+// MFAManager returns the MFA manager.
+func (r *RegistryDefault) MFAManager() *strategies.ManagerImpl {
+	return r.mfaManager
+}
+
+// SelfserviceHandler returns the selfservice handler.
+func (r *RegistryDefault) SelfserviceHandler() *selfservice.Handler {
+	return r.selfserviceHandler.Get()
+}
+
+// Courier returns the courier.
+func (r *RegistryDefault) Courier() courier.Courier {
+	return r.courierInstance.Get()
+}
+
+// AuditPool returns the audit pool.
+func (r *RegistryDefault) AuditPool() audit.Pool {
+	return r.auditPool.Get()
+}
+
+// AuditRecorder returns the audit recorder.
+func (r *RegistryDefault) AuditRecorder() audit.Recorder {
+	return r.auditRecorder.Get()
+}
+
+// AuditManager returns the audit manager.
+func (r *RegistryDefault) AuditManager() audit.Manager {
+	return r.auditManager.Get()
 }
 
 // NotificationSender returns nil - not yet implemented.

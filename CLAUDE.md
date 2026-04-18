@@ -43,7 +43,9 @@ make ca                                       # Generate CA certificates for all
 ```bash
 make install INSTALL_MODE=local               # Local install (SQLite + Redis, default)
 make install INSTALL_MODE=docker              # Docker install
-make start/stop/status/restart/logs           # Service management after install
+make install INSTALL_MODE=k8s                 # Kubernetes install
+make install INSTALL_MODE=all                # Install all modes
+make start/stop/status/restart/logs           # Service management (after install)
 ```
 
 ### Other
@@ -56,8 +58,9 @@ make verify-copyright                         # Verify license headers (runs in 
 make clean                                    # Remove _output directory
 ```
 
-### Frontend (web/ submodule)
+### Frontend (web/ is a git submodule)
 ```bash
+git submodule update --init --recursive       # Initialize submodule first (once)
 cd web && pnpm install && pnpm start          # Dev server at localhost:8000
 cd web && pnpm test                           # Run frontend tests
 ```
@@ -140,7 +143,7 @@ GORM AutoMigrate runs via `persistence.Persister.MigrateUp()` at startup with mo
 - `pkg/server/` — GenericAPIServer wrapping Gin engine with HTTP/HTTPS lifecycle, graceful shutdown, healthz/metrics/pprof
 - `pkg/middleware/` — Gin middlewares: auth (jwt/basic/apikey/auto), cors, request_id, logger, recovery, secure, nocache, dump
 - `pkg/container/` — IoC/DI container wrapping barnettZQG/inject
-- `pkg/code/` — Error code definitions; define constants in `base.go`/`apiserver.go` with `// ErrXxx - HTTP: description.` comments, then run `make gen`
+- `pkg/code/` — Error code definitions; define constants in `base.go`/`apiserver.go` with `// ErrXxx - HTTP: description.` comments, then run `make gen` to generate `code_generated.go`
 - `pkg/log/` — Structured logging (zap-based)
 - `pkg/options/` — Configuration option structs (mysql, redis, jwt, grpc, secure, auth, etc.) with `AddFlags()`, `Validate()`, `Complete()`
 - `pkg/api/proto/apiserver/v1/` — Protobuf definitions + generated gRPC code
@@ -160,6 +163,8 @@ GORM AutoMigrate runs via `persistence.Persister.MigrateUp()` at startup with mo
 
 - Base path: `/api/v1`
 - Swagger UI: `/swagger/*any`
+- HTTP server: port 8080 (configurable via `server.http.port`)
+- gRPC server: port 8081 (configurable via `server.grpc.port`)
 - Health/version/metrics/pprof endpoints available
 - API groups: Authentication, User, Resource, Role, Organization, Department, ApiKey, Policy, CacheServer, IdentityProvider, Application, EmailTemplate
 

@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/coding-hui/iam/pkg/log"
+	"go.uber.org/zap"
 
 	cliflag "github.com/coding-hui/common/cli/flag"
 	"github.com/coding-hui/common/cli/globalflag"
@@ -211,12 +211,12 @@ func (a *App) runCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	if !a.silence {
-		log.Infof("%v Starting %s ...", progressMessage, a.name)
+		zap.S().Infof("%v Starting %s ...", progressMessage, a.name)
 		if !a.noVersion {
-			log.Infof("%v Version: `%s`", progressMessage, version.Get().ToJSON())
+			zap.S().Infof("%v Version: `%s`", progressMessage, version.Get().ToJSON())
 		}
 		if !a.noConfig {
-			log.Infof("%v Config file used: `%s`", progressMessage, viper.ConfigFileUsed())
+			zap.S().Infof("%v Config file used: `%s`", progressMessage, viper.ConfigFileUsed())
 		}
 	}
 	if a.options != nil {
@@ -244,7 +244,7 @@ func (a *App) applyOptionRules() error {
 	}
 
 	if printableOptions, ok := a.options.(PrintableOptions); ok && !a.silence {
-		log.Infof("%v Config: `%s`", progressMessage, printableOptions.String())
+		zap.S().Infof("%v Config: `%s`", progressMessage, printableOptions.String())
 	}
 
 	return nil

@@ -5,20 +5,24 @@
 package middleware
 
 import (
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-// CORS returns a middleware that handles CORS headers.
-func CORS() gin.HandlerFunc {
-	config := cors.DefaultConfig()
-	config.AllowAllOrigins = false
-	config.AllowOrigins = []string{"*"}
-	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
-	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Request-ID"}
-	config.ExposeHeaders = []string{"X-Request-ID"}
-	config.AllowCredentials = true
-	config.MaxAge = 86400 // 24 hours
+const (
+	maxAge = 12
+)
 
-	return cors.New(config)
+// Cors add cors headers.
+func Cors() gin.HandlerFunc {
+	return cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type", "Accept", "X-Request-ID", "X-API-Key"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: false,
+		MaxAge:           maxAge * time.Hour,
+	})
 }
