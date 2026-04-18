@@ -35,6 +35,11 @@ jobs:
         with:
           go-version: '1.24'
 
+      - name: Install tools
+        run: |
+          go install github.com/coding-hui/addlicense@latest
+          go install github.com/swaggo/swag/cmd/swag@latest
+
       - name: Get the version
         id: get_version
         run: |

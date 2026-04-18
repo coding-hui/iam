@@ -133,8 +133,8 @@ serve-swagger: tools.verify.swag
 verify-copyright: tools.verify.addlicense
 	@echo "==> Verifying license headers"
 	@addlicense --check -f $(ROOT_DIR)/hack/boilerplate.txt \
-		--skip-dirs "api/*" --skip-dirs "installer/*" --skip-dirs "web/node_modules/*" \
-		--skip-dirs "_output/*" $(ROOT_DIR)
+		--skip-dirs "api/*" --skip-dirs "installer/*" --skip-dirs "web/*" --skip-dirs "web/node_modules/*" \
+		--skip-dirs "web/src/.umi/*" --skip-dirs "_output/*" --skip-dirs ".idea/*" $(ROOT_DIR)
 
 ## add-copyright: Add license headers
 .PHONY: add-copyright
@@ -142,7 +142,7 @@ add-copyright: tools.verify.addlicense
 	@echo "==> Adding license headers"
 	@addlicense -v -f $(ROOT_DIR)/hack/boilerplate.txt \
 		--skip-dirs "api/*" --skip-dirs "web/*" --skip-dirs "installer/*" \
-		--skip-dirs "_output/*" $(ROOT_DIR)
+		--skip-dirs "_output/*" --skip-dirs ".idea/*" $(ROOT_DIR)
 
 ## clean: Remove build output
 .PHONY: clean
