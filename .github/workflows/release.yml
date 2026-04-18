@@ -14,12 +14,7 @@ on:
       - 'examples/**'
       - 'docs/**'
       - '**/*.md'
-  workflow_dispatch: { }
-
-# env:
-#   # Use docker.io for Docker Hub if empty
-#   REGISTRY: ''
-#   REGISTRY_PREFIX: wecoding
+  workflow_dispatch: {}
 
 jobs:
 
@@ -50,16 +45,16 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Docker Login
-        # You may pin to the exact commit or the version.
-        # uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc
         uses: docker/login-action@v3
         with:
-          # Server address of Docker registry. If not set then will default to Docker Hub
           registry: ${{ vars.REGISTRY }}
-          # Username used to log against the Docker registry
           username: ${{ vars.DOCKER_USER }}
-          # Password or personal access token used to log against the Docker registry
           password: ${{ secrets.DOCKER_PWD }}
 
-      - name: Daily Release
-        run: make image REGISTRY_PREFIX=${{ vars.REGISTRY_PREFIX }} BUILDX_OUTPUT_TYPE=registry PLATFORMS="linux/amd64,linux/arm64" IMAGES="iam-apiserver iam-authzserver" EXTRA_ARGS="--cache-from type=gha --cache-to type=gha,mode=max"
+      - name: Build and push Docker image
+        run: |
+          docker buildx create --use 2>/dev/null || true
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            --push \
+            -t ${{ vars.REGISTRY_PREFIX }}/iam-apiserver:$VERSION \
+            -f installer/dockerfile/iam-apiserver/Dockerfile .
