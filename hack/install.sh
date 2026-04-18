@@ -8,10 +8,10 @@ set -euo pipefail
 IAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT_DIR="${IAM_ROOT}/_output"
 IAM_DIR="${HOME}/.iam"
-IAM_BIN="${IAM_DIR}/bin/iam-apiserver"
+IAM_BIN="${IAM_DIR}/bin/apiserver"
 IAM_CONF="${IAM_DIR}/conf/apiserver.yaml"
 IAM_DATA="${HOME}/.iam/data"
-IAM_LOG="${IAM_DIR}/logs"
+IAM_PID="${IAM_DIR}/apiserver.pid"
 
 # ==============================================================================
 # Commands
@@ -20,10 +20,10 @@ cmd_install() {
   mkdir -p "${IAM_DIR}/bin" "${IAM_DIR}/conf" "${HOME}/.iam/data" "${IAM_DIR}/logs"
 
   # Build
-  echo "[INFO] Building iam-apiserver..."
+  echo "[INFO] Building apiserver..."
   mkdir -p "${OUTPUT_DIR}/bin"
   CGO_ENABLED=1 go build -ldflags "-X github.com/coding-hui/common/version.GitVersion=$(git describe --tags --always 2>/dev/null || echo v0.0.0) -X github.com/coding-hui/common/version.GitCommit=$(git rev-parse HEAD 2>/dev/null)" \
-    -o "${OUTPUT_DIR}/bin/iam-apiserver" "${IAM_ROOT}/cmd/apiserver"
+    -o "${OUTPUT_DIR}/bin/apiserver" "${IAM_ROOT}/cmd/apiserver"
 
   # Config
   echo "[INFO] Generating configuration..."
@@ -31,85 +31,60 @@ cmd_install() {
       "${IAM_ROOT}/conf/apiserver.yaml" > "${IAM_CONF}"
 
   # Binary
-  cp "${OUTPUT_DIR}/bin/iam-apiserver" "${IAM_BIN}"
+  cp "${OUTPUT_DIR}/bin/apiserver" "${IAM_BIN}"
   chmod +x "${IAM_BIN}"
 
-  # Service
-  if [[ "$(uname -s)" == "Darwin" ]]; then
-    cat > "${IAM_ROOT}/io.github.coding-hui.iam-apiserver.plist" << PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key><string>io.github.coding-hui.iam-apiserver</string>
-    <key>ProgramArguments</key><array><string>${IAM_BIN}</string><string>--config</string><string>${IAM_CONF}</string></array>
-    <key>RunAtLoad</key><true/>
-    <key>StandardOutPath</key><string>${IAM_LOG}/iam-apiserver.log</string>
-    <key>StandardErrorPath</key><string>${IAM_LOG}/iam-apiserver.error.log</string>
-</dict>
-</plist>
-PLIST
-    mkdir -p "${HOME}/Library/LaunchAgents"
-    cp "${IAM_ROOT}/io.github.coding-hui.iam-apiserver.plist" "${HOME}/Library/LaunchAgents/"
-    launchctl load "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist"
-  else
-    cat > /tmp/iam-apiserver.service << EOF
-[Unit] Description=IAM API Server After=network.target
-[Service] Type=simple ExecStart=${IAM_BIN} --config ${IAM_CONF} WorkingDirectory=${IAM_DIR} Restart=on-failure
-[Install] WantedBy=multi-user.target
-EOF
-    sudo cp /tmp/iam-apiserver.service /etc/systemd/system/
-    sudo systemctl daemon-reload
-    sudo systemctl enable iam-apiserver
-    sudo systemctl start iam-apiserver
+  echo "[INFO] Installed to ${IAM_BIN}"
+  echo "[INFO] Config: ${IAM_CONF}"
+  echo "[INFO] Run: ${IAM_BIN} --config ${IAM_CONF}"
+}
+
+cmd_start() {
+  if [ -f "${IAM_PID}" ] && kill -0 "$(cat "${IAM_PID}")" 2>/dev/null; then
+    echo "[WARN] Already running (PID: $(cat ${IAM_PID}))"
+    return 0
   fi
 
-  # Wait
-  echo "[INFO] Waiting for service..."
+  echo "[INFO] Starting apiserver..."
+  nohup "${IAM_BIN}" --config "${IAM_CONF}" > "${IAM_DIR}/logs/apiserver.log" 2>&1 &
+  echo $! > "${IAM_PID}"
+
+  # Wait for startup
   local i=0
   while [ $((i++)) -lt 30 ] && ! nc -z -w1 127.0.0.1 8080 2>/dev/null; do
     sleep 1
   done
 
-  echo "[INFO] IAM apiserver installed"
-  echo "  HTTP: http://127.0.0.1:8080"
-}
-
-cmd_uninstall() {
-  echo "[INFO] Uninstalling..."
-  if [[ "$(uname -s)" == "Darwin" ]]; then
-    launchctl unload "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist" 2>/dev/null || true
-    rm -f "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist"
+  if nc -z -w1 127.0.0.1 8080 2>/dev/null; then
+    echo "[INFO] Started (PID: $(cat ${IAM_PID}))"
+    echo "[INFO] HTTP: http://127.0.0.1:8080"
   else
-    sudo systemctl stop iam-apiserver 2>/dev/null || true
-    sudo systemctl disable iam-apiserver 2>/dev/null || true
-    sudo rm -f /etc/systemd/system/iam-apiserver.service
+    echo "[ERROR] Failed to start"
+    return 1
   fi
-  rm -rf "${IAM_DIR}"
-  echo "[INFO] Done"
-}
-
-cmd_start() {
-  if [[ "$(uname -s)" == "Darwin" ]]; then
-    launchctl load "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist"
-  else
-    sudo systemctl start iam-apiserver
-  fi
-  echo "[INFO] Started"
 }
 
 cmd_stop() {
-  if [[ "$(uname -s)" == "Darwin" ]]; then
-    launchctl unload "${HOME}/Library/LaunchAgents/io.github.coding-hui.iam-apiserver.plist"
-  else
-    sudo systemctl stop iam-apiserver
+  if [ -f "${IAM_PID}" ]; then
+    local pid=$(cat "${IAM_PID}")
+    if kill -0 "${pid}" 2>/dev/null; then
+      echo "[INFO] Stopping (PID: ${pid})..."
+      kill "${pid}" 2>/dev/null || true
+      sleep 1
+      kill -9 "${pid}" 2>/dev/null || true
+    fi
+    rm -f "${IAM_PID}"
   fi
   echo "[INFO] Stopped"
 }
 
 cmd_status() {
-  if nc -z -w1 127.0.0.1 8080 2>/dev/null; then
-    echo "[INFO] Running (http://127.0.0.1:8080)"
+  if [ -f "${IAM_PID}" ] && kill -0 "$(cat "${IAM_PID}")" 2>/dev/null; then
+    if nc -z -w1 127.0.0.1 8080 2>/dev/null; then
+      echo "[INFO] Running (PID: $(cat ${IAM_PID}), http://127.0.0.1:8080)"
+    else
+      echo "[WARN] Running but not responding (PID: $(cat ${IAM_PID}))"
+    fi
   else
     echo "[WARN] Not running"
     return 1
@@ -121,7 +96,18 @@ cmd_restart() {
 }
 
 cmd_logs() {
-  tail -50 "${IAM_LOG}/iam-apiserver.log" 2>/dev/null || echo "[WARN] No logs found"
+  if [ -f "${IAM_DIR}/logs/apiserver.log" ]; then
+    tail -50 "${IAM_DIR}/logs/apiserver.log"
+  else
+    echo "[WARN] No logs found"
+  fi
+}
+
+cmd_uninstall() {
+  echo "[INFO] Uninstalling..."
+  cmd_stop
+  rm -rf "${IAM_DIR}"
+  echo "[INFO] Done"
 }
 
 # ==============================================================================
