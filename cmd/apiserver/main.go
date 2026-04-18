@@ -48,7 +48,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := apiserver.Run("apiserver"); err != nil {
+	if err := apiserver.Run("apiserver", opts); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}

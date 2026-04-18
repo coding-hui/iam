@@ -21,18 +21,12 @@ import (
 )
 
 // Run starts the API server.
-func Run(basename string) error {
-	// Options should already be completed and validated by app.Run()
-	opts := GetOptions()
-	if opts == nil {
-		return fmt.Errorf("options not initialized")
-	}
-
+func Run(basename string, opts *Options) error {
 	cfg := &opts.Config
 
 	// Create registry
 	reg := driver.NewRegistry(cfg)
-	var logger = reg.Logger()
+	logger := reg.Logger()
 
 	// Initialize context with cancellation
 	ctx, cancel := context.WithCancel(context.Background())
@@ -83,13 +77,7 @@ func Run(basename string) error {
 	// Start HTTP server in goroutine
 	go func() {
 		logger.Infof("Starting API server %s on %s", basename, addr)
-		var err error
-		if cfg.Server.TLSCert != "" && cfg.Server.TLSKey != "" {
-			err = srv.ListenAndServeTLS(cfg.Server.TLSCert, cfg.Server.TLSKey)
-		} else {
-			err = srv.ListenAndServe()
-		}
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.Errorf("Server error: %v", err)
 		}
 	}()
