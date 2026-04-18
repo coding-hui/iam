@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -17,12 +18,28 @@ import (
 )
 
 func main() {
-	// Set default config path
+	// Check for explicit config file
+	configFile := os.Getenv("IAM_CONFIG_FILE")
+	for i, arg := range os.Args[1:] {
+		if arg == "--config" && i+1 < len(os.Args)-1 {
+			configFile = os.Args[i+2]
+			break
+		}
+		if strings.HasPrefix(arg, "--config=") {
+			configFile = strings.TrimPrefix(arg, "--config=")
+			break
+		}
+	}
+
 	viper.SetConfigName("apiserver")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	viper.AddConfigPath(filepath.Join(os.Getenv("HOME"), ".iam", "conf"))
-	viper.AddConfigPath("/etc/iam")
+	if configFile != "" {
+		viper.SetConfigFile(configFile)
+	} else {
+		viper.AddConfigPath(".")
+		viper.AddConfigPath(filepath.Join(os.Getenv("HOME"), ".iam", "conf"))
+		viper.AddConfigPath("/etc/iam")
+	}
 
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: failed to read config: %v\n", err)

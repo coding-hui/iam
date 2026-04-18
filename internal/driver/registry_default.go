@@ -355,8 +355,8 @@ func (r *RegistryDefault) newCache() Cache {
 func newLogger() *logrus.Logger {
 	logger := logrus.New()
 	logger.SetLevel(logrus.InfoLevel)
-	logger.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
+	logger.SetFormatter(&logrus.JSONFormatter{
+		TimestampFormat: "2006-01-02T15:04:05.000Z07:00",
 	})
 	return logger
 }
