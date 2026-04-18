@@ -26,6 +26,9 @@ import (
 func NewRouter(reg driver.Registry) *gin.Engine {
 	r := gin.New()
 
+	// Apply JSON logger config for consistent logging
+	r.Use(gin.LoggerWithConfig(middleware.GetLoggerConfig(nil, nil)))
+
 	// Global middleware
 	r.Use(middleware.RequestID())
 	r.Use(middleware.RequestLog())

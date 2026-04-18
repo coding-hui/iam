@@ -5,7 +5,8 @@
 package middleware
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
 	"io"
 	"regexp"
 	"time"
@@ -38,45 +39,53 @@ func RequestID() gin.HandlerFunc {
 	}
 }
 
-// GetLoggerConfig return gin.LoggerConfig which will write the logs to specified io.Writer with given gin.LogFormatter.
-// By default gin.DefaultWriter = os.Stdout
-// reference: https://github.com/gin-gonic/gin#custom-log-format
-func GetLoggerConfig(formatter gin.LogFormatter, output io.Writer, skipPaths []string) gin.LoggerConfig {
-	if formatter == nil {
-		formatter = GetDefaultLogFormatterWithRequestID()
-	}
+// GinLogFormatterParams holds the parameters for GIN JSON log format.
+type GinLogFormatterParams struct {
+	gin.LogFormatterParams
+	RequestID string
+}
 
+// GetLoggerConfig return gin.LoggerConfig with JSON formatter.
+func GetLoggerConfig(output io.Writer, skipPaths []string) gin.LoggerConfig {
 	return gin.LoggerConfig{
-		Formatter: formatter,
+		Formatter: GetGinJSONLogFormatter(),
 		Output:    output,
 		SkipPaths: skipPaths,
 	}
 }
 
-// GetDefaultLogFormatterWithRequestID returns gin.LogFormatter with 'RequestID'.
-func GetDefaultLogFormatterWithRequestID() gin.LogFormatter {
+// GetGinJSONLogFormatter returns a gin.LogFormatter that outputs JSON.
+func GetGinJSONLogFormatter() gin.LogFormatter {
 	return func(param gin.LogFormatterParams) string {
-		var statusColor, methodColor, resetColor string
-		if param.IsOutputColor() {
-			statusColor = param.StatusCodeColor()
-			methodColor = param.MethodColor()
-			resetColor = param.ResetColor()
+		rid := ""
+		if v, ok := param.Keys[XRequestIDKey]; ok {
+			rid, _ = v.(string)
 		}
 
 		if param.Latency > time.Minute {
-			// Truncate in a golang < 1.8 safe way
 			param.Latency -= param.Latency % time.Second
 		}
 
-		return fmt.Sprintf("%s%3d%s - [%s] \"%v %s%s%s %s\" %s",
-			// param.TimeStamp.Format("2006/01/02 - 15:04:05"),
-			statusColor, param.StatusCode, resetColor,
-			param.ClientIP,
-			param.Latency,
-			methodColor, param.Method, resetColor,
-			param.Path,
-			param.ErrorMessage,
-		)
+		buf := &bytes.Buffer{}
+		enc := json.NewEncoder(buf)
+
+		logEntry := map[string]interface{}{
+			"time":      param.TimeStamp.Format(time.RFC3339Nano),
+			"level":     "info",
+			"client_ip": param.ClientIP,
+			"latency":   param.Latency.String(),
+			"method":    param.Method,
+			"path":      param.Path,
+			"status":    param.StatusCode,
+			"error":     param.ErrorMessage,
+		}
+
+		if rid != "" {
+			logEntry["request_id"] = rid
+		}
+
+		enc.Encode(logEntry)
+		return buf.String()
 	}
 }
 
