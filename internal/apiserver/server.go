@@ -23,7 +23,6 @@ import (
 
 // Run starts the API server.
 func Run(basename string, cfg *config.Config) error {
-
 	// Create registry
 	reg := driver.NewRegistry(cfg)
 	logger := reg.Logger()

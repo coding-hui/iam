@@ -96,8 +96,17 @@ cmd_restart() {
 }
 
 cmd_logs() {
+  local follow=false
+  if [ "${2:-}" = "-f" ]; then
+    follow=true
+  fi
+
   if [ -f "${IAM_DIR}/logs/apiserver.log" ]; then
-    tail -50 "${IAM_DIR}/logs/apiserver.log"
+    if $follow; then
+      tail -f "${IAM_DIR}/logs/apiserver.log"
+    else
+      tail -50 "${IAM_DIR}/logs/apiserver.log"
+    fi
   else
     echo "[WARN] No logs found"
   fi
