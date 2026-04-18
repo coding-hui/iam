@@ -10,7 +10,6 @@ OUTPUT_DIR="${IAM_ROOT}/_output"
 IAM_DIR="${HOME}/.iam"
 IAM_BIN="${IAM_DIR}/bin/iam-apiserver"
 IAM_CONF="${IAM_DIR}/conf/iam-apiserver.yaml"
-IAM_CERT="${IAM_DIR}/conf/cert"
 IAM_DATA="${HOME}/.iam/data"
 IAM_LOG="${IAM_DIR}/logs"
 
@@ -18,7 +17,7 @@ IAM_LOG="${IAM_DIR}/logs"
 # Commands
 
 cmd_install() {
-  mkdir -p "${IAM_DIR}/bin" "${IAM_DIR}/conf/cert" "${HOME}/.iam/data" "${IAM_DIR}/logs"
+  mkdir -p "${IAM_DIR}/bin" "${IAM_DIR}/conf" "${HOME}/.iam/data" "${IAM_DIR}/logs"
 
   # Build
   echo "[INFO] Building iam-apiserver..."
@@ -26,20 +25,9 @@ cmd_install() {
   CGO_ENABLED=1 go build -ldflags "-X github.com/coding-hui/common/version.GitVersion=$(git describe --tags --always 2>/dev/null || echo v0.0.0) -X github.com/coding-hui/common/version.GitCommit=$(git rev-parse HEAD 2>/dev/null)" \
     -o "${OUTPUT_DIR}/bin/iam-apiserver" "${IAM_ROOT}/cmd/apiserver"
 
-  # CA cert
-  echo "[INFO] Generating certificates..."
-  openssl genrsa -out "${IAM_CERT}/ca-key.pem" 2048 2>/dev/null
-  openssl req -x509 -new -nodes -key "${IAM_CERT}/ca-key.pem" -sha256 -days 3650 -out "${IAM_CERT}/ca.pem" -subj "/CN=IAM CA" 2>/dev/null
-  openssl genrsa -out "${IAM_CERT}/iam-apiserver-key.pem" 2048 2>/dev/null
-  openssl req -new -key "${IAM_CERT}/iam-apiserver-key.pem" -out "${IAM_CERT}/iam-apiserver.csr" -subj "/CN=IAM APIServer" 2>/dev/null
-  openssl x509 -req -in "${IAM_CERT}/iam-apiserver.csr" -CA "${IAM_CERT}/ca.pem" -CAkey "${IAM_CERT}/ca-key.pem" -CAcreateserial \
-    -out "${IAM_CERT}/iam-apiserver.pem" -days 825 -sha256 2>/dev/null
-  rm -f "${IAM_CERT}/iam-apiserver.csr" "${IAM_CERT}/ca-key.pem"
-
   # Config
   echo "[INFO] Generating configuration..."
-  sed -e "s|{{IAM_CERT}}|${IAM_CERT}|g" \
-      -e "s|{{IAM_DATA}}|${IAM_DATA}|g" \
+  sed -e "s|{{IAM_DATA}}|${IAM_DATA}|g" \
       -e "s|{{IAM_LOG}}|${IAM_LOG}|g" \
       "${IAM_ROOT}/configs/iam-apiserver.yaml" > "${IAM_CONF}"
 
@@ -85,8 +73,7 @@ EOF
   done
 
   echo "[INFO] IAM apiserver installed"
-  echo "  HTTP:  http://127.0.0.1:8080"
-  echo "  HTTPS: https://127.0.0.1:8443"
+  echo "  HTTP: http://127.0.0.1:8080"
 }
 
 cmd_uninstall() {

@@ -2,23 +2,11 @@ server:
   insecure:
     bind_address: 127.0.0.1
     bind_port: 8080
-  secure:
-    bind_address: 0.0.0.0
-    bind_port: 8443
-    tls:
-      cert_file: {{IAM_CERT}}/iam-apiserver.pem
-      key_file: {{IAM_CERT}}/iam-apiserver-key.pem
-  grpc:
-    bind_address: 0.0.0.0
-    bind_port: 8081
 database:
   type: sqlite
   dsn: {{IAM_DATA}}/iam.db
 cache:
   type: memory
-  redis:
-    host: 127.0.0.1
-    port: 6379
 log:
   level: info
   path: {{IAM_LOG}}
