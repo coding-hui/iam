@@ -51,7 +51,7 @@ all: tidy gen format lint build
 ## build: Build binaries for host platform
 .PHONY: build
 build:
-	@echo "==> Building binaries"
+	@echo "==> Building apiserver $(VERSION)"
 	@mkdir -p $(OUTPUT_DIR)/bin
 	@$(GO) build $(GO_BUILD_FLAGS) -o $(OUTPUT_DIR)/bin/apiserver$(GO_OUT_EXT) $(ROOT_PACKAGE)/cmd/apiserver
 
