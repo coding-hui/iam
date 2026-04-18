@@ -69,7 +69,7 @@ func GetGinJSONLogFormatter() gin.LogFormatter {
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
 
-		logEntry := map[string]interface{}{
+		logEntry := map[string]any{
 			"time":      param.TimeStamp.Format(time.RFC3339Nano),
 			"level":     "info",
 			"client_ip": param.ClientIP,
@@ -84,7 +84,9 @@ func GetGinJSONLogFormatter() gin.LogFormatter {
 			logEntry["request_id"] = rid
 		}
 
-		enc.Encode(logEntry)
+		if err := enc.Encode(logEntry); err != nil {
+			return ""
+		}
 		return buf.String()
 	}
 }
