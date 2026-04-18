@@ -50,11 +50,6 @@ COVERAGE ?= 60
 PLATFORMS ?= linux/amd64 linux/arm64
 
 # ==============================================================================
-# Includes (only for tools installation)
-
-include hack/makelib/tools.mk
-
-# ==============================================================================
 # Usage
 
 define USAGE_OPTIONS
@@ -271,3 +266,40 @@ go.test.cover: go.test
 	@echo "==> Coverage report"
 	@$(GO) tool cover -func=$(OUTPUT_DIR)/coverage.out | \
 		awk -v target=$(COVERAGE) -f $(ROOT_DIR)/hack/coverage.awk
+
+# ==============================================================================
+# Tool verification and installation (inline, no makelib needed)
+
+TOOLS_DIR := $(OUTPUT_DIR)/tools
+
+.PHONY: tools.verify.golangci-lint tools.verify.addlicense tools.verify.goimports \
+	tools.verify.golines tools.verify.swag tools.verify.go-junit-report tools.verify.codegen
+
+tools.verify.%:
+	@if ! which $* &>/dev/null; then \
+		$(MAKE) install.$*; \
+	fi
+
+.PHONY: install.golangci-lint install.addlicense install.goimports install.golines \
+	install.swag install.go-junit-report install.codegen
+
+install.golangci-lint:
+	@$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.1.6
+
+install.addlicense:
+	@$(GO) install github.com/coding-hui/addlicense@latest
+
+install.goimports:
+	@$(GO) install golang.org/x/tools/cmd/goimports@latest
+
+install.golines:
+	@$(GO) install github.com/segmentio/golines@latest
+
+install.swag:
+	@$(GO) install github.com/swaggo/swag/cmd/swag@latest
+
+install.go-junit-report:
+	@$(GO) install github.com/jstemmer/go-junit-report@latest
+
+install.codegen:
+	@$(GO) install $(ROOT_DIR)/tools/codegen/codegen.go
