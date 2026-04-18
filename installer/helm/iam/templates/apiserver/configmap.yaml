@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "iam.apiServerFullname" . }}
-  labels:
-    {{- include "iam.apiServerLabels" . | nindent 4 }}
-data:
-  iam-apiserver.yaml: |
-    {{- .Files.Get .Values.apiServer.configFile | nindent 4}}
