@@ -24,17 +24,6 @@ import (
 
 // NewRouter creates a new Gin router with all middleware and routes configured.
 func NewRouter(reg driver.Registry) *gin.Engine {
-	// Set Gin mode based on config
-	mode := reg.Config().Server.Mode
-	switch mode {
-	case "release":
-		gin.SetMode(gin.ReleaseMode)
-	case "test":
-		gin.SetMode(gin.TestMode)
-	default:
-		gin.SetMode(gin.DebugMode)
-	}
-
 	r := gin.New()
 
 	// Global middleware

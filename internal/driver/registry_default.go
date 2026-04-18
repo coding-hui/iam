@@ -21,7 +21,6 @@ import (
 	"github.com/coding-hui/iam/internal/identity/lockout"
 	"github.com/coding-hui/iam/internal/identity/session"
 	"github.com/coding-hui/iam/internal/identity/token"
-	"github.com/coding-hui/iam/internal/persistence"
 	"github.com/coding-hui/iam/internal/persistence/sql"
 	"github.com/coding-hui/iam/internal/selfservice"
 	"github.com/coding-hui/iam/internal/selfservice/courier"
@@ -101,7 +100,7 @@ type RegistryDefault struct {
 func NewRegistry(cfg *config.Config) *RegistryDefault {
 	return &RegistryDefault{
 		config: cfg,
-		logger: newLogger(cfg.Server.Mode),
+		logger: newLogger(),
 		tracer: otel.Tracer("iam"),
 	}
 }
@@ -334,11 +333,7 @@ func (r *RegistryDefault) newPersister() *sql.Persister {
 
 	switch dbConfig.Driver {
 	case "mysql":
-		p, err = sql.NewMySQLPersister(dbConfig.DSN, &persistence.Options{
-			MaxIdle:     dbConfig.MaxIdle,
-			MaxOpen:     dbConfig.MaxOpen,
-			MaxLifetime: dbConfig.MaxLifetime,
-		})
+		p, err = sql.NewMySQLPersister(dbConfig.DSN, nil)
 	case "sqlite":
 		p, err = sql.NewSQLitePersister(dbConfig.DSN, nil)
 	default:
@@ -353,27 +348,16 @@ func (r *RegistryDefault) newPersister() *sql.Persister {
 }
 
 func (r *RegistryDefault) newCache() Cache {
-	redisConfig := r.config.Redis
-	client := cache.NewRedisClient(redisConfig.Addr, redisConfig.Password, redisConfig.DB, redisConfig.PoolSize)
-	return cache.NewRedisCache(client, "iam:")
+	// Use in-memory cache for simplified setup
+	return cache.NewMemoryCache()
 }
 
-func newLogger(mode string) *logrus.Logger {
+func newLogger() *logrus.Logger {
 	logger := logrus.New()
-
-	switch mode {
-	case "release":
-		logger.SetLevel(logrus.InfoLevel)
-		logger.SetFormatter(&logrus.JSONFormatter{})
-	case "test":
-		logger.SetLevel(logrus.WarnLevel)
-	default:
-		logger.SetLevel(logrus.DebugLevel)
-		logger.SetFormatter(&logrus.TextFormatter{
-			FullTimestamp: true,
-		})
-	}
-
+	logger.SetLevel(logrus.InfoLevel)
+	logger.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
 	return logger
 }
 

@@ -20,32 +20,19 @@ func NewOptions() *Options {
 	return &Options{
 		Config: config.Config{
 			Server: config.ServerConfig{
-				Port:    8080,
-				Mode:    "debug",
-				Healthz: true,
+				Port: 8080,
 			},
 			Database: config.DatabaseConfig{
-				Driver:  "sqlite",
-				MaxIdle: 10,
-				MaxOpen: 100,
+				Driver: "sqlite",
 			},
 		},
 	}
 }
 
-// Complete sets default values for options that cannot be expressed as zero values.
+// Complete sets default values.
 func (o *Options) Complete() error {
 	if o.Server.Port == 0 {
 		o.Server.Port = 8080
-	}
-	if o.Server.Mode == "" {
-		o.Server.Mode = "debug"
-	}
-	if o.Database.MaxIdle == 0 {
-		o.Database.MaxIdle = 10
-	}
-	if o.Database.MaxOpen == 0 {
-		o.Database.MaxOpen = 100
 	}
 	return nil
 }
