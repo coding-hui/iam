@@ -68,9 +68,13 @@ func (h *Handler) List(c *gin.Context) {
 		return
 	}
 
-	networkID := c.GetString("network_id")
+	networkIDStr := c.GetString("network_id")
+	if networkIDStr == "" {
+		networkIDStr = "00000000-0000-0000-0000-000000000000"
+	}
+	networkID := uuid.MustParse(networkIDStr)
 
-	identities, total, err := h.manager.ListIdentities(c.Request.Context(), uuid.MustParse(networkID), params)
+	identities, total, err := h.manager.ListIdentities(c.Request.Context(), networkID, params)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
